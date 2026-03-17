@@ -1,0 +1,250 @@
+<?php
+
+namespace App\Livewire;
+
+use Livewire\Component;
+use App\Models\Book;
+use App\Models\BookAuthor;
+use App\Support\Countries;
+use Illuminate\Support\Str;
+use Livewire\WithFileUploads;
+
+class BookSubmissionWizard extends Component
+{
+    use WithFileUploads;
+
+    public int $currentStep = 1;
+    public int $totalSteps = 6;
+
+    // ... (rest of the properties the same)
+
+    public function nextStep()
+    {
+        $this->validateCurrentStep();
+        $this->saveDraft();
+        $this->currentStep++;
+    }
+
+    public function previousStep()
+    {
+        $this->currentStep--;
+    }
+
+    public function goToStep(int $step)
+    {
+        if ($step >= 1 && $step <= $this->totalSteps && $step <= $this->currentStep) {
+            $this->currentStep = $step;
+        }
+    }
+
+    protected function validateCurrentStep()
+    {
+        $rules = match($this->currentStep) {
+            1 => [
+                // Identificación Básica
+                'title' => 'required|min:3|max:255',
+                'book_type' => 'required|string',
+                'primary_language' => 'required|string',
+                // Editorial y Publicación
+                'publisher' => 'required|string|max:255',
+                'publisher_country' => 'required|string|max:100',
+            ],
+            2 => [
+                // Autores
+                'authors' => 'required|array|min:1',
+                'authors.*.full_name' => 'required|string|max:255',
+                'authors.*.role' => 'required|string',
+                // Contenido Académico
+                'abstract' => 'required|min:100|max:5000',
+                'keywords' => 'required|array|min:3',
+                'knowledge_areas' => 'required|array|min:1',
+            ],
+            3 => [
+                // Acceso Abierto
+                'is_open_access' => 'required|boolean',
+                'license_type' => 'required|string',
+                // Modelo de Negocio
+                'publication_model' => 'required|string',
+            ],
+            4 => [
+                // Evaluación y Ética (Calidad Editorial)
+                'has_peer_review' => 'required|boolean',
+                // Indexación (Opcional, sin reglas obligatorias iniciales)
+            ],
+            5 => [
+                // Archivos
+                // 'main_file' => 'required|file|mimes:pdf,epub|max:51200',
+            ],
+            default => [],
+        };
+        
+        // Conditional validation for Step 5 (Files)
+        if ($this->currentStep === 5 && !$this->book?->main_file && !$this->main_file) {
+             // Optional logic
+        }
+
+        $this->validate($rules);
+    }
+
+    public function saveDraft()
+    {
+        $data = [
+            // Step 1
+            'title' => $this->title,
+            'slug' => Str::slug($this->title) . '-' . Str::random(6),
+            'subtitle' => $this->subtitle ?: null,
+            'book_type' => $this->book_type ?: null,
+            'primary_language' => $this->primary_language ?: null,
+            'secondary_language' => $this->secondary_language ?: null,
+            'publication_year' => $this->publication_year,
+            'edition' => $this->edition ?: null,
+            'isbn' => $this->isbn ?: null,
+            'doi' => $this->doi ?: null,
+            'landing_url' => $this->landing_url ?: null,
+
+            // Step 3
+            'publisher' => $this->publisher ?: null,
+            'publisher_country' => $this->publisher_country ?: null,
+            'publisher_city' => $this->publisher_city ?: null,
+            'collection_series' => $this->collection_series ?: null,
+            'sponsor_entity' => $this->sponsor_entity ?: null,
+            'total_pages' => $this->total_pages,
+            'format' => $this->format ?: null,
+            'exact_publication_date' => $this->exact_publication_date ?: null,
+
+            // Step 4
+            'abstract' => $this->abstract ?: null,
+            'keywords' => $this->keywords,
+            'knowledge_areas' => $this->knowledge_areas,
+            'main_discipline' => $this->main_discipline ?: null,
+            'secondary_discipline' => $this->secondary_discipline ?: null,
+            'academic_level' => $this->academic_level ?: null,
+            'table_of_contents' => $this->table_of_contents ?: null,
+
+            // Step 5
+            'is_open_access' => $this->is_open_access,
+            'access_type' => $this->is_open_access ? $this->access_type : null,
+            'license_type' => $this->license_type ?: null,
+            'rights_holder' => $this->rights_holder ?: null,
+            'allows_reuse' => $this->allows_reuse,
+            'allows_commercial_use' => $this->allows_commercial_use,
+
+            // Step 6
+            'publication_model' => $this->publication_model ?: null,
+            'access_cost' => $this->access_cost,
+            'author_apc' => $this->author_apc,
+            'funded_by' => $this->funded_by,
+
+            // Step 7
+            'has_peer_review' => $this->has_peer_review,
+            'review_type' => $this->has_peer_review ? $this->review_type : null,
+            'has_editorial_committee' => $this->has_editorial_committee,
+            'has_editorial_standards' => $this->has_editorial_standards,
+            'has_antiplagiarism' => $this->has_antiplagiarism,
+            'has_ethics_code' => $this->has_ethics_code,
+
+            // Step 8
+            'is_indexed' => $this->is_indexed,
+            'indexes' => $this->indexes,
+            'citation_count' => $this->citation_count,
+            'available_metrics' => $this->available_metrics ?: null,
+
+            // Step 9 - metadata
+            'download_url' => $this->download_url ?: null,
+            'file_size' => $this->file_size ?: null,
+            'file_checksum' => $this->file_checksum ?: null,
+
+            'status' => 'draft',
+        ];
+
+        // Handle file uploads
+        if ($this->cover_image) {
+            $data['cover_image'] = $this->cover_image->store('book-covers', 'public');
+        }
+        
+        if ($this->table_of_contents_file) {
+            $data['table_of_contents_file'] = $this->table_of_contents_file->store('book-toc', 'public');
+        }
+
+        if ($this->main_file) {
+            $data['main_file'] = $this->main_file->store('books', 'public');
+        }
+
+        // We can't save recursive file arrays to the DB directly in the same way Filament does if usage is complex.
+        // Assuming the model casts 'chapter_files' and 'supplementary_files' to array/json.
+        // We'll process uploads here.
+        if (!empty($this->chapter_files)) {
+             $processedChapters = []; // You might need to merge with existing if partial updates are allowed
+             foreach ($this->chapter_files as $cf) {
+                 $item = ['chapter_name' => $cf['chapter_name']];
+                 if (isset($cf['file']) && $cf['file'] instanceof \Illuminate\Http\UploadedFile) {
+                     $item['file'] = $cf['file']->store('book-chapters', 'public');
+                 } elseif (isset($cf['file']) && is_string($cf['file'])) {
+                     $item['file'] = $cf['file']; // Keep existing path if not changed
+                 }
+                 $processedChapters[] = $item;
+             }
+             $data['chapter_files'] = $processedChapters;
+        }
+
+        if (!empty($this->supplementary_files)) {
+             $processedSupp = [];
+             foreach ($this->supplementary_files as $sf) {
+                 $item = ['name' => $sf['name']];
+                 if (isset($sf['file']) && $sf['file'] instanceof \Illuminate\Http\UploadedFile) {
+                     $item['file'] = $sf['file']->store('book-supplementary', 'public');
+                 } elseif (isset($sf['file']) && is_string($sf['file'])) {
+                     $item['file'] = $sf['file'];
+                 }
+                 $processedSupp[] = $item;
+             }
+             $data['supplementary_files'] = $processedSupp;
+        }
+
+        if ($this->book) {
+            unset($data['slug']);
+            $this->book->update($data);
+        } else {
+            $data['user_id'] = auth()->id();
+            $this->book = Book::create($data);
+        }
+
+        // Save authors
+        if ($this->book) {
+            $this->book->authors()->delete();
+            foreach ($this->authors as $index => $author) {
+                if (!empty($author['full_name'])) {
+                    $this->book->authors()->create([
+                        'role' => $author['role'] ?? 'author',
+                        'full_name' => $author['full_name'],
+                        'orcid' => $author['orcid'] ?: null,
+                        'affiliation' => $author['affiliation'] ?: null,
+                        'country_code' => $author['country_code'] ?: null,
+                        'order' => $index,
+                    ]);
+                }
+            }
+        }
+    }
+
+    public function submit()
+    {
+        $this->saveDraft();
+        return redirect()->route('app.book.checkout', $this->book);
+    }
+
+    public function saveAndExit()
+    {
+        $this->saveDraft();
+        return redirect()->route('app.dashboard');
+    }
+
+    public function render()
+    {
+        return view('livewire.book-submission-wizard', [
+            'countries' => Countries::forSelect(),
+        ])->layout('components.layouts.app', [
+            'title' => $this->book ? 'Editar Libro - OpenSciRank' : 'Registrar Libro - OpenSciRank',
+        ]);
+    }
+}
