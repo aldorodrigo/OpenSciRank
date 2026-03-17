@@ -43,8 +43,13 @@ OpenSciRank es una plataforma avanzada para la evaluación y clasificación de r
    # Edita el archivo .env con tus credenciales de base de datos
    ```
 
-4. **Generar la clave de aplicación y migrar**:
+4. **Generar la clave de aplicación y migrar la base de datos**:
    ```bash
+   # Si usas Sail:
+   ./vendor/bin/sail artisan key:generate
+   ./vendor/bin/sail artisan migrate --seed
+
+   # Si usas PHP directamente:
    php artisan key:generate
    php artisan migrate --seed
    ```
@@ -72,6 +77,27 @@ composer dev
 # O manualmente
 php artisan serve & npm run dev
 ```
+
+## 👥 Administración (Primer Acceso)
+
+Si has desplegado el proyecto en un servidor nuevo y no tienes un usuario administrador, puedes usar el script de emergencia `create_admin.php`:
+
+1.  **Ejecutar el script**:
+    ```bash
+    # Si usas Sail:
+    ./vendor/bin/sail artisan tinker create_admin.php
+
+    # Si usas PHP directamente:
+    php artisan tinker create_admin.php
+    ```
+
+2.  **Credenciales**: El usuario creado será `admin@openscirank.com` con la contraseña `password`.
+
+> [!WARNING]
+> **SEGURIDAD**: Por razones de seguridad, debes eliminar el archivo `create_admin.php` inmediatamente después de obtener tu acceso inicial y cambiar la contraseña desde el panel administrativo.
+> ```bash
+> rm create_admin.php
+> ```
 
 ## 🧪 Pruebas
 
