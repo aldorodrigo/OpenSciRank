@@ -109,6 +109,21 @@ Si has desplegado el proyecto en un servidor nuevo, debes inicializar el sistema
 > [!IMPORTANT]
 > **Seguridad**: Una vez que hayas iniciado sesión por primera vez, asegúrate de cambiar la contraseña y el email del administrador desde el panel de control de Filament.
 
+## 🚀 Git y Despliegue
+
+Si realizas cambios en el código y quieres subirlos a GitHub, utiliza estos comandos estándar:
+
+```bash
+# 1. Preparar todos los cambios
+git add .
+
+# 2. Guardar los cambios con un mensaje descriptivo
+git commit -m "Descripción de tus cambios"
+
+# 3. Subir los cambios a GitHub
+git push origin main
+```
+
 ## 🧪 Pruebas
 
 El proyecto incluye una suite de pruebas para asegurar la calidad del código:
