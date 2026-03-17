@@ -78,26 +78,36 @@ composer dev
 php artisan serve & npm run dev
 ```
 
-## 👥 Administración (Primer Acceso)
+## 👥 Administración y Control de Acceso (Shield)
 
-Si has desplegado el proyecto en un servidor nuevo y no tienes un usuario administrador, puedes usar el script de emergencia `create_admin.php`:
+Si has desplegado el proyecto en un servidor nuevo, debes inicializar el sistema de permisos y crear el usuario administrador:
 
-1.  **Ejecutar el script**:
+1.  **Generar Roles y Permisos**:
+    El proyecto utiliza [Filament Shield](https://github.com/bezhanSalleh/filament-shield). Ejecuta este comando para generar todos los permisos basados en los modelos:
     ```bash
-    # Si usas Sail:
-    ./vendor/bin/sail artisan tinker create_admin.php
-
     # Si usas PHP directamente:
-    php artisan tinker create_admin.php
+    php artisan shield:generate --all
+
+    # Si usas Sail:
+    ./vendor/bin/sail artisan shield:generate --all
     ```
 
-2.  **Credenciales**: El usuario creado será `admin@openscirank.com` con la contraseña `password`.
+2.  **Crear Usuario Administrador (Seeder)**:
+    Recomendamos usar el seeder incluido para crear el usuario inicial con el rol `super_admin`:
+    ```bash
+    # Si usas PHP directamente:
+    php artisan db:seed --class=AdminUserSeeder
 
-> [!WARNING]
-> **SEGURIDAD**: Por razones de seguridad, debes eliminar el archivo `create_admin.php` inmediatamente después de obtener tu acceso inicial y cambiar la contraseña desde el panel administrativo.
-> ```bash
-> rm create_admin.php
-> ```
+    # Si usas Sail:
+    ./vendor/bin/sail artisan db:seed --class=AdminUserSeeder
+    ```
+
+3.  **Credenciales por defecto**: 
+    - **Email**: `admin@openscirank.com`
+    - **Password**: `password`
+
+> [!IMPORTANT]
+> **Seguridad**: Una vez que hayas iniciado sesión por primera vez, asegúrate de cambiar la contraseña y el email del administrador desde el panel de control de Filament.
 
 ## 🧪 Pruebas
 
