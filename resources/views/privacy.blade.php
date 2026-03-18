@@ -52,7 +52,7 @@
                 <p>Nos reservamos el derecho de actualizar esta Política de Privacidad para reflejar cambios en nuestras prácticas o requerimientos legales. Le notificaremos cualquier cambio significativo a través de su correo electrónico registrado.</p>
 
                 <div class="mt-12 border-t border-gray-100 pt-8 dark:border-gray-800">
-                    <p class="text-sm text-gray-500">Para cualquier consulta sobre el tratamiento de sus datos, puede contactarnos en: <a href="mailto:privacy@esp.u-cal.org" class="text-indigo-600 hover:underline dark:text-indigo-400">privacy@esp.u-cal.org</a>.</p>
+                    <p class="text-sm text-gray-500">Para cualquier consulta sobre el tratamiento de sus datos, por favor contáctenos a través de nuestra <a href="/contact" class="text-indigo-600 hover:underline dark:text-indigo-400">página de contacto</a>.</p>
                 </div>
             </div>
         </div>

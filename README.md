@@ -45,13 +45,15 @@ OpenSciRank es una plataforma avanzada para la evaluación y clasificación de r
 
 4. **Generar la clave de aplicación y migrar la base de datos**:
    ```bash
-   # Si usas Sail:
-   ./vendor/bin/sail artisan key:generate
-   ./vendor/bin/sail artisan migrate --seed
+    # Si usas Sail:
+    ./vendor/bin/sail artisan key:generate
+    ./vendor/bin/sail artisan migrate
+    ./vendor/bin/sail artisan db:seed --class=CriteriaItemSeeder
 
-   # Si usas PHP directamente:
-   php artisan key:generate
-   php artisan migrate --seed
+    # Si usas PHP directamente:
+    php artisan key:generate
+    php artisan migrate
+    php artisan db:seed --class=CriteriaItemSeeder
    ```
 
 5. **Instalar dependencias de JS y compilar**:
@@ -100,6 +102,16 @@ Si has desplegado el proyecto en un servidor nuevo, debes inicializar el sistema
 
     # Si usas Sail:
     ./vendor/bin/sail artisan db:seed --class=AdminUserSeeder
+    ```
+
+4.  **Inicializar Categorías e Indicadores (Documento Maestro)**:
+    Para cargar las 5 áreas de evaluación y los 18 indicadores oficiales:
+    ```bash
+    # Si usas PHP directamente:
+    php artisan db:seed --class=CriteriaItemSeeder
+
+    # Si usas Sail:
+    ./vendor/bin/sail artisan db:seed --class=CriteriaItemSeeder
     ```
 
 3.  **Credenciales por defecto**: 

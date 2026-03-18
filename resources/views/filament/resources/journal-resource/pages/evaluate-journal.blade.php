@@ -2,385 +2,237 @@
     <div x-data="{
         activeCategory: '{{ addslashes($this->getCriteriaByCategory()->keys()->first()) }}',
         setCategory(name) { this.activeCategory = name; }
-    }">
+    }" class="space-y-6">
 
-        {{-- HERO HEADER --}}
-        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%); border-radius: 16px; padding: 24px; margin-bottom: 0; color: white;">
-            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px;">
-                {{-- Left: Journal Info --}}
-                <div style="flex: 1; min-width: 250px;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                        @if($record->isEvaluated())
-                            <span style="display: inline-flex; align-items: center; border-radius: 9999px; background: rgba(34,197,94,0.2); color: #86efac; padding: 4px 12px; font-size: 12px; font-weight: 600;">✓ Evaluado</span>
-                        @else
-                            <span style="display: inline-flex; align-items: center; border-radius: 9999px; background: rgba(245,158,11,0.2); color: #fcd34d; padding: 4px 12px; font-size: 12px; font-weight: 600;">⏳ Pendiente</span>
-                        @endif
-                    </div>
-                    <h1 style="font-size: 22px; font-weight: 800; margin: 0; line-height: 1.3;">{{ $record->title }}</h1>
-                    @if($record->abbreviated_name)
-                        <div style="font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px;">{{ $record->abbreviated_name }}</div>
-                    @endif
-                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 8px; font-size: 13px; color: rgba(255,255,255,0.55);">
-                        @if($record->publisher)<span>📚 {{ $record->publisher }}</span>@endif
-                        @if($record->publishing_institution)<span>🏛️ {{ $record->publishing_institution }}</span>@endif
-                        @if($record->country_code)<span>🌍 {{ $record->country_code }}</span>@endif
-                        @if($record->issn_print)<span>ISSN: {{ $record->issn_print }}</span>@endif
-                        @if($record->issn_online)<span>e-ISSN: {{ $record->issn_online }}</span>@endif
-                        @if($record->start_year)<span>📅 Desde {{ $record->start_year }}</span>@endif
-                        @if($record->license_type)<span>📄 {{ $record->license_type }}</span>@endif
-                    </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px;">
-                        @if($record->url)
-                            <a href="{{ $record->url }}" target="_blank" rel="noopener noreferrer"
-                               style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; font-size: 12px; font-weight: 600; border-radius: 9999px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); text-decoration: none; transition: background 0.2s;"
-                               onmouseover="this.style.background='rgba(255,255,255,0.2)'"
-                               onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                                🔗 {{ parse_url($record->url, PHP_URL_HOST) ?? 'Visitar sitio' }}
-                            </a>
-                        @endif
-                        @if($record->editorial_board_url)
-                            <a href="{{ $record->editorial_board_url }}" target="_blank" rel="noopener noreferrer"
-                               style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; font-size: 12px; font-weight: 600; border-radius: 9999px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); text-decoration: none; transition: background 0.2s;"
-                               onmouseover="this.style.background='rgba(255,255,255,0.2)'"
-                               onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                                👥 Comité Editorial
-                            </a>
-                        @endif
-                        @if($record->open_access_policy_url)
-                            <a href="{{ $record->open_access_policy_url }}" target="_blank" rel="noopener noreferrer"
-                               style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; font-size: 12px; font-weight: 600; border-radius: 9999px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); text-decoration: none; transition: background 0.2s;"
-                               onmouseover="this.style.background='rgba(255,255,255,0.2)'"
-                               onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                                🔓 Política OA
-                            </a>
-                        @endif
-                        @if($record->license_url)
-                            <a href="{{ $record->license_url }}" target="_blank" rel="noopener noreferrer"
-                               style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; font-size: 12px; font-weight: 600; border-radius: 9999px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); text-decoration: none; transition: background 0.2s;"
-                               onmouseover="this.style.background='rgba(255,255,255,0.2)'"
-                               onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                                📜 Licencia
-                            </a>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Right: Score & Stats --}}
-                <div style="display: flex; align-items: center; gap: 24px;">
-                    @php $score = $this->calculateScore(); @endphp
-                    <div style="text-align: center;">
-                        <div style="width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; background: rgba(255,255,255,0.08);
-                            border: 5px solid {{ $score >= 80 ? '#22c55e' : ($score >= 50 ? '#f59e0b' : '#ef4444') }}; color: {{ $score >= 80 ? '#86efac' : ($score >= 50 ? '#fcd34d' : '#fca5a5') }};">
-                            {{ number_format($score, 0) }}<span style="font-size: 14px;">%</span>
-                        </div>
-                        <div style="font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 6px;">Nota</div>
-                    </div>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.06); border-radius: 10px; padding: 8px 14px; font-size: 13px;">
-                            <span style="color: rgba(255,255,255,0.45);">Progreso</span>
-                            <div style="width: 80px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 9999px; overflow: hidden;">
-                                <div style="height: 100%; border-radius: 9999px; background: #60a5fa; transition: width 0.5s; width: {{ $this->getCompletionPercentage() }}%;"></div>
-                            </div>
-                            <span style="font-weight: 700; color: white;">{{ $this->getCompletedCount() }}/{{ $this->getTotalCount() }}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.06); border-radius: 10px; padding: 8px 14px; font-size: 13px;">
-                            <span style="color: rgba(255,255,255,0.45);">Excluyentes</span>
-                            @if($this->getCoresFailedCount() > 0)
-                                <span style="font-weight: 700; color: #fca5a5;">⚠ {{ $this->getCoresFailedCount() }} sin cumplir</span>
+        {{-- NEW PREMIUM HERO HEADER --}}
+        <div class="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-xl lg:shadow-2xl">
+            {{-- Background decorative elements --}}
+            <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl"></div>
+            
+            <div class="relative z-10 p-6 lg:p-10">
+                <div class="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+                    {{-- Left: Journal Info --}}
+                    <div class="flex-1 space-y-4">
+                        <div class="flex items-center gap-3">
+                            @if($record->isEvaluated())
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold tracking-wide text-emerald-400 ring-1 ring-emerald-500/30">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                    EVALUADO
+                                </span>
                             @else
-                                <span style="font-weight: 700; color: #86efac;">✓ Todo OK</span>
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1 text-xs font-bold tracking-wide text-amber-400 ring-1 ring-amber-500/30">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                    PENDIENTE
+                                </span>
+                            @endif
+                            <span class="text-xs font-medium text-slate-400">{{ $record->issn_online ?: ($record->issn_print ?: 'Sin ISSN') }}</span>
+                        </div>
+
+                        <div>
+                            <h1 class="text-2xl font-black tracking-tight text-white lg:text-4xl">
+                                {{ $record->title }}
+                            </h1>
+                            @if($record->abbreviated_name)
+                                <p class="mt-1 text-sm font-medium text-slate-400">{{ $record->abbreviated_name }}</p>
                             @endif
                         </div>
-                        @if($record->evaluated_at)
-                            <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.06); border-radius: 10px; padding: 8px 14px; font-size: 13px;">
-                                <span style="color: rgba(255,255,255,0.45);">Evaluado</span>
-                                <span style="color: white;">{{ $record->evaluated_at->format('d/m/Y') }}</span>
+
+                        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-400">
+                            @if($record->publisher)
+                                <span class="flex items-center gap-2"><svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A4.833 4.833 0 0 1 12 12.25c-1.317 0-2.527-.525-3.414-1.382V21" /></svg>{{ $record->publisher }}</span>
+                            @endif
+                            @if($record->country_code)
+                                <span class="flex items-center gap-2"><svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" /></svg>{{ $record->country_code }}</span>
+                            @endif
+                            @if($record->start_year)
+                                <span class="flex items-center gap-2"><svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>{{ $record->start_year }}</span>
+                            @endif
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            @if($record->url)
+                                <a href="{{ $record->url }}" target="_blank" class="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>
+                                    Sitio Web
+                                </a>
+                            @endif
+                            @if($record->editorial_board_url)
+                                <a href="{{ $record->editorial_board_url }}" target="_blank" class="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white">
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.998 5.998 0 0 0-12 0m12 0c0-.856-.33-1.635-.873-2.219m-.306-5.674a3 3 0 1 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" /></svg>
+                                    Comité Editorial
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Right: Animated Score Circle --}}
+                    <div class="flex items-center gap-8">
+                        @php $score = $this->calculateScore(); @endphp
+                        <div class="relative flex flex-col items-center">
+                            <div class="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-800/50 shadow-inner ring-4 {{ $score >= 80 ? 'ring-emerald-500' : ($score >= 50 ? 'ring-amber-500' : 'ring-rose-500') }} transition-all duration-500">
+                                <span class="text-3xl font-black text-white">{{ number_format($score, 0) }}<span class="text-lg opacity-60">%</span></span>
                             </div>
-                        @endif
+                            <span class="mt-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Puntaje Final</span>
+                        </div>
+
+                        <div class="hidden flex-col gap-3 sm:flex">
+                            <div class="flex items-center gap-4 rounded-xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-sm">
+                                <div class="flex-1 space-y-1">
+                                    <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                        <span>Progreso de Evaluación</span>
+                                        <span>{{ $this->getCompletionPercentage() }}%</span>
+                                    </div>
+                                    <div class="h-1.5 w-40 overflow-hidden rounded-full bg-slate-700">
+                                        <div class="h-full bg-indigo-500 transition-all duration-700" style="width: {{ $this->getCompletionPercentage() }}%"></div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="block text-lg font-black leading-none text-white">{{ $this->getCompletedCount() }}</span>
+                                    <span class="text-[10px] font-bold text-slate-500">/{{ $this->getTotalCount() }}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 rounded-xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-sm">
+                                @if($this->getCoresFailedCount() > 0)
+                                    <svg class="h-5 w-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                                    <span class="text-xs font-bold text-rose-400">{{ $this->getCoresFailedCount() }} Criterios Excluyentes sin cumplir</span>
+                                @else
+                                    <svg class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                    <span class="text-xs font-bold text-emerald-400 text-shadow-sm">Todo OK en base metodológica</span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        {{-- JOURNAL DETAIL PANEL (collapsible) --}}
-        <div x-data="{ showDetails: false }" style="margin-bottom: 24px;">
+        </div        {{-- JOURNAL DETAIL PANEL (collapsible) --}}
+        <div x-data="{ showDetails: false }" class="mt-[-1rem]">
             <button type="button" @click="showDetails = !showDetails"
-                    style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; font-size: 13px; font-weight: 600; color: #6366f1; background: #eef2ff; border: 1px solid #c7d2fe; border-top: none; border-radius: 0 0 16px 16px; cursor: pointer; transition: background 0.2s;"
-                    onmouseover="this.style.background='#e0e7ff'"
-                    onmouseout="this.style.background='#eef2ff'">
-                <span x-text="showDetails ? '▲ Ocultar datos de la revista' : '▼ Ver todos los datos de la revista'"></span>
+                    class="group flex w-full items-center justify-center gap-2 rounded-b-2xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-bold uppercase tracking-widest text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800">
+                <span x-show="!showDetails" class="flex items-center gap-2">
+                    <svg class="h-4 w-4 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                    Ver detalles de la revista
+                </span>
+                <span x-show="showDetails" class="flex items-center gap-2">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" /></svg>
+                    Ocultar detalles
+                </span>
             </button>
 
-            <div x-show="showDetails" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                 style="margin-top: 12px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
-
+            <div x-show="showDetails" x-collapse x-cloak class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 {{-- Description --}}
                 @if($record->description)
-                    <div style="padding: 16px 20px; border-bottom: 1px solid #f3f4f6;">
-                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; margin-bottom: 6px;">Descripción</div>
-                        <p style="font-size: 14px; color: #374151; line-height: 1.6; margin: 0;">{{ $record->description }}</p>
+                    <div class="border-b border-slate-100 p-6 dark:border-slate-800">
+                        <h4 class="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Descripción Editorial</h4>
+                        <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ $record->description }}</p>
                     </div>
                 @endif
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0;">
-
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {{-- SECTION: Identification --}}
-                    <div style="padding: 16px 20px; border-bottom: 1px solid #f3f4f6; border-right: 1px solid #f3f4f6;">
-                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6366f1; margin-bottom: 10px;">📋 Identificación</div>
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af; width: 140px;">Título</td>
-                                <td style="padding: 4px 0; color: #111827; font-weight: 500;">{{ $record->title }}</td>
-                            </tr>
-                            @if($record->abbreviated_name)
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Nombre abreviado</td>
-                                <td style="padding: 4px 0; color: #111827;">{{ $record->abbreviated_name }}</td>
-                            </tr>
-                            @endif
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">ISSN impreso</td>
-                                <td style="padding: 4px 0; color: #111827;">{{ $record->issn_print ?: '—' }}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">ISSN electrónico</td>
-                                <td style="padding: 4px 0; color: #111827;">{{ $record->issn_online ?: '—' }}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">País</td>
-                                <td style="padding: 4px 0; color: #111827;">{{ $record->country_code ?: '—' }}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Año de inicio</td>
-                                <td style="padding: 4px 0; color: #111827;">{{ $record->start_year ?: '—' }}</td>
-                            </tr>
-                            @if($record->subject_areas && count($record->subject_areas))
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af; vertical-align: top;">Áreas temáticas</td>
-                                <td style="padding: 4px 0;">
+                    <div class="border-b border-slate-100 p-5 dark:border-slate-800 sm:border-r">
+                        <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-indigo-500">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" /></svg>
+                            Identificación
+                        </h5>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">ISSN Impreso</span>
+                                <span class="font-semibold text-slate-700 dark:text-slate-300">{{ $record->issn_print ?: '—' }}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">e-ISSN</span>
+                                <span class="font-semibold text-slate-700 dark:text-slate-300">{{ $record->issn_online ?: '—' }}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">Año inicio</span>
+                                <span class="font-semibold text-slate-700 dark:text-slate-300">{{ $record->start_year ?: '—' }}</span>
+                            </div>
+                            @if($record->subject_areas)
+                            <div class="space-y-2 pt-1">
+                                <span class="text-xs font-bold text-slate-400">Áreas temáticas</span>
+                                <div class="flex flex-wrap gap-1">
                                     @foreach($record->subject_areas as $area)
-                                        <span style="display: inline-block; background: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 9999px; font-size: 11px; margin: 1px 2px;">{{ $area }}</span>
+                                        <span class="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-400">{{ $area }}</span>
                                     @endforeach
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                             @endif
-                            @if($record->target_audience && count($record->target_audience))
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af; vertical-align: top;">Público objetivo</td>
-                                <td style="padding: 4px 0;">
-                                    @foreach($record->target_audience as $aud)
-                                        <span style="display: inline-block; background: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 9999px; font-size: 11px; margin: 1px 2px;">{{ $aud }}</span>
-                                    @endforeach
-                                </td>
-                            </tr>
-                            @endif
-                            @if($record->publication_languages && count($record->publication_languages))
-                            <tr>
-                                <td style="padding: 4px 0; color: #9ca3af; vertical-align: top;">Idiomas</td>
-                                <td style="padding: 4px 0;">
-                                    @foreach($record->publication_languages as $lang)
-                                        <span style="display: inline-block; background: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 9999px; font-size: 11px; margin: 1px 2px;">{{ $lang }}</span>
-                                    @endforeach
-                                </td>
-                            </tr>
-                            @endif
-                        </table>
+                        </div>
                     </div>
 
                     {{-- SECTION: Open Access --}}
-                    <div style="padding: 16px 20px; border-bottom: 1px solid #f3f4f6;">
-                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #059669; margin-bottom: 10px;">🔓 Acceso Abierto</div>
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            @php
-                                $boolIcon = fn($val) => $val === null ? '<span style="color:#d1d5db;">—</span>' : ($val ? '<span style="color:#22c55e;">✓</span>' : '<span style="color:#ef4444;">✗</span>');
-                            @endphp
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af; width: 180px;">Acceso abierto</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->is_open_access) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Tipo de acceso</td>
-                                <td style="padding: 4px 0; color: #111827;">
-                                    @if($record->access_type)
-                                        <span style="background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600;">
-                                            {{ match($record->access_type) { 'full_oa' => 'Completo', 'hybrid' => 'Híbrido', 'restricted' => 'Restringido', default => $record->access_type } }}
-                                        </span>
-                                    @else — @endif
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Accesible sin registro</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->articles_accessible_without_registration) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Permite auto-archivo</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->allows_self_archiving) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Tiene embargo</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->has_embargo) !!} @if($record->embargo_months) <span style="color:#6b7280; font-size:12px;">({{ $record->embargo_months }} meses)</span> @endif</td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    {{-- SECTION: Copyright & Licensing --}}
-                    <div style="padding: 16px 20px; border-bottom: 1px solid #f3f4f6; border-right: 1px solid #f3f4f6;">
-                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7c3aed; margin-bottom: 10px;">📄 Copyright y Licencias</div>
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af; width: 180px;">Licencia</td>
-                                <td style="padding: 4px 0; color: #111827; font-weight: 500;">{{ $record->license_type ?: '—' }}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Autores retienen copyright</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->authors_retain_copyright) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Permite uso comercial</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->allows_commercial_reuse) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Licencia visible en artículos</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->licenses_visible_in_articles) !!}</td>
-                            </tr>
-                            @if($record->copyright_policy)
-                            <tr>
-                                <td style="padding: 4px 0; color: #9ca3af; vertical-align: top;">Política de copyright</td>
-                                <td style="padding: 4px 0; color: #6b7280; font-size: 12px;">{{ Str::limit($record->copyright_policy, 150) }}</td>
-                            </tr>
-                            @endif
-                        </table>
+                    <div class="border-b border-slate-100 p-5 dark:border-slate-800 lg:border-r">
+                        <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-emerald-500">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                            Acceso Abierto
+                        </h5>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">Acceso Abierto</span>
+                                <span>{!! $record->is_open_access ? '✅' : '❌' !!}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">Tipo de acceso</span>
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400">
+                                    {{ match($record->access_type) { 'full_oa' => 'Completo', 'hybrid' => 'Híbrido', 'restricted' => 'Restringido', default => '—' } }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">Sin registro</span>
+                                <span>{!! $record->articles_accessible_without_registration ? '✅' : '❌' !!}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">Embargo</span>
+                                <span class="font-medium text-slate-700 dark:text-slate-300">
+                                    @if($record->has_embargo) ⚠️ {{ $record->embargo_months }} meses @else No @endif
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- SECTION: Editorial --}}
-                    <div style="padding: 16px 20px; border-bottom: 1px solid #f3f4f6;">
-                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #0891b2; margin-bottom: 10px;">📰 Editorial</div>
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af; width: 180px;">Institución editora</td>
-                                <td style="padding: 4px 0; color: #111827;">{{ $record->publishing_institution ?: '—' }}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Editor responsable</td>
-                                <td style="padding: 4px 0; color: #111827;">{{ $record->editor_name ?: '—' }}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Email institucional</td>
-                                <td style="padding: 4px 0; color: #111827;">{{ $record->institutional_email ?: '—' }}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Comité editorial visible</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->editorial_board_visible) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Revisión por pares</td>
-                                <td style="padding: 4px 0; color: #111827;">
-                                    @if($record->peer_review_type)
-                                        {{ match($record->peer_review_type) { 'double_blind' => 'Doble ciego', 'single_blind' => 'Simple ciego', 'open' => 'Abierta', 'post_publication' => 'Post publicación', default => $record->peer_review_type } }}
-                                    @else — @endif
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 4px 0; color: #9ca3af;">Frecuencia</td>
-                                <td style="padding: 4px 0; color: #111827;">
-                                    @if($record->publication_frequency)
-                                        {{ match($record->publication_frequency) { 'annual' => 'Anual', 'biannual' => 'Semestral', 'quarterly' => 'Trimestral', 'bimonthly' => 'Bimestral', 'monthly' => 'Mensual', 'continuous' => 'Continua', default => $record->publication_frequency } }}
-                                    @else — @endif
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    {{-- SECTION: Business Model --}}
-                    <div style="padding: 16px 20px; border-bottom: 1px solid #f3f4f6; border-right: 1px solid #f3f4f6;">
-                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #ca8a04; margin-bottom: 10px;">💰 Modelo de Negocio</div>
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af; width: 180px;">Cobra APC</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->charges_apc) !!}
-                                    @if($record->charges_apc && $record->apc_amount)
-                                        <span style="color: #111827; margin-left: 4px;">{{ $record->apc_currency ?? 'USD' }} {{ number_format($record->apc_amount, 2) }}</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Exenciones de APC</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->has_apc_waivers) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Tiene publicidad</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->has_advertising) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Modelo transparente</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->business_model_transparent) !!}</td>
-                            </tr>
-                            @if($record->funding_sources && count($record->funding_sources))
-                            <tr>
-                                <td style="padding: 4px 0; color: #9ca3af; vertical-align: top;">Fuentes de financiamiento</td>
-                                <td style="padding: 4px 0;">
-                                    @foreach($record->funding_sources as $src)
-                                        <span style="display: inline-block; background: #fef9c3; color: #854d0e; padding: 2px 8px; border-radius: 9999px; font-size: 11px; margin: 1px 2px;">{{ $src }}</span>
-                                    @endforeach
-                                </td>
-                            </tr>
-                            @endif
-                        </table>
-                    </div>
-
-                    {{-- SECTION: Ethics --}}
-                    <div style="padding: 16px 20px;">
-                        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #dc2626; margin-bottom: 10px;">🛡️ Ética y Buenas Prácticas</div>
-                        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af; width: 180px;">Política de ética</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->has_ethics_policy) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Adhiere a COPE</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->adheres_to_cope) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Política antiplagio</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->has_antiplagiarism_policy) !!}
-                                    @if($record->antiplagiarism_tool)
-                                        <span style="color: #6b7280; font-size: 12px; margin-left: 4px;">({{ $record->antiplagiarism_tool }})</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Conflicto de interés</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->has_conflict_of_interest_policy) !!}</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid #f9fafb;">
-                                <td style="padding: 4px 0; color: #9ca3af;">Declara uso de IA</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->declares_ai_use) !!}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 4px 0; color: #9ca3af;">Asigna DOI</td>
-                                <td style="padding: 4px 0;">{!! $boolIcon($record->assigns_doi) !!}</td>
-                            </tr>
-                        </table>
+                    <div class="border-b border-slate-100 p-5 dark:border-slate-800">
+                        <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-blue-500">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" /></svg>
+                            Editorial y Pares
+                        </h5>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">Revisión por Pares</span>
+                                <span class="font-semibold text-slate-700 dark:text-slate-300">
+                                    {{ match($record->peer_review_type) { 'double_blind' => 'Doble ciego', 'single_blind' => 'Simple ciego', 'open' => 'Abierta', 'post_publication' => 'Post publicación', default => '—' } }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">Frecuencia</span>
+                                <span class="font-semibold text-slate-700 dark:text-slate-300">
+                                    {{ match($record->publication_frequency) { 'annual' => 'Anual', 'biannual' => 'Semestral', 'quarterly' => 'Trimestral', 'bimonthly' => 'Bimestral', 'monthly' => 'Mensual', 'continuous' => 'Continua', default => '—' } }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
+                                <span class="text-slate-400">DOI asignado</span>
+                                <span>{!! $record->assigns_doi ? '✅' : '❌' !!}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {{-- Evaluator & Owner Info --}}
-                <div style="padding: 12px 20px; background: #f9fafb; border-top: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: #6b7280;">
-                    <span>👤 <strong>Propietario:</strong> {{ $record->user->name ?? '—' }}</span>
+                {{-- Admin Footer --}}
+                <div class="flex flex-wrap items-center gap-6 bg-slate-50/50 px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:bg-slate-900/50">
+                    <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span> Propietario: <span class="text-slate-600 dark:text-slate-300">{{ $record->user->name ?? '—' }}</span></div>
                     @if($record->assignedEvaluator)
-                        <span>🔍 <strong>Evaluador:</strong> {{ $record->assignedEvaluator->name }}</span>
+                        <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span> Evaluador: <span class="text-slate-600 dark:text-slate-300">{{ $record->assignedEvaluator->name }}</span></div>
                     @endif
-                    <span>📊 <strong>Estado:</strong> {{ match($record->status) { 'draft' => 'Borrador', 'submitted' => 'Enviado', 'requires_changes' => 'Requiere correcciones', 'indexed' => 'Indexado', default => $record->status } }}</span>
-                    @if($record->created_at)
-                        <span>📅 <strong>Registrado:</strong> {{ $record->created_at->format('d/m/Y') }}</span>
-                    @endif
+                    <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span> Registrada: <span class="text-slate-600 dark:text-slate-300">{{ $record->created_at?->format('d/m/Y') ?? '—' }}</span></div>
                 </div>
             </div>
         </div>
 
-        {{-- CATEGORY NAVIGATION TABS --}}
+        {{-- NEW CATEGORY NAVIGATION (Tabs) --}}
         @php $categoryProgress = $this->getCategoryProgress(); @endphp
-        <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 16px;">
+        <div class="no-scrollbar flex gap-2 overflow-x-auto pb-4">
             @foreach($this->getCriteriaByCategory() as $categoryName => $items)
                 @php
                     $prog = $categoryProgress[$categoryName] ?? ['completed' => 0, 'total' => 0];
@@ -388,19 +240,31 @@
                 @endphp
                 <button type="button"
                         @click="setCategory('{{ addslashes($categoryName) }}')"
-                        :style="activeCategory === '{{ addslashes($categoryName) }}'
-                            ? 'background: #4f46e5; color: white; box-shadow: 0 4px 14px rgba(79,70,229,0.3);'
-                            : 'background: white; color: #6b7280; border: 1px solid #e5e7eb;'"
-                        style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; white-space: nowrap; flex-shrink: 0; cursor: pointer; transition: all 0.2s; border: none;">
-                    @if($allDone)
-                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #22c55e; color: white; font-size: 11px; display: flex; align-items: center; justify-content: center;">✓</span>
-                    @else
-                        <span style="width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,0.08); font-size: 11px; display: flex; align-items: center; justify-content: center;"
-                              :style="activeCategory === '{{ addslashes($categoryName) }}' ? 'background: rgba(255,255,255,0.2); color: white;' : ''">
+                        class="relative flex shrink-0 items-center gap-3 rounded-xl border px-4 py-3 transition-all duration-300"
+                        :class="activeCategory === '{{ addslashes($categoryName) }}' 
+                            ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-200 dark:shadow-none translate-y-[-2px]' 
+                            : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800'">
+                    
+                    <div class="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black"
+                         :class="activeCategory === '{{ addslashes($categoryName) }}' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'">
+                        @if($allDone)
+                            <svg class="h-4 w-4 text-emerald-500" :class="activeCategory === '{{ addslashes($categoryName) }}' ? 'text-white' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        @else
                             {{ $prog['completed'] }}
-                        </span>
+                        @endif
+                    </div>
+                    
+                    <span class="text-sm font-bold tracking-tight">{{ $categoryName }}</span>
+
+                    @if($allDone)
+                        <div class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white shadow-sm dark:ring-slate-900">
+                             <svg class="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                        </div>
                     @endif
-                    {{ Str::limit($categoryName, 28) }}
+                </button>
+            @endforeach
+        </div>
+limit($categoryName, 28) }}
                 </button>
             @endforeach
         </div>
