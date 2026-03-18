@@ -39,6 +39,14 @@ Route::get('/ranking', function () {
     return redirect('/search');
 })->name('ranking');
 
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
+Route::get('/privacy', function () {
+    return view('privacy');
+})->name('privacy');
+
 Route::get('/blog', function () {
     return view('blog.index');
 })->name('blog.index');
