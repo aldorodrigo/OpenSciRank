@@ -105,12 +105,49 @@ class EvaluateJournal extends Page
 
         $percentage = ($earnedWeight / $totalWeight) * 100;
 
-        // Si hay cores que fallan, máximo 49%
+        // Regla del Documento Maestro: Si hay cores que fallan, máximo 49%
         if ($coresFailed) {
             $percentage = min($percentage, 49);
         }
 
         return round($percentage, 2);
+    }
+
+    /**
+     * Determine suggested level based on score
+     * A: 80-100, B: 60-79, C: 40-59
+     */
+    public function getSuggestedLevel(): string
+    {
+        $score = $this->calculateScore();
+        
+        if ($score >= 80) return 'A';
+        if ($score >= 60) return 'B';
+        if ($score >= 40) return 'C';
+        
+        return '';
+    }
+
+    /**
+     * Check if journal qualifies for the Editorial Standards Seal
+     * Condition: Score >= 75 AND ALL critical indicators met
+     */
+    public function qualifiesForSeal(): bool
+    {
+        $score = $this->calculateScore();
+        if ($score < 75) return false;
+
+        // Critical Indicators (Criteria codes defined in methodology)
+        $criticalCodes = ['1.1', '2.1', '3.1', '4.2', '5.1'];
+        $criticalItems = CriteriaItem::whereIn('code', $criticalCodes)->get()->keyBy('id');
+
+        foreach ($criticalItems as $itemId => $item) {
+            if (empty($this->scores[$itemId])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function getCoresFailedCount(): int
@@ -166,6 +203,7 @@ class EvaluateJournal extends Page
      */
     public function confirmSave(): void
     {
+        $this->assigned_level = $this->getSuggestedLevel();
         $this->showConfirmModal = true;
     }
 

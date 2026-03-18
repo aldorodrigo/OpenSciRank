@@ -144,6 +144,25 @@ El proyecto incluye una suite de pruebas para asegurar la calidad del código:
 php artisan test
 ```
 
+## 🎨 Compilación de Activos (Tailwind CSS)
+
+Si realizas cambios en la interfaz (Blade, CSS, componentes), es **fundamental** compilar los activos para que se reflejen correctamente:
+
+### Desarrollo (Hot Reloading)
+Mantiene un servidor activo que compila los cambios al instante mientras trabajas:
+```bash
+npm run dev
+```
+
+### Producción (Compilación Final)
+Genera los archivos optimizados y minificados para el servidor real:
+```bash
+npm run build
+```
+
+> [!TIP]
+> **Vite**: El proyecto utiliza Vite para gestionar los assets. Si los cambios en el CSS no se ven aplicados, asegúrate de que el comando `npm run dev` esté ejecutándose en una terminal abierta.
+
 ## 📄 Licencia
 
 Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.

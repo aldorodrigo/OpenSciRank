@@ -106,7 +106,7 @@
                     </div>
                 </div>
             </div>
-        </div        {{-- JOURNAL DETAIL PANEL (collapsible) --}}
+        </div>        {{-- JOURNAL DETAIL PANEL (collapsible) --}}
         <div x-data="{ showDetails: false }" class="mt-[-1rem]">
             <button type="button" @click="showDetails = !showDetails"
                     class="group flex w-full items-center justify-center gap-2 rounded-b-2xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-bold uppercase tracking-widest text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800">
@@ -264,10 +264,6 @@
                 </button>
             @endforeach
         </div>
-limit($categoryName, 28) }}
-                </button>
-            @endforeach
-        </div>
 
         {{-- CRITERIA PANELS --}}
         @foreach($this->getCriteriaByCategory() as $categoryName => $items)
@@ -276,225 +272,281 @@ limit($categoryName, 28) }}
                 $allDone = $prog['completed'] === $prog['total'];
                 $catPercent = $prog['total'] > 0 ? round(($prog['completed'] / $prog['total']) * 100) : 0;
             @endphp
-            <div x-show="activeCategory === '{{ addslashes($categoryName) }}'" x-cloak>
+            <div x-show="activeCategory === '{{ addslashes($categoryName) }}'" x-cloak class="space-y-4">
 
-                {{-- Category Header --}}
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <h2 style="font-size: 18px; font-weight: 700; margin: 0;">{{ $categoryName }}</h2>
-                        <span style="font-size: 13px; color: #9ca3af;">{{ $prog['completed'] }}/{{ $prog['total'] }}</span>
-                        <div style="width: 60px; height: 5px; background: #e5e7eb; border-radius: 9999px; overflow: hidden;">
-                            <div style="height: 100%; border-radius: 9999px; transition: width 0.3s; background: {{ $allDone ? '#22c55e' : '#3b82f6' }}; width: {{ $catPercent }}%;"></div>
+                {{-- Category Header & Quick Actions --}}
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
+                    <div class="flex flex-col gap-1">
+                        <h2 class="text-xl font-black tracking-tight text-slate-800 dark:text-white">{{ $categoryName }}</h2>
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-1.5 w-24 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                                <div class="h-full transition-all duration-500 {{ $allDone ? 'bg-emerald-500' : 'bg-indigo-500' }}" style="width: {{ $catPercent }}%"></div>
+                            </div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $prog['completed'] }} de {{ $prog['total'] }} indicadores</span>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button"
-                                wire:click="toggleAllInCategory('{{ addslashes($categoryName) }}', true)"
-                                style="font-size: 12px; color: #3b82f6; font-weight: 500; padding: 4px 10px; border-radius: 6px; border: none; background: transparent; cursor: pointer;"
-                                onmouseover="this.style.background='#eff6ff'"
-                                onmouseout="this.style.background='transparent'">
-                            ☑ Marcar todos
+                    <div class="flex gap-2">
+                        <button type="button" wire:click="toggleAllInCategory('{{ addslashes($categoryName) }}', true)"
+                                class="rounded-lg bg-slate-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-indigo-400 dark:hover:bg-slate-700">
+                            Marcar todos
                         </button>
-                        <button type="button"
-                                wire:click="toggleAllInCategory('{{ addslashes($categoryName) }}', false)"
-                                style="font-size: 12px; color: #9ca3af; font-weight: 500; padding: 4px 10px; border-radius: 6px; border: none; background: transparent; cursor: pointer;"
-                                onmouseover="this.style.background='#f3f4f6'"
-                                onmouseout="this.style.background='transparent'">
-                            ☐ Desmarcar
+                        <button type="button" wire:click="toggleAllInCategory('{{ addslashes($categoryName) }}', false)"
+                                class="rounded-lg bg-slate-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 transition hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700">
+                            Desmarcar
                         </button>
                     </div>
                 </div>
 
-                {{-- Criteria Cards --}}
-                <div style="display: flex; flex-direction: column; gap: 8px;">
+                {{-- Criteria Cards Grid --}}
+                <div class="grid grid-cols-1 gap-3">
                     @foreach($items as $item)
                         @php $isChecked = !empty($scores[$item->id]); @endphp
-                        <label style="display: block; border-radius: 12px; background: white; padding: 16px; cursor: pointer; transition: all 0.2s; border: 1px solid {{ $isChecked ? '#bbf7d0' : ($item->is_core && !$isChecked ? '#fecaca' : '#e5e7eb') }}; border-left: 4px solid {{ $isChecked ? '#22c55e' : ($item->is_core ? '#ef4444' : '#d1d5db') }};"
-                               onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.06)'; this.style.transform='translateY(-1px)';"
-                               onmouseout="this.style.boxShadow='none'; this.style.transform='none';">
-                            <div style="display: flex; align-items: flex-start; gap: 14px;">
-                                {{-- Checkbox --}}
-                                <div style="padding-top: 2px;">
-                                    <input
-                                        type="checkbox"
-                                        wire:model.live="scores.{{ $item->id }}"
-                                        style="width: 18px; height: 18px; border-radius: 4px; accent-color: #4f46e5; cursor: pointer;"
-                                    >
+                        <div class="relative group">
+                            <label class="relative block cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300
+                                {{ $isChecked 
+                                    ? 'bg-emerald-50/30 border-emerald-200 dark:bg-emerald-500/5 dark:border-emerald-500/20' 
+                                    : ($item->is_core ? 'bg-white border-slate-200 hover:border-rose-300 dark:bg-slate-900 dark:border-slate-800' : 'bg-white border-slate-200 hover:border-indigo-300 dark:bg-slate-900 dark:border-slate-800') 
+                                }}">
+                                
+                                {{-- Selection Indicator Bar --}}
+                                <div class="absolute inset-y-0 left-0 w-1.5 transition-colors duration-300
+                                    {{ $isChecked ? 'bg-emerald-500' : ($item->is_core ? 'bg-rose-500' : 'bg-slate-200 dark:bg-slate-800') }}">
                                 </div>
 
-                                {{-- Content --}}
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                        <span style="font-family: monospace; font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #f3f4f6; color: #9ca3af;">{{ $item->code }}</span>
-                                        <span style="font-weight: 600; font-size: 14px; color: #111827; {{ $isChecked ? 'text-decoration: line-through; opacity: 0.45;' : '' }}">{{ $item->name }}</span>
+                                <div class="flex items-start gap-5 p-5">
+                                    {{-- Custom Styled Checkbox Container --}}
+                                    <div class="relative mt-1">
+                                        <input type="checkbox" wire:model.live="scores.{{ $item->id }}" class="peer sr-only">
+                                        <div class="flex h-6 w-6 items-center justify-center rounded-lg border-2 border-slate-200 bg-white transition-all peer-checked:border-emerald-500 peer-checked:bg-emerald-500 dark:border-slate-700 dark:bg-slate-800">
+                                            <svg class="h-4 w-4 text-white opacity-0 transition-opacity peer-checked:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                            </svg>
+                                        </div>
                                     </div>
-                                    @if($item->description)
-                                        <p style="margin: 6px 0 0; font-size: 13px; color: #6b7280; line-height: 1.5;">{{ $item->description }}</p>
-                                    @endif
-                                </div>
 
-                                {{-- Badges --}}
-                                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
-                                    @if($item->is_core)
-                                        <span style="border-radius: 9999px; padding: 3px 10px; font-size: 11px; font-weight: 600; background: #fef2f2; color: #dc2626;">Excluyente</span>
-                                    @endif
-                                    <div style="display: flex; align-items: center; gap: 6px;">
-                                        <span style="border-radius: 9999px; padding: 2px 8px; font-size: 11px; font-weight: 500;
-                                            {{ $item->type === 'core' ? 'background: #eff6ff; color: #2563eb;' : '' }}
-                                            {{ $item->type === 'advanced' ? 'background: #fffbeb; color: #d97706;' : '' }}
-                                            {{ $item->type === 'excellence' ? 'background: #f0fdf4; color: #16a34a;' : '' }}
-                                        ">{{ ucfirst($item->type) }}</span>
-                                        <span style="border-radius: 9999px; padding: 2px 8px; font-size: 11px; background: #f3f4f6; color: #6b7280;">×{{ $item->weight }}</span>
+                                    {{-- Content --}}
+                                    <div class="flex-1 space-y-2">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <span class="rounded bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                                {{ $item->code }}
+                                            </span>
+                                            
+                                            <h3 class="text-sm font-bold tracking-tight transition-all duration-300
+                                                {{ $isChecked ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-200' }}">
+                                                {{ $item->name }}
+                                            </h3>
+
+                                            @if($item->is_core)
+                                                <div class="flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-rose-600 ring-1 ring-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/20">
+                                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                                                    Excluyente
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        @if($item->description)
+                                            <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                                                {{ $item->description }}
+                                            </p>
+                                        @endif
                                     </div>
-                                    <span style="font-size: 18px;">{{ $isChecked ? '✅' : '⬜' }}</span>
+
+                                    {{-- Metadata / Labeling --}}
+                                    <div class="flex shrink-0 flex-col items-end gap-2 text-right">
+                                        <div class="flex items-center gap-2">
+                                            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider
+                                                {{ $item->type === 'core' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' : '' }}
+                                                {{ $item->type === 'advanced' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' : '' }}
+                                                {{ $item->type === 'excellence' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400' : '' }}
+                                            ">
+                                                {{ $item->type }}
+                                            </span>
+                                            <span class="text-[10px] font-black text-slate-300 dark:text-slate-600">
+                                                W: {{ $item->weight }}
+                                            </span>
+                                        </div>
+                                        
+                                        @if($isChecked)
+                                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 transition-all duration-500 animate-in fade-in zoom-in">
+                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-                        </label>
+                            </label>
+                        </div>
                     @endforeach
                 </div>
             </div>
         @endforeach
 
         {{-- EVALUATION NOTES --}}
-        <div style="margin-top: 24px;">
-            <div style="border-radius: 16px; background: white; border: 1px solid #e5e7eb; overflow: hidden;">
-                <div style="padding: 12px 20px; background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
-                    <h3 style="font-weight: 600; font-size: 15px; margin: 0;">📝 Observaciones</h3>
-                </div>
-                <div style="padding: 20px;">
-                    <textarea
-                        wire:model="evaluation_notes"
-                        rows="4"
-                        style="display: block; width: 100%; border-radius: 10px; border: 1px solid #d1d5db; padding: 10px 14px; font-size: 14px; line-height: 1.5; resize: vertical; transition: border-color 0.2s;"
-                        placeholder="Observaciones adicionales sobre la evaluación..."
-                        onfocus="this.style.borderColor='#4f46e5'; this.style.boxShadow='0 0 0 3px rgba(79,70,229,0.1)';"
-                        onblur="this.style.borderColor='#d1d5db'; this.style.boxShadow='none';"
-                    ></textarea>
-                </div>
+        <div class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/50">
+                <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-500">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
+                    Observaciones Técnicas
+                </h3>
+            </div>
+            <div class="p-6">
+                <textarea
+                    wire:model="evaluation_notes"
+                    rows="4"
+                    class="block w-full rounded-xl border-slate-200 bg-slate-50/50 p-4 text-sm transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-300 dark:focus:border-indigo-500 dark:focus:bg-slate-900"
+                    placeholder="Escribe aquí cualquier observación relevante sobre la calidad editorial o técnica detectada..."
+                ></textarea>
             </div>
         </div>
 
-        {{-- STICKY FOOTER --}}
-        <div style="position: sticky; bottom: 0; z-index: 20; margin: 24px -16px 0; padding: 12px 16px; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-top: 1px solid #e5e7eb; box-shadow: 0 -4px 12px rgba(0,0,0,0.04);">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
-                <a href="{{ \App\Filament\Resources\JournalResource::getUrl('index') }}"
-                   style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: #6b7280; background: white; border-radius: 10px; border: 1px solid #e5e7eb; text-decoration: none; transition: background 0.2s;"
-                   onmouseover="this.style.background='#f9fafb'"
-                   onmouseout="this.style.background='white'">
-                    ← Volver
-                </a>
+        {{-- NEW GLASSMORPHY STICKY FOOTER --}}
+        <div class="sticky bottom-6 z-30 mt-10">
+            <div class="rounded-2xl border border-white/20 bg-white/80 p-4 shadow-2xl backdrop-blur-xl dark:border-slate-700/30 dark:bg-slate-900/80">
+                <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                    <a href="{{ \App\Filament\Resources\JournalResource::getUrl('index') }}"
+                       class="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-slate-200">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+                        Volver al listado
+                    </a>
 
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    {{-- Live Summary --}}
-                    <div style="display: none; align-items: center; gap: 12px; margin-right: 8px; font-size: 13px;" class="fi-hidden sm:fi-flex" id="eval-live-summary">
-                        <span style="color: #9ca3af;">Criterios:</span>
-                        <span style="font-weight: 700;">{{ $this->getCompletedCount() }}/{{ $this->getTotalCount() }}</span>
-                        <span style="width: 1px; height: 16px; background: #d1d5db; display: inline-block;"></span>
-                        <span style="color: #9ca3af;">Nota:</span>
-                        <span style="font-weight: 800; font-size: 16px; color: {{ $this->calculateScore() >= 80 ? '#16a34a' : ($this->calculateScore() >= 50 ? '#d97706' : '#dc2626') }};">
-                            {{ $this->calculateScore() }}%
-                        </span>
+                    <div class="flex items-center gap-4">
+                        {{-- Live Stats Pill --}}
+                        <div class="hidden items-center gap-6 rounded-xl bg-slate-900 px-6 py-2.5 text-white shadow-inner sm:flex dark:bg-black">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">Completado</span>
+                                <span class="text-sm font-black">{{ $this->getCompletedCount() }} / {{ $this->getTotalCount() }}</span>
+                            </div>
+                            <div class="h-8 w-px bg-slate-800"></div>
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">Nota Actual</span>
+                                <span class="text-sm font-black {{ $this->calculateScore() >= 80 ? 'text-emerald-400' : ($this->calculateScore() >= 50 ? 'text-amber-400' : 'text-rose-400') }}">
+                                    {{ $this->calculateScore() }}%
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button wire:click="saveDraft" wire:loading.attr="disabled"
+                                    class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 hover:shadow-md active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                                <span wire:loading.remove wire:target="saveDraft">Guardar Borrador</span>
+                                <span wire:loading wire:target="saveDraft">Guardando...</span>
+                            </button>
+
+                            <button wire:click="confirmSave" wire:loading.attr="disabled"
+                                    class="relative overflow-hidden rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-black text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-indigo-300 active:scale-95 dark:shadow-none">
+                                Finalizar Evaluación
+                            </button>
+                        </div>
                     </div>
-                    <script>
-                        // Show on wider screens
-                        if (window.innerWidth >= 640) {
-                            document.getElementById('eval-live-summary').style.display = 'flex';
-                        }
-                    </script>
-
-                    <button
-                        wire:click="saveDraft"
-                        wire:loading.attr="disabled"
-                        type="button"
-                        style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: #374151; background: white; border-radius: 10px; border: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s;"
-                        onmouseover="this.style.background='#f9fafb'"
-                        onmouseout="this.style.background='white'">
-                        <span wire:loading.remove wire:target="saveDraft">💾 Guardar Borrador</span>
-                        <span wire:loading wire:target="saveDraft">⏳ Guardando...</span>
-                    </button>
-
-                    <button
-                        wire:click="confirmSave"
-                        wire:loading.attr="disabled"
-                        type="button"
-                        style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 20px; font-size: 13px; font-weight: 600; color: white; background: #4f46e5; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(79,70,229,0.3); transition: background 0.2s;"
-                        onmouseover="this.style.background='#4338ca'"
-                        onmouseout="this.style.background='#4f46e5'">
-                        ✅ Completar Evaluación
-                    </button>
                 </div>
             </div>
         </div>
 
-        {{-- CONFIRMATION MODAL --}}
+        {{-- PREMIUM CONFIRMATION MODAL --}}
         @if($showConfirmModal)
-            <div style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);">
-                <div style="background: white; border-radius: 16px; box-shadow: 0 25px 50px rgba(0,0,0,0.12); max-width: 460px; width: 100%; overflow: hidden; animation: modalIn 0.2s ease-out;">
-                    <style>
-                        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-                    </style>
+            <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md bg-slate-900/60 transition-opacity">
+                <div x-data x-init="$el.focus()" class="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 animate-in zoom-in duration-200 dark:bg-slate-900 dark:ring-slate-800">
                     {{-- Modal Header --}}
-                    <div style="padding: 20px 24px; background: linear-gradient(135deg, #4f46e5, #6366f1); color: white;">
-                        <h3 style="font-size: 18px; font-weight: 700; margin: 0;">Confirmar Evaluación</h3>
-                        <p style="font-size: 13px; color: rgba(255,255,255,0.7); margin: 4px 0 0;">{{ $record->title }}</p>
+                    <div class="relative bg-slate-900 px-8 py-10 text-white overflow-hidden">
+                        <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl"></div>
+                        <div class="relative z-10 flex flex-col items-center text-center">
+                            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500 shadow-lg shadow-indigo-500/40">
+                                <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                            </div>
+                            <h3 class="text-2xl font-black tracking-tight">¿Confirmar Evaluación?</h3>
+                            <p class="mt-2 text-sm font-medium text-slate-400">{{ $record->title }}</p>
+                        </div>
                     </div>
 
                     {{-- Modal Body --}}
-                    <div style="padding: 24px;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-                            <div style="background: #f9fafb; border-radius: 12px; padding: 16px; text-align: center;">
-                                <div style="font-size: 24px; font-weight: 800; color: #111827;">{{ $this->getCompletedCount() }}/{{ $this->getTotalCount() }}</div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Criterios cumplidos</div>
+                    <div class="px-8 py-8">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
+                                <span class="block text-3xl font-black text-slate-900 dark:text-white">{{ $this->getCompletedCount() }}</span>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Indicadores</span>
                             </div>
-                            <div style="background: #f9fafb; border-radius: 12px; padding: 16px; text-align: center;">
-                                <div style="font-size: 24px; font-weight: 800; color: {{ $this->calculateScore() >= 50 ? '#16a34a' : '#dc2626' }};">{{ $this->calculateScore() }}%</div>
-                                <div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">Nota final</div>
+                            <div class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
+                                <span class="block text-3xl font-black {{ $this->calculateScore() >= 50 ? 'text-emerald-500' : 'text-rose-500' }}">
+                                    {{ $this->calculateScore() }}%
+                                </span>
+                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Nota Final</span>
                             </div>
                         </div>
 
-                        @if($this->getCoresFailedCount() > 0)
-                            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #dc2626; margin-bottom: 12px;">
-                                ⚠️ {{ $this->getCoresFailedCount() }} criterio(s) excluyente(s) sin cumplir — nota limitada al 49%
+                        {{-- Quality Seal Status (Master Document Rule) --}}
+                        <div class="mt-6 rounded-2xl border p-5 {{ $this->qualifiesForSeal() ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20' : 'bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-800' }}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-full {{ $this->qualifiesForSeal() ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 dark:shadow-none' : 'bg-slate-200 text-slate-400 dark:bg-slate-700' }}">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xs font-black uppercase tracking-widest {{ $this->qualifiesForSeal() ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500' }}">Editorial Standards Seal</h4>
+                                        <p class="text-[10px] font-bold {{ $this->qualifiesForSeal() ? 'text-emerald-600/70 dark:text-emerald-500/60' : 'text-slate-400' }}">
+                                            {{ $this->qualifiesForSeal() ? 'Califica para el sello de calidad' : 'No califica para el sello (Min. 75% + Críticos)' }}
+                                        </p>
+                                    </div>
+                                </div>
+                                @if($this->qualifiesForSeal())
+                                    <span class="rounded-full bg-emerald-500 px-2 py-0.5 text-[9px] font-black text-white px-2">APROBADO</span>
+                                @endif
+                            </div>
+
+                            {{-- Database Categories Summary --}}
+                            <div class="mt-4 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 dark:border-slate-700">
+                                <p class="mb-1 text-[9px] font-black uppercase tracking-widest text-slate-400">Resumen por Categorías</p>
+                                @foreach($this->getCategoryProgress() as $categoryName => $stats)
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">{{ $categoryName }}</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="h-1 w-12 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                                                <div class="h-full bg-indigo-500" style="width: {{ ($stats['completed'] / $stats['total']) * 100 }}%"></div>
+                                            </div>
+                                            <span class="text-[9px] font-black text-slate-500">
+                                                {{ $stats['completed'] }}/{{ $stats['total'] }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        @if($this->getCoresFailedCount() > 0 && !$this->qualifiesForSeal())
+                            <div class="mt-4 flex items-center gap-3 rounded-xl bg-orange-50 p-4 text-xs font-bold text-orange-600 ring-1 ring-orange-200 dark:bg-orange-500/10 dark:ring-orange-500/20">
+                                <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                                <span>Criterios excluyentes sin cumplir. Nota limitada al 49%.</span>
                             </div>
                         @endif
 
-                        {{-- Level & Status Assignment --}}
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-                            <div>
-                                <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Nivel asignado</label>
-                                <select wire:model="assigned_level"
-                                        style="width: 100%; padding: 8px 12px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 8px; background: white; color: #111827; cursor: pointer;">
-                                    <option value="">— Sin asignar —</option>
-                                    <option value="A">Nivel A (80-100%)</option>
-                                    <option value="B">Nivel B (60-79%)</option>
-                                    <option value="C">Nivel C (40-59%)</option>
+                        <div class="mt-8 grid grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Nivel de Calificación</label>
+                                <select wire:model="assigned_level" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
+                                    <option value="">— Sin Nivel —</option>
+                                    <option value="A">Nivel A</option>
+                                    <option value="B">Nivel B</option>
+                                    <option value="C">Nivel C</option>
                                 </select>
+                                <p class="text-[9px] font-bold text-slate-400 italic">Sugerido por nota: <span class="text-indigo-500">{{ $this->getSuggestedLevel() ?: 'Ninguno' }}</span></p>
                             </div>
-                            <div>
-                                <label style="display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 4px;">Estado</label>
-                                <select wire:model="assigned_status"
-                                        style="width: 100%; padding: 8px 12px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 8px; background: white; color: #111827; cursor: pointer;">
-                                    <option value="indexed">✅ Indexado</option>
-                                    <option value="requires_changes">🔄 Requiere correcciones</option>
+                            <div class="space-y-2">
+                                <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Estado de Evaluación</label>
+                                <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
+                                    <option value="indexed">Indexada ✅</option>
+                                    <option value="requires_changes">Requiere Cambios 🔄</option>
+                                    <option value="rejected">Rechazada ❌</option>
                                 </select>
                             </div>
                         </div>
-
-                        <p style="font-size: 13px; color: #6b7280; margin: 0;">
-                            Se guardará la evaluación con el nivel y estado seleccionados. Esta acción no se puede deshacer fácilmente.
-                        </p>
                     </div>
 
                     {{-- Modal Footer --}}
-                    <div style="padding: 16px 24px; background: #f9fafb; display: flex; justify-content: flex-end; gap: 10px;">
-                        <button wire:click="cancelSave" type="button"
-                                style="padding: 8px 16px; font-size: 13px; font-weight: 500; color: #6b7280; background: white; border-radius: 10px; border: 1px solid #e5e7eb; cursor: pointer;">
+                    <div class="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50 px-8 py-6 dark:border-slate-800 dark:bg-slate-900/50">
+                        <button wire:click="cancelSave" class="rounded-xl px-5 py-2.5 text-sm font-bold text-slate-500 transition hover:bg-slate-200/50 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-white">
                             Cancelar
                         </button>
-                        <button wire:click="save" wire:loading.attr="disabled" type="button"
-                                style="padding: 8px 20px; font-size: 13px; font-weight: 600; color: white; background: #4f46e5; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(79,70,229,0.3);">
-                            <span wire:loading.remove wire:target="save">Sí, Completar</span>
-                            <span wire:loading wire:target="save">⏳ Procesando...</span>
+                        <button wire:click="save" wire:loading.attr="disabled" class="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-2.5 text-sm font-black text-white transition hover:bg-indigo-700 active:scale-95">
+                            <span wire:loading.remove wire:target="save">Confirmar Registro</span>
+                            <span wire:loading wire:target="save">Procesando...</span>
                         </button>
                     </div>
                 </div>
