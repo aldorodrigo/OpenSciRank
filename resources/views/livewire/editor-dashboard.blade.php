@@ -169,6 +169,12 @@
                                                 <a href="{{ route('app.submit.edit', $journal) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
                                                     Editar
                                                 </a>
+                                                @if($journal->status === 'requires_changes')
+                                                    <span class="text-gray-300 dark:text-gray-600">|</span>
+                                                    <a href="{{ route('journal.show', $journal->slug) }}" class="text-sm font-medium text-amber-600 hover:text-amber-500 dark:text-amber-400">
+                                                        Ver Evaluación
+                                                    </a>
+                                                @endif
                                                 <span class="text-gray-300 dark:text-gray-600">|</span>
                                                 <a href="{{ route('app.checkout', $journal) }}" class="text-sm font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400">
                                                     {{ $journal->status === 'requires_changes' ? 'Corregir y Reenviar' : 'Pagar' }}

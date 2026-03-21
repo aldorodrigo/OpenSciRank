@@ -67,12 +67,16 @@ class JournalResource extends Resource
                                     ->required(),
                                 Forms\Components\Select::make('status')
                                     ->label('Estado')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Estado actual del proceso de indexación.')
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Estado actual del proceso de publicación/indexación.')
                                     ->options([
                                         'draft' => 'Borrador',
-                                        'submitted' => 'Enviado',
-                                        'requires_changes' => 'Requiere correcciones',
-                                        'indexed' => 'Indexado',
+                                        'submitted' => 'Enviada para Evaluación',
+                                        'requires_changes' => 'Requiere Correcciones',
+                                        'pending_listing' => 'Pendiente de Listar',
+                                        'listed' => 'Revista Listada',
+                                        'evaluated' => 'Revista Evaluada',
+                                        'certified' => 'Revista Certificada',
+                                        'rejected' => 'Rechazada',
                                     ])
                                     ->required()
                                     ->default('draft'),
@@ -368,14 +372,22 @@ class JournalResource extends Resource
                         'draft' => 'gray',
                         'submitted' => 'warning',
                         'requires_changes' => 'danger',
-                        'indexed' => 'success',
+                        'pending_listing' => 'info',
+                        'listed' => 'success',
+                        'evaluated' => 'primary',
+                        'certified' => 'success',
+                        'rejected' => 'danger',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'draft' => 'Borrador',
-                        'submitted' => 'Enviado',
-                        'requires_changes' => 'Requiere correcciones',
-                        'indexed' => 'Indexado',
+                        'submitted' => 'Enviada',
+                        'requires_changes' => 'Correcciones',
+                        'pending_listing' => 'Pendiente de Listar',
+                        'listed' => 'Listada',
+                        'evaluated' => 'Evaluada',
+                        'certified' => 'Certificada',
+                        'rejected' => 'Rechazada',
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('assignedEvaluator.name')
@@ -395,9 +407,13 @@ class JournalResource extends Resource
                     ->label('Estado')
                     ->options([
                         'draft' => 'Borrador',
-                        'submitted' => 'Enviado',
-                        'requires_changes' => 'Requiere correcciones',
-                        'indexed' => 'Indexado',
+                        'submitted' => 'Enviada',
+                        'requires_changes' => 'Requiere Correcciones',
+                        'pending_listing' => 'Pendiente de Listar',
+                        'listed' => 'Listada',
+                        'evaluated' => 'Evaluada',
+                        'certified' => 'Certificada',
+                        'rejected' => 'Rechazada',
                     ]),
                 Tables\Filters\SelectFilter::make('assigned_evaluator_id')
                     ->label('Evaluador')
@@ -409,7 +425,7 @@ class JournalResource extends Resource
                     ->label('Asignar')
                     ->icon('heroicon-o-user-plus')
                     ->color('info')
-                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes']))
+                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes', 'evaluated']))
                     ->form([
                         Forms\Components\Select::make('assigned_evaluator_id')
                             ->label('Evaluador')
@@ -431,8 +447,15 @@ class JournalResource extends Resource
                     ->label('Evaluar')
                     ->icon('heroicon-o-clipboard-document-check')
                     ->color('warning')
-                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes']))
+                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes', 'evaluated']))
                     ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
+
+                \Filament\Actions\Action::make('review_listing')
+                    ->label('Revisar Solicitud de Listado')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->color('info')
+                    ->visible(fn (Journal $record): bool => $record->status === 'pending_listing')
+                    ->url(fn (Journal $record): string => static::getUrl('review_listing', ['record' => $record])),
 
                 \Filament\Actions\Action::make('view_evaluation')
                     ->label('Ver')
@@ -498,6 +521,7 @@ class JournalResource extends Resource
             'create' => Pages\CreateJournal::route('/create'),
             'edit' => Pages\EditJournal::route('/{record}/edit'),
             'evaluate' => Pages\EvaluateJournal::route('/{record}/evaluate'),
+            'review_listing' => Pages\ReviewListing::route('/{record}/review-listing'),
         ];
     }
 }

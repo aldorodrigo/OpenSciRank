@@ -473,21 +473,31 @@
                         </div>
 
                         {{-- Quality Seal Status (Master Document Rule) --}}
-                        <div class="mt-6 rounded-2xl border p-5 {{ $this->qualifiesForSeal() ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20' : 'bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-800' }}">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-full {{ $this->qualifiesForSeal() ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 dark:shadow-none' : 'bg-slate-200 text-slate-400 dark:bg-slate-700' }}">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>
+                        <div class="mt-6 overflow-hidden rounded-2xl border transition-all duration-500 {{ $this->qualifiesForSeal() ? 'bg-emerald-50/50 border-emerald-200 shadow-lg shadow-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20 dark:shadow-none' : 'bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-800' }}">
+                            <div class="relative flex items-center justify-between p-5">
+                                @if($this->qualifiesForSeal())
+                                    <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl"></div>
+                                @endif
+                                
+                                <div class="relative z-10 flex items-center gap-4">
+                                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl {{ $this->qualifiesForSeal() ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/40 rotate-3' : 'bg-slate-200 text-slate-400 dark:bg-slate-700' }} transition-transform duration-700">
+                                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-xs font-black uppercase tracking-widest {{ $this->qualifiesForSeal() ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500' }}">Editorial Standards Seal</h4>
-                                        <p class="text-[10px] font-bold {{ $this->qualifiesForSeal() ? 'text-emerald-600/70 dark:text-emerald-500/60' : 'text-slate-400' }}">
-                                            {{ $this->qualifiesForSeal() ? 'Califica para el sello de calidad' : 'No califica para el sello (Min. 75% + Críticos)' }}
+                                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] {{ $this->qualifiesForSeal() ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500' }}">Editorial Standards Seal</h4>
+                                        <p class="text-xs font-black {{ $this->qualifiesForSeal() ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400' }}">
+                                            {{ $this->qualifiesForSeal() ? 'Sello Editorial Otorgado' : 'Sello No Otorgado (Min. 75% + Críticos)' }}
                                         </p>
                                     </div>
                                 </div>
+                                
                                 @if($this->qualifiesForSeal())
-                                    <span class="rounded-full bg-emerald-500 px-2 py-0.5 text-[9px] font-black text-white px-2">APROBADO</span>
+                                    <div class="relative z-10 flex flex-col items-end">
+                                        <span class="inline-flex animate-pulse items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-[10px] font-black tracking-wide text-white shadow-lg shadow-emerald-500/30">
+                                            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                            CALIFICA
+                                        </span>
+                                    </div>
                                 @endif
                             </div>
 
@@ -531,7 +541,8 @@
                             <div class="space-y-2">
                                 <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Estado de Evaluación</label>
                                 <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
-                                    <option value="indexed">Indexada ✅</option>
+                                    <option value="certified">Evaluada con Sello Editorial ✅</option>
+                                    <option value="evaluated">Evaluada sin Sello Editorial 📄</option>
                                     <option value="requires_changes">Requiere Cambios 🔄</option>
                                     <option value="rejected">Rechazada ❌</option>
                                 </select>

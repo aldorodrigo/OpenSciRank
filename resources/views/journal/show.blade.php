@@ -118,6 +118,46 @@
                 </div>
             </div>
         </div>
+
+        {{-- Evaluation Feedback for Owner --}}
+        @if(auth()->id() === $journal->user_id && ($journal->status === 'requires_changes' || $journal->evaluation_notes))
+            <div class="container mx-auto mt-8 px-4">
+                <div class="overflow-hidden rounded-xl border border-amber-200 bg-amber-50 shadow-md dark:border-amber-900/50 dark:bg-amber-950/20">
+                    <div class="flex items-center gap-4 border-b border-amber-200 bg-amber-100/50 px-6 py-4 dark:border-amber-900/50 dark:bg-amber-900/30">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200 text-amber-700 dark:bg-amber-800 dark:text-amber-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-amber-900 dark:text-amber-400 underline decoration-amber-300 dark:decoration-amber-700 underline-offset-4">Acción Requerida: Ajustes Editoriales</h3>
+                            <p class="text-sm text-amber-700 dark:text-amber-500">Un evaluador ha revisado tu revista y solicita cambios para continuar con la indexación.</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="mb-3 text-xs font-black uppercase tracking-widest text-amber-800/60 dark:text-amber-400/50">Observaciones del Evaluador</h4>
+                        <div class="rounded-lg bg-white p-4 text-gray-700 shadow-inner dark:bg-gray-900 dark:text-gray-300 border-l-4 border-amber-400 dark:border-amber-600 italic leading-relaxed">
+                            {!! nl2br(e($journal->evaluation_notes ?: 'No hay observaciones específicas detalladas, por favor revisa los criterios de evaluación abajo.')) !!}
+                        </div>
+                        
+                        <div class="mt-6 flex flex-wrap gap-4">
+                            <a href="{{ route('app.submit.edit', $journal) }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-md transition hover:bg-indigo-700 hover:scale-[1.02] active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Editar y Corregir Datos
+                            </a>
+                            <a href="#evaluation-criteria" class="inline-flex items-center rounded-lg bg-amber-200 px-4 py-2 text-sm font-bold text-amber-800 transition hover:bg-amber-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Revisar Criterios Faltantes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
     {{-- Details Section --}}
@@ -178,7 +218,7 @@
                         $colors = ['bg-indigo-600', 'bg-emerald-600', 'bg-amber-600', 'bg-purple-600', 'bg-rose-600', 'bg-cyan-600', 'bg-orange-600', 'bg-pink-600'];
                         $colorIndex = 0;
                     @endphp
-                    <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                    <section id="evaluation-criteria" class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                         <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">Criterios de Evaluación</h2>
                         <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Resultados basados en los estándares de Editorial Standards Platform.</p>
 

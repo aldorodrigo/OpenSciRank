@@ -24,7 +24,7 @@ class EvaluateJournal extends Page
     public string $evaluation_notes = '';
     public bool $showConfirmModal = false;
     public string $assigned_level = '';
-    public string $assigned_status = 'indexed';
+    public string $assigned_status = 'evaluated';
 
     public function mount(int | string $record): void
     {
@@ -46,8 +46,8 @@ class EvaluateJournal extends Page
         $this->evaluation_notes = $this->record->evaluation_notes ?? '';
         $this->assigned_level = $this->record->current_level ?? '';
         $this->assigned_status = in_array($this->record->status, ['submitted', 'requires_changes'])
-            ? 'indexed'
-            : ($this->record->status ?? 'indexed');
+            ? 'evaluated'
+            : ($this->record->status ?? 'evaluated');
     }
 
     public function getTitle(): string | Htmlable
@@ -204,6 +204,17 @@ class EvaluateJournal extends Page
     public function confirmSave(): void
     {
         $this->assigned_level = $this->getSuggestedLevel();
+        
+        // Sugerir estado basado en si califica para el sello
+        if ($this->qualifiesForSeal()) {
+            $this->assigned_status = 'certified';
+        } else {
+            // Si ya estaba en requires_changes o rejected, mantenerlo o sugerir evaluated
+            if (!in_array($this->assigned_status, ['requires_changes', 'rejected'])) {
+                $this->assigned_status = 'evaluated';
+            }
+        }
+
         $this->showConfirmModal = true;
     }
 

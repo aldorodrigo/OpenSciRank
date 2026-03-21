@@ -421,7 +421,7 @@ class BookResource extends Resource
                                         'draft' => 'Borrador',
                                         'submitted' => 'Enviado',
                                         'requires_changes' => 'Requiere correcciones',
-                                        'indexed' => 'Indexado',
+                                        'listed' => 'Libro Listado',
                                     ])
                                     ->required()
                                     ->default('draft'),
@@ -484,14 +484,14 @@ class BookResource extends Resource
                         'draft' => 'gray',
                         'submitted' => 'warning',
                         'requires_changes' => 'danger',
-                        'indexed' => 'success',
+                        'listed' => 'success',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'draft' => 'Borrador',
                         'submitted' => 'Enviado',
-                        'requires_changes' => 'Requiere correcciones',
-                        'indexed' => 'Indexado',
+                        'requires_changes' => 'Correcciones',
+                        'listed' => 'Listado',
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('publication_year')
@@ -508,7 +508,7 @@ class BookResource extends Resource
                         'draft' => 'Borrador',
                         'submitted' => 'Enviado',
                         'requires_changes' => 'Requiere correcciones',
-                        'indexed' => 'Indexado',
+                        'listed' => 'Listado',
                     ]),
                 Tables\Filters\SelectFilter::make('book_type')
                     ->label('Tipo')

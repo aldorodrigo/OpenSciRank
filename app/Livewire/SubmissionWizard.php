@@ -397,6 +397,14 @@ class SubmissionWizard extends Component
         return redirect()->route('app.dashboard');
     }
 
+    public function listJournal()
+    {
+        $this->saveDraft();
+        $this->journal->update(['status' => 'pending_listing']);
+        session()->flash('message', 'Tu solicitud para listar la revista ha sido enviada.');
+        return redirect()->route('app.dashboard');
+    }
+
     public function render()
     {
         return view('livewire.submission-wizard', [
