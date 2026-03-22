@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Laravel Sail",
+      "runtimeExecutable": "wsl",
+      "runtimeArgs": ["-d", "Ubuntu-24.04", "--cd", "/home/rorrigo/OpenSciRank", "--", "bash", "-c", "./vendor/bin/sail up --no-color 2>&1"],
+      "port": 5000,
+      "autoPort": false
+    },
+    {
+      "name": "Vite Dev Server",
+      "runtimeExecutable": "wsl",
+      "runtimeArgs": ["-d", "Ubuntu-24.04", "--cd", "/home/rorrigo/OpenSciRank", "--", "bash", "-c", "./vendor/bin/sail npm run dev 2>&1"],
+      "port": 5173,
+      "autoPort": false
+    }
+  ]
+}

@@ -6,23 +6,23 @@ use Livewire\Component;
 use Livewire\Attributes\Computed;
 use App\Models\Book;
 use App\Models\Product;
+use App\Services\StripePaymentService;
 
 class BookPaymentCheckout extends Component
 {
     public Book $book;
 
     public ?int $selectedPlan = null;
-    public string $paymentMethod = 'card';
+    public bool $processing = false;
 
     public function mount(Book $book)
     {
         $this->book = $book;
 
-        // Ensure user owns this book
         if ($this->book->user_id !== auth()->id()) {
             abort(403);
         }
-        
+
         $firstProduct = $this->products->first();
         if ($firstProduct) {
             $this->selectedPlan = $firstProduct->id;
@@ -45,32 +45,31 @@ class BookPaymentCheckout extends Component
         $product = Product::find($this->selectedPlan);
         if (!$product) return;
 
-        // Simulate successful payment & attach to Book
-        $payment = \App\Models\Payment::create([
-            'user_id' => auth()->id(),
-            'product_id' => $product->id,
-            'amount' => $product->price,
-            'currency' => $product->currency,
-            'provider' => $this->paymentMethod,
-            'status' => 'completed',
-        ]);
-        
-        $payment->payable()->associate($this->book);
-        $payment->save();
+        $this->processing = true;
 
-        $this->book->update([
-            'status' => 'submitted',
-        ]);
+        try {
+            $service = app(StripePaymentService::class);
 
-        session()->flash('message', '¡Pago procesado exitosamente! Tu libro ha sido enviado a revisión.');
+            $session = $service->createCheckoutSession(
+                user: auth()->user(),
+                product: $product,
+                payable: $this->book,
+                successUrl: route('app.book.checkout.success', ['book' => $this->book->id]) . '?session_id={CHECKOUT_SESSION_ID}',
+                cancelUrl: route('app.book.checkout', ['book' => $this->book->id]),
+            );
 
-        return redirect()->route('app.dashboard');
+            return redirect($session->url);
+        } catch (\Exception $e) {
+            $this->processing = false;
+            session()->flash('error', 'Error al procesar el pago. Por favor, inténtalo de nuevo.');
+            \Illuminate\Support\Facades\Log::error('Stripe checkout error', ['error' => $e->getMessage()]);
+        }
     }
 
     public function render()
     {
         return view('livewire.book-payment-checkout')->layout('components.layouts.app', [
-            'title' => 'Pago - ' . $this->book->title . ' - OpenSciRank',
+            'title' => 'Pago - ' . $this->book->title . ' - Editorial Standards Platform',
         ]);
     }
 }

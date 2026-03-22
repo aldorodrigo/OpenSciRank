@@ -2,6 +2,33 @@
     :title="$journal->title . ' - Editorial Standards Platform'"
     :description="'Perfil de ' . $journal->title . '. Calificación, métricas y criterios de evaluación.'"
 >
+    <x-slot:jsonLd>
+    @php
+        $ld = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Periodical',
+            'name' => $journal->title,
+            'url' => url('/journal/' . $journal->slug),
+            'inLanguage' => 'es',
+            'isPartOf' => [
+                '@type' => 'WebSite',
+                'name' => 'Editorial Standards Platform',
+                'url' => url('/'),
+            ],
+        ];
+        if ($journal->issn_print) $ld['issn'] = $journal->issn_print;
+        if ($journal->issn_online) $ld['issn'] = $journal->issn_online;
+        if ($journal->description) $ld['description'] = strip_tags($journal->description);
+        if ($journal->website_url) $ld['sameAs'] = $journal->website_url;
+        if ($journal->country_code) $ld['countryOfOrigin'] = $journal->country_code;
+        if ($journal->publisher) $ld['publisher'] = ['@type' => 'Organization', 'name' => $journal->publisher];
+        if ($journal->status === 'certified' && $journal->seal_expires_at?->isFuture()) {
+            $ld['award'] = 'Editorial Standards Seal — Vigente hasta ' . $journal->seal_expires_at->format('d/m/Y');
+        }
+    @endphp
+    <script type="application/ld+json">{!! json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+    </x-slot:jsonLd>
+
     <x-slot:header>true</x-slot:header>
 
     <div class="bg-gray-50 py-8 dark:bg-gray-950">
@@ -42,13 +69,24 @@
                                 </span>
                             @endif
                             <span class="rounded-full px-3 py-1 text-sm font-medium
-                                @if($journal->status === 'indexed') bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400
-                                @elseif($journal->status === 'requires_changes') bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400
-                                @elseif($journal->status === 'submitted') bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400
+                                @if(in_array($journal->status, ['indexed', 'listed', 'certified'])) bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400
+                                @elseif(str_starts_with($journal->status, 'requires_changes')) bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400
+                                @elseif(in_array($journal->status, ['submitted', 'pending_listing'])) bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400
                                 @else bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400
                                 @endif
                             ">
-                                {{ match($journal->status) { 'draft' => 'Borrador', 'submitted' => 'Enviado', 'requires_changes' => 'Requiere correcciones', 'indexed' => 'Indexado', default => ucfirst($journal->status) } }}
+                                {{ match($journal->status) {
+                                    'draft' => 'Borrador',
+                                    'submitted' => 'En Evaluacion',
+                                    'pending_listing' => 'Pendiente de Listado',
+                                    'requires_changes_listing' => 'Requiere correcciones',
+                                    'requires_changes_evaluation' => 'Requiere correcciones',
+                                    'listed' => 'Listada',
+                                    'evaluated' => 'Evaluada',
+                                    'certified' => 'Certificada',
+                                    'indexed' => 'Indexada',
+                                    default => ucfirst($journal->status)
+                                } }}
                             </span>
                             @if($journal->is_open_access)
                                 <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700 dark:bg-green-900/50 dark:text-green-400">
@@ -120,7 +158,7 @@
         </div>
 
         {{-- Evaluation Feedback for Owner --}}
-        @if(auth()->id() === $journal->user_id && ($journal->status === 'requires_changes' || $journal->evaluation_notes))
+        @if(auth()->id() === $journal->user_id && str_starts_with($journal->status, 'requires_changes'))
             <div class="container mx-auto mt-8 px-4">
                 <div class="overflow-hidden rounded-xl border border-amber-200 bg-amber-50 shadow-md dark:border-amber-900/50 dark:bg-amber-950/20">
                     <div class="flex items-center gap-4 border-b border-amber-200 bg-amber-100/50 px-6 py-4 dark:border-amber-900/50 dark:bg-amber-900/30">
@@ -211,8 +249,8 @@
                     @endif
                 </section>
 
-                {{-- Evaluation Criteria (Real Data) --}}
-                @if($journal->evaluationScores->isNotEmpty())
+                {{-- Evaluation Criteria (Real Data) — solo visible para revistas certificadas/indexadas --}}
+                @if($journal->evaluationScores->isNotEmpty() && in_array($journal->status, ['certified', 'indexed']))
                     @php
                         $scoresByCategory = $journal->evaluationScores->groupBy(fn($s) => $s->criteriaItem?->category?->name ?? 'Sin categoría');
                         $colors = ['bg-indigo-600', 'bg-emerald-600', 'bg-amber-600', 'bg-purple-600', 'bg-rose-600', 'bg-cyan-600', 'bg-orange-600', 'bg-pink-600'];
@@ -480,6 +518,32 @@
 
             {{-- Sidebar --}}
             <aside class="space-y-6">
+                {{-- Sello de Calidad --}}
+                @if($journal->status === 'certified' && $journal->seal_expires_at && $journal->seal_expires_at->isFuture())
+                    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Sello de Calidad</h3>
+                        <div class="flex justify-center">
+                            <img src="{{ route('badge.svg', $journal->slug) }}" alt="Editorial Standards Seal - {{ $journal->title }}" class="h-auto w-full">
+                        </div>
+                        <p class="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">
+                            Vigente hasta {{ $journal->seal_expires_at->format('d/m/Y') }}
+                        </p>
+                        <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                            Esta revista aprobó la evaluación técnica de Editorial Standards Platform con una puntuación del {{ number_format($journal->current_score, 1) }}%.
+                        </p>
+                        <div class="mt-4 space-y-2">
+                            <a href="#evaluation-criteria" class="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Verificar sello
+                            </a>
+                            <a href="/methodology" class="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Conocer la metodología
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Quick Info --}}
                 <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                     <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Información General</h3>
@@ -623,6 +687,7 @@
                         </div>
                     </div>
                 @endif
+
             </aside>
         </div>
     </div>

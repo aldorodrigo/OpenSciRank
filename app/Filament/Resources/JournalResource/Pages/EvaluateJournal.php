@@ -6,6 +6,8 @@ use App\Filament\Resources\JournalResource;
 use App\Models\CriteriaItem;
 use App\Models\Journal;
 use App\Models\JournalEvaluationScore;
+use App\Notifications\ChangesRequested;
+use App\Notifications\EvaluationCompleted;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
@@ -45,7 +47,7 @@ class EvaluateJournal extends Page
 
         $this->evaluation_notes = $this->record->evaluation_notes ?? '';
         $this->assigned_level = $this->record->current_level ?? '';
-        $this->assigned_status = in_array($this->record->status, ['submitted', 'requires_changes'])
+        $this->assigned_status = in_array($this->record->status, ['submitted', 'requires_changes_evaluation'])
             ? 'evaluated'
             : ($this->record->status ?? 'evaluated');
     }
@@ -209,8 +211,8 @@ class EvaluateJournal extends Page
         if ($this->qualifiesForSeal()) {
             $this->assigned_status = 'certified';
         } else {
-            // Si ya estaba en requires_changes o rejected, mantenerlo o sugerir evaluated
-            if (!in_array($this->assigned_status, ['requires_changes', 'rejected'])) {
+            // Si ya estaba en requires_changes_evaluation o rejected, mantenerlo o sugerir evaluated
+            if (!in_array($this->assigned_status, ['requires_changes_evaluation', 'rejected'])) {
                 $this->assigned_status = 'evaluated';
             }
         }
@@ -255,10 +257,25 @@ class EvaluateJournal extends Page
             'status' => $this->assigned_status,
         ]);
 
+        // Award seal if certified (1 year validity)
+        if ($this->assigned_status === 'certified') {
+            $this->record->awardSeal(1);
+        }
+
         $coresFailed = $this->getCoresFailedCount();
         $body = "Nota final: {$score}%";
         if ($coresFailed > 0) {
             $body .= " — ⚠️ {$coresFailed} criterio(s) excluyente(s) no cumplido(s), nota limitada al 49%";
+        }
+
+        // Notify journal owner via email
+        $owner = $this->record->user;
+        if ($owner) {
+            if ($this->assigned_status === 'requires_changes_evaluation') {
+                $owner->notify(new ChangesRequested($this->record, 'evaluation', $this->evaluation_notes));
+            } else {
+                $owner->notify(new EvaluationCompleted($this->record->fresh()));
+            }
         }
 
         Notification::make()

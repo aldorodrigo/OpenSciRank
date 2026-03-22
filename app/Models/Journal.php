@@ -57,6 +57,7 @@ class Journal extends Model
         'assigned_evaluator_id',
         'current_score',
         'current_level',
+        'listed_at',
         'evaluated_at',
         'evaluation_notes',
         'issn_print',
@@ -65,6 +66,11 @@ class Journal extends Model
         'url',
         'country_code',
         'start_year',
+        // Seal fields
+        'seal_awarded_at',
+        'seal_expires_at',
+        'seal_status',
+        'seal_notified_at',
         // OAI Fields
         'oai_base_url',
         'oai_set_spec',
@@ -97,7 +103,11 @@ class Journal extends Model
         'assigns_doi' => 'boolean',
         'apc_amount' => 'decimal:2',
         'current_score' => 'decimal:2',
+        'listed_at' => 'datetime',
         'evaluated_at' => 'datetime',
+        'seal_awarded_at' => 'date',
+        'seal_expires_at' => 'date',
+        'seal_notified_at' => 'datetime',
         'oai_last_harvested_at' => 'datetime',
     ];
 
@@ -186,5 +196,45 @@ class Journal extends Model
     public function payments()
     {
         return $this->morphMany(Payment::class, 'payable');
+    }
+
+    // Seal helpers
+
+    public function hasSeal(): bool
+    {
+        return $this->status === 'certified' && $this->seal_status === 'active';
+    }
+
+    public function isSealExpired(): bool
+    {
+        return $this->seal_expires_at && $this->seal_expires_at->isPast();
+    }
+
+    public function isSealExpiringSoon(int $days = 30): bool
+    {
+        return $this->seal_expires_at
+            && !$this->seal_expires_at->isPast()
+            && $this->seal_expires_at->diffInDays(now()) <= $days;
+    }
+
+    public function awardSeal(int $years = 1): void
+    {
+        $this->update([
+            'seal_awarded_at' => now(),
+            'seal_expires_at' => now()->addYears($years),
+            'seal_status' => 'active',
+        ]);
+    }
+
+    public function renewSeal(int $years = 1): void
+    {
+        $baseDate = $this->seal_expires_at && $this->seal_expires_at->isFuture()
+            ? $this->seal_expires_at
+            : now();
+
+        $this->update([
+            'seal_expires_at' => $baseDate->copy()->addYears($years),
+            'seal_status' => 'active',
+        ]);
     }
 }

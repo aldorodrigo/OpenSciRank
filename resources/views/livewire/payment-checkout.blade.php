@@ -54,74 +54,23 @@
                     </div>
                 </div>
 
-                {{-- Payment Method --}}
+                {{-- Payment Info --}}
                 <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                    <h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">Método de Pago</h2>
+                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Método de Pago</h2>
 
-                    <div class="space-y-4">
-                        <label class="flex cursor-pointer items-center rounded-lg border-2 p-4 transition
-                            @if($paymentMethod === 'card') border-indigo-600 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/20
-                            @else border-gray-200 hover:border-gray-300 dark:border-gray-700
-                            @endif
-                        ">
-                            <input type="radio" wire:model.live="paymentMethod" value="card" class="sr-only">
-                            <div class="flex h-5 w-5 items-center justify-center rounded-full border-2
-                                @if($paymentMethod === 'card') border-indigo-600 bg-indigo-600
-                                @else border-gray-300 dark:border-gray-600
-                                @endif
-                            ">
-                                @if($paymentMethod === 'card')
-                                    <div class="h-2 w-2 rounded-full bg-white"></div>
-                                @endif
-                            </div>
-                            <div class="ml-3 flex items-center gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                </svg>
-                                <span class="font-medium text-gray-900 dark:text-white">Tarjeta de Crédito/Débito</span>
-                            </div>
-                        </label>
-
-                        <label class="flex cursor-pointer items-center rounded-lg border-2 p-4 transition
-                            @if($paymentMethod === 'paypal') border-indigo-600 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/20
-                            @else border-gray-200 hover:border-gray-300 dark:border-gray-700
-                            @endif
-                        ">
-                            <input type="radio" wire:model.live="paymentMethod" value="paypal" class="sr-only">
-                            <div class="flex h-5 w-5 items-center justify-center rounded-full border-2
-                                @if($paymentMethod === 'paypal') border-indigo-600 bg-indigo-600
-                                @else border-gray-300 dark:border-gray-600
-                                @endif
-                            ">
-                                @if($paymentMethod === 'paypal')
-                                    <div class="h-2 w-2 rounded-full bg-white"></div>
-                                @endif
-                            </div>
-                            <div class="ml-3 flex items-center gap-3">
-                                <span class="text-2xl font-bold text-[#003087]">Pay</span><span class="text-2xl font-bold text-[#009CDE]">Pal</span>
-                            </div>
-                        </label>
+                    <div class="flex items-center gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">Pago seguro con Stripe</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Tarjeta de crédito, débito y más métodos disponibles.</p>
+                        </div>
                     </div>
 
-                    @if($paymentMethod === 'card')
-                        <div class="mt-6 space-y-4">
-                            <div>
-                                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Número de Tarjeta</label>
-                                <input type="text" placeholder="4242 4242 4242 4242"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Expiración</label>
-                                    <input type="text" placeholder="MM/AA"
-                                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-                                </div>
-                                <div>
-                                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">CVC</label>
-                                    <input type="text" placeholder="123"
-                                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
-                                </div>
-                            </div>
+                    @if(session('error'))
+                        <div class="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                            {{ session('error') }}
                         </div>
                     @endif
                 </div>
@@ -156,9 +105,19 @@
                     </div>
 
                     <button wire:click="processPayment"
-                        class="w-full rounded-lg bg-emerald-600 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-emerald-500"
+                        wire:loading.attr="disabled"
+                        class="w-full rounded-lg bg-emerald-600 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         @if(!$selectedPlan) disabled @endif>
-                        Pagar ${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }} {{ $this->products->firstWhere('id', $selectedPlan)?->currency }}
+                        <span wire:loading.remove wire:target="processPayment">
+                            Pagar ${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }} {{ $this->products->firstWhere('id', $selectedPlan)?->currency }}
+                        </span>
+                        <span wire:loading wire:target="processPayment" class="flex items-center justify-center gap-2">
+                            <svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            Redirigiendo a Stripe...
+                        </span>
                     </button>
 
                     <p class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">

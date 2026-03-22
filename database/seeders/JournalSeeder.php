@@ -14,11 +14,11 @@ class JournalSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminUser = User::where('email', 'admin@openscirank.com')->first();
+        $adminUser = User::where('email', 'admin@editorialstandards.com')->first();
         
         if (!$adminUser) {
             $this->call(AdminUserSeeder::class);
-            $adminUser = User::where('email', 'admin@openscirank.com')->first();
+            $adminUser = User::where('email', 'admin@editorialstandards.com')->first();
         }
 
         $userId = $adminUser->id;

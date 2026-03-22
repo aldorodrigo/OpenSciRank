@@ -54,7 +54,7 @@ class UserProfile extends Component
     public function render()
     {
         return view('livewire.user-profile')->layout('components.layouts.app', [
-            'title' => 'Mi Perfil - OpenSciRank',
+            'title' => 'Mi Perfil - Editorial Standards Platform',
         ]);
     }
 }

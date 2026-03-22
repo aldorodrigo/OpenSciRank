@@ -239,7 +239,7 @@
                             <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Decisión sobre el Listado</label>
                             <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
                                 <option value="listed">Aprobar y Listar ✅</option>
-                                <option value="requires_changes">Pedir Correcciones 🔄</option>
+                                <option value="requires_changes_listing">Pedir Correcciones 🔄</option>
                                 <option value="rejected">Rechazar Listado ❌</option>
                             </select>
                         </div>

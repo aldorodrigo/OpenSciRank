@@ -647,7 +647,7 @@
                                     Evaluar Revista
                                 </h4>
                                 <p class="mb-6 flex-1 text-sm leading-relaxed text-indigo-800/80 dark:text-indigo-200/80">
-                                    Obtén el Sello de Calidad Editorial OpenSciRank. Tu revista será evaluada en detalle según nuestros criterios metodológicos. Una calificación alta aumentará significativamente la visibilidad, prestigio y confianza en tus publicaciones, destacándote en la comunidad científica.
+                                    Obtén el Sello de Calidad Editorial Standards Platform. Tu revista será evaluada en detalle según nuestros criterios metodológicos. Una calificación alta aumentará significativamente la visibilidad, prestigio y confianza en tus publicaciones, destacándote en la comunidad científica.
                                 </p>
                                 <button wire:click="submit" type="button" class="wizard-btn wizard-btn-success flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-500">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>

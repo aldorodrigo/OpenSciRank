@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Journal;
+use App\Notifications\ListingRequested;
 use App\Support\Countries;
 use Illuminate\Support\Str;
 
@@ -401,6 +402,10 @@ class SubmissionWizard extends Component
     {
         $this->saveDraft();
         $this->journal->update(['status' => 'pending_listing']);
+
+        // Notify user that listing request was received
+        auth()->user()->notify(new ListingRequested($this->journal));
+
         session()->flash('message', 'Tu solicitud para listar la revista ha sido enviada.');
         return redirect()->route('app.dashboard');
     }
@@ -410,7 +415,7 @@ class SubmissionWizard extends Component
         return view('livewire.submission-wizard', [
             'countries' => Countries::forSelect(),
         ])->layout('components.layouts.app', [
-            'title' => 'Registrar Revista - OpenSciRank',
+            'title' => 'Registrar Revista - Editorial Standards Platform',
         ]);
     }
 }

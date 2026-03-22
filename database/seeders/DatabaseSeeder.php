@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             EvaluationCategorySeeder::class,
             CriteriaItemSeeder::class,
+            ProductSeeder::class,
         ]);
     }
 

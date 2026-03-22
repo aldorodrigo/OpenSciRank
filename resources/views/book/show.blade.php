@@ -1,4 +1,29 @@
 <x-layouts.app title="{{ $book->title }} - Editorial Standards Platform" description="Ficha pública del libro académico {{ $book->title }} en el índice de Editorial Standards Platform.">
+    <x-slot:jsonLd>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Book",
+        "name": {{ Js::from($book->title) }},
+        "url": "{{ url('/book/' . $book->slug) }}",
+        @if($book->isbn_print)"isbn": {{ Js::from($book->isbn_print) }},@endif
+        @if($book->isbn_digital)"isbn": {{ Js::from($book->isbn_digital) }},@endif
+        @if($book->description)"description": {{ Js::from(strip_tags($book->description)) }},@endif
+        @if($book->publisher)"publisher": {
+            "@type": "Organization",
+            "name": {{ Js::from($book->publisher) }}
+        },@endif
+        @if($book->publication_year)"datePublished": "{{ $book->publication_year }}",@endif
+        "inLanguage": "es",
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "Editorial Standards Platform",
+            "url": "{{ url('/') }}"
+        }
+    }
+    </script>
+    </x-slot:jsonLd>
+
     <x-slot:header>true</x-slot:header>
 
     {{-- Breadcrumb --}}

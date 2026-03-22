@@ -520,7 +520,7 @@ class BookSubmissionWizard extends Component
         return view('livewire.book-submission-wizard', [
             'countries' => Countries::forSelect(),
         ])->layout('components.layouts.app', [
-            'title' => $this->book ? 'Editar Libro - OpenSciRank' : 'Registrar Libro - OpenSciRank',
+            'title' => $this->book ? 'Editar Libro - Editorial Standards Platform' : 'Registrar Libro - Editorial Standards Platform',
         ]);
     }
 }

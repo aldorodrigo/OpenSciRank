@@ -527,23 +527,13 @@
                             </div>
                         @endif
 
-                        <div class="mt-8 grid grid-cols-2 gap-6">
-                            <div class="space-y-2">
-                                <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Nivel de Calificación</label>
-                                <select wire:model="assigned_level" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
-                                    <option value="">— Sin Nivel —</option>
-                                    <option value="A">Nivel A</option>
-                                    <option value="B">Nivel B</option>
-                                    <option value="C">Nivel C</option>
-                                </select>
-                                <p class="text-[9px] font-bold text-slate-400 italic">Sugerido por nota: <span class="text-indigo-500">{{ $this->getSuggestedLevel() ?: 'Ninguno' }}</span></p>
-                            </div>
+                        <div class="mt-8">
                             <div class="space-y-2">
                                 <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Estado de Evaluación</label>
                                 <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
                                     <option value="certified">Evaluada con Sello Editorial ✅</option>
                                     <option value="evaluated">Evaluada sin Sello Editorial 📄</option>
-                                    <option value="requires_changes">Requiere Cambios 🔄</option>
+                                    <option value="requires_changes_evaluation">Requiere Cambios 🔄</option>
                                     <option value="rejected">Rechazada ❌</option>
                                 </select>
                             </div>
