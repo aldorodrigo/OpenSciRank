@@ -1,4 +1,4 @@
-<x-layouts.app title="Ranking Global - OpenSciRank" description="Ranking de las mejores revistas científicas y libros académicos indexados en OpenSciRank, ordenados por puntaje de evaluación.">
+<x-layouts.app title="Ranking Global - Editorial Standards Platform" description="Ranking de las mejores revistas científicas y libros académicos indexados en Editorial Standards Platform, ordenados por puntaje de evaluación.">
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
@@ -8,7 +8,7 @@
                 🏆 Actualizado en tiempo real
             </div>
             <h1 class="text-4xl font-bold sm:text-5xl">Ranking Global</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-orange-100">Las publicaciones científicas con mayor calidad editorial según la evaluación de OpenSciRank.</p>
+            <p class="mx-auto mt-4 max-w-2xl text-orange-100">Las publicaciones científicas con mayor calidad editorial según la evaluación de Editorial Standards Platform.</p>
         </div>
     </section>
 

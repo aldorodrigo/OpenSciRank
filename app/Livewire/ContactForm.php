@@ -35,8 +35,8 @@ class ContactForm extends Component
             "Asunto: {$this->subject}\n\n" .
             "Mensaje:\n{$this->message}",
             function ($mail) {
-                $mail->to(config('mail.from.address', 'admin@openscirank.com'))
-                     ->subject("Contacto OpenSciRank: {$this->subject}")
+                $mail->to(config('mail.from.address', 'admin@editorialstandards.com'))
+                     ->subject("Contacto Editorial Standards Platform: {$this->subject}")
                      ->replyTo($this->email, $this->name);
             }
         );

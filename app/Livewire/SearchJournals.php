@@ -43,7 +43,12 @@ class SearchJournals extends Component
         $books = collect();
 
         // Get available countries for filter
-        $countries = Journal::where('status', 'indexed')
+        $countries = Journal::whereIn('status', ['listed', 'evaluated', 'certified'])
+            ->where(fn($q) => $q
+                ->where('status', '!=', 'certified')
+                ->orWhereNull('seal_expires_at')
+                ->orWhere('seal_expires_at', '>', now())
+            )
             ->whereNotNull('country_code')
             ->distinct()
             ->pluck('country_code')
@@ -52,7 +57,12 @@ class SearchJournals extends Component
 
         if ($this->type !== 'books') {
             $journalQuery = Journal::query()
-                ->where('status', 'indexed')
+                ->whereIn('status', ['listed', 'evaluated', 'certified'])
+                ->where(fn($q) => $q
+                    ->where('status', '!=', 'certified')
+                    ->orWhereNull('seal_expires_at')
+                    ->orWhere('seal_expires_at', '>', now())
+                )
                 ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
                 ->when($this->level, fn($q) => $q->where('current_level', $this->level))
                 ->when($this->country, fn($q) => $q->where('country_code', $this->country));
@@ -73,7 +83,7 @@ class SearchJournals extends Component
 
         if ($this->type !== 'journals') {
             $bookQuery = Book::query()
-                ->where('status', 'indexed')
+                ->where('status', 'listed')
                 ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
                 ->when($this->level, fn($q) => $q->where('current_level', $this->level));
 

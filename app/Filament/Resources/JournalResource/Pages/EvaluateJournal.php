@@ -6,6 +6,8 @@ use App\Filament\Resources\JournalResource;
 use App\Models\CriteriaItem;
 use App\Models\Journal;
 use App\Models\JournalEvaluationScore;
+use App\Notifications\ChangesRequested;
+use App\Notifications\EvaluationCompleted;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
@@ -24,7 +26,7 @@ class EvaluateJournal extends Page
     public string $evaluation_notes = '';
     public bool $showConfirmModal = false;
     public string $assigned_level = '';
-    public string $assigned_status = 'indexed';
+    public string $assigned_status = 'evaluated';
 
     public function mount(int | string $record): void
     {
@@ -45,9 +47,9 @@ class EvaluateJournal extends Page
 
         $this->evaluation_notes = $this->record->evaluation_notes ?? '';
         $this->assigned_level = $this->record->current_level ?? '';
-        $this->assigned_status = in_array($this->record->status, ['submitted', 'requires_changes'])
-            ? 'indexed'
-            : ($this->record->status ?? 'indexed');
+        $this->assigned_status = in_array($this->record->status, ['submitted', 'requires_changes_evaluation'])
+            ? 'evaluated'
+            : ($this->record->status ?? 'evaluated');
     }
 
     public function getTitle(): string | Htmlable
@@ -105,12 +107,49 @@ class EvaluateJournal extends Page
 
         $percentage = ($earnedWeight / $totalWeight) * 100;
 
-        // Si hay cores que fallan, máximo 49%
+        // Regla del Documento Maestro: Si hay cores que fallan, máximo 49%
         if ($coresFailed) {
             $percentage = min($percentage, 49);
         }
 
         return round($percentage, 2);
+    }
+
+    /**
+     * Determine suggested level based on score
+     * A: 80-100, B: 60-79, C: 40-59
+     */
+    public function getSuggestedLevel(): string
+    {
+        $score = $this->calculateScore();
+        
+        if ($score >= 80) return 'A';
+        if ($score >= 60) return 'B';
+        if ($score >= 40) return 'C';
+        
+        return '';
+    }
+
+    /**
+     * Check if journal qualifies for the Editorial Standards Seal
+     * Condition: Score >= 75 AND ALL critical indicators met
+     */
+    public function qualifiesForSeal(): bool
+    {
+        $score = $this->calculateScore();
+        if ($score < 75) return false;
+
+        // Critical Indicators (Criteria codes defined in methodology)
+        $criticalCodes = ['1.1', '2.1', '3.1', '4.2', '5.1'];
+        $criticalItems = CriteriaItem::whereIn('code', $criticalCodes)->get()->keyBy('id');
+
+        foreach ($criticalItems as $itemId => $item) {
+            if (empty($this->scores[$itemId])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function getCoresFailedCount(): int
@@ -166,6 +205,18 @@ class EvaluateJournal extends Page
      */
     public function confirmSave(): void
     {
+        $this->assigned_level = $this->getSuggestedLevel();
+        
+        // Sugerir estado basado en si califica para el sello
+        if ($this->qualifiesForSeal()) {
+            $this->assigned_status = 'certified';
+        } else {
+            // Si ya estaba en requires_changes_evaluation o rejected, mantenerlo o sugerir evaluated
+            if (!in_array($this->assigned_status, ['requires_changes_evaluation', 'rejected'])) {
+                $this->assigned_status = 'evaluated';
+            }
+        }
+
         $this->showConfirmModal = true;
     }
 
@@ -206,10 +257,25 @@ class EvaluateJournal extends Page
             'status' => $this->assigned_status,
         ]);
 
+        // Award seal if certified (1 year validity)
+        if ($this->assigned_status === 'certified') {
+            $this->record->awardSeal(1);
+        }
+
         $coresFailed = $this->getCoresFailedCount();
         $body = "Nota final: {$score}%";
         if ($coresFailed > 0) {
             $body .= " — ⚠️ {$coresFailed} criterio(s) excluyente(s) no cumplido(s), nota limitada al 49%";
+        }
+
+        // Notify journal owner via email
+        $owner = $this->record->user;
+        if ($owner) {
+            if ($this->assigned_status === 'requires_changes_evaluation') {
+                $owner->notify(new ChangesRequested($this->record, 'evaluation', $this->evaluation_notes));
+            } else {
+                $owner->notify(new EvaluationCompleted($this->record->fresh()));
+            }
         }
 
         Notification::make()

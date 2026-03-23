@@ -1,2 +1,11 @@
 User-agent: *
-Disallow:
+Disallow: /app/
+Disallow: /admin/
+Disallow: /stripe/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Allow: /
+
+Sitemap: https://editorialstandards.org/sitemap.xml

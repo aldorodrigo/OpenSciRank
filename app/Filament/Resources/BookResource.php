@@ -420,8 +420,8 @@ class BookResource extends Resource
                                     ->options([
                                         'draft' => 'Borrador',
                                         'submitted' => 'Enviado',
-                                        'requires_changes' => 'Requiere correcciones',
-                                        'indexed' => 'Indexado',
+                                        'requires_changes_listing' => 'Correcciones (Listado)',
+                                        'listed' => 'Libro Listado',
                                     ])
                                     ->required()
                                     ->default('draft'),
@@ -483,15 +483,15 @@ class BookResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
                         'submitted' => 'warning',
-                        'requires_changes' => 'danger',
-                        'indexed' => 'success',
+                        'requires_changes_listing' => 'danger',
+                        'listed' => 'success',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'draft' => 'Borrador',
                         'submitted' => 'Enviado',
-                        'requires_changes' => 'Requiere correcciones',
-                        'indexed' => 'Indexado',
+                        'requires_changes_listing' => 'Correcciones',
+                        'listed' => 'Listado',
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('publication_year')
@@ -507,8 +507,8 @@ class BookResource extends Resource
                     ->options([
                         'draft' => 'Borrador',
                         'submitted' => 'Enviado',
-                        'requires_changes' => 'Requiere correcciones',
-                        'indexed' => 'Indexado',
+                        'requires_changes_listing' => 'Correcciones (Listado)',
+                        'listed' => 'Listado',
                     ]),
                 Tables\Filters\SelectFilter::make('book_type')
                     ->label('Tipo')

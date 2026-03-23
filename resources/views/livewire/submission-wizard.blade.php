@@ -633,10 +633,43 @@
                             <div><dt class="text-gray-500">Revisión:</dt><dd class="font-medium text-gray-900 dark:text-white">{{ $peerReviewTypes[$peer_review_type] ?? '—' }}</dd></div>
                         </dl>
                     </div>
-                    <div class="rounded-lg bg-indigo-50 p-4 dark:bg-indigo-900/20">
-                        <p class="text-sm text-indigo-700 dark:text-indigo-300">
-                            <strong>Nota:</strong> Al continuar serás redirigido a la página de pago. Una vez completado, tu revista será enviada a revisión.
-                        </p>
+
+                    <div class="mt-8">
+                        <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Elige cómo continuar</h3>
+                        <div class="grid gap-6 md:grid-cols-2">
+                            {{-- Option 1: Evaluate (Recommended) --}}
+                            <div class="relative flex flex-col rounded-2xl border-2 border-indigo-500 bg-indigo-50/50 p-6 dark:border-indigo-400 dark:bg-indigo-900/20">
+                                <div class="absolute -top-3 left-6 inline-flex rounded-full bg-indigo-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
+                                    Recomendado
+                                </div>
+                                <h4 class="mb-2 flex items-center gap-2 text-lg font-bold text-indigo-900 dark:text-indigo-300">
+                                    <svg class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>
+                                    Evaluar Revista
+                                </h4>
+                                <p class="mb-6 flex-1 text-sm leading-relaxed text-indigo-800/80 dark:text-indigo-200/80">
+                                    Obtén el Sello de Calidad Editorial Standards Platform. Tu revista será evaluada en detalle según nuestros criterios metodológicos. Una calificación alta aumentará significativamente la visibilidad, prestigio y confianza en tus publicaciones, destacándote en la comunidad científica.
+                                </p>
+                                <button wire:click="submit" type="button" class="wizard-btn wizard-btn-success flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-500">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>
+                                    Pagar y Evaluar
+                                </button>
+                            </div>
+                            
+                            {{-- Option 2: List --}}
+                            <div class="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                                <h4 class="mb-2 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
+                                    <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
+                                    Listar Revista (Gratis)
+                                </h4>
+                                <p class="mb-6 flex-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                                    Registra tu revista en nuestra base de datos de acceso público de forma gratuita. Tu revista aparecerá en los resultados de búsqueda tras ser aprobada por el equipo, pero no contará con el Sello de Calidad ni con una calificación detallada de nuestra plataforma.
+                                </p>
+                                <button wire:click="listJournal" type="button" class="wizard-btn flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-6 py-3.5 font-bold text-slate-700 transition-all hover:bg-slate-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
+                                    Solicitar Listado
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             @endif
@@ -661,11 +694,6 @@
                     <button wire:click="nextStep" type="button" class="wizard-btn wizard-btn-primary inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white">
                         Siguiente
                         <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
-                    </button>
-                @else
-                    <button wire:click="submit" type="button" class="wizard-btn wizard-btn-success inline-flex items-center rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white">
-                        <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        Continuar al Pago
                     </button>
                 @endif
             </div>

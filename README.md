@@ -45,13 +45,15 @@ OpenSciRank es una plataforma avanzada para la evaluación y clasificación de r
 
 4. **Generar la clave de aplicación y migrar la base de datos**:
    ```bash
-   # Si usas Sail:
-   ./vendor/bin/sail artisan key:generate
-   ./vendor/bin/sail artisan migrate --seed
+    # Si usas Sail:
+    ./vendor/bin/sail artisan key:generate
+    ./vendor/bin/sail artisan migrate
+    ./vendor/bin/sail artisan db:seed --class=CriteriaItemSeeder
 
-   # Si usas PHP directamente:
-   php artisan key:generate
-   php artisan migrate --seed
+    # Si usas PHP directamente:
+    php artisan key:generate
+    php artisan migrate
+    php artisan db:seed --class=CriteriaItemSeeder
    ```
 
 5. **Instalar dependencias de JS y compilar**:
@@ -102,12 +104,37 @@ Si has desplegado el proyecto en un servidor nuevo, debes inicializar el sistema
     ./vendor/bin/sail artisan db:seed --class=AdminUserSeeder
     ```
 
+4.  **Inicializar Categorías e Indicadores (Documento Maestro)**:
+    Para cargar las 5 áreas de evaluación y los 18 indicadores oficiales:
+    ```bash
+    # Si usas PHP directamente:
+    php artisan db:seed --class=CriteriaItemSeeder
+
+    # Si usas Sail:
+    ./vendor/bin/sail artisan db:seed --class=CriteriaItemSeeder
+    ```
+
 3.  **Credenciales por defecto**: 
     - **Email**: `admin@openscirank.com`
     - **Password**: `password`
 
 > [!IMPORTANT]
 > **Seguridad**: Una vez que hayas iniciado sesión por primera vez, asegúrate de cambiar la contraseña y el email del administrador desde el panel de control de Filament.
+
+## 🚀 Git y Despliegue
+
+Si realizas cambios en el código y quieres subirlos a GitHub, utiliza estos comandos estándar:
+
+```bash
+# 1. Preparar todos los cambios
+git add .
+
+# 2. Guardar los cambios con un mensaje descriptivo
+git commit -m "Descripción de tus cambios"
+
+# 3. Subir los cambios a GitHub
+git push origin main
+```
 
 ## 🧪 Pruebas
 
@@ -116,6 +143,25 @@ El proyecto incluye una suite de pruebas para asegurar la calidad del código:
 ```bash
 php artisan test
 ```
+
+## 🎨 Compilación de Activos (Tailwind CSS)
+
+Si realizas cambios en la interfaz (Blade, CSS, componentes), es **fundamental** compilar los activos para que se reflejen correctamente:
+
+### Desarrollo (Hot Reloading)
+Mantiene un servidor activo que compila los cambios al instante mientras trabajas:
+```bash
+npm run dev
+```
+
+### Producción (Compilación Final)
+Genera los archivos optimizados y minificados para el servidor real:
+```bash
+npm run build
+```
+
+> [!TIP]
+> **Vite**: El proyecto utiliza Vite para gestionar los assets. Si los cambios en el CSS no se ven aplicados, asegúrate de que el comando `npm run dev` esté ejecutándose en una terminal abierta.
 
 ## 📄 Licencia
 

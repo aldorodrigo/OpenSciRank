@@ -2,6 +2,33 @@
     :title="$journal->title . ' - Editorial Standards Platform'"
     :description="'Perfil de ' . $journal->title . '. Calificación, métricas y criterios de evaluación.'"
 >
+    <x-slot:jsonLd>
+    @php
+        $ld = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Periodical',
+            'name' => $journal->title,
+            'url' => url('/journal/' . $journal->slug),
+            'inLanguage' => 'es',
+            'isPartOf' => [
+                '@type' => 'WebSite',
+                'name' => 'Editorial Standards Platform',
+                'url' => url('/'),
+            ],
+        ];
+        if ($journal->issn_print) $ld['issn'] = $journal->issn_print;
+        if ($journal->issn_online) $ld['issn'] = $journal->issn_online;
+        if ($journal->description) $ld['description'] = strip_tags($journal->description);
+        if ($journal->website_url) $ld['sameAs'] = $journal->website_url;
+        if ($journal->country_code) $ld['countryOfOrigin'] = $journal->country_code;
+        if ($journal->publisher) $ld['publisher'] = ['@type' => 'Organization', 'name' => $journal->publisher];
+        if ($journal->status === 'certified' && $journal->seal_expires_at?->isFuture()) {
+            $ld['award'] = 'Editorial Standards Seal — Vigente hasta ' . $journal->seal_expires_at->format('d/m/Y');
+        }
+    @endphp
+    <script type="application/ld+json">{!! json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+    </x-slot:jsonLd>
+
     <x-slot:header>true</x-slot:header>
 
     <div class="bg-gray-50 py-8 dark:bg-gray-950">
@@ -42,13 +69,24 @@
                                 </span>
                             @endif
                             <span class="rounded-full px-3 py-1 text-sm font-medium
-                                @if($journal->status === 'indexed') bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400
-                                @elseif($journal->status === 'requires_changes') bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400
-                                @elseif($journal->status === 'submitted') bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400
+                                @if(in_array($journal->status, ['indexed', 'listed', 'certified'])) bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400
+                                @elseif(str_starts_with($journal->status, 'requires_changes')) bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-400
+                                @elseif(in_array($journal->status, ['submitted', 'pending_listing'])) bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400
                                 @else bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400
                                 @endif
                             ">
-                                {{ match($journal->status) { 'draft' => 'Borrador', 'submitted' => 'Enviado', 'requires_changes' => 'Requiere correcciones', 'indexed' => 'Indexado', default => ucfirst($journal->status) } }}
+                                {{ match($journal->status) {
+                                    'draft' => 'Borrador',
+                                    'submitted' => 'En Evaluacion',
+                                    'pending_listing' => 'Pendiente de Listado',
+                                    'requires_changes_listing' => 'Requiere correcciones',
+                                    'requires_changes_evaluation' => 'Requiere correcciones',
+                                    'listed' => 'Listada',
+                                    'evaluated' => 'Evaluada',
+                                    'certified' => 'Certificada',
+                                    'indexed' => 'Indexada',
+                                    default => ucfirst($journal->status)
+                                } }}
                             </span>
                             @if($journal->is_open_access)
                                 <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700 dark:bg-green-900/50 dark:text-green-400">
@@ -118,6 +156,46 @@
                 </div>
             </div>
         </div>
+
+        {{-- Evaluation Feedback for Owner --}}
+        @if(auth()->id() === $journal->user_id && str_starts_with($journal->status, 'requires_changes'))
+            <div class="container mx-auto mt-8 px-4">
+                <div class="overflow-hidden rounded-xl border border-amber-200 bg-amber-50 shadow-md dark:border-amber-900/50 dark:bg-amber-950/20">
+                    <div class="flex items-center gap-4 border-b border-amber-200 bg-amber-100/50 px-6 py-4 dark:border-amber-900/50 dark:bg-amber-900/30">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200 text-amber-700 dark:bg-amber-800 dark:text-amber-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-amber-900 dark:text-amber-400 underline decoration-amber-300 dark:decoration-amber-700 underline-offset-4">Acción Requerida: Ajustes Editoriales</h3>
+                            <p class="text-sm text-amber-700 dark:text-amber-500">Un evaluador ha revisado tu revista y solicita cambios para continuar con la indexación.</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="mb-3 text-xs font-black uppercase tracking-widest text-amber-800/60 dark:text-amber-400/50">Observaciones del Evaluador</h4>
+                        <div class="rounded-lg bg-white p-4 text-gray-700 shadow-inner dark:bg-gray-900 dark:text-gray-300 border-l-4 border-amber-400 dark:border-amber-600 italic leading-relaxed">
+                            {!! nl2br(e($journal->evaluation_notes ?: 'No hay observaciones específicas detalladas, por favor revisa los criterios de evaluación abajo.')) !!}
+                        </div>
+                        
+                        <div class="mt-6 flex flex-wrap gap-4">
+                            <a href="{{ route('app.submit.edit', $journal) }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-md transition hover:bg-indigo-700 hover:scale-[1.02] active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Editar y Corregir Datos
+                            </a>
+                            <a href="#evaluation-criteria" class="inline-flex items-center rounded-lg bg-amber-200 px-4 py-2 text-sm font-bold text-amber-800 transition hover:bg-amber-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Revisar Criterios Faltantes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
     {{-- Details Section --}}
@@ -171,14 +249,14 @@
                     @endif
                 </section>
 
-                {{-- Evaluation Criteria (Real Data) --}}
-                @if($journal->evaluationScores->isNotEmpty())
+                {{-- Evaluation Criteria (Real Data) — solo visible para revistas certificadas/indexadas --}}
+                @if($journal->evaluationScores->isNotEmpty() && in_array($journal->status, ['certified', 'indexed']))
                     @php
                         $scoresByCategory = $journal->evaluationScores->groupBy(fn($s) => $s->criteriaItem?->category?->name ?? 'Sin categoría');
                         $colors = ['bg-indigo-600', 'bg-emerald-600', 'bg-amber-600', 'bg-purple-600', 'bg-rose-600', 'bg-cyan-600', 'bg-orange-600', 'bg-pink-600'];
                         $colorIndex = 0;
                     @endphp
-                    <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                    <section id="evaluation-criteria" class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                         <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">Criterios de Evaluación</h2>
                         <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Resultados basados en los estándares de Editorial Standards Platform.</p>
 
@@ -440,6 +518,32 @@
 
             {{-- Sidebar --}}
             <aside class="space-y-6">
+                {{-- Sello de Calidad --}}
+                @if($journal->status === 'certified' && $journal->seal_expires_at && $journal->seal_expires_at->isFuture())
+                    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Sello de Calidad</h3>
+                        <div class="flex justify-center">
+                            <img src="{{ route('badge.svg', $journal->slug) }}" alt="Editorial Standards Seal - {{ $journal->title }}" class="h-auto w-full">
+                        </div>
+                        <p class="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">
+                            Vigente hasta {{ $journal->seal_expires_at->format('d/m/Y') }}
+                        </p>
+                        <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                            Esta revista aprobó la evaluación técnica de Editorial Standards Platform con una puntuación del {{ number_format($journal->current_score, 1) }}%.
+                        </p>
+                        <div class="mt-4 space-y-2">
+                            <a href="#evaluation-criteria" class="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Verificar sello
+                            </a>
+                            <a href="/methodology" class="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Conocer la metodología
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Quick Info --}}
                 <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                     <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Información General</h3>
@@ -583,6 +687,7 @@
                         </div>
                     </div>
                 @endif
+
             </aside>
         </div>
     </div>

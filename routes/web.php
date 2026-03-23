@@ -9,6 +9,14 @@ use App\Livewire\BookSubmissionWizard;
 use App\Livewire\PaymentCheckout;
 use App\Livewire\BookPaymentCheckout;
 use App\Livewire\UserProfile;
+use App\Http\Controllers\CheckoutSuccessController;
+use App\Http\Controllers\BadgeController;
+use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\StripeWebhookController;
+
+// Sitemap & SEO
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/badge/{slug}.svg', [BadgeController::class, 'show'])->name('badge.svg');
 
 // Public Routes
 Route::get('/', function () {
@@ -39,6 +47,14 @@ Route::get('/ranking', function () {
     return redirect('/search');
 })->name('ranking');
 
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
+Route::get('/privacy', function () {
+    return view('privacy');
+})->name('privacy');
+
 Route::get('/blog', function () {
     return view('blog.index');
 })->name('blog.index');
@@ -67,7 +83,7 @@ Route::get('/book/{slug}', function (string $slug) {
 })->name('book.show');
 
 // Authenticated Portal Routes
-Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('app')->name('app.')->group(function () {
     Route::get('/', EditorDashboard::class)->name('dashboard');
     Route::get('/profile', UserProfile::class)->name('profile');
     
@@ -75,9 +91,17 @@ Route::middleware(['auth'])->prefix('app')->name('app.')->group(function () {
     Route::get('/submit', SubmissionWizard::class)->name('submit');
     Route::get('/submit/{journal}', SubmissionWizard::class)->name('submit.edit');
     Route::get('/checkout/{journal}', PaymentCheckout::class)->name('checkout');
-    
+    Route::get('/checkout/{journal}/success', [CheckoutSuccessController::class, 'journal'])->name('checkout.success');
+    Route::get('/renew/{journal}', PaymentCheckout::class)->name('renew');
+    Route::get('/badge/{journal}', [BadgeController::class, 'page'])->name('badge');
+
     // Book routes
     Route::get('/book/submit', BookSubmissionWizard::class)->name('book.submit');
     Route::get('/book/submit/{book}', BookSubmissionWizard::class)->name('book.submit.edit');
     Route::get('/book/checkout/{book}', BookPaymentCheckout::class)->name('book.checkout');
+    Route::get('/book/checkout/{book}/success', [CheckoutSuccessController::class, 'book'])->name('book.checkout.success');
 });
+
+// Stripe Webhook (CSRF excluded in bootstrap/app.php)
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook');

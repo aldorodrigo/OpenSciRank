@@ -14,13 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-        //User::factory()->create([
-        //    'name' => 'Test User',
-        //    'email' => 'test@example.com',
-        //]);
-        
-        // Crea 50 revistas usando nuestra factoría
-        //Journal::factory()->count(50)->create();
+        $this->call([
+            AdminUserSeeder::class,
+            EvaluationCategorySeeder::class,
+            CriteriaItemSeeder::class,
+            ProductSeeder::class,
+        ]);
     }
+
 }

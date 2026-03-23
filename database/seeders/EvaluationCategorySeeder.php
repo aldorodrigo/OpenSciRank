@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\CriteriaItem;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class EvaluationCategorySeeder extends Seeder
 {
@@ -13,20 +15,53 @@ class EvaluationCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Identificación y normalización de la revista', 'weight' => 10, 'is_active' => true],
-            ['name' => 'Editorial y gestión institucional', 'weight' => 8, 'is_active' => true],
-            ['name' => 'Equipo editorial y gobierno', 'weight' => 10, 'is_active' => true],
-            ['name' => 'Alcance, enfoque y contenido', 'weight' => 10, 'is_active' => true],
-            ['name' => 'Periodicidad y continuidad', 'weight' => 6, 'is_active' => true],
-            ['name' => 'Proceso de evaluación por pares', 'weight' => 10, 'is_active' => true],
-            ['name' => 'Ética editorial y buenas prácticas', 'weight' => 10, 'is_active' => true],
-            ['name' => 'Acceso abierto y derechos', 'weight' => 10, 'is_active' => true],
-            ['name' => 'Modelo de negocio y financiamiento', 'weight' => 8, 'is_active' => true],
-            ['name' => 'Infraestructura técnica y visibilidad', 'weight' => 6, 'is_active' => true],
-            ['name' => 'Indexación y reconocimiento externo', 'weight' => 6, 'is_active' => true],
-            ['name' => 'Transparencia y experiencia del usuario', 'weight' => 4, 'is_active' => true],
-            ['name' => 'Gestión editorial interna (sistema)', 'weight' => 2, 'is_active' => true],
+            [
+                'name' => 'Identidad Editorial', 
+                'weight' => 20, 
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Transparencia del Proceso Editorial', 
+                'weight' => 25, 
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Ética Editorial', 
+                'weight' => 20, 
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Acceso y Derechos', 
+                'weight' => 15, 
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Infraestructura Técnica', 
+                'weight' => 20, 
+                'is_active' => true,
+            ],
         ];
+
+        // Try to disable FK checks via DB statement (more direct for MySQL)
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        } catch (\Exception $e) {
+            $this->command->warn("Could not disable foreign key checks: " . $e->getMessage());
+        }
+
+        $categoryNames = collect($categories)->pluck('name')->toArray();
+        
+        // Manual cleanup: first things that depend on categories we want to remove
+        $categoriesToKeep = Category::whereIn('name', $categoryNames)->pluck('id')->toArray();
+        
+        // If we are doing a full restructure, it's safer to just clear items first
+        // especially if item IDs/codes are changing.
+        if (request()->has('full_reset') || true) {
+             // CriteriaItemSeeder will call this, and we want it to be clean.
+             // We delete items associated with any category that isn't in our new list.
+             CriteriaItem::whereNotIn('category_id', $categoriesToKeep)->delete();
+             Category::whereNotIn('name', $categoryNames)->delete();
+        }
 
         foreach ($categories as $category) {
             Category::updateOrCreate(
@@ -35,6 +70,12 @@ class EvaluationCategorySeeder extends Seeder
             );
         }
 
-        $this->command->info("✅ Created " . count($categories) . " evaluation categories.");
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } catch (\Exception $e) {
+            // Log it but continue
+        }
+
+        $this->command->info("✅ Created/Updated " . count($categories) . " master evaluation categories.");
     }
 }
