@@ -12,29 +12,124 @@ class SearchJournals extends Component
     use WithPagination;
 
     public string $search = '';
-    public string $level = '';
     public string $country = '';
     public string $type = 'all'; // all, journals, books
     public string $sortBy = 'score'; // score, title, recent
+    public string $subjectArea = '';
+    public string $frequency = '';
+    public string $accessType = '';
+    public string $apcRange = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'level' => ['except' => ''],
         'country' => ['except' => ''],
         'type' => ['except' => 'all'],
         'sortBy' => ['except' => 'score'],
+        'subjectArea' => ['except' => ''],
+        'frequency' => ['except' => ''],
+        'accessType' => ['except' => ''],
+        'apcRange' => ['except' => ''],
+    ];
+
+    public const SUBJECT_AREAS = [
+        'sciences' => 'Ciencias',
+        'engineering' => 'Ingeniería',
+        'medicine' => 'Medicina',
+        'social_sciences' => 'Ciencias Sociales',
+        'humanities' => 'Humanidades',
+        'arts' => 'Artes',
+        'education' => 'Educación',
+        'law' => 'Derecho',
+        'economics' => 'Economía',
+        'agriculture' => 'Agricultura',
+    ];
+
+    public const FREQUENCIES = [
+        'continuous' => 'Publicación continua',
+        'monthly' => 'Mensual',
+        'bimonthly' => 'Bimestral',
+        'quarterly' => 'Trimestral',
+        'biannual' => 'Semestral',
+        'annual' => 'Anual',
+    ];
+
+    public const ACCESS_TYPES = [
+        'full_oa' => 'Acceso Abierto completo',
+        'hybrid' => 'Híbrido',
+        'restricted' => 'Restringido',
+    ];
+
+    public const APC_RANGES = [
+        'no_apc' => 'No cobra APC',
+        '0-500' => 'Hasta $500 USD',
+        '501-1500' => '$501 – $1,500 USD',
+        '1501+' => 'Más de $1,500 USD',
+    ];
+
+    public const COUNTRIES = [
+        'AR' => 'Argentina',
+        'AU' => 'Australia',
+        'BR' => 'Brasil',
+        'CA' => 'Canadá',
+        'CH' => 'Suiza',
+        'CL' => 'Chile',
+        'CN' => 'China',
+        'CO' => 'Colombia',
+        'CR' => 'Costa Rica',
+        'CU' => 'Cuba',
+        'DE' => 'Alemania',
+        'EC' => 'Ecuador',
+        'EG' => 'Egipto',
+        'ES' => 'España',
+        'FR' => 'Francia',
+        'GB' => 'Reino Unido',
+        'IN' => 'India',
+        'IR' => 'Irán',
+        'IT' => 'Italia',
+        'JP' => 'Japón',
+        'KE' => 'Kenia',
+        'KR' => 'Corea del Sur',
+        'MX' => 'México',
+        'NG' => 'Nigeria',
+        'NL' => 'Países Bajos',
+        'NZ' => 'Nueva Zelanda',
+        'PE' => 'Perú',
+        'PK' => 'Pakistán',
+        'PT' => 'Portugal',
+        'TR' => 'Turquía',
+        'US' => 'Estados Unidos',
+        'UY' => 'Uruguay',
+        'VE' => 'Venezuela',
+        'ZA' => 'Sudáfrica',
     ];
 
     public function updatingSearch() { $this->resetPage(); }
-    public function updatingLevel() { $this->resetPage(); }
     public function updatingCountry() { $this->resetPage(); }
     public function updatingType() { $this->resetPage(); }
     public function updatingSortBy() { $this->resetPage(); }
+    public function updatingSubjectArea() { $this->resetPage(); }
+    public function updatingFrequency() { $this->resetPage(); }
+    public function updatingAccessType() { $this->resetPage(); }
+    public function updatingApcRange() { $this->resetPage(); }
 
     public function resetFilters()
     {
-        $this->reset(['search', 'level', 'country', 'type', 'sortBy']);
+        $this->reset(['search', 'country', 'type', 'sortBy', 'subjectArea', 'frequency', 'accessType', 'apcRange']);
         $this->resetPage();
+    }
+
+    public static function countryName(string $code): string
+    {
+        return self::COUNTRIES[$code] ?? $code;
+    }
+
+    public static function countryFlag(string $code): string
+    {
+        $code = strtoupper($code);
+        if (strlen($code) !== 2) return '';
+        $flag = mb_chr(0x1F1E6 + ord($code[0]) - ord('A'))
+              . mb_chr(0x1F1E6 + ord($code[1]) - ord('A'));
+        return $flag;
     }
 
     public function render()
@@ -43,7 +138,7 @@ class SearchJournals extends Component
         $books = collect();
 
         // Get available countries for filter
-        $countries = Journal::whereIn('status', ['listed', 'evaluated', 'certified'])
+        $countryCodes = Journal::whereIn('status', ['listed', 'evaluated', 'certified'])
             ->where(fn($q) => $q
                 ->where('status', '!=', 'certified')
                 ->orWhereNull('seal_expires_at')
@@ -64,8 +159,17 @@ class SearchJournals extends Component
                     ->orWhere('seal_expires_at', '>', now())
                 )
                 ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
-                ->when($this->level, fn($q) => $q->where('current_level', $this->level))
-                ->when($this->country, fn($q) => $q->where('country_code', $this->country));
+                ->when($this->country, fn($q) => $q->where('country_code', $this->country))
+                ->when($this->subjectArea, fn($q) => $q->whereJsonContains('subject_areas', $this->subjectArea))
+                ->when($this->frequency, fn($q) => $q->where('publication_frequency', $this->frequency))
+                ->when($this->accessType, fn($q) => $q->where('access_type', $this->accessType))
+                ->when($this->apcRange, fn($q) => match ($this->apcRange) {
+                    'no_apc' => $q->where(fn($sub) => $sub->where('charges_apc', false)->orWhereNull('charges_apc')),
+                    '0-500' => $q->where('charges_apc', true)->whereBetween('apc_amount', [0, 500]),
+                    '501-1500' => $q->where('charges_apc', true)->whereBetween('apc_amount', [501, 1500]),
+                    '1501+' => $q->where('charges_apc', true)->where('apc_amount', '>', 1500),
+                    default => $q,
+                });
 
             match ($this->sortBy) {
                 'score' => $journalQuery->orderByDesc('current_score'),
@@ -85,7 +189,8 @@ class SearchJournals extends Component
             $bookQuery = Book::query()
                 ->where('status', 'listed')
                 ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
-                ->when($this->level, fn($q) => $q->where('current_level', $this->level));
+                ->when($this->subjectArea, fn($q) => $q->whereJsonContains('knowledge_areas', $this->subjectArea))
+                ->when($this->accessType, fn($q) => $q->where('access_type', $this->accessType));
 
             match ($this->sortBy) {
                 'score' => $bookQuery->orderByDesc('current_score'),
@@ -100,6 +205,10 @@ class SearchJournals extends Component
                 $books = $bookQuery->get();
             }
         }
+
+        // Counts by type
+        $journalTotal = $this->type === 'books' ? 0 : ($this->type === 'journals' ? $journals->total() : $journals->count());
+        $bookTotal = $this->type === 'journals' ? 0 : ($this->type === 'books' ? $books->total() : $books->count());
 
         // For "all" type, we merge and paginate manually
         if ($this->type === 'all') {
@@ -126,7 +235,9 @@ class SearchJournals extends Component
             return view('livewire.search-journals', [
                 'results' => $paginator,
                 'totalCount' => $total,
-                'countries' => $countries,
+                'journalTotal' => $journalTotal,
+                'bookTotal' => $bookTotal,
+                'countryCodes' => $countryCodes,
                 'isAllType' => true,
             ]);
         }
@@ -142,7 +253,9 @@ class SearchJournals extends Component
         return view('livewire.search-journals', [
             'results' => $paginatedResults,
             'totalCount' => $paginatedResults->total(),
-            'countries' => $countries,
+            'journalTotal' => $journalTotal,
+            'bookTotal' => $bookTotal,
+            'countryCodes' => $countryCodes,
             'isAllType' => false,
         ]);
     }

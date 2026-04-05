@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             EvaluationCategorySeeder::class,
             CriteriaItemSeeder::class,
             ProductSeeder::class,
+            JournalSeeder::class,
+            CmsPostSeeder::class,
         ]);
     }
 

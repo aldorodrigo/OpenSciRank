@@ -55,13 +55,29 @@ Route::get('/privacy', function () {
     return view('privacy');
 })->name('privacy');
 
-Route::get('/blog', function () {
-    return view('blog.index');
+Route::get('/blog', function (Illuminate\Http\Request $request) {
+    $query = App\Models\CmsPost::published()->latest('published_at');
+
+    if ($request->filled('category') && $request->category !== 'todos') {
+        $query->byCategory($request->category);
+    }
+
+    $posts = $query->paginate(12);
+    $featured = App\Models\CmsPost::published()->featured()->latest('published_at')->first();
+
+    return view('blog.index', compact('posts', 'featured'));
 })->name('blog.index');
 
 Route::get('/blog/{slug}', function (string $slug) {
-    // Future: return view('blog.show', compact('post'));
-    return redirect()->route('blog.index');
+    $post = App\Models\CmsPost::published()->where('slug', $slug)->firstOrFail();
+    $related = App\Models\CmsPost::published()
+        ->where('category', $post->category)
+        ->where('id', '!=', $post->id)
+        ->latest('published_at')
+        ->limit(3)
+        ->get();
+
+    return view('blog.show', compact('post', 'related'));
 })->name('blog.show');
 
 Route::get('/journal/{slug}', function (string $slug) {

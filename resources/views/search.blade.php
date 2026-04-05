@@ -9,8 +9,11 @@
 
             {{-- Stats --}}
             @php
-                $journalCount = \App\Models\Journal::where('status', 'indexed')->count();
-                $bookCount = \App\Models\Book::where('status', 'indexed')->count();
+                $journalCount = \App\Models\Journal::whereIn('status', ['listed', 'evaluated', 'certified'])->count();
+                $bookCount = \App\Models\Book::where('status', 'listed')->count();
+                $certifiedCount = \App\Models\Journal::where('status', 'certified')
+                    ->where(fn($q) => $q->whereNull('seal_expires_at')->orWhere('seal_expires_at', '>', now()))
+                    ->count();
             @endphp
             <div class="mt-8 flex flex-wrap items-center justify-center gap-8">
                 <div class="text-center">
@@ -21,6 +24,11 @@
                 <div class="text-center">
                     <div class="text-3xl font-extrabold">{{ number_format($bookCount) }}</div>
                     <div class="mt-1 text-sm text-indigo-200">Libros indexados</div>
+                </div>
+                <div class="h-10 w-px bg-white/20"></div>
+                <div class="text-center">
+                    <div class="text-3xl font-extrabold">{{ number_format($certifiedCount) }}</div>
+                    <div class="mt-1 text-sm text-indigo-200">Revistas Certificadas</div>
                 </div>
                 <div class="h-10 w-px bg-white/20"></div>
                 <div class="text-center">
