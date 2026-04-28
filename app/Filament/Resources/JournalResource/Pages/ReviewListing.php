@@ -42,7 +42,7 @@ class ReviewListing extends Page
 
     public function getTitle(): string | Htmlable
     {
-        return 'Revisar Solicitud de Listado: ' . $this->record->title;
+        return 'Revisar Solicitud de Listado: ' . $this->record->getTranslationWithFallback('title');
     }
 
     public function confirmSave(): void

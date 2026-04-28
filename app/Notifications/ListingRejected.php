@@ -18,20 +18,20 @@ class ListingRejected extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $type = $this->record instanceof \App\Models\Journal ? 'revista' : 'libro';
-        $title = $this->record->title;
+        $type = $this->record instanceof \App\Models\Journal ? __('journal') : __('book');
+        $title = $this->record->getTranslationWithFallback('title');
 
         $mail = (new MailMessage)
-            ->subject("Solicitud de listado rechazada - " . config('app.name'))
-            ->greeting("Hola {$notifiable->name},")
-            ->line("Lamentamos informarte que la solicitud de listado de tu {$type} **\"{$title}\"** no ha sido aprobada.");
+            ->subject(__('Listing request rejected') . ' - ' . config('app.name'))
+            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->line(__('We regret to inform you that the listing request for your :type **":title"** has not been approved.', ['type' => $type, 'title' => $title]));
 
         if ($this->notes) {
-            $mail->line("**Observaciones:** {$this->notes}");
+            $mail->line(__('**Observations:** :notes', ['notes' => $this->notes]));
         }
 
         return $mail
-            ->line('Si tienes dudas, puedes contactarnos desde nuestra página de contacto.')
-            ->action('Contactar', url('/contact'));
+            ->line(__('If you have questions, you can contact us from our contact page.'))
+            ->action(__('Contact'), url('/contact'));
     }
 }

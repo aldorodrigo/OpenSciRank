@@ -10,7 +10,7 @@
             <input
                 type="text"
                 wire:model.live.debounce.300ms="search"
-                placeholder="Buscar revistas científicas o libros académicos..."
+                placeholder="{{ __('Search scientific journals or academic books...') }}"
                 class="w-full rounded-xl border border-gray-300 bg-white py-4 pl-12 pr-4 text-lg shadow-sm transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-indigo-400"
             >
             <div wire:loading wire:target="search" class="absolute inset-y-0 right-0 flex items-center pr-4">
@@ -25,7 +25,7 @@
     {{-- Active Filters Chips --}}
     @if($search || $country || $type !== 'all' || $subjectArea || $frequency || $accessType || $apcRange)
     <div class="mb-6 flex flex-wrap items-center gap-2">
-        <span class="text-sm text-gray-500 dark:text-gray-400">Filtros activos:</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Active filters:') }}</span>
         @if($search)
         <button wire:click="$set('search', '')" class="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700 transition hover:bg-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-400 dark:hover:bg-indigo-900/60">
             "{{ $search }}" <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -33,7 +33,7 @@
         @endif
         @if($type !== 'all')
         <button wire:click="$set('type', 'all')" class="inline-flex items-center gap-1 rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700 transition hover:bg-purple-200 dark:bg-purple-900/40 dark:text-purple-400 dark:hover:bg-purple-900/60">
-            {{ $type === 'journals' ? 'Solo Revistas' : 'Solo Libros' }} <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            {{ $type === 'journals' ? __('Journals only') : __('Books only') }} <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         @endif
         @if($subjectArea)
@@ -63,7 +63,7 @@
         </button>
         @endif
         <button wire:click="resetFilters" class="text-sm font-medium text-gray-500 underline hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-            Limpiar todo
+            {{ __('Clear all') }}
         </button>
     </div>
     @endif
@@ -72,29 +72,29 @@
         {{-- Filters Sidebar --}}
         <aside class="lg:col-span-1">
             <div class="sticky top-24 rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Filtros</h3>
+                <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">{{ __('Filters') }}</h3>
 
                 {{-- Type Filter --}}
                 <div class="mb-5">
-                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Type') }}</label>
                     <select
                         wire:model.live="type"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <option value="all">Todos</option>
-                        <option value="journals">Solo Revistas</option>
-                        <option value="books">Solo Libros</option>
+                        <option value="all">{{ __('All') }}</option>
+                        <option value="journals">{{ __('Journals only') }}</option>
+                        <option value="books">{{ __('Books only') }}</option>
                     </select>
                 </div>
 
                 {{-- Subject Area Filter --}}
                 <div class="mb-5">
-                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Área Temática</label>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Subject Area') }}</label>
                     <select
                         wire:model.live="subjectArea"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <option value="">Todas las áreas</option>
+                        <option value="">{{ __('All areas') }}</option>
                         @foreach(\App\Livewire\SearchJournals::SUBJECT_AREAS as $key => $label)
                             <option value="{{ $key }}">{{ $label }}</option>
                         @endforeach
@@ -104,12 +104,12 @@
                 {{-- Frequency Filter (journals only) --}}
                 @if($type !== 'books')
                 <div class="mb-5">
-                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Frecuencia</label>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Frequency') }}</label>
                     <select
                         wire:model.live="frequency"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <option value="">Todas</option>
+                        <option value="">{{ __('All') }}</option>
                         @foreach(\App\Livewire\SearchJournals::FREQUENCIES as $key => $label)
                             <option value="{{ $key }}">{{ $label }}</option>
                         @endforeach
@@ -119,12 +119,12 @@
 
                 {{-- Access Type Filter --}}
                 <div class="mb-5">
-                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Acceso</label>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Access Type') }}</label>
                     <select
                         wire:model.live="accessType"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <option value="">Todos</option>
+                        <option value="">{{ __('All') }}</option>
                         @foreach(\App\Livewire\SearchJournals::ACCESS_TYPES as $key => $label)
                             <option value="{{ $key }}">{{ $label }}</option>
                         @endforeach
@@ -134,12 +134,12 @@
                 {{-- APC Range Filter (journals only) --}}
                 @if($type !== 'books')
                 <div class="mb-5">
-                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Cobra APC</label>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Charges APC') }}</label>
                     <select
                         wire:model.live="apcRange"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <option value="">Todos</option>
+                        <option value="">{{ __('All') }}</option>
                         @foreach(\App\Livewire\SearchJournals::APC_RANGES as $key => $label)
                             <option value="{{ $key }}">{{ $label }}</option>
                         @endforeach
@@ -150,12 +150,12 @@
                 {{-- Country Filter --}}
                 @if($countryCodes->count() > 0)
                 <div class="mb-5">
-                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">País</label>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Country') }}</label>
                     <select
                         wire:model.live="country"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <option value="">Todos los países</option>
+                        <option value="">{{ __('All countries') }}</option>
                         @foreach($countryCodes as $c)
                             <option value="{{ $c }}">{{ \App\Livewire\SearchJournals::countryFlag($c) }} {{ \App\Livewire\SearchJournals::countryName($c) }}</option>
                         @endforeach
@@ -165,14 +165,14 @@
 
                 {{-- Sort --}}
                 <div class="mb-5">
-                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Ordenar por</label>
+                    <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Sort by') }}</label>
                     <select
                         wire:model.live="sortBy"
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
-                        <option value="score">Mayor puntaje</option>
-                        <option value="title">Nombre A-Z</option>
-                        <option value="recent">Más recientes</option>
+                        <option value="score">{{ __('Highest score') }}</option>
+                        <option value="title">{{ __('Name A-Z') }}</option>
+                        <option value="recent">{{ __('Most recent') }}</option>
                     </select>
                 </div>
 
@@ -182,7 +182,7 @@
                     class="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                     style="cursor:pointer;"
                 >
-                    Limpiar Filtros
+                    {{ __('Clear Filters') }}
                 </button>
             </div>
         </aside>
@@ -192,12 +192,12 @@
             {{-- Results count --}}
             <div class="mb-6 flex items-center justify-between">
                 <p class="text-sm text-gray-600 dark:text-gray-400">
-                    <span class="font-semibold text-gray-900 dark:text-white">{{ $totalCount }}</span> publicaciones
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ $totalCount }}</span> {{ __('publications') }}
                     @if($type === 'all' && $journalTotal > 0 && $bookTotal > 0)
                         <span class="text-gray-400 dark:text-gray-500">·</span>
-                        {{ $journalTotal }} {{ $journalTotal === 1 ? 'revista' : 'revistas' }}
+                        {{ $journalTotal }} {{ $journalTotal === 1 ? __('journal') : __('journals') }}
                         <span class="text-gray-400 dark:text-gray-500">·</span>
-                        {{ $bookTotal }} {{ $bookTotal === 1 ? 'libro' : 'libros' }}
+                        {{ $bookTotal }} {{ $bookTotal === 1 ? __('book') : __('books') }}
                     @endif
                 </p>
             </div>
@@ -210,7 +210,7 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                         </svg>
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Buscando...</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Searching...') }}</span>
                     </div>
                 </div>
 
@@ -219,12 +219,12 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No se encontraron publicaciones</h3>
-                        <p class="mt-2 text-gray-500 dark:text-gray-400">Intenta ajustar tus filtros o busca con otros términos.</p>
+                        <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{{ __('No publications found') }}</h3>
+                        <p class="mt-2 text-gray-500 dark:text-gray-400">{{ __('Try adjusting your filters or search with other terms.') }}</p>
                         @if($search || $country || $type !== 'all' || $subjectArea || $frequency || $accessType || $apcRange)
                         <button wire:click="resetFilters" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            Limpiar filtros
+                            {{ __('Clear filters') }}
                         </button>
                         @endif
                     </div>
@@ -243,7 +243,7 @@
                             @endphp
                             <a href="{{ $link }}" class="group flex flex-col overflow-hidden rounded-xl bg-white shadow-md transition hover:shadow-xl hover:-translate-y-0.5 dark:bg-gray-900 {{ $hasSeal ? 'seal-ribbon-wrapper' : '' }}">
                                 @if($hasSeal)
-                                    <div class="seal-ribbon">SELLO ✓</div>
+                                    <div class="seal-ribbon">{{ __('SEAL ✓') }}</div>
                                 @endif
                                 <div class="flex flex-1 flex-col p-5">
                                     {{-- Header: Logo + badges --}}
@@ -270,11 +270,11 @@
                                             <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
                                                 {{ $itemType === 'journal' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' }}
                                             ">
-                                                {{ $itemType === 'journal' ? 'Revista' : 'Libro' }}
+                                                {{ $itemType === 'journal' ? __('Journal') : __('Book') }}
                                             </span>
                                             @if($hasSeal)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                                                ✅ Sello
+                                                ✅ {{ __('Seal') }}
                                             </span>
                                             @endif
                                         </div>
@@ -282,12 +282,17 @@
 
                                     {{-- Title --}}
                                     <h3 class="mb-1.5 text-base font-semibold leading-snug text-gray-900 transition group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
-                                        {{ $item->title }}
+                                        {{ $item->getTranslationWithFallback('title') }}
                                     </h3>
 
                                     {{-- Institution --}}
-                                    @if($item->publishing_institution ?? $item->publisher ?? null)
-                                        <p class="mb-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{{ $item->publishing_institution ?? $item->publisher }}</p>
+                                    @php
+                                        $itemInstitution = ($itemType === 'journal' && $item->publishing_institution)
+                                            ? $item->getTranslationWithFallback('publishing_institution')
+                                            : ($item->publisher ?? null);
+                                    @endphp
+                                    @if($itemInstitution)
+                                        <p class="mb-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{{ $itemInstitution }}</p>
                                     @endif
 
                                     {{-- Country --}}
@@ -321,7 +326,7 @@
                                     </div>
                                     @else
                                     <div class="mt-3">
-                                        <span class="text-xs text-gray-400 dark:text-gray-500">Sin evaluar</span>
+                                        <span class="text-xs text-gray-400 dark:text-gray-500">{{ __('Not evaluated') }}</span>
                                     </div>
                                     @endif
                                 </div>
@@ -330,9 +335,40 @@
                     </div>
 
                     {{-- Pagination --}}
-                    <div class="mt-8">
-                        {{ $results->links() }}
+                    @if($results->lastPage() > 1)
+                    @php
+                        $cp = $results->currentPage();
+                        $lp = $results->lastPage();
+                        $pages = collect();
+                        $pages = $pages->merge(range(1, min(3, $lp)));
+                        $pages = $pages->merge(range(max(1, $cp - 1), min($lp, $cp + 1)));
+                        $pages = $pages->merge(range(max(1, $lp - 2), $lp));
+                        $pages = $pages->unique()->sort()->values();
+                        $btnBase = 'inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition';
+                        $btnActive = 'border-indigo-500 bg-indigo-500 text-white';
+                        $btnNormal = 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700';
+                        $btnDisabled = 'border-gray-200 bg-white text-gray-300 cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-600';
+                    @endphp
+                    <div class="mt-8 flex flex-wrap items-center justify-center gap-1">
+                        <button wire:click="gotoPage(1)" {{ $cp <= 1 ? 'disabled' : '' }}
+                            class="{{ $btnBase }} {{ $cp <= 1 ? $btnDisabled : $btnNormal }}">&laquo;&laquo;</button>
+                        <button wire:click="previousPage" {{ $cp <= 1 ? 'disabled' : '' }}
+                            class="{{ $btnBase }} {{ $cp <= 1 ? $btnDisabled : $btnNormal }}">&laquo;</button>
+
+                        @foreach($pages as $idx => $i)
+                            @if($idx > 0 && $i - $pages[$idx - 1] > 1)
+                                <span class="px-1 text-sm text-gray-400">...</span>
+                            @endif
+                            <button wire:click="gotoPage({{ $i }})"
+                                class="{{ $btnBase }} {{ $cp === $i ? $btnActive : $btnNormal }}">{{ $i }}</button>
+                        @endforeach
+
+                        <button wire:click="nextPage" {{ $cp >= $lp ? 'disabled' : '' }}
+                            class="{{ $btnBase }} {{ $cp >= $lp ? $btnDisabled : $btnNormal }}">&raquo;</button>
+                        <button wire:click="gotoPage({{ $lp }})" {{ $cp >= $lp ? 'disabled' : '' }}
+                            class="{{ $btnBase }} {{ $cp >= $lp ? $btnDisabled : $btnNormal }}">&raquo;&raquo;</button>
                     </div>
+                    @endif
                 @endif
             </div>
         </div>

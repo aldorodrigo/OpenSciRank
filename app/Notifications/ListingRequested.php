@@ -18,16 +18,16 @@ class ListingRequested extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $type = $this->record instanceof \App\Models\Journal ? 'revista' : 'libro';
-        $title = $this->record->title;
+        $type = $this->record instanceof \App\Models\Journal ? __('journal') : __('book');
+        $title = $this->record->getTranslationWithFallback('title');
 
         return (new MailMessage)
-            ->subject("Solicitud de listado recibida - " . config('app.name'))
-            ->greeting("Hola {$notifiable->name},")
-            ->line("Hemos recibido tu solicitud para listar tu {$type} **\"{$title}\"** en nuestra plataforma.")
-            ->line("Nuestro equipo revisará la información proporcionada y te notificaremos cuando se complete la revisión.")
-            ->line("El proceso de revisión toma habitualmente entre 3 y 5 días hábiles.")
-            ->action('Ver Mi Panel', url('/app'))
-            ->line('Gracias por confiar en nosotros.');
+            ->subject(__('Listing request received') . ' - ' . config('app.name'))
+            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->line(__('We have received your request to list your :type **":title"** on our platform.', ['type' => $type, 'title' => $title]))
+            ->line(__('Our team will review the provided information and notify you when the review is complete.'))
+            ->line(__('The review process usually takes between 3 and 5 business days.'))
+            ->action(__('View My Dashboard'), url('/app'))
+            ->line(__('Thank you for trusting us.'));
     }
 }

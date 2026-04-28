@@ -18,9 +18,12 @@ class BookSubmissionWizard extends Component
 
     public ?Book $book = null;
 
+    // Idioma primario para campos traducibles
+    public string $primary_locale = 'es';
+
     // Step 1: Identificación y Editorial
-    public $title = '';
-    public $subtitle = '';
+    public array $title = ['es' => '', 'en' => '', 'pt' => ''];
+    public array $subtitle = ['es' => '', 'en' => '', 'pt' => ''];
     public $book_type = '';
     public $primary_language = '';
     public $secondary_language = '';
@@ -32,27 +35,27 @@ class BookSubmissionWizard extends Component
     public $publisher = '';
     public $publisher_country = '';
     public $publisher_city = '';
-    public $collection_series = '';
-    public $sponsor_entity = '';
+    public array $collection_series = ['es' => '', 'en' => '', 'pt' => ''];
+    public array $sponsor_entity = ['es' => '', 'en' => '', 'pt' => ''];
     public $total_pages = '';
     public $format = '';
     public $exact_publication_date = '';
 
     // Step 2: Autores y Contenido Académico
     public $authors = [['full_name' => '', 'role' => '', 'affiliation' => '', 'country_code' => '', 'orcid' => '']];
-    public $abstract = '';
+    public array $abstract = ['es' => '', 'en' => '', 'pt' => ''];
     public $keywords = [];
     public $knowledge_areas = [];
     public $main_discipline = '';
     public $secondary_discipline = '';
     public $academic_level = '';
-    public $table_of_contents = '';
+    public array $table_of_contents = ['es' => '', 'en' => '', 'pt' => ''];
 
     // Step 3: Acceso y Modelo de Negocio
     public $is_open_access = false;
     public $access_type = '';
     public $license_type = '';
-    public $rights_holder = '';
+    public array $rights_holder = ['es' => '', 'en' => '', 'pt' => ''];
     public $allows_reuse = false;
     public $allows_commercial_use = false;
     public $publication_model = '';
@@ -70,7 +73,7 @@ class BookSubmissionWizard extends Component
     public $is_indexed = false;
     public $indexes = [];
     public $citation_count = null;
-    public $available_metrics = '';
+    public array $available_metrics = ['es' => '', 'en' => '', 'pt' => ''];
 
     // Step 5: Archivos
     public $main_file;
@@ -84,10 +87,17 @@ class BookSubmissionWizard extends Component
 
     public function mount(?Book $book = null)
     {
+        // Default primary_locale based on app locale
+        $appLocale = app()->getLocale();
+        $this->primary_locale = in_array($appLocale, ['es', 'en', 'pt'], true) ? $appLocale : 'es';
+
+        $emptyLocales = ['es' => '', 'en' => '', 'pt' => ''];
+
         if ($book && $book->exists) {
             $this->book = $book;
-            $this->title = $book->title ?? '';
-            $this->subtitle = $book->subtitle ?? '';
+            $this->primary_locale = $book->primary_locale ?? 'es';
+            $this->title = array_merge($emptyLocales, $book->getTranslations('title') ?? []);
+            $this->subtitle = array_merge($emptyLocales, $book->getTranslations('subtitle') ?? []);
             $this->book_type = $book->book_type ?? '';
             $this->primary_language = $book->primary_language ?? '';
             $this->secondary_language = $book->secondary_language ?? '';
@@ -99,24 +109,24 @@ class BookSubmissionWizard extends Component
             $this->publisher = $book->publisher ?? '';
             $this->publisher_country = $book->publisher_country ?? '';
             $this->publisher_city = $book->publisher_city ?? '';
-            $this->collection_series = $book->collection_series ?? '';
-            $this->sponsor_entity = $book->sponsor_entity ?? '';
+            $this->collection_series = array_merge($emptyLocales, $book->getTranslations('collection_series') ?? []);
+            $this->sponsor_entity = array_merge($emptyLocales, $book->getTranslations('sponsor_entity') ?? []);
             $this->total_pages = $book->total_pages ?? '';
             $this->format = $book->format ?? '';
             $this->exact_publication_date = $book->exact_publication_date ?? '';
             
-            $this->abstract = $book->abstract ?? '';
+            $this->abstract = array_merge($emptyLocales, $book->getTranslations('abstract') ?? []);
             $this->keywords = is_array($book->keywords) ? $book->keywords : json_decode($book->keywords ?? '[]', true);
             $this->knowledge_areas = is_array($book->knowledge_areas) ? $book->knowledge_areas : json_decode($book->knowledge_areas ?? '[]', true);
             $this->main_discipline = $book->main_discipline ?? '';
             $this->secondary_discipline = $book->secondary_discipline ?? '';
             $this->academic_level = $book->academic_level ?? '';
-            $this->table_of_contents = $book->table_of_contents ?? '';
+            $this->table_of_contents = array_merge($emptyLocales, $book->getTranslations('table_of_contents') ?? []);
 
             $this->is_open_access = $book->is_open_access ?? false;
             $this->access_type = $book->access_type ?? '';
             $this->license_type = $book->license_type ?? '';
-            $this->rights_holder = $book->rights_holder ?? '';
+            $this->rights_holder = array_merge($emptyLocales, $book->getTranslations('rights_holder') ?? []);
             $this->allows_reuse = $book->allows_reuse ?? false;
             $this->allows_commercial_use = $book->allows_commercial_use ?? false;
 
@@ -135,7 +145,7 @@ class BookSubmissionWizard extends Component
             $this->is_indexed = $book->is_indexed ?? false;
             $this->indexes = is_array($book->indexes) ? $book->indexes : json_decode($book->indexes ?? '[]', true);
             $this->citation_count = $book->citation_count;
-            $this->available_metrics = $book->available_metrics ?? '';
+            $this->available_metrics = array_merge($emptyLocales, $book->getTranslations('available_metrics') ?? []);
 
             if ($book->authors()->count() > 0) {
                 $this->authors = $book->authors->map(fn($author) => [
@@ -322,9 +332,10 @@ class BookSubmissionWizard extends Component
 
     protected function validateCurrentStep()
     {
+        $primary = $this->primary_locale;
         $rules = match($this->currentStep) {
             1 => [
-                'title' => 'required|min:3|max:255',
+                "title.{$primary}" => 'required|string|min:3|max:255',
                 'book_type' => 'required|string',
                 'primary_language' => 'required|string',
                 'publisher' => 'required|string|max:255',
@@ -334,7 +345,7 @@ class BookSubmissionWizard extends Component
                 'authors' => 'required|array|min:1',
                 'authors.*.full_name' => 'required|string|max:255',
                 'authors.*.role' => 'required|string',
-                'abstract' => 'required|min:100|max:5000',
+                "abstract.{$primary}" => 'required|string|min:100|max:5000',
                 'keywords' => 'required|array|min:3',
                 'knowledge_areas' => 'required|array|min:1',
             ],
@@ -364,11 +375,15 @@ class BookSubmissionWizard extends Component
 
     public function saveDraft()
     {
+        // Filtra entradas vacías de los arrays de traducciones
+        $cleanTranslations = fn(array $arr) => array_filter($arr, fn($v) => filled($v));
+
         $data = [
+            'primary_locale' => $this->primary_locale,
             // Step 1
-            'title' => $this->title,
-            'slug' => Str::slug($this->title) . '-' . Str::random(6),
-            'subtitle' => $this->subtitle ?: null,
+            'title' => $cleanTranslations($this->title),
+            'slug' => Str::slug($this->title[$this->primary_locale] ?? '') . '-' . Str::random(6),
+            'subtitle' => $cleanTranslations($this->subtitle),
             'book_type' => $this->book_type ?: null,
             'primary_language' => $this->primary_language ?: null,
             'secondary_language' => $this->secondary_language ?: null,
@@ -382,26 +397,26 @@ class BookSubmissionWizard extends Component
             'publisher' => $this->publisher ?: null,
             'publisher_country' => $this->publisher_country ?: null,
             'publisher_city' => $this->publisher_city ?: null,
-            'collection_series' => $this->collection_series ?: null,
-            'sponsor_entity' => $this->sponsor_entity ?: null,
+            'collection_series' => $cleanTranslations($this->collection_series),
+            'sponsor_entity' => $cleanTranslations($this->sponsor_entity),
             'total_pages' => $this->total_pages,
             'format' => $this->format ?: null,
             'exact_publication_date' => $this->exact_publication_date ?: null,
 
             // Step 4
-            'abstract' => $this->abstract ?: null,
+            'abstract' => $cleanTranslations($this->abstract),
             'keywords' => $this->keywords,
             'knowledge_areas' => $this->knowledge_areas,
             'main_discipline' => $this->main_discipline ?: null,
             'secondary_discipline' => $this->secondary_discipline ?: null,
             'academic_level' => $this->academic_level ?: null,
-            'table_of_contents' => $this->table_of_contents ?: null,
+            'table_of_contents' => $cleanTranslations($this->table_of_contents),
 
             // Step 5
             'is_open_access' => $this->is_open_access,
             'access_type' => $this->is_open_access ? $this->access_type : null,
             'license_type' => $this->license_type ?: null,
-            'rights_holder' => $this->rights_holder ?: null,
+            'rights_holder' => $cleanTranslations($this->rights_holder),
             'allows_reuse' => $this->allows_reuse,
             'allows_commercial_use' => $this->allows_commercial_use,
 
@@ -423,7 +438,7 @@ class BookSubmissionWizard extends Component
             'is_indexed' => $this->is_indexed,
             'indexes' => $this->indexes,
             'citation_count' => $this->citation_count,
-            'available_metrics' => $this->available_metrics ?: null,
+            'available_metrics' => $cleanTranslations($this->available_metrics),
 
             // Step 9 - metadata
             'download_url' => $this->download_url ?: null,
@@ -520,7 +535,7 @@ class BookSubmissionWizard extends Component
         return view('livewire.book-submission-wizard', [
             'countries' => Countries::forSelect(),
         ])->layout('components.layouts.app', [
-            'title' => $this->book ? 'Editar Libro - Editorial Standards Platform' : 'Registrar Libro - Editorial Standards Platform',
+            'title' => ($this->book ? __('Edit Book') : __('Register Book')) . ' - Editorial Standards Platform',
         ]);
     }
 }

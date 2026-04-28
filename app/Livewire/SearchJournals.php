@@ -223,13 +223,12 @@ class SearchJournals extends Component
                 default => $merged->sortByDesc(fn($r) => $r['item']->current_score ?? 0),
             };
 
-            $page = request()->get('page', 1);
+            $page = $this->getPage();
             $perPage = 12;
             $total = $merged->count();
             $items = $merged->slice(($page - 1) * $perPage, $perPage)->values();
             $paginator = new \Illuminate\Pagination\LengthAwarePaginator($items, $total, $perPage, $page, [
-                'path' => request()->url(),
-                'query' => request()->query(),
+                'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
             ]);
 
             return view('livewire.search-journals', [

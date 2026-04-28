@@ -7,17 +7,40 @@
 
         {{-- SEO Meta Tags --}}
         <title>{{ $title ?? config('app.name', 'Editorial Standards Platform') }}</title>
-        <meta name="description" content="{{ $description ?? 'Editorial Standards Platform - Plataforma global de evaluación editorial y visibilidad para revistas científicas y libros académicos.' }}">
-        <meta name="keywords" content="{{ $keywords ?? 'evaluación editorial, revistas científicas, libros académicos, estándares editoriales, editorial standards seal' }}">
+        <meta name="description" content="{{ $description ?? __('Editorial Standards Platform - Global platform for editorial evaluation and visibility for scientific journals and academic books.') }}">
+        <meta name="keywords" content="{{ $keywords ?? __('editorial evaluation, scientific journals, academic books, editorial standards, editorial standards seal') }}">
         <meta name="author" content="Editorial Standards Platform">
         <meta name="robots" content="index, follow">
         <link rel="canonical" href="{{ url()->current() }}">
+
+        {{-- Hreflang alternate links --}}
+        @php
+            $defaultLocale = config('app.fallback_locale', 'en');
+            $currentPath = request()->path();
+            $pathWithoutLocale = $currentPath;
+            foreach (config('app.available_locales', []) as $loc) {
+                if ($loc !== $defaultLocale && (str_starts_with($currentPath, $loc . '/') || $currentPath === $loc)) {
+                    $pathWithoutLocale = $currentPath === $loc ? '' : substr($currentPath, strlen($loc) + 1);
+                    break;
+                }
+            }
+        @endphp
+        @foreach (config('app.available_locales', ['en']) as $hrefLocale)
+            @php
+                $hrefPath = $hrefLocale === $defaultLocale
+                    ? '/' . ltrim($pathWithoutLocale, '/')
+                    : '/' . $hrefLocale . '/' . ltrim($pathWithoutLocale, '/');
+                $hrefPath = rtrim($hrefPath, '/') ?: '/';
+            @endphp
+            <link rel="alternate" hreflang="{{ $hrefLocale }}" href="{{ url($hrefPath) }}">
+        @endforeach
+        <link rel="alternate" hreflang="x-default" href="{{ url('/' . ltrim($pathWithoutLocale, '/')) }}">
 
         {{-- Open Graph / Facebook --}}
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
         <meta property="og:title" content="{{ $title ?? config('app.name', 'Editorial Standards Platform') }}">
-        <meta property="og:description" content="{{ $description ?? 'Plataforma global de evaluación editorial y visibilidad para revistas científicas.' }}">
+        <meta property="og:description" content="{{ $description ?? __('Global platform for editorial evaluation and visibility for scientific journals.') }}">
         <meta property="og:image" content="{{ $ogImage ?? asset('images/og-default.png') }}">
         <meta property="og:locale" content="{{ app()->getLocale() }}">
         <meta property="og:site_name" content="Editorial Standards Platform">
@@ -26,7 +49,7 @@
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:url" content="{{ url()->current() }}">
         <meta name="twitter:title" content="{{ $title ?? config('app.name', 'Editorial Standards Platform') }}">
-        <meta name="twitter:description" content="{{ $description ?? 'Plataforma global de evaluación editorial y visibilidad para revistas científicas.' }}">
+        <meta name="twitter:description" content="{{ $description ?? __('Global platform for editorial evaluation and visibility for scientific journals.') }}">
         <meta name="twitter:image" content="{{ $ogImage ?? asset('images/og-default.png') }}">
 
         {{-- Favicon --}}
@@ -71,7 +94,7 @@
                                 </svg>
                                 Editorial Standards
                             </a>
-                            <p class="mt-4 max-w-xs text-sm text-gray-600 dark:text-gray-400">Plataforma global de evaluación editorial y visibilidad para revistas científicas y libros académicos.</p>
+                            <p class="mt-4 max-w-xs text-sm text-gray-600 dark:text-gray-400">{{ __('Global platform for editorial evaluation and visibility for scientific journals and academic books.') }}</p>
                             <div class="mt-5 flex items-center gap-3">
                                 <a href="https://twitter.com/editstandards" target="_blank" rel="noopener" class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-200 text-gray-600 transition hover:bg-indigo-100 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-indigo-900/40 dark:hover:text-indigo-400" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:#e5e7eb;" aria-label="Twitter/X">
                                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -82,44 +105,44 @@
                             </div>
                         </div>
 
-                        {{-- Plataforma --}}
+                        {{-- Platform --}}
                         <div>
-                            <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">Plataforma</h4>
+                            <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Platform') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="/search" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Revistas Científicas</a></li>
-                                <li><a href="/search?type=books" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Libros Académicos</a></li>
-                                <li><a href="/blog" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Blog</a></li>
+                                <li><a href="{{ locale_path('/search') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Scientific Journals') }}</a></li>
+                                <li><a href="{{ locale_path('/search?type=books') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Academic Books') }}</a></li>
+                                <li><a href="{{ locale_path('/blog') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Blog</a></li>
                             </ul>
                         </div>
 
-                        {{-- Servicios --}}
+                        {{-- Services --}}
                         <div>
-                            <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">Servicios</h4>
+                            <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Services') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="/methodology" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Metodología</a></li>
-                                <li><a href="/pricing" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Evaluación Editorial</a></li>
-                                <li><a href="/register" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Registrar Revista</a></li>
-                                <li><a href="/contact" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Para Instituciones</a></li>
+                                <li><a href="{{ locale_path('/methodology') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Methodology') }}</a></li>
+                                <li><a href="{{ locale_path('/pricing') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Editorial Evaluation') }}</a></li>
+                                <li><a href="{{ locale_path('/register') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Register Journal') }}</a></li>
+                                <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('For Institutions') }}</a></li>
                             </ul>
                         </div>
 
-                        {{-- Compañía --}}
+                        {{-- Company --}}
                         <div>
-                            <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">Compañía</h4>
+                            <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Company') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="/about" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Nosotros</a></li>
-                                <li><a href="/contact" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Contacto</a></li>
-                                <li><a href="/terms" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Términos de Uso</a></li>
-                                <li><a href="/privacy" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Privacidad</a></li>
+                                <li><a href="{{ locale_path('/about') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('About Us') }}</a></li>
+                                <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Contact') }}</a></li>
+                                <li><a href="{{ locale_path('/terms') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Terms of Use') }}</a></li>
+                                <li><a href="{{ locale_path('/privacy') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Privacy') }}</a></li>
                             </ul>
                         </div>
                     </div>
 
                     {{-- Bottom bar --}}
                     <div class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 sm:flex-row dark:border-gray-800" style="margin-top:3rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid #e5e7eb;padding-top:2rem;">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">&copy; {{ date('Y') }} Editorial Standards Platform. Todos los derechos reservados.</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">&copy; {{ date('Y') }} Editorial Standards Platform. {{ __('All rights reserved.') }}</p>
                         <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
-                            <span>Evaluación editorial transparente</span>
+                            <span>{{ __('Transparent editorial evaluation') }}</span>
                             <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
                                 <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3"/></svg>
                                 Editorial Standards Seal

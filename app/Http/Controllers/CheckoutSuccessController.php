@@ -24,8 +24,8 @@ class CheckoutSuccessController extends Controller
         $result = $this->verifyAndSyncPayment($request->query('session_id'), $journal);
 
         return view('checkout-success', [
-            'type' => 'revista',
-            'title' => $journal->title,
+            'type' => __('journal'),
+            'title' => $journal->getTranslationWithFallback('title'),
             'paid' => $result['paid'],
             'isRenewal' => $result['is_renewal'] ?? false,
             'sealExpiresAt' => $journal->fresh()->seal_expires_at,
@@ -41,8 +41,8 @@ class CheckoutSuccessController extends Controller
         $result = $this->verifyAndSyncPayment($request->query('session_id'), $book);
 
         return view('checkout-success', [
-            'type' => 'libro',
-            'title' => $book->title,
+            'type' => __('book'),
+            'title' => $book->getTranslationWithFallback('title'),
             'paid' => $result['paid'],
             'isRenewal' => false,
             'sealExpiresAt' => null,

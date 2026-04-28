@@ -1,11 +1,11 @@
-<x-layouts.app title="Contacto - Editorial Standards Platform" description="Contáctanos para más información sobre indexación de revistas y libros científicos.">
+<x-layouts.app :title="__('Contact - Editorial Standards Platform')" :description="__('Contact us for more information about scientific journal and book indexing.')">
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
     <section class="bg-gradient-to-br from-indigo-600 to-purple-600 py-16 text-white">
         <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl font-bold sm:text-5xl">Contacto</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-indigo-100">¿Tienes preguntas sobre la indexación? Estamos aquí para ayudarte.</p>
+            <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Contact') }}</h1>
+            <p class="mx-auto mt-4 max-w-2xl text-indigo-100">{{ __('Do you have questions about indexing? We are here to help you.') }}</p>
         </div>
     </section>
 
@@ -15,8 +15,8 @@
                 {{-- Contact Info --}}
                 <div class="space-y-8">
                     <div>
-                        <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Información de Contacto</h3>
-                        <p class="text-gray-600 dark:text-gray-400">Responderemos tu consulta dentro de 24-48 horas hábiles.</p>
+                        <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">{{ __('Contact Information') }}</h3>
+                        <p class="text-gray-600 dark:text-gray-400">{{ __('We will respond to your inquiry within 24-48 business hours.') }}</p>
                     </div>
 
                     <div class="space-y-6">
@@ -39,8 +39,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-900 dark:text-white">Horario</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Lunes a Viernes, 9:00 - 18:00 (GMT-3)</p>
+                                <p class="font-medium text-gray-900 dark:text-white">{{ __('Business Hours') }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Monday to Friday, 9:00 - 18:00 (GMT-3)') }}</p>
                             </div>
                         </div>
 
@@ -51,8 +51,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-900 dark:text-white">Plan Institucional</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">¿Eres universidad o grupo editorial? Escríbenos para un plan personalizado.</p>
+                                <p class="font-medium text-gray-900 dark:text-white">{{ __('Institutional Plan') }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Are you a university or publishing group? Write to us for a personalized plan.') }}</p>
                             </div>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
                 {{-- Contact Form --}}
                 <div class="lg:col-span-2">
                     <div class="rounded-xl bg-white p-8 shadow-lg dark:bg-gray-900">
-                        <h3 class="mb-6 text-xl font-bold text-gray-900 dark:text-white">Envíanos un mensaje</h3>
+                        <h3 class="mb-6 text-xl font-bold text-gray-900 dark:text-white">{{ __('Send us a message') }}</h3>
                         <livewire:contact-form />
                     </div>
                 </div>

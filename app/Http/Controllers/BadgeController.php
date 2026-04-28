@@ -47,7 +47,7 @@ class BadgeController extends Controller
 
         if (!$isActive) {
             return redirect()->route('app.dashboard')
-                ->with('error', 'El badge solo está disponible para revistas con sello vigente.');
+                ->with('error', __('The badge is only available for journals with an active seal.'));
         }
 
         return view('badge.show', compact('journal'));

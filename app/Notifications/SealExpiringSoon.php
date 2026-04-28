@@ -20,12 +20,12 @@ class SealExpiringSoon extends Notification
         $daysLeft = now()->diffInDays($this->journal->seal_expires_at);
 
         return (new MailMessage)
-            ->subject('Tu Editorial Standards Seal vence pronto - ' . config('app.name'))
-            ->greeting("Hola {$notifiable->name},")
-            ->line("El Editorial Standards Seal de tu revista **\"{$this->journal->title}\"** vence en **{$daysLeft} días** (el {$this->journal->seal_expires_at->format('d/m/Y')}).")
-            ->line('Una vez vencido, el sello dejará de ser válido y no podrá mostrarse en tu sitio web.')
-            ->line('Renueva ahora por 2 años y mantén tu certificación vigente.')
-            ->action('Renovar Sello', url("/app/renew/{$this->journal->id}"))
-            ->line('Gracias por confiar en ' . config('app.name') . '.');
+            ->subject(__('Your Editorial Standards Seal is expiring soon') . ' - ' . config('app.name'))
+            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->line(__('The Editorial Standards Seal of your journal **":title"** expires in **:days days** (on :date).', ['title' => $this->journal->getTranslationWithFallback('title'), 'days' => $daysLeft, 'date' => $this->journal->seal_expires_at->format('d/m/Y')]))
+            ->line(__('Once expired, the seal will no longer be valid and cannot be displayed on your website.'))
+            ->line(__('Renew now for 2 years and keep your certification active.'))
+            ->action(__('Renew Seal'), url("/app/renew/{$this->journal->id}"))
+            ->line(__('Thank you for trusting :app.', ['app' => config('app.name')]));
     }
 }

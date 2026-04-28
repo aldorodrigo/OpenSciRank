@@ -32,10 +32,10 @@
 
                         <div>
                             <h1 class="text-2xl font-black tracking-tight text-white lg:text-4xl">
-                                {{ $record->title }}
+                                {{ $record->getTranslationWithFallback('title') }}
                             </h1>
-                            @if($record->abbreviated_name)
-                                <p class="mt-1 text-sm font-medium text-slate-400">{{ $record->abbreviated_name }}</p>
+                            @if($record->getTranslationWithFallback('abbreviated_name'))
+                                <p class="mt-1 text-sm font-medium text-slate-400">{{ $record->getTranslationWithFallback('abbreviated_name') }}</p>
                             @endif
                         </div>
 
@@ -73,10 +73,11 @@
         {{-- JOURNAL DETAIL PANEL (expanded by default for listing review) --}}
         <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             {{-- Description --}}
-            @if($record->description)
+            @php $journalDescription = $record->getTranslationWithFallback('description'); @endphp
+            @if($journalDescription)
                 <div class="border-b border-slate-100 p-6 dark:border-slate-800">
                     <h4 class="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Descripción Editorial</h4>
-                    <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ $record->description }}</p>
+                    <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ $journalDescription }}</p>
                 </div>
             @endif
 
@@ -229,7 +230,7 @@
                                 <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                             </div>
                             <h3 class="text-2xl font-black tracking-tight">¿Confirmar Revisión?</h3>
-                            <p class="mt-2 text-sm font-medium text-slate-400">{{ $record->title }}</p>
+                            <p class="mt-2 text-sm font-medium text-slate-400">{{ $record->getTranslationWithFallback('title') }}</p>
                         </div>
                     </div>
 

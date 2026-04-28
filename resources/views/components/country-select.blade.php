@@ -1,12 +1,13 @@
 @props([
     'name' => 'country_code',
     'value' => '',
-    'placeholder' => 'Buscar país...',
+    'placeholder' => '',
     'wire' => null,
 ])
 
 @php
     $selectedName = $value ? \App\Support\Countries::getName($value) : '';
+    $placeholder = $placeholder ?: __('Search country...');
 @endphp
 
 <div
@@ -89,7 +90,7 @@
                 @keydown.escape="open = false"
                 x-ref="searchInput"
                 x-init="$watch('open', (value) => { if (value) $nextTick(() => $refs.searchInput.focus()) })"
-                placeholder="Escribe para buscar..."
+                placeholder="{{ __('Type to search...') }}"
                 class="w-full rounded-md border-0 bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 dark:bg-gray-900 dark:text-white"
             >
         </div>
@@ -111,7 +112,7 @@
             </template>
             <template x-if="filtered.length === 0">
                 <li class="px-4 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-                    No se encontraron países
+                    {{ __('No countries found') }}
                 </li>
             </template>
         </ul>

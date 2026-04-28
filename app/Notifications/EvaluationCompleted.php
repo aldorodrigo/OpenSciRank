@@ -20,29 +20,29 @@ class EvaluationCompleted extends Notification
     {
         $score = number_format($this->journal->current_score, 1);
         $isCertified = $this->journal->status === 'certified';
-        $status = $isCertified ? 'Certificada' : 'Evaluada';
+        $status = $isCertified ? __('Certified') : __('Evaluated');
 
         $mail = (new MailMessage)
-            ->subject("Evaluación completada: {$status} - " . config('app.name'))
-            ->greeting("Hola {$notifiable->name},")
-            ->line("La evaluación de tu revista **\"{$this->journal->title}\"** ha finalizado.")
-            ->line("**Resultado:** {$status}")
-            ->line("**Puntuación:** {$score}%");
+            ->subject(__('Evaluation completed: :status', ['status' => $status]) . ' - ' . config('app.name'))
+            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->line(__('The evaluation of your journal **":title"** has been completed.', ['title' => $this->journal->getTranslationWithFallback('title')]))
+            ->line(__('**Result:** :status', ['status' => $status]))
+            ->line(__('**Score:** :score%', ['score' => $score]));
 
         if ($this->journal->evaluation_notes) {
-            $mail->line("**Observaciones:**")
+            $mail->line(__('**Observations:**'))
                 ->line($this->journal->evaluation_notes);
         }
 
         if ($isCertified && $this->journal->seal_expires_at) {
             $mail->line('---')
-                ->line("Tu revista ha obtenido el **Editorial Standards Seal**, vigente hasta el **{$this->journal->seal_expires_at->format('d/m/Y')}**.")
-                ->line('Ahora puedes obtener el sello editorial embebible para mostrar en tu sitio web.')
-                ->action('Obtener Sello Editorial', url("/app/badge/{$this->journal->id}"))
-                ->line('Gracias por participar en nuestro proceso de evaluación.');
+                ->line(__('Your journal has received the **Editorial Standards Seal**, valid until **:date**.', ['date' => $this->journal->seal_expires_at->format('d/m/Y')]))
+                ->line(__('You can now get the embeddable editorial seal to display on your website.'))
+                ->action(__('Get Editorial Seal'), url("/app/badge/{$this->journal->id}"))
+                ->line(__('Thank you for participating in our evaluation process.'));
         } else {
-            $mail->action('Ver Detalles', url('/app'))
-                ->line('Gracias por participar en nuestro proceso de evaluación.');
+            $mail->action(__('View Details'), url('/app'))
+                ->line(__('Thank you for participating in our evaluation process.'));
         }
 
         return $mail;

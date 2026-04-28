@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CriteriaItemSeeder::class,
             ProductSeeder::class,
             JournalSeeder::class,
+            CmsCategorySeeder::class,
             CmsPostSeeder::class,
         ]);
     }

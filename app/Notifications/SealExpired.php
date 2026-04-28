@@ -18,15 +18,15 @@ class SealExpired extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Tu Editorial Standards Seal ha vencido - ' . config('app.name'))
-            ->greeting("Hola {$notifiable->name},")
-            ->line("El Editorial Standards Seal de tu revista **\"{$this->journal->title}\"** ha vencido.")
-            ->line('Esto significa que:')
-            ->line('- El sello ya no es válido y no debe mostrarse en tu sitio web.')
-            ->line('- Tu revista mantiene su puntuación y nivel de evaluación.')
-            ->line('- Puedes renovar el sello en cualquier momento.')
-            ->line('Renueva por 2 años y recupera tu certificación editorial.')
-            ->action('Renovar Sello', url("/app/renew/{$this->journal->id}"))
-            ->line('Gracias por confiar en ' . config('app.name') . '.');
+            ->subject(__('Your Editorial Standards Seal has expired') . ' - ' . config('app.name'))
+            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->line(__('The Editorial Standards Seal of your journal **":title"** has expired.', ['title' => $this->journal->getTranslationWithFallback('title')]))
+            ->line(__('This means that:'))
+            ->line(__('- The seal is no longer valid and should not be displayed on your website.'))
+            ->line(__('- Your journal retains its score and evaluation level.'))
+            ->line(__('- You can renew the seal at any time.'))
+            ->line(__('Renew for 2 years and recover your editorial certification.'))
+            ->action(__('Renew Seal'), url("/app/renew/{$this->journal->id}"))
+            ->line(__('Thank you for trusting :app.', ['app' => config('app.name')]));
     }
 }

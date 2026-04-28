@@ -6,11 +6,21 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Spatie\Translatable\HasTranslations;
 
 class CmsPost extends Model
 {
+    use HasTranslations;
+
+    public array $translatable = [
+        'title',
+        'excerpt',
+        'content',
+    ];
+
     protected $fillable = [
         'user_id',
+        'primary_locale',
         'title',
         'slug',
         'content',
@@ -29,38 +39,18 @@ class CmsPost extends Model
         'published_at' => 'datetime',
     ];
 
-    public const CATEGORIES = [
-        'guias' => [
-            'label' => 'Guías',
-            'color' => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400',
-        ],
-        'ciencia-abierta' => [
-            'label' => 'Ciencia Abierta',
-            'color' => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
-        ],
-        'indexacion' => [
-            'label' => 'Indexación',
-            'color' => 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-400',
-        ],
-        'criterios' => [
-            'label' => 'Criterios',
-            'color' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
-        ],
-        'casos-de-exito' => [
-            'label' => 'Casos de Éxito',
-            'color' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400',
-        ],
-        'novedades' => [
-            'label' => 'Novedades',
-            'color' => 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-400',
-        ],
-    ];
-
     protected static function booted(): void
     {
         static::creating(function (CmsPost $post) {
             if (empty($post->slug)) {
-                $slug = Str::slug($post->title);
+                $primary = $post->primary_locale ?: 'es';
+                $title = $post->getTranslation('title', $primary, false)
+                    ?: $post->getTranslation('title', app()->getLocale(), false)
+                    ?: '';
+                $slug = Str::slug($title);
+                if (empty($slug)) {
+                    $slug = 'post';
+                }
                 $original = $slug;
                 $count = 1;
                 while (static::where('slug', $slug)->exists()) {
@@ -69,6 +59,15 @@ class CmsPost extends Model
                 $post->slug = $slug;
             }
         });
+    }
+
+    public function getTranslationWithFallback(string $field): string
+    {
+        $value = $this->getTranslation($field, app()->getLocale(), false);
+        if (!empty($value)) {
+            return $value;
+        }
+        return $this->getTranslation($field, $this->primary_locale ?? 'es', false) ?? '';
     }
 
     public function author(): BelongsTo
@@ -91,13 +90,18 @@ class CmsPost extends Model
         return $query->where('category', $category);
     }
 
+    public function categoryRel(): BelongsTo
+    {
+        return $this->belongsTo(CmsCategory::class, 'category', 'slug');
+    }
+
     public function getCatLabelAttribute(): string
     {
-        return self::CATEGORIES[$this->category]['label'] ?? $this->category ?? '';
+        return $this->categoryRel?->getTranslationWithFallback('name') ?? '';
     }
 
     public function getCatColorAttribute(): string
     {
-        return self::CATEGORIES[$this->category]['color'] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+        return $this->categoryRel?->color ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
     }
 }

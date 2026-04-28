@@ -4,10 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Translatable\HasTranslations;
 
 class Book extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasTranslations;
+
+    public array $translatable = [
+        'title',
+        'subtitle',
+        'abstract',
+        'collection_series',
+        'sponsor_entity',
+        'table_of_contents',
+        'rights_holder',
+        'available_metrics',
+    ];
+
     protected $guarded = [];
 
     protected $casts = [
@@ -41,6 +54,15 @@ class Book extends Model
         'submission_date' => 'date',
         'approval_date' => 'date',
     ];
+
+    public function getTranslationWithFallback(string $field): string
+    {
+        $value = $this->getTranslation($field, app()->getLocale(), false);
+        if (!empty($value)) {
+            return $value;
+        }
+        return $this->getTranslation($field, $this->primary_locale ?? 'es', false) ?? '';
+    }
 
     public function user()
     {

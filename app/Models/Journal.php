@@ -5,12 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Translatable\HasTranslations;
 
 class Journal extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasTranslations;
+
+    public array $translatable = [
+        'title',
+        'abbreviated_name',
+        'description',
+        'copyright_policy',
+        'publishing_institution',
+        'editor_name',
+    ];
+
     protected $fillable = [
         'user_id',
+        'primary_locale',
         'title',
         'slug',
         'abbreviated_name',
@@ -110,6 +122,15 @@ class Journal extends Model
         'seal_notified_at' => 'datetime',
         'oai_last_harvested_at' => 'datetime',
     ];
+
+    public function getTranslationWithFallback(string $field): string
+    {
+        $value = $this->getTranslation($field, app()->getLocale(), false);
+        if (!empty($value)) {
+            return $value;
+        }
+        return $this->getTranslation($field, $this->primary_locale ?? 'es', false) ?? '';
+    }
 
     public function user()
     {
