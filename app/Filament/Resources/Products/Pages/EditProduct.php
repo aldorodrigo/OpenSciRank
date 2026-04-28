@@ -16,4 +16,31 @@ class EditProduct extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $translatable = $this->record->translatable ?? [];
+
+        foreach ($translatable as $field) {
+            $data[$field] = $this->record->getTranslations($field);
+        }
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $translatable = $this->record->translatable ?? [];
+
+        foreach ($translatable as $field) {
+            if (isset($data[$field]) && is_array($data[$field])) {
+                $data[$field] = array_filter(
+                    $data[$field],
+                    fn ($value) => filled($value)
+                );
+            }
+        }
+
+        return $data;
+    }
 }

@@ -18,7 +18,7 @@ class PaymentConfirmed extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $item = $this->payment->product?->name ?? __('Service');
+        $item = $this->payment->product?->getTranslationWithFallback('name') ?: __('Service');
 
         return (new MailMessage)
             ->subject(__('Payment confirmed') . ' - ' . config('app.name'))

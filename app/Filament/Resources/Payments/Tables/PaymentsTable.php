@@ -21,6 +21,7 @@ class PaymentsTable
                     ->sortable(),
                 TextColumn::make('product.name')
                     ->label('Producto')
+                    ->formatStateUsing(fn ($record): string => $record->product?->getTranslationWithFallback('name') ?? '')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('amount')

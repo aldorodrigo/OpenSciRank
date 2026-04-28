@@ -27,7 +27,7 @@
                                 ">
 
                                 <div class="mb-4 flex items-center justify-between">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $product->name }}</h3>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $product->getTranslationWithFallback('name') }}</h3>
                                     <div class="flex h-5 w-5 items-center justify-center rounded-full border-2
                                         @if($selectedPlan === $product->id) border-indigo-600 bg-indigo-600
                                         @else border-gray-300 dark:border-gray-600
@@ -47,7 +47,7 @@
                                 </div>
 
                                 <div class="prose prose-sm dark:prose-invert">
-                                    {!! $product->description !!}
+                                    {!! $product->getTranslationWithFallback('description') !!}
                                 </div>
                             </div>
                         @endforeach
@@ -90,7 +90,7 @@
 
                     <div class="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
                         <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 dark:text-gray-400">{{ $this->products->firstWhere('id', $selectedPlan)?->name ?? __('Select a plan') }}</span>
+                            <span class="text-gray-600 dark:text-gray-400">{{ $this->products->firstWhere('id', $selectedPlan)?->getTranslationWithFallback('name') ?? __('Select a plan') }}</span>
                             <span class="font-medium text-gray-900 dark:text-white">${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }}</span>
                         </div>
                         <div class="flex justify-between text-sm">
