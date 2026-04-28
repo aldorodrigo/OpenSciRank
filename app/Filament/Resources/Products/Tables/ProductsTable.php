@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use App\Models\Product;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -17,6 +18,11 @@ class ProductsTable
             ->columns([
                 TextColumn::make('name')
                     ->label('Nombre del Producto')
+                    ->formatStateUsing(fn (Product $record): string => $record->getTranslationWithFallback('name'))
+                    ->searchable(),
+                TextColumn::make('slug')
+                    ->label('Slug')
+                    ->toggleable()
                     ->searchable(),
                 TextColumn::make('price')
                     ->label('Precio Base')

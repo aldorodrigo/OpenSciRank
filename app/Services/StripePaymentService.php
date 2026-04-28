@@ -33,8 +33,9 @@ class StripePaymentService
                 'price_data' => [
                     'currency' => strtolower($product->currency),
                     'product_data' => [
-                        'name' => $product->name,
-                        'description' => $product->description ?? "Plan {$product->name} - {$payable->title}",
+                        'name' => $product->getTranslationWithFallback('name'),
+                        'description' => $product->getTranslationWithFallback('description')
+                            ?: "Plan {$product->getTranslationWithFallback('name')} - {$payable->getTranslationWithFallback('title')}",
                     ],
                     'unit_amount' => (int) ($product->price * 100), // Stripe uses cents
                 ],
