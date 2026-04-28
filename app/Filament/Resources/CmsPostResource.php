@@ -3,10 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CmsPostResource\Pages;
+use App\Models\CmsCategory;
 use App\Models\CmsPost;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -30,39 +33,91 @@ class CmsPostResource extends Resource
             ->schema([
                 Section::make('Contenido')
                     ->schema([
-                        Forms\Components\TextInput::make('title')
-                            ->label('Título')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $state, Forms\Set $set) {
-                                $set('slug', Str::slug($state));
-                            }),
+                        Tabs::make('title_tabs')
+                            ->columnSpanFull()
+                            ->tabs([
+                                Tab::make('ES')->schema([
+                                    Forms\Components\TextInput::make('title.es')
+                                        ->label('Título (ES)')
+                                        ->maxLength(255)
+                                        ->live(onBlur: true)
+                                        ->afterStateUpdated(function (?string $state, Forms\Set $set) {
+                                            if (filled($state)) {
+                                                $set('slug', Str::slug($state));
+                                            }
+                                        }),
+                                ]),
+                                Tab::make('EN')->schema([
+                                    Forms\Components\TextInput::make('title.en')
+                                        ->label('Title (EN)')
+                                        ->maxLength(255),
+                                ]),
+                                Tab::make('PT')->schema([
+                                    Forms\Components\TextInput::make('title.pt')
+                                        ->label('Título (PT)')
+                                        ->maxLength(255),
+                                ]),
+                            ]),
+
+                        Forms\Components\Select::make('primary_locale')
+                            ->label('Idioma principal')
+                            ->options(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'])
+                            ->default('es')
+                            ->required(),
 
                         Forms\Components\TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
 
-                        Forms\Components\Textarea::make('excerpt')
-                            ->label('Extracto')
-                            ->required()
-                            ->maxLength(500)
-                            ->rows(3)
-                            ->columnSpanFull(),
+                        Tabs::make('excerpt_tabs')
+                            ->columnSpanFull()
+                            ->tabs([
+                                Tab::make('ES')->schema([
+                                    Forms\Components\Textarea::make('excerpt.es')
+                                        ->label('Extracto (ES)')
+                                        ->maxLength(500)
+                                        ->rows(3),
+                                ]),
+                                Tab::make('EN')->schema([
+                                    Forms\Components\Textarea::make('excerpt.en')
+                                        ->label('Excerpt (EN)')
+                                        ->maxLength(500)
+                                        ->rows(3),
+                                ]),
+                                Tab::make('PT')->schema([
+                                    Forms\Components\Textarea::make('excerpt.pt')
+                                        ->label('Extrato (PT)')
+                                        ->maxLength(500)
+                                        ->rows(3),
+                                ]),
+                            ]),
 
-                        Forms\Components\RichEditor::make('content')
-                            ->label('Contenido')
-                            ->required()
-                            ->columnSpanFull(),
+                        Tabs::make('content_tabs')
+                            ->columnSpanFull()
+                            ->tabs([
+                                Tab::make('ES')->schema([
+                                    Forms\Components\RichEditor::make('content.es')
+                                        ->label('Contenido (ES)'),
+                                ]),
+                                Tab::make('EN')->schema([
+                                    Forms\Components\RichEditor::make('content.en')
+                                        ->label('Content (EN)'),
+                                ]),
+                                Tab::make('PT')->schema([
+                                    Forms\Components\RichEditor::make('content.pt')
+                                        ->label('Conteúdo (PT)'),
+                                ]),
+                            ]),
                     ])
                     ->columns(2),
 
                 Section::make('Configuración')
                     ->schema([
                         Forms\Components\Select::make('category')
-                            ->label('Categoría')
-                            ->options(collect(CmsPost::CATEGORIES)->mapWithKeys(fn ($cat, $key) => [$key => $cat['label']]))
+                            ->label(__('Categoría'))
+                            ->options(fn () => CmsCategory::ordered()->get()->mapWithKeys(fn ($c) => [$c->slug => $c->getTranslationWithFallback('name')])->toArray())
+                            ->searchable()
                             ->required(),
 
                         Forms\Components\Select::make('emoji')
@@ -121,13 +176,11 @@ class CmsPostResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('Título')
-                    ->searchable()
-                    ->limit(50),
+                    ->formatStateUsing(fn (CmsPost $record): string => Str::limit($record->getTranslationWithFallback('title'), 50))
+                    ->searchable(),
 
-                Tables\Columns\TextColumn::make('category')
-                    ->label('Categoría')
-                    ->badge()
-                    ->formatStateUsing(fn (?string $state) => CmsPost::CATEGORIES[$state]['label'] ?? $state),
+                Tables\Columns\TextColumn::make('cat_label')
+                    ->label(__('Categoría')),
 
                 Tables\Columns\IconColumn::make('is_featured')
                     ->label('Destacado')
@@ -146,7 +199,7 @@ class CmsPostResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
                     ->label('Categoría')
-                    ->options(collect(CmsPost::CATEGORIES)->mapWithKeys(fn ($cat, $key) => [$key => $cat['label']])),
+                    ->options(fn () => CmsCategory::ordered()->get()->mapWithKeys(fn ($c) => [$c->slug => $c->getTranslationWithFallback('name')])->toArray()),
 
                 Tables\Filters\TernaryFilter::make('published')
                     ->label('Estado')

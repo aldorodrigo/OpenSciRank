@@ -18,14 +18,14 @@ class ListingApproved extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $type = $this->record instanceof \App\Models\Journal ? 'revista' : 'libro';
-        $title = $this->record->title;
+        $type = $this->record instanceof \App\Models\Journal ? __('journal') : __('book');
+        $title = $this->record->getTranslationWithFallback('title');
 
         return (new MailMessage)
-            ->subject("Tu {$type} ha sido listada - " . config('app.name'))
-            ->greeting("Hola {$notifiable->name},")
-            ->line("Nos complace informarte que tu {$type} **\"{$title}\"** ha sido aprobada y listada en nuestra plataforma.")
-            ->action('Ver Mi Panel', url('/app'))
-            ->line('Gracias por ser parte de nuestra comunidad.');
+            ->subject(__('Your :type has been listed', ['type' => $type]) . ' - ' . config('app.name'))
+            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->line(__('We are pleased to inform you that your :type **":title"** has been approved and listed on our platform.', ['type' => $type, 'title' => $title]))
+            ->action(__('View My Dashboard'), url('/app'))
+            ->line(__('Thank you for being part of our community.'));
     }
 }

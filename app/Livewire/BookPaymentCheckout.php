@@ -61,7 +61,7 @@ class BookPaymentCheckout extends Component
             return redirect($session->url);
         } catch (\Exception $e) {
             $this->processing = false;
-            session()->flash('error', 'Error al procesar el pago. Por favor, inténtalo de nuevo.');
+            session()->flash('error', __('Error processing the payment. Please try again.'));
             \Illuminate\Support\Facades\Log::error('Stripe checkout error', ['error' => $e->getMessage()]);
         }
     }
@@ -69,7 +69,7 @@ class BookPaymentCheckout extends Component
     public function render()
     {
         return view('livewire.book-payment-checkout')->layout('components.layouts.app', [
-            'title' => 'Pago - ' . $this->book->title . ' - Editorial Standards Platform',
+            'title' => __('Payment') . ' - ' . $this->book->getTranslationWithFallback('title') . ' - Editorial Standards Platform',
         ]);
     }
 }

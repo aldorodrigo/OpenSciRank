@@ -54,7 +54,7 @@ class EvaluateJournal extends Page
 
     public function getTitle(): string | Htmlable
     {
-        return 'Evaluar: ' . $this->record->title;
+        return 'Evaluar: ' . $this->record->getTranslationWithFallback('title');
     }
 
     public function getCriteriaByCategory(): Collection

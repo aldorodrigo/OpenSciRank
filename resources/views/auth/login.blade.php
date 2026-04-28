@@ -1,4 +1,4 @@
-<x-layouts.app title="Iniciar Sesión - Editorial Standards Platform">
+<x-layouts.app :title="__('Sign In - Editorial Standards Platform')">
     <x-slot:header>true</x-slot:header>
 
     <div class="flex min-h-[80vh] items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4 py-12 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
@@ -16,8 +16,8 @@
             {{-- Card --}}
             <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-900">
                 <div class="mb-6 text-center">
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">¡Bienvenido!</h1>
-                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Ingresa tus credenciales</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Welcome!') }}</h1>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Enter your credentials') }}</p>
                 </div>
 
                 @if(session('status'))
@@ -30,9 +30,9 @@
                     @csrf
 
                     <div>
-                        <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Correo electrónico</label>
+                        <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Email address') }}</label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
-                            placeholder="tu@email.com"
+                            placeholder="your@email.com"
                             class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         @error('email')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -40,7 +40,7 @@
                     </div>
 
                     <div x-data="{ show: false }">
-                        <label for="password" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
+                        <label for="password" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Password') }}</label>
                         <div class="relative">
                             <input :type="show ? 'text' : 'password'" id="password" name="password" required
                                 placeholder="••••••••"
@@ -67,21 +67,21 @@
                     <div class="flex items-center justify-between">
                         <label class="flex cursor-pointer items-center">
                             <input type="checkbox" name="remember" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Recordarme</span>
+                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
                         </label>
                         <a href="{{ route('password.request') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-                            ¿Olvidaste tu contraseña?
+                            {{ __('Forgot your password?') }}
                         </a>
                     </div>
 
                     <button type="submit" class="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white shadow-lg transition hover:bg-indigo-500">
-                        Iniciar Sesión
+                        {{ __('Sign In') }}
                     </button>
                 </form>
 
                 <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                    ¿No tienes cuenta?
-                    <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">Regístrate</a>
+                    {{ __("Don't have an account?") }}
+                    <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ __('Sign Up') }}</a>
                 </p>
             </div>
         </div>

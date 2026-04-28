@@ -1,14 +1,14 @@
-<x-layouts.app title="Ranking Global - Editorial Standards Platform" description="Ranking de las mejores revistas científicas y libros académicos indexados en Editorial Standards Platform, ordenados por puntaje de evaluación.">
+<x-layouts.app :title="__('Global Ranking') . ' - Editorial Standards Platform'" :description="__('Ranking of the best scientific journals and academic books indexed in Editorial Standards Platform, sorted by evaluation score.')">
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
     <section class="bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 py-16 text-white">
         <div class="container mx-auto px-4 text-center">
             <div class="mb-4 inline-flex items-center rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-                🏆 Actualizado en tiempo real
+                🏆 {{ __('Updated in real time') }}
             </div>
-            <h1 class="text-4xl font-bold sm:text-5xl">Ranking Global</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-orange-100">Las publicaciones científicas con mayor calidad editorial según la evaluación de Editorial Standards Platform.</p>
+            <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Global Ranking') }}</h1>
+            <p class="mx-auto mt-4 max-w-2xl text-orange-100">{{ __('Scientific publications with the highest editorial quality according to the evaluation of Editorial Standards Platform.') }}</p>
         </div>
     </section>
 
@@ -17,13 +17,13 @@
         <div class="container mx-auto px-4 py-4">
             <div class="flex flex-wrap items-center gap-4">
                 <div class="flex flex-wrap gap-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 self-center">Tipo:</span>
-                    <button class="rounded-full bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white">Revistas</button>
-                    <button class="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-300">Libros</button>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 self-center">{{ __('Type:') }}</span>
+                    <button class="rounded-full bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white">{{ __('Journals') }}</button>
+                    <button class="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-300">{{ __('Books') }}</button>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 self-center">Nivel:</span>
-                    @foreach(['Todos', 'A', 'B', 'C'] as $i => $level)
+                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 self-center">{{ __('Level:') }}</span>
+                    @foreach([__('All'), 'A', 'B', 'C'] as $i => $level)
                     <button class="rounded-full {{ $i === 0 ? 'bg-gray-800 text-white dark:bg-white dark:text-gray-900' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300' }} px-4 py-1.5 text-sm font-medium transition">
                         {{ $level }}
                     </button>
@@ -52,21 +52,14 @@
                     <div class="flex flex-col items-center bg-white py-6 text-center dark:bg-gray-900 {{ $pos === 0 ? 'bg-amber-50 dark:bg-amber-900/10' : '' }}">
                         <div class="mb-2 text-3xl">{{ $pos === 0 ? '🥇' : ($pos === 1 ? '🥈' : '🥉') }}</div>
                         @if($j->logo)
-                            <img src="{{ Storage::url($j->logo) }}" alt="{{ $j->title }}" class="h-10 w-10 rounded-lg object-cover">
+                            <img src="{{ Storage::url($j->logo) }}" alt="{{ $j->getTranslationWithFallback('title') }}" class="h-10 w-10 rounded-lg object-cover">
                         @else
                             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                             </div>
                         @endif
-                        <p class="mt-2 px-4 text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">{{ $j->title }}</p>
+                        <p class="mt-2 px-4 text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">{{ $j->getTranslationWithFallback('title') }}</p>
                         <span class="mt-2 text-xl font-bold text-indigo-600 dark:text-indigo-400">{{ $j->current_score }}%</span>
-                        @if($j->current_level)
-                        <span class="mt-1 rounded-full px-2 py-0.5 text-xs font-bold
-                            @if($j->current_level === 'A') bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400
-                            @elseif($j->current_level === 'B') bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-400
-                            @else bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400
-                            @endif">Nivel {{ $j->current_level }}</span>
-                        @endif
                     </div>
                     @endforeach
                 </div>
@@ -78,10 +71,10 @@
                         <thead>
                             <tr class="border-b border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">#</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Publicación</th>
-                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Nivel</th>
-                                <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Puntaje</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">País</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Publication') }}</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Level') }}</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Score') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Country') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
@@ -100,16 +93,16 @@
                                 <td class="px-6 py-4">
                                     <a href="{{ route('journal.show', $j->slug) }}" class="flex items-center gap-3">
                                         @if($j->logo)
-                                            <img src="{{ Storage::url($j->logo) }}" alt="{{ $j->title }}" class="h-9 w-9 rounded-lg object-cover">
+                                            <img src="{{ Storage::url($j->logo) }}" alt="{{ $j->getTranslationWithFallback('title') }}" class="h-9 w-9 rounded-lg object-cover">
                                         @else
                                             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                             </div>
                                         @endif
                                         <div>
-                                            <p class="font-semibold text-gray-900 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">{{ $j->title }}</p>
+                                            <p class="font-semibold text-gray-900 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">{{ $j->getTranslationWithFallback('title') }}</p>
                                             @if($j->publishing_institution)
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $j->publishing_institution }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $j->getTranslationWithFallback('publishing_institution') }}</p>
                                             @endif
                                         </div>
                                     </a>
@@ -151,10 +144,10 @@
             {{-- Empty state --}}
             <div class="py-24 text-center">
                 <div class="mx-auto mb-6 text-6xl">🏆</div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">El ranking está en construcción</h2>
-                <p class="mx-auto mt-3 max-w-md text-gray-600 dark:text-gray-400">Aún no hay publicaciones indexadas. Sé el primero en registrar tu revista.</p>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('The ranking is under construction') }}</h2>
+                <p class="mx-auto mt-3 max-w-md text-gray-600 dark:text-gray-400">{{ __('There are no indexed publications yet. Be the first to register your journal.') }}</p>
                 <a href="/register" class="mt-8 inline-flex rounded-lg bg-indigo-600 px-8 py-3 font-semibold text-white transition hover:bg-indigo-500">
-                    Registrar mi Revista
+                    {{ __('Register my Journal') }}
                 </a>
             </div>
             @endif
@@ -164,10 +157,10 @@
     {{-- CTA --}}
     <section class="bg-white py-16 dark:bg-gray-900">
         <div class="container mx-auto px-4 text-center">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">¿Quieres aparecer en el ranking?</h2>
-            <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">Registra tu revista o libro y obtén una evaluación profesional basada en +50 criterios internacionales.</p>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Do you want to appear in the ranking?') }}</h2>
+            <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">{{ __('Register your journal or book and get a professional evaluation based on +50 international criteria.') }}</p>
             <a href="/register" class="mt-8 inline-flex items-center rounded-lg bg-indigo-600 px-8 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-500">
-                Indexar mi Publicación — Gratis
+                {{ __('Index my Publication — Free') }}
             </a>
         </div>
     </section>

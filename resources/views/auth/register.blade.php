@@ -1,4 +1,4 @@
-<x-layouts.app title="Registrarse - Editorial Standards Platform">
+<x-layouts.app :title="__('Sign Up - Editorial Standards Platform')">
     <x-slot:header>true</x-slot:header>
 
     <div class="flex min-h-[80vh] items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 px-4 py-12 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
@@ -16,17 +16,17 @@
             {{-- Card --}}
             <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-900">
                 <div class="mb-6 text-center">
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Crea tu cuenta</h1>
-                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Únete a Editorial Standards Platform</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Create your account') }}</h1>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Join Editorial Standards Platform') }}</p>
                 </div>
 
                 <form method="POST" action="{{ route('register') }}" class="space-y-5">
                     @csrf
 
                     <div>
-                        <label for="name" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre completo</label>
+                        <label for="name" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Full name') }}</label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus
-                            placeholder="Tu nombre"
+                            placeholder="{{ __('Your name') }}"
                             class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         @error('name')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -34,9 +34,9 @@
                     </div>
 
                     <div>
-                        <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Correo electrónico</label>
+                        <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Email address') }}</label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                            placeholder="tu@email.com"
+                            placeholder="your@email.com"
                             class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         @error('email')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -44,9 +44,9 @@
                     </div>
 
                     <div>
-                        <label for="password" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
+                        <label for="password" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Password') }}</label>
                         <input type="password" id="password" name="password" required
-                            placeholder="Mínimo 8 caracteres"
+                            placeholder="{{ __('Minimum 8 characters') }}"
                             class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         @error('password')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
@@ -54,20 +54,20 @@
                     </div>
 
                     <div>
-                        <label for="password_confirmation" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar contraseña</label>
+                        <label for="password_confirmation" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Confirm password') }}</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" required
-                            placeholder="Repite tu contraseña"
+                            placeholder="{{ __('Repeat your password') }}"
                             class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
 
                     <button type="submit" class="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white shadow-lg transition hover:bg-indigo-500">
-                        Crear cuenta
+                        {{ __('Create account') }}
                     </button>
                 </form>
 
                 <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                    ¿Ya tienes cuenta?
-                    <a href="{{ route('login') }}" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">Inicia sesión</a>
+                    {{ __('Already have an account?') }}
+                    <a href="{{ route('login') }}" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ __('Sign In') }}</a>
                 </p>
             </div>
         </div>

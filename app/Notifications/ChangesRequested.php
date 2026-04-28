@@ -22,22 +22,22 @@ class ChangesRequested extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $type = $this->record instanceof \App\Models\Journal ? 'revista' : 'libro';
-        $title = $this->record->title;
-        $contextLabel = $this->context === 'evaluation' ? 'evaluación' : 'listado';
+        $type = $this->record instanceof \App\Models\Journal ? __('journal') : __('book');
+        $title = $this->record->getTranslationWithFallback('title');
+        $contextLabel = $this->context === 'evaluation' ? __('evaluation') : __('listing');
 
         $mail = (new MailMessage)
-            ->subject("Correcciones solicitadas ({$contextLabel}) - " . config('app.name'))
-            ->greeting("Hola {$notifiable->name},")
-            ->line("Se han solicitado correcciones en tu {$type} **\"{$title}\"** como parte del proceso de {$contextLabel}.");
+            ->subject(__('Corrections requested (:context)', ['context' => $contextLabel]) . ' - ' . config('app.name'))
+            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->line(__('Corrections have been requested for your :type **":title"** as part of the :context process.', ['type' => $type, 'title' => $title, 'context' => $contextLabel]));
 
         if ($this->notes) {
-            $mail->line("**Observaciones del revisor:**")
+            $mail->line(__("**Reviewer's observations:**"))
                 ->line($this->notes);
         }
 
         return $mail
-            ->action('Revisar y Corregir', url('/app'))
-            ->line('Por favor, realiza las correcciones indicadas y reenvía tu solicitud.');
+            ->action(__('Review and Correct'), url('/app'))
+            ->line(__('Please make the indicated corrections and resubmit your request.'));
     }
 }

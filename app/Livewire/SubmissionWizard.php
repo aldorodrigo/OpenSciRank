@@ -28,10 +28,13 @@ class SubmissionWizard extends Component
     public ?bool $has_embargo = null;
     public ?int $embargo_months = null;
 
+    // Idioma primario para campos traducibles
+    public string $primary_locale = 'es';
+
     // Step 2: About the Journal
-    public string $title = '';
-    public string $abbreviated_name = '';
-    public string $description = '';
+    public array $title = ['es' => '', 'en' => '', 'pt' => ''];
+    public array $abbreviated_name = ['es' => '', 'en' => '', 'pt' => ''];
+    public array $description = ['es' => '', 'en' => '', 'pt' => ''];
     public array $subject_areas = [];
     public array $target_audience = [];
     public array $publication_languages = [];
@@ -45,13 +48,13 @@ class SubmissionWizard extends Component
     public string $license_url = '';
     public ?bool $authors_retain_copyright = null;
     public ?bool $allows_commercial_reuse = null;
-    public string $copyright_policy = '';
+    public array $copyright_policy = ['es' => '', 'en' => '', 'pt' => ''];
     public ?bool $licenses_visible_in_articles = null;
 
     // Step 4: Editorial
-    public string $publishing_institution = '';
+    public array $publishing_institution = ['es' => '', 'en' => '', 'pt' => ''];
     public string $country_code = '';
-    public string $editor_name = '';
+    public array $editor_name = ['es' => '', 'en' => '', 'pt' => ''];
     public string $institutional_email = '';
     public ?bool $editorial_board_visible = null;
     public string $editorial_board_url = '';
@@ -161,6 +164,10 @@ class SubmissionWizard extends Component
 
     public function mount(?Journal $journal = null)
     {
+        // Default primary_locale based on app locale
+        $appLocale = app()->getLocale();
+        $this->primary_locale = in_array($appLocale, ['es', 'en', 'pt'], true) ? $appLocale : 'es';
+
         if ($journal && $journal->exists) {
             $this->journal = $journal;
             $this->loadFromJournal($journal);
@@ -178,10 +185,14 @@ class SubmissionWizard extends Component
         $this->has_embargo = $journal->has_embargo;
         $this->embargo_months = $journal->embargo_months;
 
-        // Step 2
-        $this->title = $journal->title ?? '';
-        $this->abbreviated_name = $journal->abbreviated_name ?? '';
-        $this->description = $journal->description ?? '';
+        // Idioma primario
+        $this->primary_locale = $journal->primary_locale ?? 'es';
+
+        // Step 2 (campos traducibles hidratados desde JSON)
+        $emptyLocales = ['es' => '', 'en' => '', 'pt' => ''];
+        $this->title = array_merge($emptyLocales, $journal->getTranslations('title') ?? []);
+        $this->abbreviated_name = array_merge($emptyLocales, $journal->getTranslations('abbreviated_name') ?? []);
+        $this->description = array_merge($emptyLocales, $journal->getTranslations('description') ?? []);
         $this->subject_areas = $journal->subject_areas ?? [];
         $this->target_audience = $journal->target_audience ?? [];
         $this->publication_languages = $journal->publication_languages ?? [];
@@ -194,13 +205,13 @@ class SubmissionWizard extends Component
         $this->license_url = $journal->license_url ?? '';
         $this->authors_retain_copyright = $journal->authors_retain_copyright;
         $this->allows_commercial_reuse = $journal->allows_commercial_reuse;
-        $this->copyright_policy = $journal->copyright_policy ?? '';
+        $this->copyright_policy = array_merge($emptyLocales, $journal->getTranslations('copyright_policy') ?? []);
         $this->licenses_visible_in_articles = $journal->licenses_visible_in_articles;
 
         // Step 4
-        $this->publishing_institution = $journal->publishing_institution ?? '';
+        $this->publishing_institution = array_merge($emptyLocales, $journal->getTranslations('publishing_institution') ?? []);
         $this->country_code = $journal->country_code ?? '';
-        $this->editor_name = $journal->editor_name ?? '';
+        $this->editor_name = array_merge($emptyLocales, $journal->getTranslations('editor_name') ?? []);
         $this->institutional_email = $journal->institutional_email ?? '';
         $this->editorial_board_visible = $journal->editorial_board_visible;
         $this->editorial_board_url = $journal->editorial_board_url ?? '';
@@ -257,10 +268,11 @@ class SubmissionWizard extends Component
 
     protected function validateCurrentStep()
     {
+        $primary = $this->primary_locale;
         $rules = match($this->currentStep) {
             1 => [
-                'title' => 'required|min:3|max:255',
-                'description' => 'required|min:50|max:2000',
+                "title.{$primary}" => 'required|string|min:3|max:255',
+                "description.{$primary}" => 'required|string|min:50|max:2000',
                 'subject_areas' => 'required|array|min:1',
                 'publication_languages' => 'required|array|min:1',
                 'url' => 'required|url',
@@ -275,9 +287,9 @@ class SubmissionWizard extends Component
                 'authors_retain_copyright' => 'required|boolean',
             ],
             4 => [
-                'publishing_institution' => 'required|string|max:255',
+                "publishing_institution.{$primary}" => 'required|string|max:255',
                 'country_code' => 'required|string|size:2',
-                'editor_name' => 'required|string|max:255',
+                "editor_name.{$primary}" => 'required|string|max:255',
                 'institutional_email' => 'required|email',
                 'editorial_board_visible' => 'required|boolean',
                 'peer_review_type' => 'required|string',
@@ -301,7 +313,11 @@ class SubmissionWizard extends Component
 
     public function saveDraft()
     {
+        // Filtra entradas vacías de los arrays de traducciones
+        $cleanTranslations = fn(array $arr) => array_filter($arr, fn($v) => filled($v));
+
         $data = [
+            'primary_locale' => $this->primary_locale,
             // Step 1
             'is_open_access' => $this->is_open_access,
             'access_type' => $this->access_type ?: null,
@@ -312,10 +328,10 @@ class SubmissionWizard extends Component
             'embargo_months' => $this->has_embargo ? $this->embargo_months : null,
 
             // Step 2
-            'title' => $this->title,
-            'slug' => Str::slug($this->title) . '-' . Str::random(6),
-            'abbreviated_name' => $this->abbreviated_name ?: null,
-            'description' => $this->description ?: null,
+            'title' => $cleanTranslations($this->title),
+            'slug' => Str::slug($this->title[$this->primary_locale] ?? '') . '-' . Str::random(6),
+            'abbreviated_name' => $cleanTranslations($this->abbreviated_name),
+            'description' => $cleanTranslations($this->description),
             'subject_areas' => $this->subject_areas,
             'target_audience' => $this->target_audience,
             'publication_languages' => $this->publication_languages,
@@ -328,13 +344,13 @@ class SubmissionWizard extends Component
             'license_url' => $this->license_url ?: null,
             'authors_retain_copyright' => $this->authors_retain_copyright,
             'allows_commercial_reuse' => $this->allows_commercial_reuse,
-            'copyright_policy' => $this->copyright_policy ?: null,
+            'copyright_policy' => $cleanTranslations($this->copyright_policy),
             'licenses_visible_in_articles' => $this->licenses_visible_in_articles,
 
             // Step 4
-            'publishing_institution' => $this->publishing_institution ?: null,
+            'publishing_institution' => $cleanTranslations($this->publishing_institution),
             'country_code' => $this->country_code ?: null,
-            'editor_name' => $this->editor_name ?: null,
+            'editor_name' => $cleanTranslations($this->editor_name),
             'institutional_email' => $this->institutional_email ?: null,
             'editorial_board_visible' => $this->editorial_board_visible,
             'editorial_board_url' => $this->editorial_board_url ?: null,
@@ -394,7 +410,7 @@ class SubmissionWizard extends Component
     public function saveAsDraft()
     {
         $this->saveDraft();
-        session()->flash('message', 'Borrador guardado exitosamente.');
+        session()->flash('message', __('Draft saved successfully.'));
         return redirect()->route('app.dashboard');
     }
 
@@ -406,7 +422,7 @@ class SubmissionWizard extends Component
         // Notify user that listing request was received
         auth()->user()->notify(new ListingRequested($this->journal));
 
-        session()->flash('message', 'Tu solicitud para listar la revista ha sido enviada.');
+        session()->flash('message', __('Your request to list the journal has been submitted.'));
         return redirect()->route('app.dashboard');
     }
 
@@ -415,7 +431,7 @@ class SubmissionWizard extends Component
         return view('livewire.submission-wizard', [
             'countries' => Countries::forSelect(),
         ])->layout('components.layouts.app', [
-            'title' => 'Registrar Revista - Editorial Standards Platform',
+            'title' => __('Register Journal') . ' - Editorial Standards Platform',
         ]);
     }
 }

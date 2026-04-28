@@ -33,7 +33,7 @@ class UserProfile extends Component
             'email' => $this->email,
         ]);
 
-        session()->flash('profile_message', 'Perfil actualizado exitosamente.');
+        session()->flash('profile_message', __('Profile updated successfully.'));
     }
 
     public function updatePassword()
@@ -48,13 +48,13 @@ class UserProfile extends Component
         ]);
 
         $this->reset(['current_password', 'password', 'password_confirmation']);
-        session()->flash('password_message', 'Contraseña actualizada exitosamente.');
+        session()->flash('password_message', __('Password updated successfully.'));
     }
 
     public function render()
     {
         return view('livewire.user-profile')->layout('components.layouts.app', [
-            'title' => 'Mi Perfil - Editorial Standards Platform',
+            'title' => __('My Profile') . ' - Editorial Standards Platform',
         ]);
     }
 }

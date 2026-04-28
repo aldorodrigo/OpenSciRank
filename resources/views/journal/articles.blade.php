@@ -1,6 +1,6 @@
 <x-layouts.app
-    :title="'Artículos de ' . $journal->title . ' - Editorial Standards Platform'"
-    :description="'Lista completa de artículos publicados en ' . $journal->title"
+    :title="__('Articles of') . ' ' . $journal->getTranslationWithFallback('title') . ' - Editorial Standards Platform'"
+    :description="__('Complete list of articles published in') . ' ' . $journal->getTranslationWithFallback('title')"
 >
     <x-slot:header>true</x-slot:header>
 
@@ -8,23 +8,23 @@
         <div class="mx-auto max-w-5xl px-4">
             {{-- Breadcrumbs --}}
             <nav class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                <a href="/" class="hover:text-indigo-600">Inicio</a>
+                <a href="/" class="hover:text-indigo-600">{{ __('Home') }}</a>
                 <span class="mx-2">/</span>
-                <a href="/search" class="hover:text-indigo-600">Buscar</a>
+                <a href="/search" class="hover:text-indigo-600">{{ __('Search') }}</a>
                 <span class="mx-2">/</span>
-                <a href="{{ route('journal.show', $journal->slug) }}" class="hover:text-indigo-600">{{ Illuminate\Support\Str::limit($journal->title, 40) }}</a>
+                <a href="{{ route('journal.show', $journal->slug) }}" class="hover:text-indigo-600">{{ Illuminate\Support\Str::limit($journal->getTranslationWithFallback('title'), 40) }}</a>
                 <span class="mx-2">/</span>
-                <span class="text-gray-900 dark:text-white">Artículos</span>
+                <span class="text-gray-900 dark:text-white">{{ __('Articles') }}</span>
             </nav>
 
             {{-- Header Card --}}
             <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">📄 Artículos Publicados</h1>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">📄 {{ __('Published Articles') }}</h1>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                            {{ $articles->total() }} artículos en
-                            <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $journal->title }}</span>
+                            {{ $articles->total() }} {{ __('articles in') }}
+                            <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $journal->getTranslationWithFallback('title') }}</span>
                         </p>
                     </div>
                     <a href="{{ route('journal.show', $journal->slug) }}"
@@ -32,7 +32,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
-                        Volver a la revista
+                        {{ __('Back to journal') }}
                     </a>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <p class="mt-4 text-gray-500 dark:text-gray-400">No se encontraron artículos.</p>
+                <p class="mt-4 text-gray-500 dark:text-gray-400">{{ __('No articles found.') }}</p>
             </div>
         @else
             <div class="space-y-4">
@@ -104,7 +104,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                     </svg>
-                                    Ver artículo
+                                    {{ __('View article') }}
                                 </a>
                             @endif
                             @if($article->pdf_url)

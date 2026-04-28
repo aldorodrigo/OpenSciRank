@@ -1,51 +1,51 @@
-<x-layouts.app title="Términos de Uso - Editorial Standards Platform">
+<x-layouts.app :title="__('Terms of Use - Editorial Standards Platform')">
     <x-slot:header>true</x-slot:header>
 
     <div class="bg-gray-50 py-16 dark:bg-gray-950">
         <div class="container mx-auto max-w-4xl px-4">
             {{-- Header --}}
             <div class="mb-12 text-center">
-                <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl">Términos de Uso</h1>
-                <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">Última actualización: {{ date('d/m/Y') }}</p>
+                <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl">{{ __('Terms of Use') }}</h1>
+                <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">{{ __('Last updated:') }} {{ date('d/m/Y') }}</p>
             </div>
 
             {{-- Content --}}
             <div class="prose prose-indigo max-w-none rounded-2xl bg-white p-8 shadow-sm dark:prose-invert dark:bg-gray-900 sm:p-12">
-                <p class="lead">Bienvenido a Editorial Standards Platform (ESP). Al utilizar nuestro sitio web y servicios, usted acepta cumplir con los siguientes términos y condiciones.</p>
+                <p class="lead">{{ __('Welcome to Editorial Standards Platform (ESP). By using our website and services, you agree to comply with the following terms and conditions.') }}</p>
 
-                <h2 class="text-2xl font-bold mt-8 mb-4">1. Aceptación de los Términos</h2>
-                <p>Al acceder o utilizar la plataforma Editorial Standards Platform (en adelante, "la Plataforma"), usted acepta estar legalmente vinculado por estos Términos de Uso y nuestra Política de Privacidad. Si no está de acuerdo con alguna parte de estos términos, no podrá acceder a la Plataforma ni utilizar nuestros servicios.</p>
+                <h2 class="text-2xl font-bold mt-8 mb-4">1. {{ __('Acceptance of Terms') }}</h2>
+                <p>{{ __('By accessing or using the Editorial Standards Platform (hereinafter, "the Platform"), you agree to be legally bound by these Terms of Use and our Privacy Policy. If you do not agree with any part of these terms, you may not access the Platform or use our services.') }}</p>
 
-                <h2 class="text-2xl font-bold mt-8 mb-4">2. Descripción del Servicio</h2>
-                <p>ESP es una plataforma global diseñada para la evaluación editorial y visibilidad de revistas científicas y libros académicos. Los servicios incluyen, entre otros, la indexación en nuestro directorio, la evaluación técnica independiente basada en criterios de Ciencia Abierta y la emisión de sellos de calidad editorial.</p>
+                <h2 class="text-2xl font-bold mt-8 mb-4">2. {{ __('Description of Service') }}</h2>
+                <p>{{ __('ESP is a global platform designed for editorial evaluation and visibility of scientific journals and academic books. Services include, among others, indexing in our directory, independent technical evaluation based on Open Science criteria and issuance of editorial quality seals.') }}</p>
 
-                <h2 class="text-2xl font-bold mt-8 mb-4">3. Registro de Usuarios y Responsabilidades</h2>
+                <h2 class="text-2xl font-bold mt-8 mb-4">3. {{ __('User Registration and Responsibilities') }}</h2>
                 <ul class="list-disc pl-6 space-y-2">
-                    <li>Para acceder a ciertas funcionalidades, como la solicitud de evaluación, es necesario registrarse como usuario.</li>
-                    <li>Usted es responsable de mantener la confidencialidad de su cuenta y contraseña.</li>
-                    <li>Usted garantiza que toda la información proporcionada durante el registro y la solicitud de evaluación es veraz, exacta y está actualizada.</li>
-                    <li>Se prohíbe el uso de identidades falsas o la suplantación de editores o instituciones.</li>
+                    <li>{{ __('To access certain functionalities, such as requesting an evaluation, registration as a user is required.') }}</li>
+                    <li>{{ __('You are responsible for maintaining the confidentiality of your account and password.') }}</li>
+                    <li>{{ __('You guarantee that all information provided during registration and evaluation request is truthful, accurate and up to date.') }}</li>
+                    <li>{{ __('The use of false identities or impersonation of editors or institutions is prohibited.') }}</li>
                 </ul>
 
-                <h2 class="text-2xl font-bold mt-8 mb-4">4. Propiedad Intelectual</h2>
-                <p>Todo el contenido de la Plataforma, incluyendo textos, logotipos, gráficos, iconos, imágenes y software, es propiedad de Editorial Standards Platform o de sus licenciantes y está protegido por leyes de propiedad intelectual internacionales.</p>
-                <p>Los editores conservan los derechos sobre la información y metadatos de sus revistas, pero otorgan a ESP una licencia para mostrar y procesar dicha información con fines de evaluación y visualización en el directorio.</p>
+                <h2 class="text-2xl font-bold mt-8 mb-4">4. {{ __('Intellectual Property') }}</h2>
+                <p>{{ __('All content on the Platform, including texts, logos, graphics, icons, images and software, is the property of Editorial Standards Platform or its licensors and is protected by international intellectual property laws.') }}</p>
+                <p>{{ __('Editors retain rights over their journal information and metadata, but grant ESP a license to display and process such information for evaluation and directory display purposes.') }}</p>
 
-                <h2 class="text-2xl font-bold mt-8 mb-4">5. Proceso de Evaluación y Sellos</h2>
-                <p>La obtención de un sello de calidad editorial de ESP está sujeta al cumplimiento de criterios técnicos específicos evaluados por nuestro equipo independiente. ESP se reserva el derecho de retirar o revocar cualquier sello si se detectan prácticas editoriales poco éticas o si la publicación deja de cumplir con los estándares requeridos.</p>
+                <h2 class="text-2xl font-bold mt-8 mb-4">5. {{ __('Evaluation Process and Seals') }}</h2>
+                <p>{{ __('Obtaining an editorial quality seal from ESP is subject to compliance with specific technical criteria evaluated by our independent team. ESP reserves the right to withdraw or revoke any seal if unethical editorial practices are detected or if the publication ceases to meet the required standards.') }}</p>
 
-                <h2 class="text-2xl font-bold mt-8 mb-4">6. Limitación de Responsabilidad</h2>
-                <p>ESP proporciona sus servicios "tal cual" y no garantiza que la plataforma esté libre de errores o interrupciones. En ningún caso ESP será responsable por daños indirectos, incidentales o consecuentes derivados del uso o la imposibilidad de uso de la plataforma.</p>
-                <p>ESP no se hace responsable de las decisiones tomadas por terceros (autores, agencias de acreditación, instituciones) basadas en las calificaciones o sellos otorgados por la Plataforma.</p>
+                <h2 class="text-2xl font-bold mt-8 mb-4">6. {{ __('Limitation of Liability') }}</h2>
+                <p>{{ __('ESP provides its services "as is" and does not guarantee that the platform is free of errors or interruptions. In no event shall ESP be liable for indirect, incidental or consequential damages arising from the use or inability to use the platform.') }}</p>
+                <p>{{ __('ESP is not responsible for decisions made by third parties (authors, accreditation agencies, institutions) based on the ratings or seals granted by the Platform.') }}</p>
 
-                <h2 class="text-2xl font-bold mt-8 mb-4">7. Modificaciones</h2>
-                <p>Nos reservamos el derecho de modificar estos Términos de Uso en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación en el sitio web. El uso continuado de la Plataforma después de dichas modificaciones constituye su aceptación de los nuevos términos.</p>
+                <h2 class="text-2xl font-bold mt-8 mb-4">7. {{ __('Modifications') }}</h2>
+                <p>{{ __('We reserve the right to modify these Terms of Use at any time. Changes will take effect immediately after publication on the website. Continued use of the Platform after such modifications constitutes your acceptance of the new terms.') }}</p>
 
-                <h2 class="text-2xl font-bold mt-8 mb-4">8. Ley Aplicable y Jurisdicción</h2>
-                <p>Estos términos se rigen por las leyes internacionales de comercio electrónico y propiedad intelectual. Cualquier disputa relacionada con estos términos quedará sujeta a la jurisdicción exclusiva de los tribunales competentes definidos por la administración de la Plataforma.</p>
+                <h2 class="text-2xl font-bold mt-8 mb-4">8. {{ __('Applicable Law and Jurisdiction') }}</h2>
+                <p>{{ __('These terms are governed by international laws of electronic commerce and intellectual property. Any dispute related to these terms will be subject to the exclusive jurisdiction of the competent courts defined by the Platform administration.') }}</p>
 
                 <div class="mt-12 border-t border-gray-100 pt-8 dark:border-gray-800">
-                    <p class="text-sm text-gray-500">Si tiene alguna pregunta sobre estos Términos de Uso, por favor contáctenos a través de nuestra <a href="/contact" class="text-indigo-600 hover:underline dark:text-indigo-400">página de contacto</a>.</p>
+                    <p class="text-sm text-gray-500">{{ __('If you have any questions about these Terms of Use, please contact us through our') }} <a href="/contact" class="text-indigo-600 hover:underline dark:text-indigo-400">{{ __('contact page') }}</a>.</p>
                 </div>
             </div>
         </div>

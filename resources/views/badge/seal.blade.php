@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="280" height="70" viewBox="0 0 280 70" role="img" aria-label="Editorial Standards Seal">
-    <title>Editorial Standards Seal - {{ $journal->title }}</title>
+    <title>Editorial Standards Seal - {{ $journal->getTranslationWithFallback('title') }}</title>
 
     @if($isActive)
         @php
@@ -30,7 +30,7 @@
 
         {{-- Text --}}
         <text x="42" y="26" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF">Editorial Standards Seal</text>
-        <text x="42" y="44" font-family="Arial, Helvetica, sans-serif" font-size="9" fill="#C7D2FE">Evaluacion tecnica verificada</text>
+        <text x="42" y="44" font-family="Arial, Helvetica, sans-serif" font-size="9" fill="#C7D2FE">{{ __('Verified technical evaluation') }}</text>
 
         {{-- Platform URL --}}
         <text x="110" y="62" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#A5B4FC" text-anchor="middle">editorialstandards.org</text>
@@ -52,7 +52,7 @@
 
         {{-- Text --}}
         <text x="42" y="26" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#E5E7EB">Editorial Standards Seal</text>
-        <text x="42" y="44" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#D1D5DB">Sello Expirado</text>
+        <text x="42" y="44" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#D1D5DB">{{ __('Expired Seal') }}</text>
 
         {{-- Platform URL --}}
         <text x="140" y="62" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#9CA3AF" text-anchor="middle">editorialstandards.org</text>

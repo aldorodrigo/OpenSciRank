@@ -1,13 +1,13 @@
 <x-layouts.app
-    :title="$journal->title . ' - Editorial Standards Platform'"
-    :description="'Perfil de ' . $journal->title . '. Calificación, métricas y criterios de evaluación.'"
+    :title="$journal->getTranslationWithFallback('title') . ' - Editorial Standards Platform'"
+    :description="__('Profile of') . ' ' . $journal->getTranslationWithFallback('title') . '. ' . __('Score, metrics and evaluation criteria.')"
 >
     <x-slot:jsonLd>
     @php
         $ld = [
             '@context' => 'https://schema.org',
             '@type' => 'Periodical',
-            'name' => $journal->title,
+            'name' => $journal->getTranslationWithFallback('title'),
             'url' => url('/journal/' . $journal->slug),
             'inLanguage' => 'es',
             'isPartOf' => [
@@ -18,12 +18,12 @@
         ];
         if ($journal->issn_print) $ld['issn'] = $journal->issn_print;
         if ($journal->issn_online) $ld['issn'] = $journal->issn_online;
-        if ($journal->description) $ld['description'] = strip_tags($journal->description);
+        if ($journal->description) $ld['description'] = strip_tags($journal->getTranslationWithFallback('description'));
         if ($journal->website_url) $ld['sameAs'] = $journal->website_url;
         if ($journal->country_code) $ld['countryOfOrigin'] = $journal->country_code;
         if ($journal->publisher) $ld['publisher'] = ['@type' => 'Organization', 'name' => $journal->publisher];
         if ($journal->status === 'certified' && $journal->seal_expires_at?->isFuture()) {
-            $ld['award'] = 'Editorial Standards Seal — Vigente hasta ' . $journal->seal_expires_at->format('d/m/Y');
+            $ld['award'] = __('Editorial Standards Seal — Valid until') . ' ' . $journal->seal_expires_at->format('d/m/Y');
         }
     @endphp
     <script type="application/ld+json">{!! json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
@@ -35,11 +35,11 @@
         <div class="container mx-auto px-4">
             {{-- Breadcrumbs --}}
             <nav class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                <a href="/" class="hover:text-indigo-600">Inicio</a>
+                <a href="/" class="hover:text-indigo-600">{{ __('Home') }}</a>
                 <span class="mx-2">/</span>
-                <a href="/search" class="hover:text-indigo-600">Buscar</a>
+                <a href="/search" class="hover:text-indigo-600">{{ __('Search') }}</a>
                 <span class="mx-2">/</span>
-                <span class="text-gray-900 dark:text-white">{{ $journal->title }}</span>
+                <span class="text-gray-900 dark:text-white">{{ $journal->getTranslationWithFallback('title') }}</span>
             </nav>
 
             {{-- Header Card --}}
@@ -47,7 +47,7 @@
                 <div class="flex flex-col items-start gap-6 md:flex-row md:items-center">
                     {{-- Logo --}}
                     @if($journal->logo)
-                        <img src="{{ Storage::url($journal->logo) }}" alt="{{ $journal->title }}" class="max-h-24 w-auto rounded-xl object-contain shadow-md" style="max-width: 112px;">
+                        <img src="{{ Storage::url($journal->logo) }}" alt="{{ $journal->getTranslationWithFallback('title') }}" class="max-h-24 w-auto rounded-xl object-contain shadow-md" style="max-width: 112px;">
                     @else
                         <div class="flex h-24 w-24 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -65,7 +65,7 @@
                                     @else bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400
                                     @endif
                                 ">
-                                    Nivel {{ $journal->current_level }}
+                                    {{ __('Level') }} {{ $journal->current_level }}
                                 </span>
                             @endif
                             <span class="rounded-full px-3 py-1 text-sm font-medium
@@ -76,15 +76,15 @@
                                 @endif
                             ">
                                 {{ match($journal->status) {
-                                    'draft' => 'Borrador',
-                                    'submitted' => 'En Evaluacion',
-                                    'pending_listing' => 'Pendiente de Listado',
-                                    'requires_changes_listing' => 'Requiere correcciones',
-                                    'requires_changes_evaluation' => 'Requiere correcciones',
-                                    'listed' => 'Listada',
-                                    'evaluated' => 'Evaluada',
-                                    'certified' => 'Certificada',
-                                    'indexed' => 'Indexada',
+                                    'draft' => __('Draft'),
+                                    'submitted' => __('Under Evaluation'),
+                                    'pending_listing' => __('Pending Listing'),
+                                    'requires_changes_listing' => __('Requires Changes'),
+                                    'requires_changes_evaluation' => __('Requires Changes'),
+                                    'listed' => __('Listed'),
+                                    'evaluated' => __('Evaluated'),
+                                    'certified' => __('Certified'),
+                                    'indexed' => __('Indexed'),
                                     default => ucfirst($journal->status)
                                 } }}
                             </span>
@@ -99,16 +99,16 @@
                                 </span>
                             @endif
                         </div>
-                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $journal->title }}</h1>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $journal->getTranslationWithFallback('title') }}</h1>
                         @if($journal->abbreviated_name)
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-500">{{ $journal->abbreviated_name }}</p>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-500">{{ $journal->getTranslationWithFallback('abbreviated_name') }}</p>
                         @endif
                         @if($journal->publisher || $journal->publishing_institution)
                             <p class="mt-2 text-gray-600 dark:text-gray-400">
                                 {{ $journal->publisher }}
                                 @if($journal->publisher && $journal->publishing_institution) — @endif
                                 @if($journal->publishing_institution)
-                                    <span class="text-gray-500">{{ $journal->publishing_institution }}</span>
+                                    <span class="text-gray-500">{{ $journal->getTranslationWithFallback('publishing_institution') }}</span>
                                 @endif
                             </p>
                         @endif
@@ -117,13 +117,13 @@
                                 <span>🌍 {{ $journal->country_code }}</span>
                             @endif
                             @if($journal->start_year)
-                                <span>📅 Desde {{ $journal->start_year }}</span>
+                                <span>📅 {{ __('Since') }} {{ $journal->start_year }}</span>
                             @endif
                             @if($journal->publication_frequency)
-                                <span>📰 {{ match($journal->publication_frequency) { 'annual' => 'Anual', 'biannual' => 'Semestral', 'quarterly' => 'Trimestral', 'bimonthly' => 'Bimestral', 'monthly' => 'Mensual', 'continuous' => 'Continua', default => $journal->publication_frequency } }}</span>
+                                <span>📰 {{ match($journal->publication_frequency) { 'annual' => __('Annual'), 'biannual' => __('Biannual'), 'quarterly' => __('Quarterly'), 'bimonthly' => __('Bimonthly'), 'monthly' => __('Monthly'), 'continuous' => __('Continuous'), default => $journal->publication_frequency } }}</span>
                             @endif
                             @if($journal->peer_review_type)
-                                <span>🔍 {{ match($journal->peer_review_type) { 'double_blind' => 'Doble ciego', 'single_blind' => 'Simple ciego', 'open' => 'Revisión abierta', default => $journal->peer_review_type } }}</span>
+                                <span>🔍 {{ match($journal->peer_review_type) { 'double_blind' => __('Double blind'), 'single_blind' => __('Single blind'), 'open' => __('Open review'), default => $journal->peer_review_type } }}</span>
                             @endif
                         </div>
                     </div>
@@ -150,7 +150,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 font-medium">Puntaje</p>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 font-medium">{{ __('Score') }}</p>
                         </div>
                     @endif
                 </div>
@@ -168,14 +168,14 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-bold text-amber-900 dark:text-amber-400 underline decoration-amber-300 dark:decoration-amber-700 underline-offset-4">Acción Requerida: Ajustes Editoriales</h3>
-                            <p class="text-sm text-amber-700 dark:text-amber-500">Un evaluador ha revisado tu revista y solicita cambios para continuar con la indexación.</p>
+                            <h3 class="text-lg font-bold text-amber-900 dark:text-amber-400 underline decoration-amber-300 dark:decoration-amber-700 underline-offset-4">{{ __('Action Required: Editorial Adjustments') }}</h3>
+                            <p class="text-sm text-amber-700 dark:text-amber-500">{{ __('A reviewer has reviewed your journal and requests changes to continue with indexing.') }}</p>
                         </div>
                     </div>
                     <div class="p-6">
-                        <h4 class="mb-3 text-xs font-black uppercase tracking-widest text-amber-800/60 dark:text-amber-400/50">Observaciones del Evaluador</h4>
+                        <h4 class="mb-3 text-xs font-black uppercase tracking-widest text-amber-800/60 dark:text-amber-400/50">{{ __("Reviewer's Observations") }}</h4>
                         <div class="rounded-lg bg-white p-4 text-gray-700 shadow-inner dark:bg-gray-900 dark:text-gray-300 border-l-4 border-amber-400 dark:border-amber-600 italic leading-relaxed">
-                            {!! nl2br(e($journal->evaluation_notes ?: 'No hay observaciones específicas detalladas, por favor revisa los criterios de evaluación abajo.')) !!}
+                            {!! nl2br(e($journal->evaluation_notes ?: __('No specific observations provided, please review the evaluation criteria below.'))) !!}
                         </div>
                         
                         <div class="mt-6 flex flex-wrap gap-4">
@@ -183,13 +183,13 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
-                                Editar y Corregir Datos
+                                {{ __('Edit and Correct Data') }}
                             </a>
                             <a href="#evaluation-criteria" class="inline-flex items-center rounded-lg bg-amber-200 px-4 py-2 text-sm font-bold text-amber-800 transition hover:bg-amber-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                Revisar Criterios Faltantes
+                                {{ __('Review Missing Criteria') }}
                             </a>
                         </div>
                     </div>
@@ -205,11 +205,11 @@
             <div class="lg:col-span-2 space-y-8">
                 {{-- About --}}
                 <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Acerca de la Revista</h2>
+                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">{{ __('About the Journal') }}</h2>
                     @if($journal->description)
-                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{{ $journal->description }}</p>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{{ $journal->getTranslationWithFallback('description') }}</p>
                     @else
-                        <p class="text-gray-400 dark:text-gray-500 italic">Sin descripción disponible.</p>
+                        <p class="text-gray-400 dark:text-gray-500 italic">{{ __('No description available.') }}</p>
                     @endif
 
                     {{-- Tags: Subject Areas, Target Audience, Languages --}}
@@ -217,7 +217,7 @@
                         <div class="mt-6 space-y-4">
                             @if($journal->subject_areas && count($journal->subject_areas))
                                 <div>
-                                    <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Áreas Temáticas</h4>
+                                    <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">{{ __('Subject Areas') }}</h4>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($journal->subject_areas as $area)
                                             <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">{{ $area }}</span>
@@ -227,7 +227,7 @@
                             @endif
                             @if($journal->target_audience && count($journal->target_audience))
                                 <div>
-                                    <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Público Objetivo</h4>
+                                    <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">{{ __('Target Audience') }}</h4>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($journal->target_audience as $aud)
                                             <span class="rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">{{ $aud }}</span>
@@ -237,7 +237,7 @@
                             @endif
                             @if($journal->publication_languages && count($journal->publication_languages))
                                 <div>
-                                    <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Idiomas de Publicación</h4>
+                                    <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">{{ __('Publication Languages') }}</h4>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($journal->publication_languages as $lang)
                                             <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">{{ $lang }}</span>
@@ -252,13 +252,13 @@
                 {{-- Evaluation Criteria (Real Data) — solo visible para revistas certificadas/indexadas --}}
                 @if($journal->evaluationScores->isNotEmpty() && in_array($journal->status, ['certified', 'indexed']))
                     @php
-                        $scoresByCategory = $journal->evaluationScores->groupBy(fn($s) => $s->criteriaItem?->category?->name ?? 'Sin categoría');
+                        $scoresByCategory = $journal->evaluationScores->groupBy(fn($s) => $s->criteriaItem?->category?->name ?? __('Uncategorized'));
                         $colors = ['bg-indigo-600', 'bg-emerald-600', 'bg-amber-600', 'bg-purple-600', 'bg-rose-600', 'bg-cyan-600', 'bg-orange-600', 'bg-pink-600'];
                         $colorIndex = 0;
                     @endphp
                     <section id="evaluation-criteria" class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                        <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">Criterios de Evaluación</h2>
-                        <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Resultados basados en los estándares de Editorial Standards Platform.</p>
+                        <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Evaluation Criteria') }}</h2>
+                        <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">{{ __('Results based on Editorial Standards Platform standards.') }}</p>
 
                         <div class="space-y-5">
                             @foreach($scoresByCategory as $catName => $scores)
@@ -293,9 +293,9 @@
                 @if($recentArticles->isNotEmpty())
                     <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                         <div class="mb-4 flex items-center justify-between">
-                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">📄 Artículos Recientes</h2>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">📄 {{ __('Recent Articles') }}</h2>
                             <span class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
-                                {{ $journal->harvestedArticles->count() }} artículos
+                                {{ $journal->harvestedArticles->count() }} {{ __('articles') }}
                             </span>
                         </div>
                         <div class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -345,7 +345,7 @@
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                 </svg>
-                                                Ver artículo
+                                                {{ __('View article') }}
                                             </a>
                                         @endif
                                         @if($article->pdf_url)
@@ -354,7 +354,7 @@
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                                                 </svg>
-                                                Descargar PDF
+                                                {{ __('Download PDF') }}
                                             </a>
                                         @endif
                                     </div>
@@ -368,7 +368,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
-                                    Ver todos los artículos ({{ $journal->harvestedArticles->count() }})
+                                    {{ __('View all articles') }} ({{ $journal->harvestedArticles->count() }})
                                 </a>
                             </div>
                         @endif
@@ -377,51 +377,51 @@
 
                 {{-- Open Access & Copyright Details --}}
                 <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Acceso y Licencias</h2>
+                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Access and Licenses') }}</h2>
                     <div class="grid gap-6 sm:grid-cols-2">
                         {{-- Open Access --}}
                         <div class="space-y-3">
-                            <h3 class="text-sm font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">🔓 Acceso Abierto</h3>
+                            <h3 class="text-sm font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">🔓 {{ __('Open Access') }}</h3>
                             <dl class="space-y-2 text-sm">
                                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
-                                    <dt class="text-gray-500 dark:text-gray-400">Acceso abierto</dt>
-                                    <dd>{!! $journal->is_open_access === null ? '<span class="text-gray-300">—</span>' : ($journal->is_open_access ? '<span class="font-semibold text-emerald-600">Sí</span>' : '<span class="font-semibold text-red-500">No</span>') !!}</dd>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('Open access') }}</dt>
+                                    <dd>{!! $journal->is_open_access === null ? '<span class="text-gray-300">—</span>' : ($journal->is_open_access ? '<span class="font-semibold text-emerald-600">' . __('Yes') . '</span>' : '<span class="font-semibold text-red-500">' . __('No') . '</span>') !!}</dd>
                                 </div>
                                 @if($journal->access_type)
                                     <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
-                                        <dt class="text-gray-500 dark:text-gray-400">Tipo de acceso</dt>
-                                        <dd class="font-medium text-gray-900 dark:text-white">{{ match($journal->access_type) { 'full_oa' => 'Completo (Gold)', 'hybrid' => 'Híbrido', 'restricted' => 'Restringido', default => $journal->access_type } }}</dd>
+                                        <dt class="text-gray-500 dark:text-gray-400">{{ __('Access type') }}</dt>
+                                        <dd class="font-medium text-gray-900 dark:text-white">{{ match($journal->access_type) { 'full_oa' => __('Full (Gold)'), 'hybrid' => __('Hybrid'), 'restricted' => __('Restricted'), default => $journal->access_type } }}</dd>
                                     </div>
                                 @endif
                                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
-                                    <dt class="text-gray-500 dark:text-gray-400">Sin registro</dt>
-                                    <dd>{!! $journal->articles_accessible_without_registration === null ? '<span class="text-gray-300">—</span>' : ($journal->articles_accessible_without_registration ? '<span class="font-semibold text-emerald-600">Sí</span>' : '<span class="font-semibold text-red-500">No</span>') !!}</dd>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('No registration') }}</dt>
+                                    <dd>{!! $journal->articles_accessible_without_registration === null ? '<span class="text-gray-300">—</span>' : ($journal->articles_accessible_without_registration ? '<span class="font-semibold text-emerald-600">' . __('Yes') . '</span>' : '<span class="font-semibold text-red-500">' . __('No') . '</span>') !!}</dd>
                                 </div>
                                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
-                                    <dt class="text-gray-500 dark:text-gray-400">Auto-archivo</dt>
-                                    <dd>{!! $journal->allows_self_archiving === null ? '<span class="text-gray-300">—</span>' : ($journal->allows_self_archiving ? '<span class="font-semibold text-emerald-600">Sí</span>' : '<span class="font-semibold text-red-500">No</span>') !!}</dd>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('Self-archiving') }}</dt>
+                                    <dd>{!! $journal->allows_self_archiving === null ? '<span class="text-gray-300">—</span>' : ($journal->allows_self_archiving ? '<span class="font-semibold text-emerald-600">' . __('Yes') . '</span>' : '<span class="font-semibold text-red-500">' . __('No') . '</span>') !!}</dd>
                                 </div>
                             </dl>
                         </div>
                         {{-- Copyright --}}
                         <div class="space-y-3">
-                            <h3 class="text-sm font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400">📄 Copyright y Licencias</h3>
+                            <h3 class="text-sm font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400">📄 {{ __('Copyright and Licenses') }}</h3>
                             <dl class="space-y-2 text-sm">
                                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
-                                    <dt class="text-gray-500 dark:text-gray-400">Licencia</dt>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('License') }}</dt>
                                     <dd class="font-medium text-gray-900 dark:text-white">{{ $journal->license_type ?: '—' }}</dd>
                                 </div>
                                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
-                                    <dt class="text-gray-500 dark:text-gray-400">Retención de copyright</dt>
-                                    <dd>{!! $journal->authors_retain_copyright === null ? '<span class="text-gray-300">—</span>' : ($journal->authors_retain_copyright ? '<span class="font-semibold text-emerald-600">Sí</span>' : '<span class="font-semibold text-red-500">No</span>') !!}</dd>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('Copyright retention') }}</dt>
+                                    <dd>{!! $journal->authors_retain_copyright === null ? '<span class="text-gray-300">—</span>' : ($journal->authors_retain_copyright ? '<span class="font-semibold text-emerald-600">' . __('Yes') . '</span>' : '<span class="font-semibold text-red-500">' . __('No') . '</span>') !!}</dd>
                                 </div>
                                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
-                                    <dt class="text-gray-500 dark:text-gray-400">Reuso comercial</dt>
-                                    <dd>{!! $journal->allows_commercial_reuse === null ? '<span class="text-gray-300">—</span>' : ($journal->allows_commercial_reuse ? '<span class="font-semibold text-emerald-600">Sí</span>' : '<span class="font-semibold text-red-500">No</span>') !!}</dd>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('Commercial reuse') }}</dt>
+                                    <dd>{!! $journal->allows_commercial_reuse === null ? '<span class="text-gray-300">—</span>' : ($journal->allows_commercial_reuse ? '<span class="font-semibold text-emerald-600">' . __('Yes') . '</span>' : '<span class="font-semibold text-red-500">' . __('No') . '</span>') !!}</dd>
                                 </div>
                                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
-                                    <dt class="text-gray-500 dark:text-gray-400">Licencia visible</dt>
-                                    <dd>{!! $journal->licenses_visible_in_articles === null ? '<span class="text-gray-300">—</span>' : ($journal->licenses_visible_in_articles ? '<span class="font-semibold text-emerald-600">Sí</span>' : '<span class="font-semibold text-red-500">No</span>') !!}</dd>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('Visible license') }}</dt>
+                                    <dd>{!! $journal->licenses_visible_in_articles === null ? '<span class="text-gray-300">—</span>' : ($journal->licenses_visible_in_articles ? '<span class="font-semibold text-emerald-600">' . __('Yes') . '</span>' : '<span class="font-semibold text-red-500">' . __('No') . '</span>') !!}</dd>
                                 </div>
                             </dl>
                         </div>
@@ -430,16 +430,16 @@
 
                 {{-- Ethics & Best Practices --}}
                 <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Ética y Buenas Prácticas</h2>
+                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Ethics and Best Practices') }}</h2>
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         @php
                             $ethicsItems = [
-                                ['label' => 'Política de ética', 'value' => $journal->has_ethics_policy, 'icon' => '🛡️'],
-                                ['label' => 'Adhiere a COPE', 'value' => $journal->adheres_to_cope, 'icon' => '✅'],
-                                ['label' => 'Política antiplagio', 'value' => $journal->has_antiplagiarism_policy, 'icon' => '🔎'],
-                                ['label' => 'Conflicto de interés', 'value' => $journal->has_conflict_of_interest_policy, 'icon' => '⚖️'],
-                                ['label' => 'Declara uso de IA', 'value' => $journal->declares_ai_use, 'icon' => '🤖'],
-                                ['label' => 'Asigna DOI', 'value' => $journal->assigns_doi, 'icon' => '🔗'],
+                                ['label' => __('Ethics policy'), 'value' => $journal->has_ethics_policy, 'icon' => '🛡️'],
+                                ['label' => __('Adheres to COPE'), 'value' => $journal->adheres_to_cope, 'icon' => '✅'],
+                                ['label' => __('Anti-plagiarism policy'), 'value' => $journal->has_antiplagiarism_policy, 'icon' => '🔎'],
+                                ['label' => __('Conflict of interest'), 'value' => $journal->has_conflict_of_interest_policy, 'icon' => '⚖️'],
+                                ['label' => __('Declares AI use'), 'value' => $journal->declares_ai_use, 'icon' => '🤖'],
+                                ['label' => __('Assigns DOI'), 'value' => $journal->assigns_doi, 'icon' => '🔗'],
                             ];
                         @endphp
                         @foreach($ethicsItems as $item)
@@ -458,9 +458,9 @@
                                         @else text-gray-400
                                         @endif
                                     ">
-                                        @if($item['value'] === true) Cumple
-                                        @elseif($item['value'] === false) No cumple
-                                        @else Sin información
+                                        @if($item['value'] === true) {{ __('Meets') }}
+                                        @elseif($item['value'] === false) {{ __('Does not meet') }}
+                                        @else {{ __('No information') }}
                                         @endif
                                     </p>
                                 </div>
@@ -469,7 +469,7 @@
                         @if($journal->antiplagiarism_tool)
                             <div class="sm:col-span-2 lg:col-span-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
                                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                                    <span class="font-medium text-gray-700 dark:text-gray-300">Herramienta antiplagio:</span> {{ $journal->antiplagiarism_tool }}
+                                    <span class="font-medium text-gray-700 dark:text-gray-300">{{ __('Anti-plagiarism tool:') }}</span> {{ $journal->antiplagiarism_tool }}
                                 </p>
                             </div>
                         @endif
@@ -478,34 +478,34 @@
 
                 {{-- Business Model --}}
                 <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Modelo de Negocio</h2>
+                    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Business Model') }}</h2>
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div class="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-gray-800">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Cobra APC</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Charges APC') }}</span>
                             <span class="text-sm font-semibold {{ $journal->charges_apc ? 'text-amber-600' : 'text-emerald-600' }}">
                                 @if($journal->charges_apc === null) <span class="text-gray-300">—</span>
-                                @elseif($journal->charges_apc) Sí
+                                @elseif($journal->charges_apc) {{ __('Yes') }}
                                     @if($journal->apc_amount) — {{ $journal->apc_currency ?? 'USD' }} {{ number_format($journal->apc_amount, 2) }} @endif
-                                @else No cobra
+                                @else {{ __('No fee') }}
                                 @endif
                             </span>
                         </div>
                         <div class="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-gray-800">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Exenciones de APC</span>
-                            <span class="text-sm font-semibold">{!! $journal->has_apc_waivers === null ? '<span class="text-gray-300">—</span>' : ($journal->has_apc_waivers ? '<span class="text-emerald-600">Disponibles</span>' : '<span class="text-gray-500">No</span>') !!}</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('APC waivers') }}</span>
+                            <span class="text-sm font-semibold">{!! $journal->has_apc_waivers === null ? '<span class="text-gray-300">—</span>' : ($journal->has_apc_waivers ? '<span class="text-emerald-600">' . __('Available') . '</span>' : '<span class="text-gray-500">' . __('No') . '</span>') !!}</span>
                         </div>
                         <div class="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-gray-800">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Publicidad</span>
-                            <span class="text-sm font-semibold">{!! $journal->has_advertising === null ? '<span class="text-gray-300">—</span>' : ($journal->has_advertising ? '<span class="text-amber-600">Tiene</span>' : '<span class="text-emerald-600">Sin publicidad</span>') !!}</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Advertising') }}</span>
+                            <span class="text-sm font-semibold">{!! $journal->has_advertising === null ? '<span class="text-gray-300">—</span>' : ($journal->has_advertising ? '<span class="text-amber-600">' . __('Has ads') . '</span>' : '<span class="text-emerald-600">' . __('No advertising') . '</span>') !!}</span>
                         </div>
                         <div class="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 dark:bg-gray-800">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Modelo transparente</span>
-                            <span class="text-sm font-semibold">{!! $journal->business_model_transparent === null ? '<span class="text-gray-300">—</span>' : ($journal->business_model_transparent ? '<span class="text-emerald-600">Sí</span>' : '<span class="text-red-500">No</span>') !!}</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Transparent model') }}</span>
+                            <span class="text-sm font-semibold">{!! $journal->business_model_transparent === null ? '<span class="text-gray-300">—</span>' : ($journal->business_model_transparent ? '<span class="text-emerald-600">' . __('Yes') . '</span>' : '<span class="text-red-500">' . __('No') . '</span>') !!}</span>
                         </div>
                     </div>
                     @if($journal->funding_sources && count($journal->funding_sources))
                         <div class="mt-4">
-                            <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Fuentes de Financiamiento</h4>
+                            <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">{{ __('Funding Sources') }}</h4>
                             <div class="flex flex-wrap gap-2">
                                 @foreach($journal->funding_sources as $src)
                                     <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">{{ $src }}</span>
@@ -521,24 +521,24 @@
                 {{-- Sello de Calidad --}}
                 @if($journal->status === 'certified' && $journal->seal_expires_at && $journal->seal_expires_at->isFuture())
                     <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Sello de Calidad</h3>
+                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">{{ __('Quality Seal') }}</h3>
                         <div class="flex justify-center">
-                            <img src="{{ route('badge.svg', $journal->slug) }}" alt="Editorial Standards Seal - {{ $journal->title }}" class="h-auto w-full">
+                            <img src="{{ route('badge.svg', $journal->slug) }}" alt="Editorial Standards Seal - {{ $journal->getTranslationWithFallback('title') }}" class="h-auto w-full">
                         </div>
                         <p class="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">
-                            Vigente hasta {{ $journal->seal_expires_at->format('d/m/Y') }}
+                            {{ __('Valid until') }} {{ $journal->seal_expires_at->format('d/m/Y') }}
                         </p>
                         <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                            Esta revista aprobó la evaluación técnica de Editorial Standards Platform con una puntuación del {{ number_format($journal->current_score, 1) }}%.
+                            {{ __('This journal passed the technical evaluation of Editorial Standards Platform with a score of') }} {{ number_format($journal->current_score, 1) }}%.
                         </p>
                         <div class="mt-4 space-y-2">
                             <a href="#evaluation-criteria" class="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Verificar sello
+                                {{ __('Verify seal') }}
                             </a>
                             <a href="/methodology" class="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Conocer la metodología
+                                {{ __('Learn about the methodology') }}
                             </a>
                         </div>
                     </div>
@@ -546,53 +546,53 @@
 
                 {{-- Quick Info --}}
                 <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Información General</h3>
+                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">{{ __('General Information') }}</h3>
                     <dl class="space-y-3 text-sm">
                         @if($journal->issn_print)
                             <div class="flex justify-between">
-                                <dt class="text-gray-500 dark:text-gray-400">ISSN Impreso</dt>
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('Print ISSN') }}</dt>
                                 <dd class="font-medium text-gray-900 dark:text-white">{{ $journal->issn_print }}</dd>
                             </div>
                         @endif
                         @if($journal->issn_online)
                             <div class="flex justify-between">
-                                <dt class="text-gray-500 dark:text-gray-400">ISSN Electrónico</dt>
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('Electronic ISSN') }}</dt>
                                 <dd class="font-medium text-gray-900 dark:text-white">{{ $journal->issn_online }}</dd>
                             </div>
                         @endif
                         @if($journal->country_code)
                             <div class="flex justify-between">
-                                <dt class="text-gray-500 dark:text-gray-400">País</dt>
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('Country') }}</dt>
                                 <dd class="font-medium text-gray-900 dark:text-white">{{ $journal->country_code }}</dd>
                             </div>
                         @endif
                         @if($journal->start_year)
                             <div class="flex justify-between">
-                                <dt class="text-gray-500 dark:text-gray-400">Año de Inicio</dt>
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('Start Year') }}</dt>
                                 <dd class="font-medium text-gray-900 dark:text-white">{{ $journal->start_year }}</dd>
                             </div>
                         @endif
                         @if($journal->publication_frequency)
                             <div class="flex justify-between">
-                                <dt class="text-gray-500 dark:text-gray-400">Frecuencia</dt>
-                                <dd class="font-medium text-gray-900 dark:text-white">{{ match($journal->publication_frequency) { 'annual' => 'Anual', 'biannual' => 'Semestral', 'quarterly' => 'Trimestral', 'bimonthly' => 'Bimensual', 'monthly' => 'Mensual', 'continuous' => 'Continua', default => $journal->publication_frequency } }}</dd>
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('Frequency') }}</dt>
+                                <dd class="font-medium text-gray-900 dark:text-white">{{ match($journal->publication_frequency) { 'annual' => __('Annual'), 'biannual' => __('Biannual'), 'quarterly' => __('Quarterly'), 'bimonthly' => __('Bimonthly'), 'monthly' => __('Monthly'), 'continuous' => __('Continuous'), default => $journal->publication_frequency } }}</dd>
                             </div>
                         @endif
                         @if($journal->peer_review_type)
                             <div class="flex justify-between">
-                                <dt class="text-gray-500 dark:text-gray-400">Revisión por Pares</dt>
-                                <dd class="font-medium text-gray-900 dark:text-white">{{ match($journal->peer_review_type) { 'double_blind' => 'Doble ciego', 'single_blind' => 'Simple ciego', 'open' => 'Abierta', default => $journal->peer_review_type } }}</dd>
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('Peer Review') }}</dt>
+                                <dd class="font-medium text-gray-900 dark:text-white">{{ match($journal->peer_review_type) { 'double_blind' => __('Double blind'), 'single_blind' => __('Single blind'), 'open' => __('Open'), default => $journal->peer_review_type } }}</dd>
                             </div>
                         @endif
                         @if($journal->current_score !== null)
                             <div class="flex justify-between">
-                                <dt class="text-gray-500 dark:text-gray-400">Puntaje</dt>
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('Score') }}</dt>
                                 <dd class="font-bold {{ $journal->current_score >= 80 ? 'text-emerald-600' : ($journal->current_score >= 50 ? 'text-amber-600' : 'text-red-500') }}">{{ number_format($journal->current_score, 0) }}%</dd>
                             </div>
                         @endif
                         @if($journal->evaluated_at)
                         <div class="flex justify-between">
-                            <dt class="text-gray-500 dark:text-gray-400">Última Evaluación</dt>
+                            <dt class="text-gray-500 dark:text-gray-400">{{ __('Last Evaluation') }}</dt>
                             <dd class="font-medium text-gray-900 dark:text-white">{{ $journal->evaluated_at->format('d/m/Y') }}</dd>
                         </div>
                         @endif
@@ -602,17 +602,17 @@
                 {{-- Editorial Info --}}
                 @if($journal->editor_name || $journal->institutional_email || $journal->editorial_board_visible !== null)
                     <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">📰 Información Editorial</h3>
+                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">📰 {{ __('Editorial Information') }}</h3>
                         <dl class="space-y-3 text-sm">
                             @if($journal->editor_name)
                                 <div class="flex justify-between">
-                                    <dt class="text-gray-500 dark:text-gray-400">Editor</dt>
-                                    <dd class="font-medium text-gray-900 dark:text-white">{{ $journal->editor_name }}</dd>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('Editor') }}</dt>
+                                    <dd class="font-medium text-gray-900 dark:text-white">{{ $journal->getTranslationWithFallback('editor_name') }}</dd>
                                 </div>
                             @endif
                             @if($journal->institutional_email)
                                 <div class="flex justify-between">
-                                    <dt class="text-gray-500 dark:text-gray-400">Email</dt>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('Email') }}</dt>
                                     <dd class="font-medium text-gray-900 dark:text-white">
                                         <a href="mailto:{{ $journal->institutional_email }}" class="text-indigo-600 hover:underline dark:text-indigo-400">
                                             {{ $journal->institutional_email }}
@@ -622,8 +622,8 @@
                             @endif
                             @if($journal->editorial_board_visible !== null)
                                 <div class="flex justify-between">
-                                    <dt class="text-gray-500 dark:text-gray-400">Comité visible</dt>
-                                    <dd class="font-medium {{ $journal->editorial_board_visible ? 'text-emerald-600' : 'text-red-500' }}">{{ $journal->editorial_board_visible ? 'Sí' : 'No' }}</dd>
+                                    <dt class="text-gray-500 dark:text-gray-400">{{ __('Visible committee') }}</dt>
+                                    <dd class="font-medium {{ $journal->editorial_board_visible ? 'text-emerald-600' : 'text-red-500' }}">{{ $journal->editorial_board_visible ? __('Yes') : __('No') }}</dd>
                                 </div>
                             @endif
                         </dl>
@@ -632,14 +632,14 @@
 
                 {{-- External Links --}}
                 <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Enlaces</h3>
+                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">{{ __('Links') }}</h3>
                     <div class="space-y-3">
                         @if($journal->url)
                             <a href="{{ $journal->url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-indigo-600 hover:underline dark:text-indigo-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
-                                Sitio Web Oficial
+                                {{ __('Official Website') }}
                             </a>
                         @endif
                         @if($journal->editorial_board_url)
@@ -647,7 +647,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                Comité Editorial
+                                {{ __('Editorial Committee') }}
                             </a>
                         @endif
                         @if($journal->open_access_policy_url)
@@ -655,7 +655,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                                 </svg>
-                                Política de Acceso Abierto
+                                {{ __('Open Access Policy') }}
                             </a>
                         @endif
                         @if($journal->license_url)
@@ -663,11 +663,11 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                Licencia
+                                {{ __('License') }}
                             </a>
                         @endif
                         @if(!$journal->url && !$journal->editorial_board_url && !$journal->open_access_policy_url && !$journal->license_url)
-                            <p class="text-sm italic text-gray-400">No hay enlaces disponibles.</p>
+                            <p class="text-sm italic text-gray-400">{{ __('No links available.') }}</p>
                         @endif
                     </div>
                 </div>
@@ -675,7 +675,7 @@
                 {{-- Registered By --}}
                 @if($journal->user)
                     <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">Registrado Por</h3>
+                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">{{ __('Registered By') }}</h3>
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400 font-bold text-sm">
                                 {{ strtoupper(substr($journal->user->name, 0, 2)) }}

@@ -47,21 +47,58 @@ class JournalResource extends Resource
                                     ->directory('journal-logos')
                                     ->maxSize(2048)
                                     ->columnSpanFull(),
-                                Forms\Components\TextInput::make('title')
-                                    ->label('Título')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Nombre completo y oficial de la revista.')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', \Illuminate\Support\Str::slug($state))),
+                                Tabs::make('title_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('title.es')
+                                                ->label('Título (ES)')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Nombre completo y oficial de la revista.')
+                                                ->maxLength(255)
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(fn (Set $set, ?string $state) => filled($state) ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('title.en')
+                                                ->label('Title (EN)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('title.pt')
+                                                ->label('Título (PT)')
+                                                ->maxLength(255),
+                                        ]),
+                                    ]),
+                                Forms\Components\Select::make('primary_locale')
+                                    ->label('Idioma principal')
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Idioma principal del registro; se usa como fallback cuando una traducción está vacía.')
+                                    ->options(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'])
+                                    ->default('es')
+                                    ->required(),
                                 Forms\Components\TextInput::make('slug')
                                     ->hintIcon('heroicon-o-information-circle', tooltip: 'URL amigable generada automáticamente a partir del título.')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('abbreviated_name')
-                                    ->label('Nombre Abreviado')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Abreviatura estándar según ISO 4, si existe.')
-                                    ->maxLength(255),
+                                Tabs::make('abbreviated_name_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('abbreviated_name.es')
+                                                ->label('Nombre Abreviado (ES)')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Abreviatura estándar según ISO 4, si existe.')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('abbreviated_name.en')
+                                                ->label('Abbreviated name (EN)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('abbreviated_name.pt')
+                                                ->label('Nome Abreviado (PT)')
+                                                ->maxLength(255),
+                                        ]),
+                                    ]),
                                 Forms\Components\Select::make('user_id')
                                     ->relationship('user', 'name')
                                     ->label('Propietario')
@@ -118,10 +155,23 @@ class JournalResource extends Resource
                                     ->numeric()
                                     ->minValue(1900)
                                     ->maxValue(2100),
-                                Forms\Components\Textarea::make('description')
-                                    ->label('Descripción')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Enfoque temático, misión y alcance editorial de la revista.')
-                                    ->columnSpanFull(),
+                                Tabs::make('description_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\Textarea::make('description.es')
+                                                ->label('Descripción (ES)')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Enfoque temático, misión y alcance editorial de la revista.'),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\Textarea::make('description.en')
+                                                ->label('Description (EN)'),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\Textarea::make('description.pt')
+                                                ->label('Descrição (PT)'),
+                                        ]),
+                                    ]),
                                 Forms\Components\TagsInput::make('subject_areas')
                                     ->label('Áreas Temáticas')
                                     ->hintIcon('heroicon-o-information-circle', tooltip: 'Disciplinas principales que cubre la revista.'),
@@ -193,10 +243,23 @@ class JournalResource extends Resource
                                 Forms\Components\Toggle::make('allows_commercial_reuse')
                                     ->label('Permite Uso Comercial')
                                     ->hintIcon('heroicon-o-information-circle', tooltip: '¿Se permite reutilizar el contenido con fines comerciales?'),
-                                Forms\Components\Textarea::make('copyright_policy')
-                                    ->label('Política de Copyright')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Texto o URL de la política de derechos de autor.')
-                                    ->columnSpanFull(),
+                                Tabs::make('copyright_policy_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\Textarea::make('copyright_policy.es')
+                                                ->label('Política de Copyright (ES)')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Texto o URL de la política de derechos de autor.'),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\Textarea::make('copyright_policy.en')
+                                                ->label('Copyright Policy (EN)'),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\Textarea::make('copyright_policy.pt')
+                                                ->label('Política de Copyright (PT)'),
+                                        ]),
+                                    ]),
                                 Forms\Components\Toggle::make('licenses_visible_in_articles')
                                     ->label('Licencias Visibles en Artículos')
                                     ->hintIcon('heroicon-o-information-circle', tooltip: '¿Cada artículo muestra la licencia bajo la que se publica?'),
@@ -204,12 +267,40 @@ class JournalResource extends Resource
 
                         Tab::make('Editorial')
                             ->schema([
-                                Forms\Components\TextInput::make('publishing_institution')
-                                    ->label('Institución Editora')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Universidad u organización que publica la revista.'),
-                                Forms\Components\TextInput::make('editor_name')
-                                    ->label('Nombre del Editor')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Director/a o editor/a jefe de la revista.'),
+                                Tabs::make('publishing_institution_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('publishing_institution.es')
+                                                ->label('Institución Editora (ES)')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Universidad u organización que publica la revista.'),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('publishing_institution.en')
+                                                ->label('Publishing Institution (EN)'),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('publishing_institution.pt')
+                                                ->label('Instituição Editora (PT)'),
+                                        ]),
+                                    ]),
+                                Tabs::make('editor_name_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('editor_name.es')
+                                                ->label('Nombre del Editor (ES)')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Director/a o editor/a jefe de la revista.'),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('editor_name.en')
+                                                ->label('Editor Name (EN)'),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('editor_name.pt')
+                                                ->label('Nome do Editor (PT)'),
+                                        ]),
+                                    ]),
                                 Forms\Components\TextInput::make('institutional_email')
                                     ->label('Email Institucional')
                                     ->hintIcon('heroicon-o-information-circle', tooltip: 'Correo con dominio institucional (no Gmail/Yahoo).')
@@ -364,6 +455,7 @@ class JournalResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('Título')
+                    ->formatStateUsing(fn (Journal $record): string => $record->getTranslationWithFallback('title'))
                     ->searchable()
                     ->sortable()
                     ->wrap()
@@ -591,7 +683,7 @@ class JournalResource extends Resource
                     ->modalDescription(fn (Journal $record): string =>
                         $record->seal_notified_at
                             ? "Ya se envió un recordatorio el {$record->seal_notified_at->format('d/m/Y H:i')}. ¿Deseas enviar otro?"
-                            : "Se enviará un email al editor de \"{$record->title}\" recordándole que su sello " .
+                            : "Se enviará un email al editor de \"{$record->getTranslationWithFallback('title')}\" recordándole que su sello " .
                               ($record->seal_expires_at->isPast() ? 'ha vencido.' : "vence el {$record->seal_expires_at->format('d/m/Y')}.")
                     )
                     ->action(function (Journal $record): void {

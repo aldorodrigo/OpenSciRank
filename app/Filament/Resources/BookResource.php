@@ -35,18 +35,54 @@ class BookResource extends Resource
                         // ============================================
                         Tab::make('Identificación Básica')
                             ->schema([
-                                Forms\Components\TextInput::make('title')
-                                    ->label('Título del Libro')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', \Illuminate\Support\Str::slug($state))),
+                                Tabs::make('title_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('title.es')
+                                                ->label('Título del Libro (ES)')
+                                                ->maxLength(255)
+                                                ->live(onBlur: true)
+                                                ->afterStateUpdated(fn (Set $set, ?string $state) => filled($state) ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('title.en')
+                                                ->label('Book Title (EN)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('title.pt')
+                                                ->label('Título do Livro (PT)')
+                                                ->maxLength(255),
+                                        ]),
+                                    ]),
+                                Forms\Components\Select::make('primary_locale')
+                                    ->label('Idioma principal')
+                                    ->options(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'])
+                                    ->default('es')
+                                    ->required(),
                                 Forms\Components\TextInput::make('slug')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('subtitle')
-                                    ->label('Subtítulo')
-                                    ->maxLength(255),
+                                Tabs::make('subtitle_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('subtitle.es')
+                                                ->label('Subtítulo (ES)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('subtitle.en')
+                                                ->label('Subtitle (EN)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('subtitle.pt')
+                                                ->label('Subtítulo (PT)')
+                                                ->maxLength(255),
+                                        ]),
+                                    ]),
                                 Forms\Components\Select::make('book_type')
                                     ->label('Tipo de Obra')
                                     ->options([
@@ -170,13 +206,45 @@ class BookResource extends Resource
                                 Forms\Components\TextInput::make('publisher_city')
                                     ->label('Ciudad')
                                     ->maxLength(100),
-                                Forms\Components\TextInput::make('collection_series')
-                                    ->label('Colección / Serie')
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('sponsor_entity')
-                                    ->label('Entidad Patrocinadora')
-                                    ->placeholder('Universidad, centro de investigación, etc.')
-                                    ->maxLength(255),
+                                Tabs::make('collection_series_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('collection_series.es')
+                                                ->label('Colección / Serie (ES)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('collection_series.en')
+                                                ->label('Collection / Series (EN)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('collection_series.pt')
+                                                ->label('Coleção / Série (PT)')
+                                                ->maxLength(255),
+                                        ]),
+                                    ]),
+                                Tabs::make('sponsor_entity_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('sponsor_entity.es')
+                                                ->label('Entidad Patrocinadora (ES)')
+                                                ->placeholder('Universidad, centro de investigación, etc.')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('sponsor_entity.en')
+                                                ->label('Sponsor Entity (EN)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('sponsor_entity.pt')
+                                                ->label('Entidade Patrocinadora (PT)')
+                                                ->maxLength(255),
+                                        ]),
+                                    ]),
                                 Forms\Components\DatePicker::make('exact_publication_date')
                                     ->label('Fecha Exacta de Publicación'),
                                 Forms\Components\TextInput::make('total_pages')
@@ -198,10 +266,25 @@ class BookResource extends Resource
                         // ============================================
                         Tab::make('Contenido Académico')
                             ->schema([
-                                Forms\Components\Textarea::make('abstract')
-                                    ->label('Resumen / Abstract')
-                                    ->rows(5)
-                                    ->columnSpanFull(),
+                                Tabs::make('abstract_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\Textarea::make('abstract.es')
+                                                ->label('Resumen / Abstract (ES)')
+                                                ->rows(5),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\Textarea::make('abstract.en')
+                                                ->label('Abstract (EN)')
+                                                ->rows(5),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\Textarea::make('abstract.pt')
+                                                ->label('Resumo (PT)')
+                                                ->rows(5),
+                                        ]),
+                                    ]),
                                 Forms\Components\TagsInput::make('keywords')
                                     ->label('Palabras Clave (Keywords)')
                                     ->columnSpanFull(),
@@ -221,10 +304,25 @@ class BookResource extends Resource
                                         'posgrado' => 'Posgrado',
                                         'investigacion' => 'Investigación',
                                     ]),
-                                Forms\Components\Textarea::make('table_of_contents')
-                                    ->label('Tabla de Contenidos (Texto)')
-                                    ->rows(6)
-                                    ->columnSpanFull(),
+                                Tabs::make('table_of_contents_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\Textarea::make('table_of_contents.es')
+                                                ->label('Tabla de Contenidos (ES)')
+                                                ->rows(6),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\Textarea::make('table_of_contents.en')
+                                                ->label('Table of Contents (EN)')
+                                                ->rows(6),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\Textarea::make('table_of_contents.pt')
+                                                ->label('Sumário (PT)')
+                                                ->rows(6),
+                                        ]),
+                                    ]),
                                 Forms\Components\FileUpload::make('table_of_contents_file')
                                     ->label('Tabla de Contenidos (Archivo)')
                                     ->directory('book-toc')
@@ -260,9 +358,25 @@ class BookResource extends Resource
                                         'copyright' => 'Copyright Tradicional',
                                         'other' => 'Otra',
                                     ]),
-                                Forms\Components\TextInput::make('rights_holder')
-                                    ->label('Titular de Derechos')
-                                    ->maxLength(255),
+                                Tabs::make('rights_holder_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\TextInput::make('rights_holder.es')
+                                                ->label('Titular de Derechos (ES)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\TextInput::make('rights_holder.en')
+                                                ->label('Rights Holder (EN)')
+                                                ->maxLength(255),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\TextInput::make('rights_holder.pt')
+                                                ->label('Titular de Direitos (PT)')
+                                                ->maxLength(255),
+                                        ]),
+                                    ]),
                                 Forms\Components\Toggle::make('allows_reuse')
                                     ->label('¿Permite Reutilización?'),
                                 Forms\Components\Toggle::make('allows_commercial_use')
@@ -353,11 +467,26 @@ class BookResource extends Resource
                                     ->label('Número de Citas')
                                     ->numeric()
                                     ->minValue(0),
-                                Forms\Components\Textarea::make('available_metrics')
-                                    ->label('Métricas Disponibles')
-                                    ->placeholder('Describir métricas disponibles')
-                                    ->rows(3)
-                                    ->columnSpanFull(),
+                                Tabs::make('available_metrics_tabs')
+                                    ->columnSpanFull()
+                                    ->tabs([
+                                        Tab::make('ES')->schema([
+                                            Forms\Components\Textarea::make('available_metrics.es')
+                                                ->label('Métricas Disponibles (ES)')
+                                                ->placeholder('Describir métricas disponibles')
+                                                ->rows(3),
+                                        ]),
+                                        Tab::make('EN')->schema([
+                                            Forms\Components\Textarea::make('available_metrics.en')
+                                                ->label('Available Metrics (EN)')
+                                                ->rows(3),
+                                        ]),
+                                        Tab::make('PT')->schema([
+                                            Forms\Components\Textarea::make('available_metrics.pt')
+                                                ->label('Métricas Disponíveis (PT)')
+                                                ->rows(3),
+                                        ]),
+                                    ]),
                             ])->columns(2),
 
                         // ============================================
@@ -462,6 +591,7 @@ class BookResource extends Resource
                     ->height(70),
                 Tables\Columns\TextColumn::make('title')
                     ->label('Título')
+                    ->formatStateUsing(fn (Book $record): string => $record->getTranslationWithFallback('title'))
                     ->searchable()
                     ->limit(40),
                 Tables\Columns\TextColumn::make('user.name')

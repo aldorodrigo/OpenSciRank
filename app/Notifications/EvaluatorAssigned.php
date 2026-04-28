@@ -19,11 +19,11 @@ class EvaluatorAssigned extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Nueva revista asignada para evaluación - ' . config('app.name'))
-            ->greeting("Hola {$notifiable->name},")
-            ->line("Se te ha asignado la revista **\"{$this->journal->title}\"** para evaluación.")
-            ->line("Por favor, revisa los datos de la revista y completa la evaluación lo antes posible.")
-            ->action('Ir al Panel de Administración', url('/admin'))
-            ->line('Gracias por tu colaboración.');
+            ->subject(__('New journal assigned for evaluation') . ' - ' . config('app.name'))
+            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
+            ->line(__('The journal **":title"** has been assigned to you for evaluation.', ['title' => $this->journal->getTranslationWithFallback('title')]))
+            ->line(__('Please review the journal data and complete the evaluation as soon as possible.'))
+            ->action(__('Go to Admin Panel'), url('/admin'))
+            ->line(__('Thank you for your collaboration.'));
     }
 }

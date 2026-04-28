@@ -14,95 +14,118 @@ use App\Http\Controllers\BadgeController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StripeWebhookController;
 
-// Sitemap & SEO
+// Sitemap & SEO (no locale prefix)
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/badge/{slug}.svg', [BadgeController::class, 'show'])->name('badge.svg');
 
-// Public Routes
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+// Stripe Webhook (CSRF excluded in bootstrap/app.php)
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook');
 
-Route::get('/search', function () {
-    return view('search');
-})->name('search');
+// ───────────��──────────────────────────────────────────
+// Localizable public routes
+// ────────────────────────────────────────────��─────────
+$publicRoutes = function () {
+    Route::get('/', function () {
+        return view('home');
+    })->name('home');
 
-Route::get('/pricing', function () {
-    return view('pricing');
-})->name('pricing');
+    Route::get('/search', function () {
+        return view('search');
+    })->name('search');
 
-Route::get('/methodology', function () {
-    return view('methodology');
-})->name('methodology');
+    Route::get('/pricing', function () {
+        $products = \App\Models\Product::where('is_active', true)->get()->keyBy('slug');
+        return view('pricing', compact('products'));
+    })->name('pricing');
 
-Route::get('/contact', function () {
-    return view('contact');
-})->name('contact');
+    Route::get('/methodology', function () {
+        return view('methodology');
+    })->name('methodology');
 
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
+    Route::get('/contact', function () {
+        return view('contact');
+    })->name('contact');
 
-Route::get('/ranking', function () {
-    return redirect('/search');
-})->name('ranking');
+    Route::get('/about', function () {
+        return view('about');
+    })->name('about');
 
-Route::get('/terms', function () {
-    return view('terms');
-})->name('terms');
+    Route::get('/ranking', function () {
+        return redirect('/search');
+    })->name('ranking');
 
-Route::get('/privacy', function () {
-    return view('privacy');
-})->name('privacy');
+    Route::get('/terms', function () {
+        return view('terms');
+    })->name('terms');
 
-Route::get('/blog', function (Illuminate\Http\Request $request) {
-    $query = App\Models\CmsPost::published()->latest('published_at');
+    Route::get('/privacy', function () {
+        return view('privacy');
+    })->name('privacy');
 
-    if ($request->filled('category') && $request->category !== 'todos') {
-        $query->byCategory($request->category);
-    }
+    Route::get('/blog', function (Illuminate\Http\Request $request) {
+        $query = App\Models\CmsPost::published()->latest('published_at');
 
-    $posts = $query->paginate(12);
-    $featured = App\Models\CmsPost::published()->featured()->latest('published_at')->first();
+        if ($request->filled('category') && $request->category !== 'todos') {
+            $query->byCategory($request->category);
+        }
 
-    return view('blog.index', compact('posts', 'featured'));
-})->name('blog.index');
+        $posts = $query->paginate(12);
+        $featured = App\Models\CmsPost::published()->featured()->latest('published_at')->first();
 
-Route::get('/blog/{slug}', function (string $slug) {
-    $post = App\Models\CmsPost::published()->where('slug', $slug)->firstOrFail();
-    $related = App\Models\CmsPost::published()
-        ->where('category', $post->category)
-        ->where('id', '!=', $post->id)
-        ->latest('published_at')
-        ->limit(3)
-        ->get();
+        return view('blog.index', compact('posts', 'featured'));
+    })->name('blog.index');
 
-    return view('blog.show', compact('post', 'related'));
-})->name('blog.show');
+    Route::get('/blog/{slug}', function (string $slug) {
+        $post = App\Models\CmsPost::published()->where('slug', $slug)->firstOrFail();
+        $related = App\Models\CmsPost::published()
+            ->where('category', $post->category)
+            ->where('id', '!=', $post->id)
+            ->latest('published_at')
+            ->limit(3)
+            ->get();
 
-Route::get('/journal/{slug}', function (string $slug) {
-    $journal = Journal::where('slug', $slug)
-        ->with(['evaluationScores.criteriaItem.category', 'user', 'harvestedArticles'])
-        ->firstOrFail();
-    return view('journal.show', compact('journal'));
-})->name('journal.show');
+        return view('blog.show', compact('post', 'related'));
+    })->name('blog.show');
 
-Route::get('/journal/{slug}/articles', function (string $slug) {
-    $journal = Journal::where('slug', $slug)->firstOrFail();
-    $articles = $journal->harvestedArticles()->orderByDesc('date')->paginate(20);
-    return view('journal.articles', compact('journal', 'articles'));
-})->name('journal.articles');
+    Route::get('/journal/{slug}', function (string $slug) {
+        $journal = Journal::where('slug', $slug)
+            ->with(['evaluationScores.criteriaItem.category', 'user', 'harvestedArticles'])
+            ->firstOrFail();
+        return view('journal.show', compact('journal'));
+    })->name('journal.show');
 
-Route::get('/book/{slug}', function (string $slug) {
-    $book = Book::where('slug', $slug)->firstOrFail();
-    return view('book.show', compact('book'));
-})->name('book.show');
+    Route::get('/journal/{slug}/articles', function (string $slug) {
+        $journal = Journal::where('slug', $slug)->firstOrFail();
+        $articles = $journal->harvestedArticles()->orderByDesc('date')->paginate(20);
+        return view('journal.articles', compact('journal', 'articles'));
+    })->name('journal.articles');
 
-// Authenticated Portal Routes
-Route::middleware(['auth', 'verified'])->prefix('app')->name('app.')->group(function () {
+    Route::get('/book/{slug}', function (string $slug) {
+        $book = Book::where('slug', $slug)->firstOrFail();
+        return view('book.show', compact('book'));
+    })->name('book.show');
+};
+
+// Default locale (en) — no prefix
+Route::group([], $publicRoutes);
+
+// Non-default locales (es, pt) — with /{locale} prefix
+$nonDefaultLocales = collect(config('app.available_locales', ['en']))
+    ->reject(fn ($l) => $l === config('app.locale', 'en'))
+    ->all();
+
+foreach ($nonDefaultLocales as $locale) {
+    Route::prefix($locale)->group($publicRoutes);
+}
+
+// ──────────────────────────────────────────────────────
+// Authenticated Portal Routes (locale-aware)
+// ──────────────────────────────────────────────────────
+$authenticatedRoutes = function () {
     Route::get('/', EditorDashboard::class)->name('dashboard');
     Route::get('/profile', UserProfile::class)->name('profile');
-    
+
     // Journal routes
     Route::get('/submit', SubmissionWizard::class)->name('submit');
     Route::get('/submit/{journal}', SubmissionWizard::class)->name('submit.edit');
@@ -116,8 +139,12 @@ Route::middleware(['auth', 'verified'])->prefix('app')->name('app.')->group(func
     Route::get('/book/submit/{book}', BookSubmissionWizard::class)->name('book.submit.edit');
     Route::get('/book/checkout/{book}', BookPaymentCheckout::class)->name('book.checkout');
     Route::get('/book/checkout/{book}/success', [CheckoutSuccessController::class, 'book'])->name('book.checkout.success');
-});
+};
 
-// Stripe Webhook (CSRF excluded in bootstrap/app.php)
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
-    ->name('stripe.webhook');
+// Default locale — /app/*
+Route::middleware(['auth', 'verified'])->prefix('app')->name('app.')->group($authenticatedRoutes);
+
+// Non-default locales — /{locale}/app/*
+foreach ($nonDefaultLocales as $locale) {
+    Route::middleware(['auth', 'verified'])->prefix($locale . '/app')->name('app.')->group($authenticatedRoutes);
+}
