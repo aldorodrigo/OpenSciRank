@@ -600,19 +600,66 @@ Si el sitio muestra un error 500 o rutas no encontradas, agrega esto al `.htacce
 
 ### 9. Configurar cron jobs (scheduler de Laravel)
 
-En hPanel → **Avanzado → Cron Jobs**, agrega:
+El scheduler de Laravel necesita una entrada cron que se ejecute **cada minuto**. Laravel decide internamente qué tareas correr según lo configurado en `routes/console.php`.
+
+**Tareas programadas actualmente registradas:**
+
+| Comando | Frecuencia | Propósito |
+|---------|------------|-----------|
+| `seal:check-expiration` | Diaria a las 03:00 | Detecta sellos próximos a vencer (30 días), los marca como `expiring_soon` y envía notificación. Cuando expiran, cambia `seal_status` a `expired` y revierte `status` de la revista de `certified` a `evaluated`. |
+
+> ⚠️ **Sin este cron, los sellos vencidos seguirán apareciendo como `certified` indefinidamente.** El comando existe en el código (`app/Console/Commands/CheckSealExpiration.php`) pero solo se ejecuta si Hostinger dispara el scheduler.
+
+#### Pasos en hPanel → Avanzado → Cron Jobs
+
+1. **Crear nuevo Cron job → seleccionar "Personalizado"** (no PHP).
+2. En **"Comando a ejecutar"** pegar (ajustando la ruta a tu proyecto):
+
+   ```
+   cd /home/u123456789/domains/tudominio.com/public_html && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
+   ```
+
+3. En las 5 columnas de tiempo seleccionar **"Cada minuto (*)"** en todas.
+4. Guardar.
+
+> Para encontrar la ruta exacta del proyecto en tu servidor, conéctate por SSH y ejecuta `pwd` desde la raíz de Laravel.
+
+#### Cola de trabajos (opcional, si en el futuro se usan colas)
+
+Hoy las notificaciones son **síncronas** (no usan queue), así que no es necesario. Si en el futuro alguna notificación implementa `ShouldQueue`, agregar un segundo cron:
 
 ```
-* * * * * php /home/u123456789/editorial-standards/artisan schedule:run >> /dev/null 2>&1
-```
-
-Para procesar la cola de trabajos (emails, notificaciones), agrega un segundo cron:
-
-```
-* * * * * php /home/u123456789/editorial-standards/artisan queue:work --once --queue=default >> /dev/null 2>&1
+* * * * * cd /home/u123456789/domains/tudominio.com/public_html && /usr/bin/php artisan queue:work --once --queue=default >> /dev/null 2>&1
 ```
 
 > En hosting compartido no hay Supervisor. El cron con `--once` es la alternativa: procesa un job por minuto.
+
+#### Verificar que el scheduler está activo
+
+Por SSH, desde la raíz del proyecto:
+
+```bash
+/usr/bin/php artisan schedule:list
+```
+
+Debe listar `seal:check-expiration` con su próxima ejecución a las `03:00`.
+
+Para forzar la ejecución manual sin esperar a las 03:00:
+
+```bash
+/usr/bin/php artisan seal:check-expiration
+```
+
+Salida esperada: `Done. Expiring soon: X, Expired: Y` (cualquier número, incluido 0, indica que el comando corrió correctamente).
+
+#### Al agregar nuevas tareas programadas
+
+Cuando se modifique `routes/console.php` para agregar nuevas tareas:
+
+1. Hacer commit + push en local.
+2. `git pull origin main` en el servidor.
+3. `php artisan config:cache` (importante: el cache de configuración puede ocultar cambios).
+4. Verificar con `php artisan schedule:list`.
 
 ---
 
