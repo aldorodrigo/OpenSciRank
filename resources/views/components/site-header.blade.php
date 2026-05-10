@@ -1,3 +1,6 @@
+@php
+    $isSearchActive = request()->routeIs('search');
+@endphp
 <header class="{{ request()->is('admin*') ? 'relative' : 'sticky top-0' }} w-full border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80" style="{{ request()->is('admin*') ? 'z-index: 50;' : 'z-index: 9999;' }}" x-data="{ mobileOpen: false }">
     <div class="container mx-auto flex h-16 items-center justify-between px-4">
         {{-- Logo --}}
@@ -11,40 +14,21 @@
 
         {{-- Desktop Nav --}}
         <nav class="hidden items-center gap-1 md:flex">
-            {{-- Directory Dropdown --}}
-            <div x-data="{ open: false }" class="relative">
-                <button @click="open = !open" @click.away="open = false"
-                    class="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-400">
-                    {{ __('Directory') }}
-                    <svg class="h-4 w-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div x-show="open"
-                    x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="opacity-0 scale-95"
-                    x-transition:enter-end="opacity-100 scale-100"
-                    x-transition:leave="transition ease-in duration-75"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-95"
-                    class="absolute left-0 mt-2 w-52 rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900"
-                    style="display: none;">
-                    <div class="p-2">
-                        <a href="{{ locale_path('/search') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400">
-                            <span class="text-lg">📰</span>
-                            <div>
-                                <p class="font-medium">{{ __('Scientific Journals') }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Browse the directory') }}</p>
-                            </div>
-                        </a>
-                        <a href="{{ locale_path('/search?type=books') }}" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400">
-                            <span class="text-lg">📚</span>
-                            <div>
-                                <p class="font-medium">{{ __('Academic Books') }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Scientific books index') }}</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            {{-- Direct directory links --}}
+            <a href="{{ locale_path('/search') }}"
+               @class([
+                   'flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold transition',
+                   'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' => $isSearchActive,
+                   'text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-indigo-400' => !$isSearchActive,
+               ])
+               @if($isSearchActive) aria-current="page" @endif>
+                <span aria-hidden="true">📰</span>{{ __('Journals') }}
+            </a>
+            <a href="{{ locale_path('/search?type=books') }}"
+               class="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-indigo-400">
+                <span aria-hidden="true">📚</span>{{ __('Books') }}
+            </a>
+            <span class="mx-2 h-5 w-px bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
 
             <a href="{{ locale_path('/methodology') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-400">{{ __('Methodology') }}</a>
             <a href="{{ locale_path('/pricing') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-400">{{ __('Pricing') }}</a>
@@ -123,9 +107,8 @@
         class="border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-950 md:hidden"
         style="display:none;">
         <nav class="container mx-auto space-y-1 px-4 py-4">
-            <p class="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">{{ __('Directory') }}</p>
-            <a href="{{ locale_path('/search') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">📰 {{ __('Scientific Journals') }}</a>
-            <a href="{{ locale_path('/search?type=books') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">📚 {{ __('Academic Books') }}</a>
+            <a href="{{ locale_path('/search') }}" class="flex items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2.5 text-sm font-bold text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">📰 {{ __('Journals directory') }}</a>
+            <a href="{{ locale_path('/search?type=books') }}" class="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">📚 {{ __('Books directory') }}</a>
             <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
             <a href="{{ locale_path('/methodology') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">{{ __('Methodology') }}</a>
             <a href="{{ locale_path('/pricing') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">{{ __('Pricing') }}</a>

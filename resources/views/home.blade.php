@@ -271,6 +271,65 @@
     </section>
     @endif
 
+    {{-- Explore Directories --}}
+    <section class="bg-white py-20 dark:bg-gray-900">
+        <div class="container mx-auto px-4">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">{{ __('Explore our directories') }}</h2>
+                <p class="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-gray-400">{{ __('Two open public directories where you can discover evaluated and certified academic content.') }}</p>
+            </div>
+            <div class="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
+                {{-- Journals --}}
+                <a href="{{ locale_path('/search') }}" class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800 dark:hover:border-indigo-600">
+                    <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-100/50 blur-3xl transition group-hover:bg-indigo-200/60 dark:bg-indigo-900/20"></div>
+                    <div class="relative">
+                        <div class="mb-5 flex items-center gap-4">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-indigo-100 text-3xl dark:bg-indigo-900/50">📰</div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Scientific Journals') }}</h3>
+                                <p class="text-sm text-indigo-600 dark:text-indigo-400">{{ __('Evaluated and certified') }}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400">{{ __('Browse journals across disciplines, filter by area, country and Open Access, and check their editorial scores.') }}</p>
+                        <div class="mt-6 flex items-end justify-between">
+                            <div>
+                                <p class="text-4xl font-extrabold text-indigo-600 dark:text-indigo-400">{{ $journalCount }}</p>
+                                <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Journals available') }}</p>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 transition-all group-hover:gap-2 dark:text-indigo-400">
+                                {{ __('Browse directory') }} →
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+                {{-- Books --}}
+                <a href="{{ locale_path('/search?type=books') }}" class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800 dark:hover:border-amber-600">
+                    <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amber-100/50 blur-3xl transition group-hover:bg-amber-200/60 dark:bg-amber-900/20"></div>
+                    <div class="relative">
+                        <div class="mb-5 flex items-center gap-4">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-amber-100 text-3xl dark:bg-amber-900/50">📚</div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Academic Books') }}</h3>
+                                <p class="text-sm text-amber-600 dark:text-amber-400">{{ __('Indexed and listed') }}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400">{{ __('Discover indexed academic books with verified bibliographic metadata, ISBN and publishing institution.') }}</p>
+                        <div class="mt-6 flex items-end justify-between">
+                            <div>
+                                <p class="text-4xl font-extrabold text-amber-600 dark:text-amber-400">{{ $bookCount }}</p>
+                                <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Books indexed') }}</p>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 transition-all group-hover:gap-2 dark:text-amber-400">
+                                {{ __('Browse directory') }} →
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
     {{-- How It Works --}}
     <section class="bg-white py-20 dark:bg-gray-900">
         <div class="container mx-auto px-4">
