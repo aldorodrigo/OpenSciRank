@@ -5,11 +5,39 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Translatable\HasTranslations;
 
 class Journal extends Model
 {
-    use HasFactory, SoftDeletes, HasTranslations;
+    use HasFactory, SoftDeletes, HasTranslations, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'status',
+                'seal_status',
+                'assigned_evaluator_id',
+                'current_score',
+                'current_level',
+                'seal_expires_at',
+                'seal_notified_at',
+                'listed_at',
+                'evaluated_at',
+                'evaluation_notes',
+            ])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->setDescriptionForEvent(fn (string $eventName): string => match ($eventName) {
+                'created' => 'Revista creada',
+                'updated' => 'Revista actualizada',
+                'deleted' => 'Revista eliminada',
+                'restored' => 'Revista restaurada',
+                default => $eventName,
+            });
+    }
 
     public array $translatable = [
         'title',

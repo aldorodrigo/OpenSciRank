@@ -4,11 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Translatable\HasTranslations;
 
 class Book extends Model
 {
-    use SoftDeletes, HasTranslations;
+    use SoftDeletes, HasTranslations, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'status',
+                'listed_at',
+                'approval_date',
+                'responsible_editor_id',
+            ])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->setDescriptionForEvent(fn (string $eventName): string => match ($eventName) {
+                'created' => 'Libro creado',
+                'updated' => 'Libro actualizado',
+                'deleted' => 'Libro eliminado',
+                'restored' => 'Libro restaurado',
+                default => $eventName,
+            });
+    }
 
     public array $translatable = [
         'title',

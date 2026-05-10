@@ -278,6 +278,18 @@ class EvaluateJournal extends Page
             }
         }
 
+        activity()
+            ->performedOn($this->record)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'score' => $score,
+                'cores_failed' => $coresFailed,
+                'final_status' => $this->assigned_status,
+                'level' => $this->assigned_level ?: null,
+                'seal_awarded' => $this->assigned_status === 'certified',
+            ])
+            ->log("Evaluación completada: {$score}% — estado: {$this->assigned_status}");
+
         Notification::make()
             ->title('Evaluación completada')
             ->body($body)

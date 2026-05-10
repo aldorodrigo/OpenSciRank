@@ -39,6 +39,11 @@ class CheckSealExpiration extends Command
                 $journal->user->notify(new SealExpiringSoon($journal));
             }
 
+            activity()
+                ->performedOn($journal)
+                ->withProperties(['seal_expires_at' => $journal->seal_expires_at?->toDateString()])
+                ->log('Sello marcado como próximo a vencer (automático)');
+
             $this->line("  ⚠ Expiring soon: {$journal->title} (expires {$journal->seal_expires_at->format('d/m/Y')})");
         }
 
@@ -61,6 +66,11 @@ class CheckSealExpiration extends Command
             if ($journal->user) {
                 $journal->user->notify(new SealExpired($journal));
             }
+
+            activity()
+                ->performedOn($journal)
+                ->withProperties(['seal_expires_at' => $journal->seal_expires_at?->toDateString()])
+                ->log('Sello vencido: estado revertido a evaluada (automático)');
 
             $this->line("  ✗ Expired: {$journal->title}");
         }

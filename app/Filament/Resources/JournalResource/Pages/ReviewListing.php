@@ -88,6 +88,15 @@ class ReviewListing extends Page
             };
         }
 
+        activity()
+            ->performedOn($this->record)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'final_status' => $this->assigned_status,
+                'has_notes' => filled($this->evaluation_notes),
+            ])
+            ->log("Revisión de listado: {$statusText}");
+
         Notification::make()
             ->title('Revisión completada')
             ->body("La revista ha sido {$statusText} correctamente.")

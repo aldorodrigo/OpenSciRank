@@ -1,27 +1,28 @@
 <x-layouts.app :title="$book->getTranslationWithFallback('title') . ' - Editorial Standards Platform'" :description="__('Public profile of the academic book') . ' ' . $book->getTranslationWithFallback('title') . ' ' . __('in the Editorial Standards Platform index.')">
+    @php
+        $jsonLd = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Book',
+            'name' => $book->getTranslationWithFallback('title'),
+            'url' => url('/book/' . $book->slug),
+            'isbn' => $book->isbn_print ?? $book->isbn_online ?? $book->isbn ?? null,
+            'description' => $book->getTranslationWithFallback('abstract')
+                ? strip_tags($book->getTranslationWithFallback('abstract'))
+                : null,
+            'publisher' => $book->publisher
+                ? ['@type' => 'Organization', 'name' => $book->publisher]
+                : null,
+            'datePublished' => $book->publication_year ? (string) $book->publication_year : null,
+            'inLanguage' => $book->primary_language ?? 'es',
+            'isPartOf' => [
+                '@type' => 'WebSite',
+                'name' => 'Editorial Standards Platform',
+                'url' => url('/'),
+            ],
+        ]);
+    @endphp
     <x-slot:jsonLd>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Book",
-        "name": {{ Js::from($book->getTranslationWithFallback('title')) }},
-        "url": "{{ url('/book/' . $book->slug) }}",
-        @if($book->isbn_print)"isbn": {{ Js::from($book->isbn_print) }},@endif
-        @if($book->isbn_digital)"isbn": {{ Js::from($book->isbn_digital) }},@endif
-        @if($book->description)"description": {{ Js::from(strip_tags($book->description)) }},@endif
-        @if($book->publisher)"publisher": {
-            "@type": "Organization",
-            "name": {{ Js::from($book->publisher) }}
-        },@endif
-        @if($book->publication_year)"datePublished": "{{ $book->publication_year }}",@endif
-        "inLanguage": "es",
-        "isPartOf": {
-            "@type": "WebSite",
-            "name": "Editorial Standards Platform",
-            "url": "{{ url('/') }}"
-        }
-    }
-    </script>
+    <script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     </x-slot:jsonLd>
 
     <x-slot:header>true</x-slot:header>

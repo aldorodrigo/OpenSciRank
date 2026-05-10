@@ -14,6 +14,7 @@ Plataforma de evaluación y visibilidad de revistas científicas y libros acadé
 | Contenedores | Laravel Sail (Docker) |
 | Email (dev) | Mailpit |
 | Pagos | Stripe |
+| Auditoría | spatie/laravel-activitylog |
 
 ---
 
@@ -177,6 +178,34 @@ Los cambios en Blade, Livewire y CSS se reflejan instantáneamente en el navegad
 ./vendor/bin/sail artisan db:seed --class=ProductSeeder             # Productos/planes
 ./vendor/bin/sail artisan db:seed --class=JournalSeeder             # 104 revistas reales
 ```
+
+---
+
+## Auditoría de cambios (Activity Log)
+
+Las revistas, libros y pagos registran automáticamente un historial de cambios usando [spatie/laravel-activitylog](https://github.com/spatie/laravel-activitylog).
+
+### Qué se registra
+
+| Modelo | Atributos auditados | Eventos custom |
+|--------|---------------------|----------------|
+| `Journal` | `status`, `seal_status`, `assigned_evaluator_id`, `current_score`, `current_level`, `seal_expires_at`, `seal_notified_at`, `listed_at`, `evaluated_at`, `evaluation_notes` | Asignación de evaluador · Evaluación completada · Revisión de listado · Cosecha OAI · Recordatorio de sello · Transición automática de sello vencido |
+| `Book` | `status`, `listed_at`, `approval_date`, `responsible_editor_id` | (solo cambios de atributos) |
+| `Payment` | `status`, `amount`, `currency`, `stripe_session_id`, `product_id` | (solo cambios de atributos) |
+
+### Dónde se consulta
+
+Cada revista y libro tiene una pestaña **"Historial"** en su vista de Filament que muestra fecha, usuario causante, evento y diff de cambios. Los eventos sin usuario (causer null) son acciones automáticas del sistema (cron, webhook).
+
+### Limpieza periódica
+
+Para limitar el crecimiento de la tabla `activity_log` (Spatie purga registros antiguos según `config/activitylog.php`, por defecto a los 365 días):
+
+```bash
+php artisan activitylog:clean
+```
+
+Se puede agregar al scheduler si en el futuro se vuelve relevante.
 
 ---
 
@@ -717,6 +746,8 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 ```
+
+> **Nota sobre paquetes nuevos:** cuando un deploy agrega un paquete de Composer (ej. `spatie/laravel-activitylog`), no es necesario correr `composer require` ni `vendor:publish` en el servidor — `composer install` ya instala el paquete porque está en `composer.lock`, y los archivos publicados (migraciones, configs) viajan en el repo. Solo asegúrate de correr `php artisan migrate --force` si el deploy incluye migraciones nuevas.
 
 ---
 

@@ -613,6 +613,15 @@ class JournalResource extends Resource
                         $evaluator = User::find($data['assigned_evaluator_id']);
                         if ($evaluator) {
                             $evaluator->notify(new EvaluatorAssigned($record));
+
+                            activity()
+                                ->performedOn($record)
+                                ->causedBy(auth()->user())
+                                ->withProperties([
+                                    'evaluator_id' => $evaluator->id,
+                                    'evaluator_name' => $evaluator->name,
+                                ])
+                                ->log("Evaluador asignado: {$evaluator->name}");
                         }
 
                         \Filament\Notifications\Notification::make()
@@ -654,6 +663,16 @@ class JournalResource extends Resource
                         try {
                             $service = app(OaiPmhService::class);
                             $count = $service->listRecords($record);
+
+                            activity()
+                                ->performedOn($record)
+                                ->causedBy(auth()->user())
+                                ->withProperties([
+                                    'articles_count' => $count,
+                                    'oai_base_url' => $record->oai_base_url,
+                                ])
+                                ->log("Cosecha OAI-PMH ejecutada: {$count} artículo(s)");
+
                             Notification::make()
                                 ->title('✅ Cosecha completada')
                                 ->body("{$count} artículo(s) obtenidos.")
@@ -661,6 +680,12 @@ class JournalResource extends Resource
                                 ->duration(8000)
                                 ->send();
                         } catch (\Exception $e) {
+                            activity()
+                                ->performedOn($record)
+                                ->causedBy(auth()->user())
+                                ->withProperties(['error' => $e->getMessage()])
+                                ->log('Cosecha OAI-PMH fallida');
+
                             Notification::make()
                                 ->title('❌ Error en la cosecha')
                                 ->body($e->getMessage())
@@ -690,13 +715,24 @@ class JournalResource extends Resource
                         $owner = $record->user;
                         if (!$owner) return;
 
-                        if ($record->seal_expires_at->isPast()) {
+                        $isPast = $record->seal_expires_at->isPast();
+
+                        if ($isPast) {
                             $owner->notify(new SealExpired($record));
                         } else {
                             $owner->notify(new SealExpiringSoon($record));
                         }
 
                         $record->update(['seal_notified_at' => now()]);
+
+                        activity()
+                            ->performedOn($record)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'recipient' => $owner->email,
+                                'seal_expires_at' => $record->seal_expires_at?->toDateString(),
+                            ])
+                            ->log($isPast ? 'Recordatorio enviado: sello vencido' : 'Recordatorio enviado: sello por vencer');
 
                         Notification::make()
                             ->title('Recordatorio enviado')
@@ -766,6 +802,7 @@ class JournalResource extends Resource
     {
         return [
             RelationManagers\HarvestedArticlesRelationManager::class,
+            \App\Filament\RelationManagers\ActivitiesRelationManager::class,
         ];
     }
 
