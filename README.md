@@ -181,6 +181,40 @@ Los cambios en Blade, Livewire y CSS se reflejan instantáneamente en el navegad
 
 ---
 
+## Exportación de datos (CSV / XLSX)
+
+El panel admin permite exportar a CSV o XLSX desde tres recursos:
+
+| Recurso | Ubicación del botón |
+|---------|--------------------|
+| **Revistas** | Botón "Exportar" en cabecera + bulk action "Exportar seleccionados" |
+| **Libros** | Botón "Exportar" en cabecera + bulk action "Exportar seleccionados" |
+| **Pagos** | Botón "Exportar" en cabecera + bulk action "Exportar seleccionados" |
+
+### Cómo funciona
+
+1. El admin pulsa "Exportar" → Filament abre un modal para elegir CSV o XLSX y las columnas a incluir.
+2. Si la tabla tiene filtros activos, **solo se exporta lo filtrado**.
+3. La exportación se procesa en segundo plano vía cola (`exports` queue). En `QUEUE_CONNECTION=sync` (modo Hostinger compartido sin worker) se procesa de inmediato.
+4. Una notificación en el panel ofrece el botón "Descargar" cuando termina.
+
+### Requisitos
+
+- Tablas `exports`, `failed_import_rows` y `imports` en la BD (publicadas por Filament Actions).
+- Disk `local` o el que defina `EXPORTS_DISK` con permisos de escritura en `storage/app/private/filament-exports/`.
+
+### Columnas exportadas
+
+Definidas en `app/Filament/Exports/`:
+
+- `JournalExporter` — 21 campos (título, estado, score, evaluador, ISSN, sello, fechas, etc.).
+- `BookExporter` — 25 campos (título, ISBN, DOI, editorial, idioma, licencia, etc.).
+- `PaymentExporter` — 14 campos (fecha, comprador, producto, monto, proveedor, ID Stripe, etc.).
+
+Para agregar/quitar columnas: editar el método `getColumns()` del Exporter correspondiente.
+
+---
+
 ## Auditoría de cambios (Activity Log)
 
 Las revistas, libros y pagos registran automáticamente un historial de cambios usando [spatie/laravel-activitylog](https://github.com/spatie/laravel-activitylog).

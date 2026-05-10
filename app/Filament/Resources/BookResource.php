@@ -2,8 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\BookExporter;
 use App\Filament\Resources\BookResource\Pages;
 use App\Models\Book;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -652,11 +655,22 @@ class BookResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_open_access')
                     ->label('Acceso Abierto'),
             ])
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Exportar')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->exporter(BookExporter::class),
+            ])
             ->actions([
                 \Filament\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->label('Exportar seleccionados')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->exporter(BookExporter::class),
                     \Filament\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\JournalExporter;
 use App\Filament\Resources\JournalResource\Pages;
 use App\Filament\Resources\JournalResource\RelationManagers;
 use App\Models\Journal;
@@ -10,6 +11,8 @@ use App\Notifications\EvaluatorAssigned;
 use App\Notifications\SealExpired;
 use App\Notifications\SealExpiringSoon;
 use App\Services\OaiPmhService;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Notifications\Notification;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -590,6 +593,13 @@ class JournalResource extends Resource
                     ),
                 Tables\Filters\TrashedFilter::make(),
             ])
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Exportar')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->exporter(JournalExporter::class),
+            ])
             ->actions([
                 \Filament\Actions\ActionGroup::make([
                 \Filament\Actions\Action::make('assign_evaluator')
@@ -790,6 +800,10 @@ class JournalResource extends Resource
                                 ->send();
                         })
                         ->deselectRecordsAfterCompletion(),
+                    ExportBulkAction::make()
+                        ->label('Exportar seleccionados')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->exporter(JournalExporter::class),
                     \Filament\Actions\DeleteBulkAction::make(),
                     \Filament\Actions\ForceDeleteBulkAction::make(),
                     \Filament\Actions\RestoreBulkAction::make(),

@@ -2,9 +2,12 @@
 
 namespace App\Filament\Resources\Payments\Tables;
 
+use App\Filament\Exports\PaymentExporter;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -63,11 +66,23 @@ class PaymentsTable
                         'refunded' => 'Reembolsado',
                     ]),
             ])
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Exportar')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    ->exporter(PaymentExporter::class),
+            ])
             ->recordActions([
                 ViewAction::make(),
             ])
             ->toolbarActions([
-                // Auditoría: no se pueden crear pagos manualmente ni eliminar masivamente.
+                BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->label('Exportar seleccionados')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->exporter(PaymentExporter::class),
+                ]),
             ]);
     }
 }
