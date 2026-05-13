@@ -215,7 +215,12 @@ class EditorDashboard extends Component
             ->where('status', 'requires_changes_listing')
             ->findOrFail($journalId);
 
-        $journal->update(['status' => 'pending_listing']);
+        // Resubmisión gratuita: el listing es gratis, no hay cobro.
+        // Reseteamos submitted_at para que el SLA cuente desde este reenvío.
+        $journal->update([
+            'status' => 'pending_listing',
+            'submitted_at' => now(),
+        ]);
         session()->flash('message', __('Your journal has been resubmitted for listing review.'));
     }
 
@@ -225,7 +230,12 @@ class EditorDashboard extends Component
             ->where('status', 'requires_changes_listing')
             ->findOrFail($bookId);
 
-        $book->update(['status' => 'pending_listing']);
+        // Resubmisión gratuita tras cambios pedidos: el editor ya pagó el
+        // listing — corregir y reenviar no genera cobro nuevo.
+        $book->update([
+            'status' => 'pending_listing',
+            'submitted_at' => now(),
+        ]);
         session()->flash('message', __('Your book has been resubmitted for listing review.'));
     }
 

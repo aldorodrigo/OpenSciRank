@@ -521,6 +521,18 @@ class BookSubmissionWizard extends Component
     public function submit()
     {
         $this->saveDraft();
+
+        // Resubmisión gratuita tras pedido de cambios del revisor.
+        // El editor ya pagó el listing — corregir y reenviar no genera cobro.
+        if ($this->book->status === 'requires_changes_listing') {
+            $this->book->update([
+                'status' => 'pending_listing',
+                'submitted_at' => now(),
+            ]);
+            session()->flash('message', __('Your corrections were submitted. The listing review will resume shortly.'));
+            return redirect()->route('app.dashboard');
+        }
+
         return redirect()->route('app.book.checkout', $this->book);
     }
 

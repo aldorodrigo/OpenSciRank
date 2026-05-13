@@ -664,18 +664,13 @@
                                                         </button>
                                                     @endif
 
-                                                    {{-- Corregir y Reenviar (evaluación) --}}
+                                                    {{-- Corregir y Reenviar (evaluación) — resubmisión gratuita --}}
                                                     @if($journal->status === 'requires_changes_evaluation')
-                                                        <button @click="open = false; openConfirm(
-                                                            '{{ __('Request Re-evaluation') }}',
-                                                            '{{ __('Confirm that you have made the corrections indicated by the evaluator. You will be redirected to payment for a new editorial evaluation.') }}',
-                                                            '{{ route('app.checkout', $journal) }}',
-                                                            '{{ __('Continue to Payment — $99') }}'
-                                                        )"
-                                                            class="flex w-full items-center gap-2 px-4 py-2 text-sm text-emerald-600 hover:bg-gray-50 dark:text-emerald-400 dark:hover:bg-gray-700">
+                                                        <a href="{{ route('app.submit.edit', $journal) }}"
+                                                            class="flex items-center gap-2 px-4 py-2 text-sm text-emerald-600 hover:bg-gray-50 dark:text-emerald-400 dark:hover:bg-gray-700">
                                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                             {{ __('Fix and Resubmit') }}
-                                                        </button>
+                                                        </a>
                                                     @endif
 
                                                     {{-- Renovar Sello (vencido o próximo a vencer) --}}

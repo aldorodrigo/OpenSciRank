@@ -418,6 +418,18 @@ class SubmissionWizard extends Component
             return redirect()->route('app.dashboard');
         }
 
+        // Resubmisión gratuita tras pedido de cambios del evaluador.
+        // El editor ya pagó la evaluación en este ciclo — corregir y
+        // reenviar no genera un cobro nuevo.
+        if ($this->journal->status === 'requires_changes_evaluation') {
+            $this->journal->update([
+                'status' => 'submitted',
+                'submitted_at' => now(),
+            ]);
+            session()->flash('message', __('Your corrections were submitted. The evaluation will resume shortly.'));
+            return redirect()->route('app.dashboard');
+        }
+
         return redirect()->route('app.checkout', $this->journal);
     }
 
