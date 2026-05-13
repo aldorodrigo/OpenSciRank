@@ -247,7 +247,7 @@
                                     <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Editorial Re-evaluation') }}</h3>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Full new evaluation to improve your score or achieve the seal.') }}</p>
                                 </div>
-                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['journal-reevaluation']?->price ? number_format($products['journal-reevaluation']->price, 0) : '79' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
+                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['journal-reevaluation']?->price ? number_format($products['journal-reevaluation']->price, 0) : '99' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
                             </div>
                         </div>
                     </div>

@@ -52,7 +52,7 @@
     "renewal_rejected.score": "**Final score:** :score%",
     "renewal_rejected.completed": "The evaluation you paid for has been completed. Here are the details:",
     "renewal_rejected.notes_label": "**Evaluator observations:**",
-    "renewal_rejected.retry_offer": "To retry, you can purchase a **re-evaluation** at a lower cost and work on the failed indicators before submitting again.",
+    "renewal_rejected.retry_offer": "To retry, you can purchase a **re-evaluation** and work on the failed indicators before submitting again.",
     "renewal_rejected.cta": "Purchase re-evaluation",
     "renewal_rejected.support": "If you have questions about the failed indicators, please contact our team.",
     "Renew your Editorial Seal": "Renew your Editorial Seal",

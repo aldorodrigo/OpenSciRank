@@ -42,9 +42,11 @@ class ProductSeeder extends Seeder
             [
                 'slug' => 'journal-reevaluation',
                 'primary_locale' => 'es',
-                // Roadmap #16: baja de $99 → $79 para incentivar el reciclaje
-                // de datos ya cargados y separar el ticket de la evaluación inicial.
-                'price' => 79.00,
+                // Ajuste 2026-05-13: re-evaluación implica el mismo trabajo de
+                // admin que la inicial (revisar 18 criterios), por lo tanto
+                // se igualan los precios. La diferencia que justifica un SKU
+                // separado es el flujo: no se entra como revista nueva.
+                'price' => 99.00,
                 'currency' => 'USD',
                 'is_active' => true,
                 'name' => [

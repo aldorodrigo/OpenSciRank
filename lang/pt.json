@@ -1278,7 +1278,7 @@
     "renewal_rejected.score": "**Pontuação obtida:** :score%",
     "renewal_rejected.completed": "A avaliação que você pagou foi concluída. Confira os detalhes:",
     "renewal_rejected.notes_label": "**Observações do avaliador:**",
-    "renewal_rejected.retry_offer": "Para tentar novamente, você pode adquirir uma **reavaliação** a um custo menor e trabalhar os indicadores que falharam antes de submeter novamente.",
+    "renewal_rejected.retry_offer": "Para tentar novamente, você pode adquirir uma **reavaliação** e trabalhar os indicadores que falharam antes de submeter novamente.",
     "renewal_rejected.cta": "Comprar reavaliação",
     "renewal_rejected.support": "Se tiver dúvidas sobre os indicadores que falharam, entre em contato com nossa equipe.",
     "Renew your Editorial Seal": "Renove seu Selo Editorial",
