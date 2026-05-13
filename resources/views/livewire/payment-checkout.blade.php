@@ -8,6 +8,9 @@
     $reevalProduct = $products->firstWhere('slug', 'journal-reevaluation');
     $selectedProduct = $products->firstWhere('id', $selectedPlan);
     $canOfferExpress = $this->canOfferExpress;
+    $isAutoEarlyDiscount = $this->isAutoEarlyDiscountApplied;
+    $discountAmount = $this->discountAmount;
+    $earlyDeadline = $this->earlyDiscountDeadline;
 @endphp
 
 <div class="bg-gray-50 py-8 dark:bg-gray-950">
@@ -190,6 +193,27 @@
                     </div>
                 @endif
 
+                {{-- Coupon code (manual; precedencia sobre auto-apply) --}}
+                <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                    <label for="manualCouponCode" class="block text-sm font-semibold text-gray-900 dark:text-white">
+                        {{ __('Discount code') }}
+                    </label>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        {{ __('Have a coupon? Enter it here. A manual code overrides any automatic discount.') }}
+                    </p>
+                    <input id="manualCouponCode"
+                        type="text"
+                        wire:model.live.debounce.500ms="manualCouponCode"
+                        placeholder="{{ __('Coupon code') }}"
+                        class="mt-3 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white" />
+                    @if($isAutoEarlyDiscount)
+                        <div class="mt-3 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            {{ __(':pct% OFF — early renewal', ['pct' => \App\Livewire\PaymentCheckout::EARLY_RENEWAL_DISCOUNT_PCT]) }}
+                        </div>
+                    @endif
+                </div>
+
                 {{-- Payment Info --}}
                 <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                     <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Payment Method') }}</h2>
@@ -245,6 +269,21 @@
                                 <span class="text-gray-600 dark:text-gray-400">{{ __('Express service (+5 days turnaround)') }}</span>
                                 <span class="font-medium text-gray-900 dark:text-white">+${{ number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 2) }}</span>
                             </div>
+                        @endif
+
+                        @if($isAutoEarlyDiscount && $discountAmount > 0)
+                            <div class="flex justify-between text-sm">
+                                <span class="inline-flex items-center gap-1.5 font-medium text-emerald-700 dark:text-emerald-400">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    {{ __('Early renewal discount (-:pct%)', ['pct' => \App\Livewire\PaymentCheckout::EARLY_RENEWAL_DISCOUNT_PCT]) }}
+                                </span>
+                                <span class="font-semibold text-emerald-700 dark:text-emerald-400">−${{ number_format($discountAmount, 2) }}</span>
+                            </div>
+                            @if($earlyDeadline)
+                                <p class="text-xs text-emerald-700/80 dark:text-emerald-400/80">
+                                    {{ __('Promo valid until :date', ['date' => $earlyDeadline->format('d/m/Y')]) }}
+                                </p>
+                            @endif
                         @endif
 
                         <div class="flex justify-between text-sm">

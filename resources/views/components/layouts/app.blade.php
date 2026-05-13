@@ -121,6 +121,7 @@
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
                                 <li><a href="{{ locale_path('/methodology') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Methodology') }}</a></li>
                                 <li><a href="{{ locale_path('/pricing') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Editorial Evaluation') }}</a></li>
+                                <li><a href="{{ locale_path('/seal-renewal') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Seal renewal information') }}</a></li>
                                 <li><a href="{{ locale_path('/register') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Register Journal') }}</a></li>
                                 <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('For Institutions') }}</a></li>
                             </ul>

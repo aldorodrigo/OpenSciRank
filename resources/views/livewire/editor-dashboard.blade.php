@@ -554,7 +554,25 @@
                                                 </p>
                                             @endif
 
-                                            @if(in_array($journal->seal_status, ['expiring_soon', 'expired'], true) || $journal->seal_expires_at->isPast())
+                                            @php
+                                                // Ventana D-60..D-30: badge ámbar de 10% OFF
+                                                // (consistente con PaymentCheckout::getIsInEarlyRenewalWindowProperty)
+                                                $isInEarlyWindow = $journal->seal_expires_at
+                                                    && ! $journal->seal_expires_at->isPast()
+                                                    && (int) now()->startOfDay()->diffInDays($journal->seal_expires_at->copy()->startOfDay(), false) >= 30
+                                                    && (int) now()->startOfDay()->diffInDays($journal->seal_expires_at->copy()->startOfDay(), false) <= 60;
+                                            @endphp
+
+                                            @if($isInEarlyWindow)
+                                                <a href="{{ route('app.renew', $journal) }}"
+                                                    class="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-amber-500">
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                                    {{ __('Renew') }}
+                                                </a>
+                                                <span class="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                                                    {{ __(':pct% OFF — early renewal', ['pct' => \App\Livewire\PaymentCheckout::EARLY_RENEWAL_DISCOUNT_PCT]) }}
+                                                </span>
+                                            @elseif(in_array($journal->seal_status, ['expiring_soon', 'expired'], true) || $journal->seal_expires_at->isPast())
                                                 <a href="{{ route('app.renew', $journal) }}"
                                                     class="mt-2 inline-flex items-center gap-1.5 rounded-lg {{ $journal->seal_expires_at->isPast() ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500' }} px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition">
                                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>

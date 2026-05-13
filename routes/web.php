@@ -39,6 +39,8 @@ $publicRoutes = function () {
         return view('pricing', compact('products'));
     })->name('pricing');
 
+    Route::get('/seal-renewal', fn () => view('seal-renewal-info'))->name('seal.renewal.info');
+
     Route::get('/methodology', function () {
         return view('methodology');
     })->name('methodology');

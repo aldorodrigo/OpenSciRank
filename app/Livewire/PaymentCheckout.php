@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Coupon;
 use App\Models\Journal;
 use App\Models\Product;
 use App\Services\StripePaymentService;
@@ -30,7 +31,25 @@ class PaymentCheckout extends Component
     /** Toggle del uplift Express (+$50, 5 días vs 15). */
     public bool $expressUplift = false;
 
+    /**
+     * Cupón provisto manualmente por el editor (pegado en un input). Tiene
+     * precedencia absoluta sobre el auto-apply de renovación temprana: si
+     * el editor escribió algo, respetamos su elección y no aplicamos nada
+     * en automático aunque la fecha encaje en la ventana D-60..D-30.
+     */
+    public string $manualCouponCode = '';
+
     public bool $processing = false;
+
+    /**
+     * Stripe coupon ID que se aplica automáticamente para renovaciones
+     * tempranas (60-30 días antes del vencimiento del sello). El admin
+     * debe haberlo creado previamente en el Dashboard de Stripe.
+     */
+    public const EARLY_RENEWAL_COUPON_CODE = 'RENEW_EARLY_10';
+
+    /** Porcentaje de descuento que aplica el cupón de renovación temprana. */
+    public const EARLY_RENEWAL_DISCOUNT_PCT = 10;
 
     public function mount(Journal $journal)
     {
@@ -239,8 +258,108 @@ class PaymentCheckout extends Component
         }
     }
 
+    /**
+     * Ventana D-60..D-30: el journal está certificado, tiene fecha de
+     * vencimiento del sello, y faltan entre 30 y 60 días (inclusive) para
+     * que venza. Si la ventana se cumple Y el plan seleccionado es una
+     * renovación, aplicamos automáticamente el cupón RENEW_EARLY_10.
+     *
+     * Carbon ops: `seal_expires_at` está entre `now()->addDays(30)` y
+     * `now()->addDays(60)` (ambos inclusive). Calculamos en días enteros
+     * con `startOfDay()` para evitar bordes por hora.
+     */
     #[Computed]
-    public function getTotalProperty(): float
+    public function getIsInEarlyRenewalWindowProperty(): bool
+    {
+        if (! $this->journal->seal_expires_at) {
+            return false;
+        }
+
+        $expiresAt = $this->journal->seal_expires_at->copy()->startOfDay();
+        $today = now()->startOfDay();
+
+        // Si ya venció, no es renovación temprana — es tardía/recovery.
+        if ($expiresAt->isPast()) {
+            return false;
+        }
+
+        $daysUntilExpiry = $today->diffInDays($expiresAt, false);
+
+        return $daysUntilExpiry >= 30 && $daysUntilExpiry <= 60;
+    }
+
+    /**
+     * Producto seleccionado actualmente es una renovación de sello
+     * (slug empieza con `seal-renewal-`).
+     */
+    protected function selectedIsRenewalProduct(): bool
+    {
+        $product = Product::find($this->selectedPlan);
+        if (! $product) {
+            return false;
+        }
+
+        return str_starts_with($product->slug, 'seal-renewal-');
+    }
+
+    /**
+     * Cupón de Stripe que la app va a aplicar al crear la sesión.
+     *
+     * Precedencia (mayor a menor):
+     *  1. `$manualCouponCode` — si el editor pegó un código a mano, manda.
+     *  2. `RENEW_EARLY_10` — auto-apply para renovación temprana D-60..D-30
+     *     SÓLO si el producto seleccionado es una renovación.
+     *  3. null — sin cupón.
+     */
+    #[Computed]
+    public function getAppliedCouponCodeProperty(): ?string
+    {
+        // 1. Manual tiene precedencia absoluta (sea válido o no — Stripe rechaza al validar).
+        $manual = trim($this->manualCouponCode);
+        if ($manual !== '') {
+            return $manual;
+        }
+
+        // 2. Auto-apply: ventana D-60..D-30 + producto de renovación + cupón existe y usable.
+        if ($this->isInEarlyRenewalWindow && $this->selectedIsRenewalProduct()) {
+            $coupon = Coupon::where('code', self::EARLY_RENEWAL_COUPON_CODE)->first();
+            if ($coupon && $coupon->isUsable()) {
+                return $coupon->code;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Indica si el cupón aplicado es el auto-apply de renovación temprana
+     * (para mostrar el badge "Descuento renovación temprana" en el resumen).
+     */
+    #[Computed]
+    public function getIsAutoEarlyDiscountAppliedProperty(): bool
+    {
+        if (trim($this->manualCouponCode) !== '') {
+            return false;
+        }
+
+        return $this->appliedCouponCode === self::EARLY_RENEWAL_COUPON_CODE;
+    }
+
+    /**
+     * Fecha límite en la que vence la promoción D-30 (cuando cierra la
+     * ventana de renovación temprana para este journal).
+     */
+    #[Computed]
+    public function getEarlyDiscountDeadlineProperty(): ?\Carbon\Carbon
+    {
+        if (! $this->journal->seal_expires_at) {
+            return null;
+        }
+        return $this->journal->seal_expires_at->copy()->subDays(30);
+    }
+
+    #[Computed]
+    public function getSubtotalProperty(): float
     {
         $total = 0;
         $mainProduct = Product::find($this->selectedPlan);
@@ -259,6 +378,38 @@ class PaymentCheckout extends Component
         }
 
         return $total;
+    }
+
+    /**
+     * Monto del descuento aplicado SÓLO al producto principal de renovación
+     * (Stripe en este modo aplica el cupón sobre el line item completo, pero
+     * en la UI mostramos el monto computado sobre el plan elegido + addons
+     * para que el editor entienda el ahorro estimado).
+     *
+     * Nota: el cálculo real lo hace Stripe en checkout. Esto es preview.
+     */
+    #[Computed]
+    public function getDiscountAmountProperty(): float
+    {
+        if (! $this->isAutoEarlyDiscountApplied) {
+            return 0.0;
+        }
+
+        // 10% del producto principal de renovación. No descuenta sobre
+        // addons (Stripe aplica el cupón sobre la sesión completa por
+        // defecto, así que esta es una aproximación conservadora UI).
+        $mainProduct = Product::find($this->selectedPlan);
+        if (! $mainProduct) {
+            return 0.0;
+        }
+
+        return round((float) $mainProduct->price * (self::EARLY_RENEWAL_DISCOUNT_PCT / 100), 2);
+    }
+
+    #[Computed]
+    public function getTotalProperty(): float
+    {
+        return max(0, $this->subtotal - $this->discountAmount);
     }
 
     public function selectPlan(int $planId)
@@ -287,6 +438,7 @@ class PaymentCheckout extends Component
             $cancelRoute = $this->isRenewal ? 'app.renew' : 'app.checkout';
 
             $useExpress = $this->expressUplift && $this->canOfferExpress;
+            $couponCode = $this->appliedCouponCode;
 
             $session = $service->createCheckoutSession(
                 user: auth()->user(),
@@ -294,10 +446,12 @@ class PaymentCheckout extends Component
                 payable: $this->journal,
                 successUrl: route('app.checkout.success', ['journal' => $this->journal->id]).'?session_id={CHECKOUT_SESSION_ID}',
                 cancelUrl: route($cancelRoute, ['journal' => $this->journal->id]),
+                couponCode: $couponCode,
                 metadata: [
                     'is_renewal' => $this->isRenewal ? '1' : '0',
                     'addon_ids' => implode(',', $this->selectedAddons),
                     'express' => $useExpress ? '1' : '0',
+                    'auto_early_discount' => $this->isAutoEarlyDiscountApplied ? '1' : '0',
                 ],
                 addonProductIds: $this->selectedAddons,
                 expressUplift: $useExpress,

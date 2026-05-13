@@ -106,6 +106,69 @@
                 {{-- Bloque institucional desactivado 2026-05-10, ver roadmap #22 --}}
             </div>
 
+            {{-- Seal Renewal (Sprint 3 #13) — bloque informativo al final de Scientific Journals --}}
+            <div class="mx-auto mt-16 max-w-5xl">
+                <div class="rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-700">
+                    <div class="mb-8 text-center">
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ __('Renewal of the Editorial Seal') }}</h2>
+                        <p class="mt-2 text-gray-500 dark:text-gray-400">{{ __('Keep your certification active') }}</p>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-3">
+                        {{-- 1 año --}}
+                        <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-800">
+                            <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('1 Year') }}</p>
+                            <p class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
+                                ${{ $products['seal-renewal-1y']?->price ? number_format($products['seal-renewal-1y']->price, 0) : '89' }}
+                                <span class="text-xs font-normal text-gray-500">USD</span>
+                            </p>
+                        </div>
+                        {{-- 2 años (highlight) --}}
+                        <div class="rounded-xl bg-indigo-50 p-6 text-center ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:ring-indigo-700">
+                            <p class="text-xs uppercase tracking-wide text-indigo-700 dark:text-indigo-300">{{ __('2 Years') }} · {{ __('most picked') }}</p>
+                            <p class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
+                                ${{ $products['seal-renewal-2y']?->price ? number_format($products['seal-renewal-2y']->price, 0) : '149' }}
+                                <span class="text-xs font-normal text-gray-500">USD</span>
+                            </p>
+                        </div>
+                        {{-- 3 años --}}
+                        <div class="rounded-xl bg-emerald-50 p-6 text-center ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:ring-emerald-700">
+                            <p class="text-xs uppercase tracking-wide text-emerald-700 dark:text-emerald-300">{{ __('3 Years') }} · {{ __('best value') }}</p>
+                            <p class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
+                                ${{ $products['seal-renewal-3y']?->price ? number_format($products['seal-renewal-3y']->price, 0) : '199' }}
+                                <span class="text-xs font-normal text-gray-500">USD</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul class="mt-8 grid gap-3 sm:grid-cols-2">
+                        <li class="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            {{ __('Seal validity: up to 3 years depending on plan') }}
+                        </li>
+                        <li class="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            {{ __('Early renewal (60-30 days before expiration): 10% discount') }}
+                        </li>
+                        <li class="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            {{ __('What is included: new evaluation + badge refresh + recommendations') }}
+                        </li>
+                        <li class="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            {{ __("If your seal expires: the journal reverts to 'Evaluated' status; you keep your score, but lose the public badge until you renew.") }}
+                        </li>
+                    </ul>
+
+                    <div class="mt-8 text-center">
+                        <a href="{{ locale_path('/seal-renewal') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                            {{ __('Seal renewal information') }}
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             {{-- Book Listing --}}
             <div class="mx-auto mt-12 max-w-5xl">
                 <h2 class="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">{{ __('Academic Books') }}</h2>
