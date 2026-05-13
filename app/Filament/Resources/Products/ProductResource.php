@@ -20,8 +20,6 @@ class ProductResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Comercial';
-
     protected static ?string $navigationLabel = 'Productos';
 
     protected static ?string $modelLabel = 'Producto';
@@ -29,6 +27,11 @@ class ProductResource extends Resource
     protected static ?string $pluralModelLabel = 'Productos';
 
     protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.commercial');
+    }
 
     public static function form(Schema $schema): Schema
     {

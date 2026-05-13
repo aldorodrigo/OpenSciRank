@@ -22,9 +22,13 @@ class CmsPostResource extends Resource
     protected static ?string $model = CmsPost::class;
 
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
-    protected static string | UnitEnum | null $navigationGroup = 'Contenido';
     protected static ?string $navigationLabel = 'Blog';
     protected static ?int $navigationSort = 3;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.content');
+    }
     protected static ?string $modelLabel = 'Artículo';
     protected static ?string $pluralModelLabel = 'Artículos';
 

@@ -1,4 +1,8 @@
 {
+    "navigation.content": "Conteúdo",
+    "navigation.evaluation": "Avaliação",
+    "navigation.commercial": "Comercial",
+    "navigation.system": "Sistema",
     "(and :count more error)": "(e mais :count erro)",
     "(and :count more errors)": "(e mais :count erro)|(e mais :count erros)|(e mais :count erros)",
     "A decryption key is required.": "Uma chave de descriptografia é necessária.",

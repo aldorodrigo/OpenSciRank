@@ -1,4 +1,8 @@
 {
+    "navigation.content": "Content",
+    "navigation.evaluation": "Evaluation",
+    "navigation.commercial": "Commercial",
+    "navigation.system": "System",
     "Guías": "Guides",
     "Ciencia Abierta": "Open Science",
     "Indexación": "Indexing",

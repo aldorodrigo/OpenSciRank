@@ -19,7 +19,10 @@ class CriteriaItemResource extends Resource
 
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Evaluación';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.evaluation');
+    }
 
     protected static ?string $modelLabel = 'Indicador de Evaluación';
 

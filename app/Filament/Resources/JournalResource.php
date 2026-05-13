@@ -32,8 +32,12 @@ class JournalResource extends Resource
     protected static ?string $model = Journal::class;
 
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-newspaper';
-    protected static string | UnitEnum | null $navigationGroup = 'Contenido';
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('navigation.content');
+    }
 
     public static function form(Schema $form): Schema
     {
