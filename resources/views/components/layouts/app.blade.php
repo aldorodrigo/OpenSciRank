@@ -153,6 +153,46 @@
             </footer>
         @endisset
 
+        {{-- Toast de renovación de sello (D-60 a D+30) --}}
+        @if(session()->has('renewal_toast'))
+        @php $toast = session('renewal_toast'); @endphp
+        <div
+            x-data="{ show: true }"
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-4"
+            x-init="setTimeout(() => show = false, 12000)"
+            class="fixed bottom-6 right-6 z-50 w-80 rounded-xl border border-amber-300 bg-amber-50 p-4 shadow-xl dark:border-amber-700 dark:bg-amber-950"
+            role="alert"
+            aria-live="polite"
+        >
+            <div class="flex items-start gap-3">
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/60">
+                    <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-amber-800 dark:text-amber-200">{{ $toast['title'] }}</p>
+                    <p class="mt-0.5 text-xs text-amber-700 dark:text-amber-300 truncate">{{ $toast['message'] }}</p>
+                    <a href="{{ $toast['url'] }}"
+                       class="mt-2 inline-flex items-center rounded-md bg-amber-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        {{ $toast['cta'] }}
+                    </a>
+                </div>
+                <button @click="show = false" class="shrink-0 text-amber-400 hover:text-amber-600 dark:hover:text-amber-200" aria-label="Cerrar">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        @endif
+
         @livewireScripts
     </body>
 </html>

@@ -75,5 +75,56 @@
     "3 Years": "3 Years",
     "most picked": "most picked",
     "best value": "best value",
-    "Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (5 business days instead of 15).": "Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (5 business days instead of 15)."
+    "Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (5 business days instead of 15).": "Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (5 business days instead of 15).",
+
+    "notifications.seal_early_reminder.subject": "Your editorial seal expires in :days days — Editorial Standards Platform",
+    "notifications.seal_early_reminder.greeting": "Hello :name,",
+    "notifications.seal_early_reminder.line1": "We are writing to let you know that the Editorial Standards Seal for your journal **\":title\"** expires in **:days days** (on :date). There is still plenty of time to renew without any rush.",
+    "notifications.seal_early_reminder.line2": "Renewing before the expiration date ensures your seal never lapses and your journal keeps its certified visibility in the directory.",
+    "notifications.seal_early_reminder.line3": "An early renewal benefit is coming soon. For now, you can start the process from your dashboard.",
+    "notifications.seal_early_reminder.cta": "Renew seal now",
+    "notifications.seal_early_reminder.footer": "Thank you for trusting Editorial Standards Platform.",
+
+    "notifications.seal_expiring_soon.subject": "Your seal expires in :days days — renew now",
+    "notifications.seal_expiring_soon.greeting": "Hello :name,",
+    "notifications.seal_expiring_soon.line1": "The Editorial Standards Seal for your journal **\":title\"** expires in **:days days** (on :date). Once expired, it will no longer be valid and cannot be displayed on your website.",
+    "notifications.seal_expiring_soon.line2": "Renew now to keep your certification active without interruption.",
+    "notifications.seal_expiring_soon.cta": "Renew seal",
+    "notifications.seal_expiring_soon.footer": "Thank you for trusting Editorial Standards Platform.",
+
+    "notifications.seal_expiring_urgent.subject": ":days days left before your seal expires — act now",
+    "notifications.seal_expiring_urgent.greeting": "Hello :name,",
+    "notifications.seal_expiring_urgent.line1": "Attention: the seal for **\":title\"** expires in **:days days** (on :date). Once expired, it will be removed from the public directory and lose its value as a certification.",
+    "notifications.seal_expiring_urgent.line2": "Renew it in minutes from your dashboard to avoid any interruption.",
+    "notifications.seal_expiring_urgent.cta": "Renew seal urgently",
+    "notifications.seal_expiring_urgent.footer": "Editorial Standards Platform — verified editorial quality.",
+
+    "notifications.seal_expiring_last_week.subject": "Last week: your seal expires on :date",
+    "notifications.seal_expiring_last_week.greeting": "Hello :name,",
+    "notifications.seal_expiring_last_week.line1": "Only **:days days** left before the seal for **\":title\"** expires (on :date).",
+    "notifications.seal_expiring_last_week.line2": "If you do not renew before that date, the seal will expire and your journal will no longer display the certification. Your score and evaluation are preserved.",
+    "notifications.seal_expiring_last_week.line3": "You can renew right now — the process takes less than 5 minutes.",
+    "notifications.seal_expiring_last_week.cta": "Renew seal now",
+    "notifications.seal_expiring_last_week.footer": "Editorial Standards Platform — verified editorial quality.",
+
+    "notifications.seal_expired.subject": "The seal for \":title\" has expired",
+    "notifications.seal_expired.greeting": "Hello :name,",
+    "notifications.seal_expired.line1": "The Editorial Standards Seal for your journal **\":title\"** has expired.",
+    "notifications.seal_expired.line2": "This means the seal is no longer valid and should not be displayed on your website. Your journal retains its score and evaluation.",
+    "notifications.seal_expired.line3": "You can renew the seal at any time. The renewal includes a new evaluation that validates your current editorial standards.",
+    "notifications.seal_expired.line4": "Start the renewal now to recover your certification.",
+    "notifications.seal_expired.cta": "Renew seal",
+    "notifications.seal_expired.footer": "Thank you for trusting Editorial Standards Platform.",
+
+    "notifications.seal_recovery.subject": "You can still recover the seal for \":title\"",
+    "notifications.seal_recovery.greeting": "Hello :name,",
+    "notifications.seal_recovery.line1": "It has been a few days since the seal for **\":title\"** expired, but you can still recover it.",
+    "notifications.seal_recovery.line2": "You can still recover your seal. The renewal includes a new evaluation that validates your current editorial standards. If you score ≥75% with all critical indicators met, the seal is renewed automatically.",
+    "notifications.seal_recovery.line3": "Do not wait — the sooner you start the renewal, the sooner you can display the certification on your website again.",
+    "notifications.seal_recovery.cta": "Recover my seal",
+    "notifications.seal_recovery.footer": "Thank you for trusting Editorial Standards Platform.",
+
+    "renewal_toast.title": "Your editorial seal is about to expire",
+    "renewal_toast.message": "The journal \":title\" expires on :date.",
+    "renewal_toast.cta": "Renew"
 }

@@ -143,19 +143,39 @@
                     </div>
                 </div>
             @elseif($bannerType === 'seal_expiring' && $sealJournal)
-                <div class="relative rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-white p-6 shadow-lg dark:border-amber-800 dark:from-amber-950/50 dark:to-gray-900">
+                {{-- D-30..D-0: urgencia naranja --}}
+                <div class="relative rounded-xl border border-amber-300 bg-gradient-to-r from-amber-50 to-white p-6 shadow-lg dark:border-amber-700 dark:from-amber-950/50 dark:to-gray-900">
                     <button @click="dismissed = true; localStorage.setItem('dashboard-banner-seal_expiring', 'true')" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                     <div class="flex items-start gap-4">
                         <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/50">
-                            <svg class="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg class="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-amber-800 dark:text-amber-300">{{ __('Your seal is about to expire') }}</h3>
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('The seal of') }} <strong>{{ $sealJournal->getTranslationWithFallback('title') }}</strong> {{ __('expires on') }} {{ $sealJournal->seal_expires_at->format('d/m/Y') }}. {{ __('Renew in advance to avoid losing the certification.') }}</p>
                             <div class="mt-4">
                                 <a href="{{ route('app.renew', $sealJournal) }}" class="inline-flex items-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-500">{{ __('Renew Seal — $129 USD') }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @elseif($bannerType === 'seal_expiring_early' && $sealJournal)
+                {{-- D-60..D-30: aviso anticipado ámbar suave --}}
+                <div class="relative rounded-xl border border-yellow-200 bg-gradient-to-r from-yellow-50 to-white p-6 shadow-lg dark:border-yellow-800 dark:from-yellow-950/50 dark:to-gray-900">
+                    <button @click="dismissed = true; localStorage.setItem('dashboard-banner-seal_expiring_early', 'true')" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/50">
+                            <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-300">{{ __('Your seal expires in less than 2 months') }}</h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('The seal of') }} <strong>{{ $sealJournal->getTranslationWithFallback('title') }}</strong> {{ __('expires on') }} {{ $sealJournal->seal_expires_at->format('d/m/Y') }}. {{ __('Plan your renewal in advance to maintain uninterrupted certification.') }}</p>
+                            <div class="mt-4">
+                                <a href="{{ route('app.renew', $sealJournal) }}" class="inline-flex items-center rounded-lg bg-yellow-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-yellow-500">{{ __('Plan renewal') }}</a>
                             </div>
                         </div>
                     </div>

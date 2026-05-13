@@ -2,50 +2,117 @@
 
 namespace App\Livewire;
 
+use App\Models\Book;
+use App\Models\Journal;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\Journal;
-use App\Models\Book;
 
 class EditorDashboard extends Component
 {
     use WithPagination;
 
+    public function mount(): void
+    {
+        // Detectar journals en ventana de renovación (D-60 a D+30) para el toast
+        // de login. Se flashea una vez por sesión; si ya existe la key no se sobreescribe.
+        if (! session()->has('renewal_toast')) {
+            $candidate = Journal::where('user_id', auth()->id())
+                ->whereNotNull('seal_expires_at')
+                ->where('seal_expires_at', '>=', now()->subDays(30))
+                ->where('seal_expires_at', '<=', now()->addDays(60))
+                ->orderBy('seal_expires_at')
+                ->first();
+
+            if ($candidate) {
+                session()->flash('renewal_toast', [
+                    'title' => __('renewal_toast.title'),
+                    'message' => __('renewal_toast.message', [
+                        'title' => $candidate->getTranslationWithFallback('title'),
+                        'date' => $candidate->seal_expires_at->format('d/m/Y'),
+                    ]),
+                    'cta' => __('renewal_toast.cta'),
+                    'url' => route('app.renew', $candidate, true),
+                ]);
+            }
+        }
+    }
+
     public bool $showObservationsModal = false;
+
     public string $observationsNotes = '';
+
     public string $observationsTitle = '';
+
     public ?int $observationsJournalId = null;
+
     public ?int $observationsBookId = null;
 
     // Ordenamiento
     public string $journalSortField = 'title';
+
     public string $journalSortDir = 'asc';
+
     public string $bookSortField = 'title';
+
     public string $bookSortDir = 'asc';
 
     // Filtros de revistas
     public string $journalSearch = '';
+
     public string $journalStatusFilter = '';
+
     public string $journalScoreFilter = '';
+
     public string $journalSealFilter = '';
 
     // Filtros de libros
     public string $bookSearch = '';
+
     public string $bookStatusFilter = '';
+
     public string $bookScoreFilter = '';
 
     // Paginación separada por tabla
     public int $journalPage = 1;
+
     public int $bookPage = 1;
+
     public int $perPage = 5;
 
-    public function updatedJournalSearch(): void { $this->journalPage = 1; }
-    public function updatedJournalStatusFilter(): void { $this->journalPage = 1; }
-    public function updatedJournalScoreFilter(): void { $this->journalPage = 1; }
-    public function updatedJournalSealFilter(): void { $this->journalPage = 1; }
-    public function updatedBookSearch(): void { $this->bookPage = 1; }
-    public function updatedBookStatusFilter(): void { $this->bookPage = 1; }
-    public function updatedBookScoreFilter(): void { $this->bookPage = 1; }
+    public function updatedJournalSearch(): void
+    {
+        $this->journalPage = 1;
+    }
+
+    public function updatedJournalStatusFilter(): void
+    {
+        $this->journalPage = 1;
+    }
+
+    public function updatedJournalScoreFilter(): void
+    {
+        $this->journalPage = 1;
+    }
+
+    public function updatedJournalSealFilter(): void
+    {
+        $this->journalPage = 1;
+    }
+
+    public function updatedBookSearch(): void
+    {
+        $this->bookPage = 1;
+    }
+
+    public function updatedBookStatusFilter(): void
+    {
+        $this->bookPage = 1;
+    }
+
+    public function updatedBookScoreFilter(): void
+    {
+        $this->bookPage = 1;
+    }
 
     public function changePerPage(int $value): void
     {
@@ -179,22 +246,36 @@ class EditorDashboard extends Component
         try {
             $service = app(\App\Services\OaiPmhService::class);
             $count = $service->listRecords($journal);
-            session()->flash('message', '✅ ' . __('Harvest completed: :count article(s) retrieved.', ['count' => $count]));
+            session()->flash('message', '✅ '.__('Harvest completed: :count article(s) retrieved.', ['count' => $count]));
         } catch (\Exception $e) {
-            session()->flash('error', '❌ ' . __('Harvest error: :message', ['message' => $e->getMessage()]));
+            session()->flash('error', '❌ '.__('Harvest error: :message', ['message' => $e->getMessage()]));
         }
     }
 
     private function computeBannerType($journals): string
     {
         $hasExpiredSeal = $journals->contains(fn ($j) => $j->seal_expires_at?->isPast());
-        $hasExpiringSeal = $journals->contains(fn ($j) => $j->seal_expires_at && ! $j->seal_expires_at->isPast() && now()->diffInDays($j->seal_expires_at) <= 60);
+        // D-30..D-0: sello en zona de urgencia (expiring_soon ya activo)
+        $hasExpiringSeal = $journals->contains(
+            fn ($j) => $j->seal_expires_at
+                && ! $j->seal_expires_at->isPast()
+                && now()->diffInDays($j->seal_expires_at) <= 30
+        );
+        // D-60..D-30: aviso temprano (sello todavía active)
+        $hasEarlyExpiringSeal = ! $hasExpiringSeal && $journals->contains(
+            fn ($j) => $j->seal_expires_at
+                && ! $j->seal_expires_at->isPast()
+                && now()->diffInDays($j->seal_expires_at) <= 60
+        );
 
         if ($hasExpiredSeal) {
             return 'seal_expired';
         }
         if ($hasExpiringSeal) {
             return 'seal_expiring';
+        }
+        if ($hasEarlyExpiringSeal) {
+            return 'seal_expiring_early';
         }
         if ($journals->isEmpty()) {
             return 'welcome';
@@ -224,10 +305,12 @@ class EditorDashboard extends Component
                 if ($this->journalStatusFilter === 'action_needed') {
                     return $c->whereIn('status', ['draft', 'listed', 'evaluated', 'requires_changes_listing', 'requires_changes_evaluation']);
                 }
+
                 return $c->where('status', $this->journalStatusFilter);
             })
             ->when($this->journalScoreFilter, fn ($c) => $c->filter(function ($j) {
                 $score = $j->score;
+
                 return match ($this->journalScoreFilter) {
                     'high' => $score >= 75,
                     'medium' => $score >= 50 && $score < 75,
@@ -261,6 +344,7 @@ class EditorDashboard extends Component
             ->when($this->bookStatusFilter, fn ($c) => $c->where('status', $this->bookStatusFilter))
             ->when($this->bookScoreFilter, fn ($c) => $c->filter(function ($b) {
                 $score = $b->score;
+
                 return match ($this->bookScoreFilter) {
                     'high' => $score >= 75,
                     'medium' => $score >= 50 && $score < 75,
@@ -291,7 +375,7 @@ class EditorDashboard extends Component
             ? $allJournals->firstWhere('status', 'listed')
             : null;
 
-        $sealJournal = in_array($bannerType, ['seal_expired', 'seal_expiring'])
+        $sealJournal = in_array($bannerType, ['seal_expired', 'seal_expiring', 'seal_expiring_early'])
             ? $allJournals->first(fn ($j) => $j->seal_expires_at && ($j->seal_expires_at->isPast() || now()->diffInDays($j->seal_expires_at) <= 60))
             : null;
 
@@ -309,7 +393,7 @@ class EditorDashboard extends Component
             'listedJournal' => $listedJournal,
             'sealJournal' => $sealJournal,
         ])->layout('components.layouts.app', [
-            'title' => __('My Dashboard') . ' - Editorial Standards Platform',
+            'title' => __('My Dashboard').' - Editorial Standards Platform',
         ]);
     }
 }

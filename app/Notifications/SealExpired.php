@@ -3,11 +3,15 @@
 namespace App\Notifications;
 
 use App\Models\Journal;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\App;
 
 class SealExpired extends Notification
 {
+    use Queueable;
+
     public function __construct(public Journal $journal) {}
 
     public function via(object $notifiable): array
@@ -17,16 +21,16 @@ class SealExpired extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
+        App::setLocale($notifiable->preferred_locale ?? 'es');
+
         return (new MailMessage)
-            ->subject(__('Your Editorial Standards Seal has expired') . ' - ' . config('app.name'))
-            ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
-            ->line(__('The Editorial Standards Seal of your journal **":title"** has expired.', ['title' => $this->journal->getTranslationWithFallback('title')]))
-            ->line(__('This means that:'))
-            ->line(__('- The seal is no longer valid and should not be displayed on your website.'))
-            ->line(__('- Your journal retains its score and evaluation level.'))
-            ->line(__('- You can renew the seal at any time.'))
-            ->line(__('Renew for 2 years and recover your editorial certification.'))
-            ->action(__('Renew Seal'), url("/app/renew/{$this->journal->id}"))
-            ->line(__('Thank you for trusting :app.', ['app' => config('app.name')]));
+            ->subject(__('notifications.seal_expired.subject', ['title' => $this->journal->getTranslationWithFallback('title')]))
+            ->greeting(__('notifications.seal_expired.greeting', ['name' => $notifiable->name]))
+            ->line(__('notifications.seal_expired.line1', ['title' => $this->journal->getTranslationWithFallback('title')]))
+            ->line(__('notifications.seal_expired.line2'))
+            ->line(__('notifications.seal_expired.line3'))
+            ->line(__('notifications.seal_expired.line4'))
+            ->action(__('notifications.seal_expired.cta'), route('app.renew', $this->journal, true))
+            ->line(__('notifications.seal_expired.footer'));
     }
 }

@@ -1297,5 +1297,56 @@
     "3 Years": "3 Anos",
     "most picked": "mais escolhido",
     "best value": "melhor valor",
-    "Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (5 business days instead of 15).": "O serviço Express está disponível como upgrade de +$:amount no checkout de avaliação ou reavaliação (5 dias úteis em vez de 15)."
+    "Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (5 business days instead of 15).": "O serviço Express está disponível como upgrade de +$:amount no checkout de avaliação ou reavaliação (5 dias úteis em vez de 15).",
+
+    "notifications.seal_early_reminder.subject": "Seu selo editorial vence em :days dias — Editorial Standards Platform",
+    "notifications.seal_early_reminder.greeting": "Olá :name,",
+    "notifications.seal_early_reminder.line1": "Estamos escrevendo para informar que o Editorial Standards Seal da sua revista **\":title\"** vence em **:days dias** (em :date). Ainda há tempo de renová-lo com tranquilidade.",
+    "notifications.seal_early_reminder.line2": "Renovar antes do vencimento garante que seu selo nunca fique inativo e que sua revista mantenha sua visibilidade certificada no diretório.",
+    "notifications.seal_early_reminder.line3": "Em breve disponibilizaremos um benefício de renovação antecipada. Por enquanto, você pode iniciar o processo pelo seu painel.",
+    "notifications.seal_early_reminder.cta": "Renovar selo agora",
+    "notifications.seal_early_reminder.footer": "Obrigado por confiar na Editorial Standards Platform.",
+
+    "notifications.seal_expiring_soon.subject": "Seu selo vence em :days dias — renove agora",
+    "notifications.seal_expiring_soon.greeting": "Olá :name,",
+    "notifications.seal_expiring_soon.line1": "O Editorial Standards Seal da sua revista **\":title\"** vence em **:days dias** (em :date). Após esse prazo, ele não será mais válido e não poderá ser exibido no seu site.",
+    "notifications.seal_expiring_soon.line2": "Renove agora para manter sua certificação ativa sem interrupções.",
+    "notifications.seal_expiring_soon.cta": "Renovar selo",
+    "notifications.seal_expiring_soon.footer": "Obrigado por confiar na Editorial Standards Platform.",
+
+    "notifications.seal_expiring_urgent.subject": ":days dias restantes para seu selo vencer — aja agora",
+    "notifications.seal_expiring_urgent.greeting": "Olá :name,",
+    "notifications.seal_expiring_urgent.line1": "Atenção: o selo de **\":title\"** vence em **:days dias** (em :date). Após o vencimento, ele será removido do diretório público e perderá validade como certificação.",
+    "notifications.seal_expiring_urgent.line2": "Renove em minutos pelo seu painel para evitar qualquer interrupção.",
+    "notifications.seal_expiring_urgent.cta": "Renovar selo com urgência",
+    "notifications.seal_expiring_urgent.footer": "Editorial Standards Platform — qualidade editorial verificada.",
+
+    "notifications.seal_expiring_last_week.subject": "Última semana: seu selo vence em :date",
+    "notifications.seal_expiring_last_week.greeting": "Olá :name,",
+    "notifications.seal_expiring_last_week.line1": "Restam apenas **:days dias** para o vencimento do selo de **\":title\"** (em :date).",
+    "notifications.seal_expiring_last_week.line2": "Se você não renovar antes dessa data, o selo vencerá e sua revista deixará de exibir a certificação. Sua pontuação e avaliação são preservadas.",
+    "notifications.seal_expiring_last_week.line3": "Você pode renovar agora mesmo — o processo leva menos de 5 minutos.",
+    "notifications.seal_expiring_last_week.cta": "Renovar selo agora",
+    "notifications.seal_expiring_last_week.footer": "Editorial Standards Platform — qualidade editorial verificada.",
+
+    "notifications.seal_expired.subject": "O selo de \":title\" expirou",
+    "notifications.seal_expired.greeting": "Olá :name,",
+    "notifications.seal_expired.line1": "O Editorial Standards Seal da sua revista **\":title\"** expirou.",
+    "notifications.seal_expired.line2": "Isso significa que o selo não é mais válido e não deve ser exibido no seu site. Sua revista mantém sua pontuação e avaliação.",
+    "notifications.seal_expired.line3": "Você pode renovar o selo a qualquer momento. A renovação inclui uma nova avaliação que valida seu estado editorial atual.",
+    "notifications.seal_expired.line4": "Inicie a renovação agora para recuperar sua certificação.",
+    "notifications.seal_expired.cta": "Renovar selo",
+    "notifications.seal_expired.footer": "Obrigado por confiar na Editorial Standards Platform.",
+
+    "notifications.seal_recovery.subject": "Você ainda pode recuperar o selo de \":title\"",
+    "notifications.seal_recovery.greeting": "Olá :name,",
+    "notifications.seal_recovery.line1": "Já se passaram alguns dias desde que o selo de **\":title\"** expirou, mas você ainda pode recuperá-lo.",
+    "notifications.seal_recovery.line2": "Você ainda pode recuperar seu selo. A renovação inclui uma nova avaliação que valida seu estado editorial atual. Se você obtiver ≥75% com todos os indicadores críticos atendidos, o selo é renovado automaticamente.",
+    "notifications.seal_recovery.line3": "Não espere mais — quanto antes você iniciar a renovação, mais cedo poderá exibir a certificação no seu site novamente.",
+    "notifications.seal_recovery.cta": "Recuperar meu selo",
+    "notifications.seal_recovery.footer": "Obrigado por confiar na Editorial Standards Platform.",
+
+    "renewal_toast.title": "Seu selo editorial está prestes a vencer",
+    "renewal_toast.message": "A revista \":title\" vence em :date.",
+    "renewal_toast.cta": "Renovar"
 }
