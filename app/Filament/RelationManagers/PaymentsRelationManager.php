@@ -3,9 +3,11 @@
 namespace App\Filament\RelationManagers;
 
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -32,13 +34,13 @@ class PaymentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('transaction_id')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label('Producto')
                     ->formatStateUsing(fn (Model $record): string => $record->product?->getTranslationWithFallback('name') ?? '—')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->label('Monto')
                     ->money(fn (Model $record) => $record->currency ?? 'USD')
                     ->sortable()
@@ -49,7 +51,7 @@ class PaymentsRelationManager extends RelationManager
                             ->money('USD')
                     ),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->label('Estado')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -67,13 +69,13 @@ class PaymentsRelationManager extends RelationManager
                         default => $state,
                     }),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Fecha')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->description(fn (Model $record): string => $record->created_at->locale('es')->diffForHumans()),
 
-                Tables\Columns\TextColumn::make('transaction_id')
+                TextColumn::make('transaction_id')
                     ->label('ID Transacción')
                     ->copyable()
                     ->limit(24)
@@ -84,7 +86,7 @@ class PaymentsRelationManager extends RelationManager
             ->paginated([10, 25])
             ->defaultPaginationPageOption(10)
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label('Estado')
                     ->options([
                         'pending' => 'Pendiente',
@@ -95,7 +97,7 @@ class PaymentsRelationManager extends RelationManager
             ])
             ->headerActions([])
             ->actions([
-                Tables\Actions\Action::make('ver_en_stripe')
+                Action::make('ver_en_stripe')
                     ->label('Ver en Stripe')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->color('gray')
