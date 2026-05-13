@@ -37,6 +37,14 @@
             </div>
         </div>
 
+        {{-- Flash de error (redirecciones desde checkout cuando validacion falla) --}}
+        @if(session('error'))
+        <div class="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/30">
+            <svg class="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/></svg>
+            <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
+        </div>
+        @endif
+
         {{-- Banner Contextual --}}
         @if($bannerType !== 'none')
         <div x-data="{ dismissed: localStorage.getItem('dashboard-banner-{{ $bannerType }}') === 'true' }" x-show="!dismissed" x-transition class="mb-8">

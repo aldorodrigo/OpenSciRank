@@ -138,11 +138,17 @@ class PaymentCheckout extends Component
                 ->values();
         }
 
-        // Show evaluation products based on journal status
+        // Show evaluation products based on journal status.
+        // Default: journal-evaluation ($99) — primera evaluación o pago tras
+        // requires_changes_evaluation (resubmit ciclo inicial).
         $slugs = ['journal-evaluation'];
 
-        // If already evaluated, show re-evaluation instead
-        if (in_array($this->journal->status, ['evaluated', 'certified', 'requires_changes_evaluation', 'listed'])) {
+        // Re-evaluation ($79) sólo cuando ya hubo una evaluación completa:
+        // evaluated (no alcanzó sello), certified (mejorar puntaje), rejected
+        // (reintento). NO incluye 'listed' (nunca pagó) ni
+        // 'requires_changes_evaluation' (mid-ciclo inicial → vuelve a pagar
+        // evaluation, no reeval).
+        if (in_array($this->journal->status, ['evaluated', 'certified', 'rejected'])) {
             $slugs = ['journal-reevaluation'];
         }
 
