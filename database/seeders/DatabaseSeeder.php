@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             CriteriaItemSeeder::class,
             ProductSeeder::class,
             CouponSeeder::class,
+            SettingSeeder::class,
             JournalSeeder::class,
             CmsCategorySeeder::class,
             CmsPostSeeder::class,
