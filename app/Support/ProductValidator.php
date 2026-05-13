@@ -16,13 +16,13 @@ class ProductValidator
      * and StripePaymentService (defense in depth).
      *
      * Rules (2026-05-13):
-     *  - journal-evaluation   → draft / listed / rejected
-     *    requires_changes_evaluation NO está acá: la resubmisión tras pedido
-     *    de cambios es gratuita (el editor ya pagó). rejected sí porque
-     *    arranca un ciclo nuevo de evaluación.
-     *  - journal-reevaluation → evaluated / certified
-     *    Mejorar puntaje no-certificado o ya certificado. rejected paga
-     *    journal-evaluation porque empieza ciclo nuevo.
+     *  - journal-evaluation   → draft / listed
+     *    Primera evaluación de la revista. requires_changes_evaluation NO está
+     *    acá: la resubmisión tras pedido de cambios es gratuita.
+     *  - journal-reevaluation → evaluated / certified / rejected
+     *    Cubre los tres casos post-evaluación: mejorar puntaje no certificado
+     *    (evaluated), refinar puntaje ya certificado (certified), reintento
+     *    tras rechazo (rejected).
      *  - seal-renewal-*       → seal_awarded_at IS NOT NULL
      *  - book products y addons standalone NO se validan acá.
      */
@@ -31,7 +31,7 @@ class ProductValidator
         $slug = $product->slug;
 
         if ($slug === 'journal-evaluation') {
-            $allowed = ['draft', 'listed', 'rejected'];
+            $allowed = ['draft', 'listed'];
             if (! in_array($journal->status, $allowed, true)) {
                 throw new \InvalidArgumentException(
                     __('checkout.evaluation_invalid_status')
@@ -42,7 +42,7 @@ class ProductValidator
         }
 
         if ($slug === 'journal-reevaluation') {
-            $allowed = ['evaluated', 'certified'];
+            $allowed = ['evaluated', 'certified', 'rejected'];
             if (! in_array($journal->status, $allowed, true)) {
                 throw new \InvalidArgumentException(
                     __('checkout.reevaluation_invalid_status')

@@ -140,14 +140,14 @@ class PaymentCheckout extends Component
 
         // Show evaluation products based on journal status (alineado con
         // ProductValidator 2026-05-13).
-        // Default: journal-evaluation ($99) — primera evaluación, listed
-        // o rejected (ciclo nuevo tras rechazo).
+        // Default: journal-evaluation ($99) — primera evaluación (draft/listed).
         $slugs = ['journal-evaluation'];
 
-        // Re-evaluation ($99) sólo cuando ya hubo evaluación completa con
-        // resultado evaluated o certified. rejected arranca ciclo nuevo y
-        // requires_changes_evaluation se resubmite gratis (no llega acá).
-        if (in_array($this->journal->status, ['evaluated', 'certified'])) {
+        // Re-evaluation ($99) post-evaluación: mejorar puntaje (evaluated),
+        // refinar score certificado (certified), reintentar tras rechazo
+        // (rejected). requires_changes_evaluation se resubmite gratis vía
+        // wizard, no pasa por este checkout.
+        if (in_array($this->journal->status, ['evaluated', 'certified', 'rejected'])) {
             $slugs = ['journal-reevaluation'];
         }
 
