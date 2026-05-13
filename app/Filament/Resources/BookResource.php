@@ -577,6 +577,14 @@ class BookResource extends Resource
                                 Forms\Components\TextInput::make('current_level')
                                     ->label('Nivel Actual')
                                     ->disabled(),
+                                // Sprint 3 #20: el admin puede activar/extender
+                                // el destacado manualmente (regalos, soporte, etc.).
+                                Forms\Components\Toggle::make('is_featured')
+                                    ->label('¿Listing Destacado?')
+                                    ->helperText('Aparece con posición preferente y badge en el directorio público.'),
+                                Forms\Components\DatePicker::make('featured_until')
+                                    ->label('Destacado hasta')
+                                    ->helperText('Fecha en que vence el beneficio del destacado.'),
                             ])->columns(2),
                     ])
                     ->columnSpanFull()
@@ -633,6 +641,25 @@ class BookResource extends Resource
                 Tables\Columns\TextColumn::make('current_score')
                     ->label('Puntuación')
                     ->sortable(),
+                // Sprint 3 #20: columna "Destacado" — sólo prende si el flag está
+                // activo Y el featured_until aún no venció.
+                Tables\Columns\TextColumn::make('is_featured')
+                    ->label('Destacado')
+                    ->badge()
+                    ->sortable()
+                    ->formatStateUsing(function ($state, Book $record): string {
+                        $active = $record->is_featured
+                            && $record->featured_until
+                            && $record->featured_until->toDateString() >= now()->toDateString();
+                        return $active
+                            ? '★ Destacado'
+                            : '—';
+                    })
+                    ->color(fn (Book $record): string => ($record->is_featured
+                        && $record->featured_until
+                        && $record->featured_until->toDateString() >= now()->toDateString())
+                        ? 'warning'
+                        : 'gray'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -654,6 +681,23 @@ class BookResource extends Resource
                     ]),
                 Tables\Filters\TernaryFilter::make('is_open_access')
                     ->label('Acceso Abierto'),
+                // Sprint 3 #20: filtro "Destacado". El estado true sólo trae los
+                // realmente vigentes; el estado false trae todos los demás.
+                Tables\Filters\TernaryFilter::make('is_featured')
+                    ->label('Destacado')
+                    ->placeholder('Todos')
+                    ->trueLabel('Solo destacados')
+                    ->falseLabel('Solo no destacados')
+                    ->queries(
+                        true: fn ($query) => $query->where('is_featured', true)
+                            ->where('featured_until', '>=', now()->toDateString()),
+                        false: fn ($query) => $query->where(function ($q) {
+                            $q->where('is_featured', false)
+                                ->orWhereNull('featured_until')
+                                ->orWhere('featured_until', '<', now()->toDateString());
+                        }),
+                        blank: fn ($query) => $query,
+                    ),
             ])
             ->headerActions([
                 ExportAction::make()
@@ -667,6 +711,58 @@ class BookResource extends Resource
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
+                    // Sprint 3 #20: bulk activar el destacado por 1 año. Si
+                    // alguno de los libros ya tenía un featured_until futuro,
+                    // sumamos 12 meses para no quitarle valor al editor (misma
+                    // lógica de extensión que StripePaymentService::applyBookFeatured).
+                    \Filament\Actions\BulkAction::make('feature_one_year')
+                        ->label('Destacar 1 año')
+                        ->icon('heroicon-o-star')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->modalHeading('Destacar libros seleccionados por 1 año')
+                        ->modalDescription('Si alguno ya tenía destacado vigente, se le suman 12 meses al vencimiento actual.')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
+                            $today = now()->toDateString();
+                            $count = 0;
+                            foreach ($records as $book) {
+                                $base = $book->featured_until && now()->lt($book->featured_until)
+                                    ? $book->featured_until->toDateString()
+                                    : $today;
+                                $book->update([
+                                    'is_featured' => true,
+                                    'featured_until' => \Carbon\Carbon::parse($base)->addYear()->toDateString(),
+                                ]);
+                                $count++;
+                            }
+
+                            \Filament\Notifications\Notification::make()
+                                ->title('Libros destacados')
+                                ->body("Destacados o extendidos: {$count}")
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    \Filament\Actions\BulkAction::make('unfeature')
+                        ->label('Quitar destacado')
+                        ->icon('heroicon-o-no-symbol')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->modalHeading('Quitar destacado de libros seleccionados')
+                        ->modalDescription('Se baja el flag de destacado de inmediato. featured_until queda registrado para auditoría.')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
+                            $count = $records->count();
+                            foreach ($records as $book) {
+                                $book->update(['is_featured' => false]);
+                            }
+
+                            \Filament\Notifications\Notification::make()
+                                ->title('Destacado removido')
+                                ->body("Libros actualizados: {$count}")
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     ExportBulkAction::make()
                         ->label('Exportar seleccionados')
                         ->icon('heroicon-o-arrow-down-tray')

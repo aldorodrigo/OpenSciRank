@@ -64,6 +64,12 @@
                         <span class="mt-1 inline-flex shrink-0 items-center rounded-full bg-indigo-100 px-3 py-1 text-xs font-bold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
                             📚 {{ __('Indexed Book') }}
                         </span>
+                        {{-- Sprint 3 #20: badge prominente para libros destacados aún vigentes. --}}
+                        @if($book->is_featured && $book->featured_until && $book->featured_until->toDateString() >= now()->toDateString())
+                            <span class="mt-1 inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                                ★ {{ __('Featured') }}
+                            </span>
+                        @endif
                     </div>
 
                     <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-400">

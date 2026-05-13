@@ -21,6 +21,7 @@
     "checkout.reevaluation_invalid_status": "This journal cannot request a re-evaluation in its current status.",
     "checkout.renewal_no_seal": "This journal has never obtained the editorial seal and cannot renew it.",
     "checkout.renewal_addons_hint": "Add an Action Plan to improve your next editorial cycle.",
+    "checkout.featured_requires_listed": "The featured listing can only be purchased once the book is listed in the directory.",
     "Renew": "Renew",
     "Expires in :days days": "Expires in :days days",
     "Expired :days days ago": "Expired :days days ago",

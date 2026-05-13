@@ -192,6 +192,16 @@ class SearchJournals extends Component
                 ->when($this->subjectArea, fn($q) => $q->whereJsonContains('knowledge_areas', $this->subjectArea))
                 ->when($this->accessType, fn($q) => $q->where('access_type', $this->accessType));
 
+            // Sprint 3 #20: libros con destacado vigente siempre primero.
+            // Calculamos un flag SQL "is_featured_now" para ordenarlos arriba
+            // sin importar el criterio elegido (score/title/recent). Dentro
+            // de los destacados, los más recientes en featured_until quedan
+            // arriba para premiar la compra fresca del addon.
+            $today = now()->toDateString();
+            $bookQuery->selectRaw('books.*, CASE WHEN is_featured = 1 AND featured_until >= ? THEN 1 ELSE 0 END as is_featured_now', [$today])
+                ->orderByDesc('is_featured_now')
+                ->orderByDesc('featured_until');
+
             match ($this->sortBy) {
                 'score' => $bookQuery->orderByDesc('current_score'),
                 'title' => $bookQuery->orderBy('title'),
@@ -215,13 +225,22 @@ class SearchJournals extends Component
             $merged = $journals->map(fn($j) => ['item' => $j, 'type' => 'journal'])
                 ->merge($books->map(fn($b) => ['item' => $b, 'type' => 'book']));
 
-            // Sort merged
+            // Sort merged. En modo "all" los libros destacados igualmente
+            // suben al tope: primero ordenamos por el criterio elegido y
+            // después subimos featured books con un sortByDesc estable.
             $merged = match ($this->sortBy) {
                 'score' => $merged->sortByDesc(fn($r) => $r['item']->current_score ?? 0),
                 'title' => $merged->sortBy(fn($r) => $r['item']->title),
                 'recent' => $merged->sortByDesc(fn($r) => $r['item']->created_at),
                 default => $merged->sortByDesc(fn($r) => $r['item']->current_score ?? 0),
             };
+
+            $today = now()->toDateString();
+            $merged = $merged->sortByDesc(function ($r) use ($today) {
+                if ($r['type'] !== 'book') return 0;
+                $item = $r['item'];
+                return ($item->is_featured && $item->featured_until && $item->featured_until->toDateString() >= $today) ? 1 : 0;
+            });
 
             $page = $this->getPage();
             $perPage = 12;

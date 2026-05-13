@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Book;
 use App\Models\Journal;
 use App\Models\Payment;
 use App\Models\Product;
@@ -9,6 +10,7 @@ use App\Models\User;
 use App\Notifications\NewRenewalEvaluation;
 use App\Notifications\PaymentOrphan;
 use App\Support\ProductValidator;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
@@ -61,7 +63,8 @@ class StripePaymentService
             ],
         ];
 
-        // Add-ons como line_items adicionales (Plan de Acción, etc.)
+        // Add-ons como line_items adicionales (Plan de Acción, Featured, etc.)
+        $addonSlugsCsv = '';
         if (! empty($addonProductIds)) {
             $addons = Product::whereIn('id', $addonProductIds)->where('is_active', true)->get();
             foreach ($addons as $addon) {
@@ -77,6 +80,10 @@ class StripePaymentService
                     'quantity' => 1,
                 ];
             }
+            // Persistimos los slugs en metadata para que el webhook pueda
+            // ejecutar la lógica post-pago (p.ej. activar featured en libros)
+            // sin necesidad de re-leer la línea de Stripe.
+            $addonSlugsCsv = $addons->pluck('slug')->implode(',');
         }
 
         // Express uplift: line_item virtual (+$50) — no es un Product en DB,
@@ -108,6 +115,7 @@ class StripePaymentService
                 'payable_type' => get_class($payable),
                 'payable_id' => $payable->id,
                 'coupon_code' => $couponCode,
+                'addon_slugs' => $addonSlugsCsv,
             ], $metadata),
         ];
 
@@ -117,11 +125,15 @@ class StripePaymentService
             ];
         }
 
-        // Backend guard: reject forbidden product × journal combinations before
-        // hitting Stripe. The same check runs in PaymentCheckout::mount(), but
-        // this layer catches direct URL bypasses.
+        // Backend guard: reject forbidden product × payable combinations before
+        // hitting Stripe. La misma comprobación corre en el componente Livewire
+        // de checkout, pero esta capa cubre los bypasses por URL directa.
         if ($payable instanceof Journal) {
             ProductValidator::validateForJournal($product, $payable);
+        }
+
+        if ($payable instanceof Book) {
+            ProductValidator::validateForBook($product, $payable);
         }
 
         return Session::create($sessionParams);
@@ -221,6 +233,39 @@ class StripePaymentService
             if ($admin) {
                 $admin->notify(new NewRenewalEvaluation($payable, $years, (float) $payment->amount, $payment->currency));
             }
+        } elseif ($payable instanceof Book) {
+            // Sprint 3 #20: pago aplicado a un Book.
+            // El destacado puede llegar como producto principal (cuando el
+            // libro ya está listed y el editor sólo compra el addon) o como
+            // addon de la compra del listing inicial. Buscamos su slug en
+            // ambos lugares.
+            $mainSlug = $payment->product?->slug;
+            $addonSlugs = (array) ($metadata->addon_slugs ?? []);
+            if (is_string($addonSlugs)) {
+                // Stripe metadata sólo soporta strings escalares: aceptamos
+                // CSV ("slug1,slug2") como respaldo al formato por línea.
+                $addonSlugs = array_filter(array_map('trim', explode(',', $addonSlugs)));
+            }
+            $boughtFeatured = $mainSlug === 'book-listing-featured-1y'
+                || in_array('book-listing-featured-1y', $addonSlugs, true);
+
+            if ($boughtFeatured) {
+                $this->applyBookFeatured($payable);
+            }
+
+            // Si el producto principal es el destacado puro (libro ya listed),
+            // no tocamos el status del libro — sigue listed. Si en cambio es
+            // book-listing (con o sin addon featured), mantenemos el flujo
+            // estándar de submission.
+            if ($mainSlug === 'book-listing-featured-1y') {
+                // Solo addon: el libro ya está listed, no resetear estado.
+                $payable->save();
+            } else {
+                $payable->update([
+                    'status' => 'submitted',
+                    'submitted_at' => now(),
+                ]);
+            }
         } else {
             $payable->update([
                 'status' => 'submitted',
@@ -229,6 +274,26 @@ class StripePaymentService
         }
 
         return $payment;
+    }
+
+    /**
+     * Activa o extiende el destacado de un libro por 1 año.
+     *
+     * Si el libro ya tenía un featured_until vigente, sumamos 12 meses al
+     * vencimiento actual (extensión). Si estaba vencido o nunca tuvo, el
+     * período arranca hoy. Decisión Sprint 3 #20: el editor pagó por una
+     * ventana de 12 meses, no por reemplazarla.
+     */
+    protected function applyBookFeatured(Book $book): void
+    {
+        $today = now()->toDateString();
+        $baseDate = $book->featured_until && now()->lt($book->featured_until)
+            ? $book->featured_until->toDateString()
+            : $today;
+
+        $book->is_featured = true;
+        $book->featured_until = Carbon::parse($baseDate)->addYear()->toDateString();
+        $book->save();
     }
 
     /**

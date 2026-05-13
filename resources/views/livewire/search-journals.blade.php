@@ -240,6 +240,11 @@
                                 $score = $item->current_score ?? 0;
                                 $hasSeal = $itemType === 'journal' && $item->status === 'certified'
                                     && ($item->seal_expires_at === null || $item->seal_expires_at->isFuture());
+                                // Sprint 3 #20: badge "Destacado" cuando el libro tiene featured vigente.
+                                $isFeaturedBook = $itemType === 'book'
+                                    && $item->is_featured
+                                    && $item->featured_until
+                                    && $item->featured_until->toDateString() >= now()->toDateString();
                             @endphp
                             <a href="{{ $link }}" class="group flex flex-col overflow-hidden rounded-xl bg-white shadow-md transition hover:shadow-xl hover:-translate-y-0.5 dark:bg-gray-900 {{ $hasSeal ? 'seal-ribbon-wrapper' : '' }}">
                                 @if($hasSeal)
@@ -275,6 +280,11 @@
                                             @if($hasSeal)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
                                                 ✅ {{ __('Seal') }}
+                                            </span>
+                                            @endif
+                                            @if($isFeaturedBook)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                                                ★ {{ __('Featured') }}
                                             </span>
                                             @endif
                                         </div>

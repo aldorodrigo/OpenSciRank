@@ -64,6 +64,7 @@ class Book extends Model
         'has_antiplagiarism' => 'boolean',
         'has_ethics_code' => 'boolean',
         'is_indexed' => 'boolean',
+        'is_featured' => 'boolean',
 
         // Decimal fields
         'access_cost' => 'decimal:2',
@@ -76,7 +77,19 @@ class Book extends Model
         'submission_date' => 'date',
         'approval_date' => 'date',
         'submitted_at' => 'datetime',
+        'featured_until' => 'date',
     ];
+
+    /**
+     * Libros realmente destacados ahora: flag activo y aún dentro de la
+     * ventana paga. Vencidos se filtran aunque is_featured siga en true
+     * (el cron books:check-featured también baja el flag a diario).
+     */
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true)
+            ->where('featured_until', '>=', now()->toDateString());
+    }
 
     public function getTranslationWithFallback(string $field): string
     {

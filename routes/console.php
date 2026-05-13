@@ -12,3 +12,11 @@ Schedule::command('seal:check-expiration')
     ->dailyAt('03:00')
     ->withoutOverlapping()
     ->onOneServer();
+
+// Sprint 3 #20: baja el flag is_featured de libros vencidos. Corre a las
+// 04:00 (1h después del cron de sello) para evitar overlap y mantener cada
+// trabajo identificable en el log de scheduler.
+Schedule::command('books:check-featured')
+    ->dailyAt('04:00')
+    ->withoutOverlapping()
+    ->onOneServer();

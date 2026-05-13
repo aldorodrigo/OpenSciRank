@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\Book;
 use App\Models\Journal;
 use App\Models\Product;
 
@@ -60,5 +61,28 @@ class ProductValidator
         // All other slugs (book-listing, action-plan-consulting,
         // institutional-pack, legacy express-evaluation, etc.) are allowed
         // without journal-status constraints.
+    }
+
+    /**
+     * Validate that a product can be purchased for the given book.
+     *
+     * Reglas:
+     *  - book-listing             → cualquier estado (es el flujo estándar)
+     *  - book-listing-featured-1y → sólo si el libro ya está listed
+     *    (cuando viaja como producto principal). Si viaja como addon junto
+     *    a book-listing, esta validación no aplica porque el listing aún
+     *    no se procesó — el caller decide cuál llamada hacer.
+     */
+    public static function validateForBook(Product $product, Book $book): void
+    {
+        $slug = $product->slug;
+
+        if ($slug === 'book-listing-featured-1y') {
+            if ($book->status !== 'listed') {
+                throw new \InvalidArgumentException(
+                    __('checkout.featured_requires_listed')
+                );
+            }
+        }
     }
 }

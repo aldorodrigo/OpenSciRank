@@ -136,6 +136,26 @@ class ProductSeeder extends Seeder
                     'pt' => 'Inclusão de um livro acadêmico ou científico no índice da plataforma. Inclui ficha pública com metadados completos (título, autores, editora, ISBN, área temática), visibilidade na busca e presença permanente no diretório de publicações acadêmicas.',
                 ],
             ],
+            // Sprint 3 #20: addon de "listing destacado" — posición preferente
+            // en el directorio y badge "Destacado" durante 12 meses. Se puede
+            // sumar al listing gratuito o renovar de forma independiente.
+            [
+                'slug' => 'book-listing-featured-1y',
+                'primary_locale' => 'es',
+                'price' => 29.00,
+                'currency' => 'USD',
+                'is_active' => true,
+                'name' => [
+                    'es' => 'Listing Destacado 1 año',
+                    'en' => 'Featured Listing 1 year',
+                    'pt' => 'Listing em Destaque 1 ano',
+                ],
+                'description' => [
+                    'es' => 'Tu libro con posición preferente en el directorio y badge "Destacado" por 12 meses.',
+                    'en' => 'Your book with preferred position in the directory and a "Featured" badge for 12 months.',
+                    'pt' => 'Seu livro com posição preferencial no diretório e selo "Em Destaque" por 12 meses.',
+                ],
+            ],
 
             // ────────────────────────────────────────────────────────────────
             // ADD-ONS / SERVICIOS COMPLEMENTARIOS

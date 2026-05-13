@@ -18,7 +18,7 @@
                     <h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Select your Plan') }}</h2>
 
                     <div class="grid gap-4 sm:grid-cols-2">
-                        @foreach($this->products as $product)
+                        @foreach($this->availablePlans as $product)
                             <div wire:click="selectPlan({{ $product->id }})"
                                 class="relative cursor-pointer rounded-xl border-2 p-6 transition
                                     @if($selectedPlan === $product->id) border-purple-600 bg-purple-50 dark:border-purple-500 dark:bg-purple-900/20
@@ -53,6 +53,37 @@
                         @endforeach
                     </div>
                 </div>
+
+                {{-- Addon: destacar listing --}}
+                @if($this->canOfferFeaturedAddon && $this->featuredProduct)
+                    <div class="rounded-xl border-2 p-6 transition
+                        @if($featuredAddon) border-amber-500 bg-amber-50 dark:border-amber-400 dark:bg-amber-900/20
+                        @else border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900
+                        @endif">
+                        <label class="flex cursor-pointer items-start gap-4">
+                            <input type="checkbox"
+                                wire:click="toggleFeaturedAddon"
+                                @checked($featuredAddon)
+                                class="mt-1 h-5 w-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                                        ★ {{ __('Featured') }}
+                                    </span>
+                                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">
+                                        {{ __('Featured listing — $:price/year', ['price' => number_format($this->featuredProduct->price, 0)]) }}
+                                    </h3>
+                                </div>
+                                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                    {{ __('Preferred position in the public directory and "Featured" badge for 12 months.') }}
+                                </p>
+                            </div>
+                            <span class="shrink-0 text-lg font-bold text-amber-600 dark:text-amber-400">
+                                +${{ number_format($this->featuredProduct->price, 2) }}
+                            </span>
+                        </label>
+                    </div>
+                @endif
 
                 {{-- Payment Info --}}
                 <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
@@ -93,6 +124,12 @@
                             <span class="text-gray-600 dark:text-gray-400">{{ $this->products->firstWhere('id', $selectedPlan)?->getTranslationWithFallback('name') ?? __('Select a plan') }}</span>
                             <span class="font-medium text-gray-900 dark:text-white">${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }}</span>
                         </div>
+                        @if($featuredAddon && $this->canOfferFeaturedAddon && $this->featuredProduct)
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 dark:text-gray-400">+ {{ $this->featuredProduct->getTranslationWithFallback('name') }}</span>
+                            <span class="font-medium text-gray-900 dark:text-white">${{ number_format($this->featuredProduct->price, 2) }}</span>
+                        </div>
+                        @endif
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600 dark:text-gray-400">{{ __('Taxes') }}</span>
                             <span class="font-medium text-gray-900 dark:text-white">$0</span>
@@ -101,7 +138,7 @@
 
                     <div class="flex justify-between py-4">
                         <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Total') }}</span>
-                        <span class="text-lg font-bold text-purple-600 dark:text-purple-400">${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }} {{ $this->products->firstWhere('id', $selectedPlan)?->currency }}</span>
+                        <span class="text-lg font-bold text-purple-600 dark:text-purple-400">${{ number_format($this->total, 2) }} {{ $this->products->firstWhere('id', $selectedPlan)?->currency }}</span>
                     </div>
 
                     <button wire:click="processPayment"
@@ -109,7 +146,7 @@
                         class="w-full rounded-lg bg-emerald-600 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         @if(!$selectedPlan) disabled @endif>
                         <span wire:loading.remove wire:target="processPayment">
-                            {{ __('Pay') }} ${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }} {{ $this->products->firstWhere('id', $selectedPlan)?->currency }}
+                            {{ __('Pay') }} ${{ number_format($this->total, 2) }} {{ $this->products->firstWhere('id', $selectedPlan)?->currency }}
                         </span>
                         <span wire:loading wire:target="processPayment" class="flex items-center justify-center gap-2">
                             <svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
