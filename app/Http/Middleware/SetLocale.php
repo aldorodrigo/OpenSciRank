@@ -56,6 +56,13 @@ class SetLocale
 
         App::setLocale($locale);
 
+        // Persistir el locale efectivo en el usuario autenticado antes de procesar
+        // el request, así cualquier notification disparada durante este request
+        // se traduce al idioma correcto del destinatario vía HasLocalePreference.
+        if (auth()->check() && auth()->user()->locale !== $locale) {
+            auth()->user()->forceFill(['locale' => $locale])->save();
+        }
+
         $response = $next($request);
 
         // Persist cookie when locale came from URL or differs from stored cookie

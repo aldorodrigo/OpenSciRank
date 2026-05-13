@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Filament\Models\Contracts\FilamentUser;
@@ -11,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser, MustVerifyEmail
+class User extends Authenticatable implements FilamentUser, HasLocalePreference, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles, HasPanelShield;
@@ -25,6 +26,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         'name',
         'email',
         'password',
+        'locale',
     ];
 
     /**
@@ -51,5 +53,14 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Locale para mailables/notifications: Laravel detecta esta interfaz y traduce
+     * cada notification al idioma del destinatario, no del request que la dispara.
+     */
+    public function preferredLocale(): string
+    {
+        return $this->locale ?? config('app.locale', 'es');
     }
 }
