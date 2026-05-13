@@ -404,6 +404,20 @@ class SubmissionWizard extends Component
     public function submit()
     {
         $this->saveDraft();
+
+        // Renovación con cambios pedidos: el editor ya pagó la renovación
+        // (pending_renewal_years preservado). Re-enviamos a evaluación
+        // saltando el checkout — la renovación sigue su curso. Reseteamos
+        // submitted_at para que el SLA cuente desde esta resubmisión.
+        if ($this->journal->pending_renewal_years !== null) {
+            $this->journal->update([
+                'status' => 'submitted',
+                'submitted_at' => now(),
+            ]);
+            session()->flash('message', __('Your journal was resubmitted for evaluation. The renewal is still in progress.'));
+            return redirect()->route('app.dashboard');
+        }
+
         return redirect()->route('app.checkout', $this->journal);
     }
 

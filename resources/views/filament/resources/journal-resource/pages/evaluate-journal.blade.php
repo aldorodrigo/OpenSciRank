@@ -4,6 +4,35 @@
         setCategory(name) { this.activeCategory = name; }
     }" class="space-y-6">
 
+        {{-- BANNER DE RENOVACIÓN PENDIENTE (Opción B, 2026-05-10) --}}
+        @if($record->pending_renewal_years !== null)
+            <div class="rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 p-5 shadow-md dark:border-amber-500 dark:from-amber-950/40 dark:to-orange-950/40">
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-amber-500/20 ring-2 ring-amber-500/40">
+                        <svg class="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </div>
+                    <div class="flex-1 space-y-1">
+                        <h3 class="text-base font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                            {{ __('evaluate.renewal_banner_title') }}
+                        </h3>
+                        <p class="text-sm font-medium text-amber-800 dark:text-amber-300">
+                            {{ __('evaluate.renewal_banner_years', ['years' => $record->pending_renewal_years]) }}
+                        </p>
+                        @if(!is_null($record->current_score))
+                            <p class="text-xs text-amber-700 dark:text-amber-400">
+                                {{ __('evaluate.renewal_banner_previous_score', ['score' => number_format((float) $record->current_score, 1)]) }}
+                            </p>
+                        @endif
+                        <p class="pt-1 text-xs italic text-amber-700/80 dark:text-amber-400/80">
+                            {{ __('evaluate.renewal_banner_policy') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- NEW PREMIUM HERO HEADER --}}
         <div class="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-xl lg:shadow-2xl">
             {{-- Background decorative elements --}}

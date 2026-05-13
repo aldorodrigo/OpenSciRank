@@ -4,16 +4,24 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        Product::truncate();
-        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        // Migración de slug 2026-05-13 (roadmap #17): el viejo "premium-report"
+        // pasa a "action-plan-consulting" con nuevo precio y propuesta de valor.
+        // Renombramos in-place ANTES del updateOrCreate para no dejar registros
+        // huérfanos cuando el seeder corre sobre una base ya poblada.
+        DB::table('products')
+            ->where('slug', 'premium-report')
+            ->update(['slug' => 'action-plan-consulting']);
 
         $products = [
+            // ────────────────────────────────────────────────────────────────
+            // EVALUACIONES (Journals)
+            // ────────────────────────────────────────────────────────────────
             [
                 'slug' => 'journal-evaluation',
                 'primary_locale' => 'es',
@@ -34,7 +42,9 @@ class ProductSeeder extends Seeder
             [
                 'slug' => 'journal-reevaluation',
                 'primary_locale' => 'es',
-                'price' => 99.00,
+                // Roadmap #16: baja de $99 → $79 para incentivar el reciclaje
+                // de datos ya cargados y separar el ticket de la evaluación inicial.
+                'price' => 79.00,
                 'currency' => 'USD',
                 'is_active' => true,
                 'name' => [
@@ -43,15 +53,38 @@ class ProductSeeder extends Seeder
                     'pt' => 'Reavaliação Editorial de Revista',
                 ],
                 'description' => [
-                    'es' => 'Nueva evaluación editorial para revistas que desean mejorar su puntuación o que no alcanzaron el sello en su evaluación anterior. Incluye revisión completa de todos los indicadores, nuevo informe técnico y posibilidad de obtener o mejorar el Editorial Standards Seal. Plazo estándar: 15 días hábiles.',
-                    'en' => 'A new editorial evaluation for journals that wish to improve their score or did not achieve the seal in their previous review. Includes a full review of all indicators, a new technical report, and the chance to earn or improve the Editorial Standards Seal. Standard turnaround: 15 business days.',
-                    'pt' => 'Nova avaliação editorial para revistas que desejam melhorar sua pontuação ou que não obtiveram o selo na avaliação anterior. Inclui revisão completa de todos os indicadores, novo relatório técnico e a possibilidade de obter ou melhorar o Editorial Standards Seal. Prazo padrão: 15 dias úteis.',
+                    'es' => 'Nueva evaluación editorial para revistas con datos ya cargados que desean mejorar su puntuación o que no alcanzaron el sello en su evaluación anterior. Reutiliza la ficha existente, incluye revisión completa de todos los indicadores, nuevo informe técnico y posibilidad de obtener o mejorar el Editorial Standards Seal. Plazo estándar: 15 días hábiles.',
+                    'en' => 'A new editorial evaluation for journals with data already on file that wish to improve their score or did not achieve the seal in their previous review. Reuses the existing record, includes a full review of all indicators, a new technical report and the chance to earn or improve the Editorial Standards Seal. Standard turnaround: 15 business days.',
+                    'pt' => 'Nova avaliação editorial para revistas com dados já cadastrados que desejam melhorar sua pontuação ou que não obtiveram o selo na avaliação anterior. Reutiliza o cadastro existente, inclui revisão completa de todos os indicadores, novo relatório técnico e possibilidade de obter ou melhorar o Editorial Standards Seal. Prazo padrão: 15 dias úteis.',
+                ],
+            ],
+
+            // ────────────────────────────────────────────────────────────────
+            // RENOVACIONES DEL SELLO — escalera 1/2/3 años (roadmap #14)
+            // ────────────────────────────────────────────────────────────────
+            [
+                'slug' => 'seal-renewal-1y',
+                'primary_locale' => 'es',
+                'price' => 89.00,
+                'currency' => 'USD',
+                'is_active' => true,
+                'name' => [
+                    'es' => 'Renovación del Sello Editorial — 1 Año',
+                    'en' => 'Editorial Seal Renewal — 1 Year',
+                    'pt' => 'Renovação do Selo Editorial — 1 Ano',
+                ],
+                'description' => [
+                    'es' => 'Renovación del Editorial Standards Seal por 1 año adicional. Incluye nueva evaluación editorial completa, informe técnico actualizado y extensión de la vigencia del sello por 12 meses.',
+                    'en' => 'Renewal of the Editorial Standards Seal for 1 additional year. Includes a full new editorial evaluation, an updated technical report and a 12-month extension of the seal.',
+                    'pt' => 'Renovação do Editorial Standards Seal por mais 1 ano. Inclui nova avaliação editorial completa, relatório técnico atualizado e extensão da validade do selo por 12 meses.',
                 ],
             ],
             [
                 'slug' => 'seal-renewal-2y',
                 'primary_locale' => 'es',
-                'price' => 129.00,
+                // Roadmap #14: sube $129 → $149 para mantener el ahorro relativo
+                // (~16%) frente a la nueva opción de 1 año a $89.
+                'price' => 149.00,
                 'currency' => 'USD',
                 'is_active' => true,
                 'name' => [
@@ -60,11 +93,32 @@ class ProductSeeder extends Seeder
                     'pt' => 'Renovação do Selo Editorial — 2 Anos',
                 ],
                 'description' => [
-                    'es' => 'Renovación del Editorial Standards Seal por 2 años adicionales. Incluye nueva evaluación editorial completa, informe técnico actualizado y extensión de la vigencia del sello por 24 meses. Ahorra respecto a dos renovaciones individuales.',
-                    'en' => 'Renewal of the Editorial Standards Seal for 2 additional years. Includes a full new editorial evaluation, an updated technical report and a 24-month extension of the seal. Cheaper than two individual renewals.',
-                    'pt' => 'Renovação do Editorial Standards Seal por mais 2 anos. Inclui nova avaliação editorial completa, relatório técnico atualizado e extensão da validade do selo por 24 meses. Economize em relação a duas renovações individuais.',
+                    'es' => 'Renovación del Editorial Standards Seal por 2 años adicionales. Incluye nueva evaluación editorial completa, informe técnico actualizado y extensión de la vigencia del sello por 24 meses. Ahorrá ~16% frente a dos renovaciones anuales.',
+                    'en' => 'Renewal of the Editorial Standards Seal for 2 additional years. Includes a full new editorial evaluation, an updated technical report and a 24-month extension of the seal. Save ~16% compared to two yearly renewals.',
+                    'pt' => 'Renovação do Editorial Standards Seal por mais 2 anos. Inclui nova avaliação editorial completa, relatório técnico atualizado e extensão da validade do selo por 24 meses. Economize ~16% em relação a duas renovações anuais.',
                 ],
             ],
+            [
+                'slug' => 'seal-renewal-3y',
+                'primary_locale' => 'es',
+                'price' => 199.00,
+                'currency' => 'USD',
+                'is_active' => true,
+                'name' => [
+                    'es' => 'Renovación del Sello Editorial — 3 Años',
+                    'en' => 'Editorial Seal Renewal — 3 Years',
+                    'pt' => 'Renovação do Selo Editorial — 3 Anos',
+                ],
+                'description' => [
+                    'es' => 'Renovación del Editorial Standards Seal por 3 años adicionales. Incluye nueva evaluación editorial completa, informe técnico actualizado y extensión de la vigencia del sello por 36 meses. Ahorrá ~25% frente a tres renovaciones anuales — el mejor valor.',
+                    'en' => 'Renewal of the Editorial Standards Seal for 3 additional years. Includes a full new editorial evaluation, an updated technical report and a 36-month extension of the seal. Save ~25% compared to three yearly renewals — best value.',
+                    'pt' => 'Renovação do Editorial Standards Seal por mais 3 anos. Inclui nova avaliação editorial completa, relatório técnico atualizado e extensão da validade do selo por 36 meses. Economize ~25% em relação a três renovações anuais — melhor valor.',
+                ],
+            ],
+
+            // ────────────────────────────────────────────────────────────────
+            // LIBROS
+            // ────────────────────────────────────────────────────────────────
             [
                 'slug' => 'book-listing',
                 'primary_locale' => 'es',
@@ -82,40 +136,53 @@ class ProductSeeder extends Seeder
                     'pt' => 'Inclusão de um livro acadêmico ou científico no índice da plataforma. Inclui ficha pública com metadados completos (título, autores, editora, ISBN, área temática), visibilidade na busca e presença permanente no diretório de publicações acadêmicas.',
                 ],
             ],
+
+            // ────────────────────────────────────────────────────────────────
+            // ADD-ONS / SERVICIOS COMPLEMENTARIOS
+            // ────────────────────────────────────────────────────────────────
+            // Roadmap #15: Express deja de ser SKU público — se aplica como
+            // uplift +$50 en el checkout cuando el plan principal es evaluación
+            // o re-evaluación. Mantenemos el registro inactivo por trazabilidad
+            // histórica de pagos previos (FK product_id en payments).
             [
                 'slug' => 'express-evaluation',
                 'primary_locale' => 'es',
                 'price' => 149.00,
                 'currency' => 'USD',
-                'is_active' => true,
+                'is_active' => false,
                 'name' => [
-                    'es' => 'Evaluación Editorial Urgente',
-                    'en' => 'Express Editorial Evaluation',
-                    'pt' => 'Avaliação Editorial Urgente',
+                    'es' => 'Evaluación Editorial Urgente (legado)',
+                    'en' => 'Express Editorial Evaluation (legacy)',
+                    'pt' => 'Avaliação Editorial Urgente (legado)',
                 ],
                 'description' => [
-                    'es' => 'Complemento de evaluación acelerada. La revista recibe el resultado de su evaluación editorial en un plazo máximo de 5 días hábiles (en lugar de los 15 días estándar). Debe adquirirse junto con una evaluación o re-evaluación editorial.',
-                    'en' => 'Express evaluation add-on. The journal receives its editorial evaluation result within a maximum of 5 business days (instead of the standard 15). Must be purchased together with an evaluation or re-evaluation.',
-                    'pt' => 'Complemento de avaliação acelerada. A revista recebe o resultado da sua avaliação editorial em até 5 dias úteis (em vez dos 15 padrão). Deve ser adquirido junto com uma avaliação ou reavaliação editorial.',
+                    'es' => 'Producto legado. El servicio Express ahora se ofrece como complemento de +$50 directamente en el checkout de evaluación o re-evaluación.',
+                    'en' => 'Legacy product. Express service is now offered as a +$50 add-on directly in the evaluation or re-evaluation checkout.',
+                    'pt' => 'Produto legado. O serviço Express agora é oferecido como complemento de +$50 diretamente no checkout de avaliação ou reavaliação.',
                 ],
             ],
+
+            // Roadmap #17: reposicionamiento del antiguo "premium-report".
+            // El slug viejo se renombra arriba (DB::table->update) antes del
+            // updateOrCreate para preservar el FK en payments.product_id.
             [
-                'slug' => 'premium-report',
+                'slug' => 'action-plan-consulting',
                 'primary_locale' => 'es',
-                'price' => 30.00,
+                'price' => 59.00,
                 'currency' => 'USD',
                 'is_active' => true,
                 'name' => [
-                    'es' => 'Informe Técnico Detallado Premium',
-                    'en' => 'Premium Detailed Technical Report',
-                    'pt' => 'Relatório Técnico Detalhado Premium',
+                    'es' => 'Plan de Acción + Consultoría',
+                    'en' => 'Action Plan + Consulting',
+                    'pt' => 'Plano de Ação + Consultoria',
                 ],
                 'description' => [
-                    'es' => 'Complemento que amplía el informe técnico estándar con recomendaciones específicas de mejora para cada criterio evaluado, ejemplos de buenas prácticas editoriales y un plan de acción priorizado para alcanzar o mejorar el Editorial Standards Seal.',
-                    'en' => 'Add-on that extends the standard technical report with specific improvement recommendations for each evaluated criterion, examples of editorial best practices and a prioritised action plan to reach or improve the Editorial Standards Seal.',
-                    'pt' => 'Complemento que amplia o relatório técnico padrão com recomendações específicas de melhoria para cada critério avaliado, exemplos de boas práticas editoriais e um plano de ação priorizado para alcançar ou melhorar o Editorial Standards Seal.',
+                    'es' => 'Recomendaciones específicas por criterio evaluado, una sesión de consultoría de 30 minutos con el evaluador y un roadmap priorizado para alcanzar o mejorar el Editorial Standards Seal. Complementa (no reemplaza) las observaciones generales del informe estándar.',
+                    'en' => 'Specific recommendations per evaluated criterion, a 30-minute consulting session with the evaluator and a prioritised roadmap to reach or improve the Editorial Standards Seal. Complements (does not replace) the general observations of the standard report.',
+                    'pt' => 'Recomendações específicas por critério avaliado, uma sessão de consultoria de 30 minutos com o avaliador e um roadmap priorizado para alcançar ou melhorar o Editorial Standards Seal. Complementa (não substitui) as observações gerais do relatório padrão.',
                 ],
             ],
+
             // Paquete institucional desactivado 2026-05-10, ver roadmap #22 — se conserva el diseño para una posible reactivación futura.
             [
                 'slug' => 'institutional-pack',
@@ -137,7 +204,9 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $product) {
-            Product::create($product);
+            $slug = $product['slug'];
+            unset($product['slug']);
+            Product::updateOrCreate(['slug' => $slug], $product);
         }
     }
 }

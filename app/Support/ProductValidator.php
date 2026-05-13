@@ -57,8 +57,8 @@ class ProductValidator
             return;
         }
 
-        // All other slugs (book-listing, express-evaluation, premium-report,
-        // action-plan-consulting, institutional-pack, etc.) are allowed without
-        // journal-status constraints.
+        // All other slugs (book-listing, action-plan-consulting,
+        // institutional-pack, legacy express-evaluation, etc.) are allowed
+        // without journal-status constraints.
     }
 }

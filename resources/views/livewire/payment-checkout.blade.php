@@ -1,5 +1,15 @@
 <x-slot:header>true</x-slot:header>
 
+@php
+    $products = $this->products;
+    $addons = $this->addons;
+    $renewalLadder = $this->renewalLadder;
+    $hasRenewals = collect($renewalLadder)->isNotEmpty();
+    $reevalProduct = $products->firstWhere('slug', 'journal-reevaluation');
+    $selectedProduct = $products->firstWhere('id', $selectedPlan);
+    $canOfferExpress = $this->canOfferExpress;
+@endphp
+
 <div class="bg-gray-50 py-8 dark:bg-gray-950">
     <div class="container mx-auto max-w-5xl px-4">
         {{-- Breadcrumbs --}}
@@ -14,45 +24,171 @@
         <div class="grid gap-8 lg:grid-cols-3">
             {{-- Plan Selection --}}
             <div class="lg:col-span-2 space-y-6">
-                <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                    <h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Select your Plan') }}</h2>
 
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        @foreach($this->products as $product)
-                            <div wire:click="selectPlan({{ $product->id }})"
-                                class="relative cursor-pointer rounded-xl border-2 p-6 transition
-                                    @if($selectedPlan === $product->id) border-indigo-600 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/20
+                {{-- RENOVACIONES: escalera 1y/2y/3y lado a lado --}}
+                @if($hasRenewals)
+                    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                        <h2 class="mb-2 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Renew your Editorial Seal') }}</h2>
+                        <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">{{ __('Pick a renewal length. Longer terms unlock better per-year pricing.') }}</p>
+
+                        <div class="grid gap-4 sm:grid-cols-3">
+                            @foreach($renewalLadder as $row)
+                                @php
+                                    $rp = $row['product'];
+                                    $years = $row['years'];
+                                    $perYear = $row['per_year'];
+                                    $savings = $row['savings_pct'];
+                                    $isSelected = $selectedPlan === $rp->id;
+                                @endphp
+                                <div wire:click="selectPlan({{ $rp->id }})"
+                                    class="relative cursor-pointer rounded-xl border-2 p-5 transition
+                                        @if($isSelected) border-indigo-600 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/20
+                                        @else border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600
+                                        @endif
+                                    ">
+                                    @if($savings !== null && $savings > 0)
+                                        <span class="absolute -top-3 right-3 rounded-full bg-emerald-500 px-3 py-0.5 text-xs font-bold text-white shadow">
+                                            {{ __('Save :pct%', ['pct' => $savings]) }}
+                                        </span>
+                                    @endif
+
+                                    <div class="mb-3 flex items-center justify-between">
+                                        <h3 class="text-base font-semibold text-gray-900 dark:text-white">
+                                            {{ trans_choice('{1} :count Year|[2,*] :count Years', $years, ['count' => $years]) }}
+                                        </h3>
+                                        <div class="flex h-5 w-5 items-center justify-center rounded-full border-2
+                                            @if($isSelected) border-indigo-600 bg-indigo-600
+                                            @else border-gray-300 dark:border-gray-600
+                                            @endif
+                                        ">
+                                            @if($isSelected)
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-2">
+                                        <span class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($rp->price, 0) }}</span>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400"> {{ $rp->currency }}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                        ${{ number_format($perYear, 2) }} / {{ __('year') }}
+                                    </p>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        @if($reevalProduct)
+                            <div class="mt-6 border-t border-dashed border-gray-200 pt-6 dark:border-gray-700">
+                                <p class="mb-3 text-sm text-gray-500 dark:text-gray-400">{{ __('Or, if you only need a fresh score:') }}</p>
+                                <div wire:click="selectPlan({{ $reevalProduct->id }})"
+                                    class="flex cursor-pointer items-center justify-between rounded-xl border-2 p-4 transition
+                                        @if($selectedPlan === $reevalProduct->id) border-indigo-600 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/20
+                                        @else border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600
+                                        @endif
+                                    ">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ $reevalProduct->getTranslationWithFallback('name') }}</h3>
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Re-evaluate without renewing the seal validity.') }}</p>
+                                    </div>
+                                    <span class="text-lg font-bold text-gray-900 dark:text-white">${{ number_format($reevalProduct->price, 0) }}</span>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    {{-- EVALUACIÓN / RE-EVALUACIÓN estándar --}}
+                    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                        <h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Select your Plan') }}</h2>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            @foreach($products as $product)
+                                <div wire:click="selectPlan({{ $product->id }})"
+                                    class="relative cursor-pointer rounded-xl border-2 p-6 transition
+                                        @if($selectedPlan === $product->id) border-indigo-600 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/20
+                                        @else border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600
+                                        @endif
+                                    ">
+                                    <div class="mb-4 flex items-center justify-between">
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $product->getTranslationWithFallback('name') }}</h3>
+                                        <div class="flex h-5 w-5 items-center justify-center rounded-full border-2
+                                            @if($selectedPlan === $product->id) border-indigo-600 bg-indigo-600
+                                            @else border-gray-300 dark:border-gray-600
+                                            @endif
+                                        ">
+                                            @if($selectedPlan === $product->id)
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <span class="text-3xl font-bold text-gray-900 dark:text-white">${{ number_format($product->price, 2) }}</span>
+                                        <span class="text-gray-500 dark:text-gray-400">/ {{ __('one-time payment') }}</span>
+                                    </div>
+
+                                    <div class="prose prose-sm dark:prose-invert">
+                                        {!! $product->getTranslationWithFallback('description') !!}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- EXPRESS UPLIFT (sólo evaluación / re-evaluación) --}}
+                @if($canOfferExpress)
+                    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                        <label class="flex cursor-pointer items-start gap-4">
+                            <input type="checkbox"
+                                wire:model.live="expressUplift"
+                                class="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('Express service +$:amount', ['amount' => number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 0)]) }}</h3>
+                                    <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">+${{ number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 2) }}</span>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Result in 5 business days instead of 15.') }}</p>
+                            </div>
+                        </label>
+                    </div>
+                @endif
+
+                {{-- ADD-ONS (Plan de Acción + Consultoría) --}}
+                @if($addons->isNotEmpty())
+                    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                        <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">{{ __('Optional Add-ons') }}</h2>
+                        @if($isRenewal)
+                            <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">{{ __('checkout.renewal_addons_hint') }}</p>
+                        @endif
+                        <div class="space-y-3">
+                            @foreach($addons as $addon)
+                                @php $isAddonSelected = in_array($addon->id, $selectedAddons); @endphp
+                                <label class="flex cursor-pointer items-start gap-4 rounded-xl border-2 p-4 transition
+                                    @if($isAddonSelected) border-indigo-600 bg-indigo-50 dark:border-indigo-500 dark:bg-indigo-900/20
                                     @else border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600
                                     @endif
                                 ">
-
-                                <div class="mb-4 flex items-center justify-between">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $product->getTranslationWithFallback('name') }}</h3>
-                                    <div class="flex h-5 w-5 items-center justify-center rounded-full border-2
-                                        @if($selectedPlan === $product->id) border-indigo-600 bg-indigo-600
-                                        @else border-gray-300 dark:border-gray-600
-                                        @endif
-                                    ">
-                                        @if($selectedPlan === $product->id)
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        @endif
+                                    <input type="checkbox"
+                                        wire:click="toggleAddon({{ $addon->id }})"
+                                        @checked($isAddonSelected)
+                                        class="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between gap-3">
+                                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ $addon->getTranslationWithFallback('name') }}</h3>
+                                            <span class="whitespace-nowrap text-lg font-bold text-gray-900 dark:text-white">+${{ number_format($addon->price, 0) }}</span>
+                                        </div>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $addon->getTranslationWithFallback('description') }}</p>
                                     </div>
-                                </div>
-
-                                <div class="mb-4">
-                                    <span class="text-3xl font-bold text-gray-900 dark:text-white">${{ number_format($product->price, 2) }}</span>
-                                    <span class="text-gray-500 dark:text-gray-400">/ {{ __('one-time payment') }}</span>
-                                </div>
-
-                                <div class="prose prose-sm dark:prose-invert">
-                                    {!! $product->getTranslationWithFallback('description') !!}
-                                </div>
-                            </div>
-                        @endforeach
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                @endif
 
                 {{-- Payment Info --}}
                 <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
@@ -90,9 +226,27 @@
 
                     <div class="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
                         <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 dark:text-gray-400">{{ $this->products->firstWhere('id', $selectedPlan)?->getTranslationWithFallback('name') ?? __('Select a plan') }}</span>
-                            <span class="font-medium text-gray-900 dark:text-white">${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }}</span>
+                            <span class="text-gray-600 dark:text-gray-400">{{ $selectedProduct?->getTranslationWithFallback('name') ?? __('Select a plan') }}</span>
+                            <span class="font-medium text-gray-900 dark:text-white">${{ number_format($selectedProduct?->price ?? 0, 2) }}</span>
                         </div>
+
+                        @foreach($selectedAddons as $addonId)
+                            @php $addon = $addons->firstWhere('id', $addonId); @endphp
+                            @if($addon)
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">{{ $addon->getTranslationWithFallback('name') }}</span>
+                                    <span class="font-medium text-gray-900 dark:text-white">+${{ number_format($addon->price, 2) }}</span>
+                                </div>
+                            @endif
+                        @endforeach
+
+                        @if($expressUplift && $canOfferExpress)
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600 dark:text-gray-400">{{ __('Express service (+5 days turnaround)') }}</span>
+                                <span class="font-medium text-gray-900 dark:text-white">+${{ number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 2) }}</span>
+                            </div>
+                        @endif
+
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600 dark:text-gray-400">{{ __('Taxes') }}</span>
                             <span class="font-medium text-gray-900 dark:text-white">$0</span>
@@ -101,7 +255,7 @@
 
                     <div class="flex justify-between py-4">
                         <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Total') }}</span>
-                        <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }} {{ $this->products->firstWhere('id', $selectedPlan)?->currency }}</span>
+                        <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">${{ number_format($this->total, 2) }} {{ $selectedProduct?->currency }}</span>
                     </div>
 
                     <button wire:click="processPayment"
@@ -109,7 +263,7 @@
                         class="w-full rounded-lg bg-emerald-600 py-3 text-center font-semibold text-white shadow-sm transition hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         @if(!$selectedPlan) disabled @endif>
                         <span wire:loading.remove wire:target="processPayment">
-                            {{ __('Pay') }} ${{ number_format($this->products->firstWhere('id', $selectedPlan)?->price ?? 0, 2) }} {{ $this->products->firstWhere('id', $selectedPlan)?->currency }}
+                            {{ __('Pay') }} ${{ number_format($this->total, 2) }} {{ $selectedProduct?->currency }}
                         </span>
                         <span wire:loading wire:target="processPayment" class="flex items-center justify-center gap-2">
                             <svg class="h-5 w-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

@@ -59,7 +59,7 @@ Books: `draft → [pay $49] → submitted → pending_listing → listed / rejec
 5. Payment record created, journal/book status updated to `submitted`
 6. `PaymentConfirmed` notification sent
 
-Products identified by `slug`: `journal-evaluation`, `journal-reevaluation`, `seal-renewal-2y`, `book-listing`, `express-evaluation`, `premium-report`, `institutional-pack`
+Products identified by `slug`: `journal-evaluation`, `journal-reevaluation`, `seal-renewal-1y`, `seal-renewal-2y`, `seal-renewal-3y`, `book-listing`, `action-plan-consulting`. Express service is no longer a public SKU — it is a +$50 uplift toggled at checkout for evaluation/re-evaluation flows. Legacy slugs kept inactive for FK integrity: `express-evaluation`, `institutional-pack`. The old `premium-report` slug was renamed to `action-plan-consulting` (roadmap #17, 2026-05-13).
 
 ### Notifications (app/Notifications/)
 

@@ -8,6 +8,8 @@ use App\Models\Journal;
 use App\Models\JournalEvaluationScore;
 use App\Notifications\ChangesRequested;
 use App\Notifications\EvaluationCompleted;
+use App\Notifications\SealRenewalApproved;
+use App\Notifications\SealRenewalRejected;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
@@ -248,17 +250,48 @@ class EvaluateJournal extends Page
 
         $score = $this->calculateScore();
 
-        // Update journal with score, level, status and notes
-        $this->record->update([
+        // Capturar antes del update: si el admin pide cambios, conservamos
+        // pending_renewal_years; en los demás paths lo limpiamos.
+        $pendingYears = $this->record->pending_renewal_years;
+        $isRenewalFlow = $pendingYears !== null;
+        $qualifies = $this->qualifiesForSeal();
+
+        if ($isRenewalFlow) {
+            // Política Opción B: si la re-evaluación aprueba, extender sello;
+            // si no, sin reembolso y queda evaluated.
+            // Excepción: si el admin eligió requires_changes_evaluation o
+            // rejected, respetar su decisión — pedir cambios mantiene el
+            // contexto de renovación para cuando el editor resuba; rechazar
+            // la cancela definitivamente.
+            if (! in_array($this->assigned_status, ['requires_changes_evaluation', 'rejected'])) {
+                $this->assigned_status = $qualifies ? 'certified' : 'evaluated';
+            }
+        }
+
+        // Preservar pending_renewal_years sólo cuando el admin pide cambios:
+        // el editor resubirá y la renovación seguirá su curso.
+        $clearPendingRenewal = ! $isRenewalFlow
+            || $this->assigned_status !== 'requires_changes_evaluation';
+
+        $updateData = [
             'current_score' => $score,
             'current_level' => $this->assigned_level ?: null,
             'evaluation_notes' => $this->evaluation_notes,
             'evaluated_at' => now(),
             'status' => $this->assigned_status,
-        ]);
+        ];
 
-        // Award seal if certified (1 year validity)
-        if ($this->assigned_status === 'certified') {
+        if ($clearPendingRenewal) {
+            $updateData['pending_renewal_years'] = null;
+        }
+
+        $this->record->update($updateData);
+
+        if ($isRenewalFlow && $this->assigned_status === 'certified') {
+            // Extender el sello por los años pagados (suma sobre el seal_expires_at vigente).
+            $this->record->renewSeal($pendingYears);
+        } elseif (! $isRenewalFlow && $this->assigned_status === 'certified') {
+            // Flujo de evaluación normal certificada — sello de 1 año.
             $this->record->awardSeal(1);
         }
 
@@ -271,12 +304,26 @@ class EvaluateJournal extends Page
         // Notify journal owner via email
         $owner = $this->record->user;
         if ($owner) {
-            if ($this->assigned_status === 'requires_changes_evaluation') {
+            if ($isRenewalFlow && $this->assigned_status === 'certified') {
+                $owner->notify(new SealRenewalApproved($this->record->fresh(), $pendingYears));
+            } elseif ($isRenewalFlow && $this->assigned_status === 'requires_changes_evaluation') {
+                // Renovación con cambios pedidos: mantenemos el contexto.
+                // El editor resube y la renovación sigue su curso.
+                $owner->notify(new ChangesRequested($this->record, 'evaluation', $this->evaluation_notes));
+            } elseif ($isRenewalFlow) {
+                // evaluated (no alcanzó 75%) o rejected (admin canceló) → sin sello, sin reembolso.
+                $owner->notify(new SealRenewalRejected($this->record->fresh()));
+            } elseif ($this->assigned_status === 'requires_changes_evaluation') {
                 $owner->notify(new ChangesRequested($this->record, 'evaluation', $this->evaluation_notes));
             } else {
                 $owner->notify(new EvaluationCompleted($this->record->fresh()));
             }
         }
+
+        // SLA: días entre submisión y evaluación, si tenemos submitted_at.
+        $slaDays = $this->record->submitted_at
+            ? (int) $this->record->submitted_at->startOfDay()->diffInDays(now()->startOfDay(), false)
+            : null;
 
         activity()
             ->performedOn($this->record)
@@ -287,8 +334,12 @@ class EvaluateJournal extends Page
                 'final_status' => $this->assigned_status,
                 'level' => $this->assigned_level ?: null,
                 'seal_awarded' => $this->assigned_status === 'certified',
+                'renewal_flow' => $isRenewalFlow,
+                'renewal_years' => $isRenewalFlow ? $pendingYears : null,
+                'renewal_context_preserved' => $isRenewalFlow && ! $clearPendingRenewal,
+                'sla_days' => $slaDays,
             ])
-            ->log("Evaluación completada: {$score}% — estado: {$this->assigned_status}");
+            ->log(($isRenewalFlow ? 'Renovación evaluada' : 'Evaluación completada') . ": {$score}% — estado: {$this->assigned_status}");
 
         Notification::make()
             ->title('Evaluación completada')

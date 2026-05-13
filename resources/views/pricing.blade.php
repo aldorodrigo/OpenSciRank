@@ -157,23 +157,7 @@
                 <p class="mb-12 text-center text-gray-500 dark:text-gray-400">{{ __('Additional services to enhance your editorial evaluation.') }}</p>
 
                 <div class="grid gap-6 sm:grid-cols-2">
-                    {{-- Express Evaluation --}}
-                    <div class="flex items-start gap-4 rounded-xl border border-gray-200 p-6 transition hover:border-indigo-200 hover:shadow-md dark:border-gray-700 dark:hover:border-indigo-800">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/50">
-                            <svg class="h-5 w-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Express Evaluation') }}</h3>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Result in 5 business days instead of 15. Acquired together with an evaluation.') }}</p>
-                                </div>
-                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['express-evaluation']?->price ? number_format($products['express-evaluation']->price, 0) : '149' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Premium Report --}}
+                    {{-- Action Plan + Consulting (antes Premium Report — roadmap #17) --}}
                     <div class="flex items-start gap-4 rounded-xl border border-gray-200 p-6 transition hover:border-indigo-200 hover:shadow-md dark:border-gray-700 dark:hover:border-indigo-800">
                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/50">
                             <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -181,10 +165,10 @@
                         <div class="flex-1">
                             <div class="flex items-start justify-between gap-4">
                                 <div>
-                                    <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Premium Report') }}</h3>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Specific recommendations, best practice examples and prioritized action plan.') }}</p>
+                                    <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Action Plan + Consulting') }}</h3>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Specific recommendations per criterion, 30-min consulting session with the evaluator and a prioritized roadmap.') }}</p>
                                 </div>
-                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['premium-report']?->price ? number_format($products['premium-report']->price, 0) : '30' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
+                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['action-plan-consulting']?->price ? number_format($products['action-plan-consulting']->price, 0) : '59' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
                             </div>
                         </div>
                     </div>
@@ -200,27 +184,43 @@
                                     <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Editorial Re-evaluation') }}</h3>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Full new evaluation to improve your score or achieve the seal.') }}</p>
                                 </div>
-                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['journal-reevaluation']?->price ? number_format($products['journal-reevaluation']->price, 0) : '99' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
+                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['journal-reevaluation']?->price ? number_format($products['journal-reevaluation']->price, 0) : '79' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Seal Renewal --}}
-                    <div class="flex items-start gap-4 rounded-xl border border-gray-200 p-6 transition hover:border-indigo-200 hover:shadow-md dark:border-gray-700 dark:hover:border-indigo-800">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/50">
-                            <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Seal Renewal — 2 Years') }}</h3>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Extends the Editorial Standards Seal validity for 24 months.') }}</p>
+                    {{-- Seal Renewal — escalera (roadmap #14) --}}
+                    <div class="sm:col-span-2 rounded-xl border border-gray-200 p-6 dark:border-gray-700">
+                        <div class="flex items-start gap-4">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/50">
+                                <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Seal Renewal') }}</h3>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Extends the Editorial Standards Seal validity. Longer terms unlock better per-year pricing.') }}</p>
+                                <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                                    <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-800">
+                                        <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('1 Year') }}</p>
+                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-1y']?->price ? number_format($products['seal-renewal-1y']->price, 0) : '89' }} <span class="text-xs font-normal text-gray-500">USD</span></p>
+                                    </div>
+                                    <div class="rounded-lg bg-indigo-50 p-3 text-center ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:ring-indigo-700">
+                                        <p class="text-xs uppercase tracking-wide text-indigo-700 dark:text-indigo-300">{{ __('2 Years') }} · {{ __('most picked') }}</p>
+                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-2y']?->price ? number_format($products['seal-renewal-2y']->price, 0) : '149' }} <span class="text-xs font-normal text-gray-500">USD</span></p>
+                                    </div>
+                                    <div class="rounded-lg bg-emerald-50 p-3 text-center ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:ring-emerald-700">
+                                        <p class="text-xs uppercase tracking-wide text-emerald-700 dark:text-emerald-300">{{ __('3 Years') }} · {{ __('best value') }}</p>
+                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-3y']?->price ? number_format($products['seal-renewal-3y']->price, 0) : '199' }} <span class="text-xs font-normal text-gray-500">USD</span></p>
+                                    </div>
                                 </div>
-                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-2y']?->price ? number_format($products['seal-renewal-2y']->price, 0) : '129' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {{-- Express se ofrece como uplift en el checkout (roadmap #15) --}}
+                <p class="mx-auto mt-8 max-w-3xl text-center text-sm text-gray-500 dark:text-gray-400">
+                    {{ __('Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (5 business days instead of 15).', ['amount' => 50]) }}
+                </p>
             </div>
         </div>
     </section>

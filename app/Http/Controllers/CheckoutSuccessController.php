@@ -88,7 +88,10 @@ class CheckoutSuccessController extends Controller
             // Ensure status is updated (skip for renewals — handled by createPaymentFromSession)
             $isRenewal = ($session->metadata->is_renewal ?? '0') === '1';
             if (!$isRenewal && $payable->status !== 'submitted') {
-                $payable->update(['status' => 'submitted']);
+                $payable->update([
+                    'status' => 'submitted',
+                    'submitted_at' => now(),
+                ]);
             }
 
             // Send payment confirmation email

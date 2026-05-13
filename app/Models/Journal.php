@@ -111,6 +111,8 @@ class Journal extends Model
         'seal_expires_at',
         'seal_status',
         'seal_notified_at',
+        'pending_renewal_years',
+        'submitted_at',
         // OAI Fields
         'oai_base_url',
         'oai_set_spec',
@@ -148,6 +150,8 @@ class Journal extends Model
         'seal_awarded_at' => 'date',
         'seal_expires_at' => 'date',
         'seal_notified_at' => 'datetime',
+        'pending_renewal_years' => 'integer',
+        'submitted_at' => 'datetime',
         'oai_last_harvested_at' => 'datetime',
     ];
 

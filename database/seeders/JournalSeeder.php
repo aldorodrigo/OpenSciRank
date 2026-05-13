@@ -159,11 +159,14 @@ class JournalSeeder extends Seeder
             $oai_set_spec = $data['oai_set_spec'] ?? null;
             unset($data['oai_base_url'], $data['oai_set_spec']);
 
+            // Matcheamos por slug (string plano) porque title es JSON multilingüe
+            // tras el upgrade a HasTranslations — un WHERE por título-string falla.
+            $slug = Str::slug($data['title']);
+
             Journal::updateOrCreate(
-                ['title' => $data['title']],
+                ['slug' => $slug],
                 array_merge($data, [
                     'user_id'                 => $userId,
-                    'slug'                    => Str::slug($data['title']),
                     'status'                  => 'listed',
                     'listed_at'               => now(),
                     'target_audience'         => ['Academic', 'Researchers'],

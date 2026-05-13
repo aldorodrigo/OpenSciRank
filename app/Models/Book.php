@@ -75,6 +75,7 @@ class Book extends Model
         'exact_publication_date' => 'date',
         'submission_date' => 'date',
         'approval_date' => 'date',
+        'submitted_at' => 'datetime',
     ];
 
     public function getTranslationWithFallback(string $field): string
