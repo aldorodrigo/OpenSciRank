@@ -37,14 +37,17 @@ This project uses **Laravel Sail** (Docker). All commands must run through Sail:
 
 ```
 draft → [pay $99] → submitted → [admin evaluates] → evaluated / certified / rejected
-                                                    ↘ requires_changes_evaluation → [user pays again] → submitted
+                                                    ↘ requires_changes_evaluation → [user corrects, FREE] → submitted
        → [free]   → pending_listing → [admin reviews] → listed / rejected
-                                                       ↘ requires_changes_listing → [user resubmits] → pending_listing
+                                                       ↘ requires_changes_listing → [user corrects, FREE] → pending_listing
 listed → [pay $99] → submitted (evaluation flow)
+evaluated / certified / rejected → [pay $99 reevaluation] → submitted
 certified → seal_status: active → expiring_soon (30d) → expired → status reverts to evaluated
 ```
 
-Books: `draft → [pay $49] → submitted → pending_listing → listed / rejected / requires_changes_listing`
+Resubmisión tras `requires_changes_*` es **gratuita** (business-logic 16.5). Cada nueva evaluación o re-evaluación sí tiene costo asociado.
+
+Books: `draft → [pay $49] → submitted → pending_listing → listed / rejected / requires_changes_listing → [free resubmit] → pending_listing`
 
 ### Scoring Algorithm
 

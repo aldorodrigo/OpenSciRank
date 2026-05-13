@@ -276,11 +276,19 @@ Cada solicitud de evaluación constituye un nuevo ciclo de evaluación:
 
 Cada evaluación corresponde a un proceso independiente y puede tener un costo asociado.
 
-#### 16.5 Renovación del sello editorial
+#### 16.5 Solicitudes de cambios durante el proceso
+
+Durante el proceso de evaluación o de revisión del listado, el equipo de la plataforma puede solicitar cambios al editor si detecta información incompleta, inconsistente o que requiera aclaración. En este caso la revista o el libro pasa a un estado intermedio que indica que se requieren correcciones por parte del editor.
+
+**La resubmisión tras una solicitud de cambios no tiene costo adicional.** El editor corrige la información solicitada y vuelve a enviar la revista o el libro dentro del mismo ciclo. La plataforma retoma el proceso desde donde quedó.
+
+Esto aplica tanto al ciclo de evaluación editorial de revistas como al ciclo de revisión del listado de libros y revistas. El editor puede repetir el ciclo de cambios cuantas veces sea necesario hasta que el equipo evaluador o revisor finalice el proceso con un resultado definitivo.
+
+#### 16.6 Renovación del sello editorial
 
 El sello editorial tiene una vigencia temporal. Una vez finalizado este período, la revista puede solicitar una nueva evaluación para renovar el sello. Esto permite asegurar que las revistas mantengan el cumplimiento de los estándares editoriales definidos por la plataforma.
 
-#### 16.6 Principio de independencia
+#### 16.7 Principio de independencia
 
 El pago por el proceso de evaluación no garantiza la obtención del sello editorial. El resultado de la evaluación depende exclusivamente del cumplimiento de los criterios técnicos definidos por la plataforma. Este principio asegura la independencia y credibilidad del sistema.
 
@@ -295,10 +303,13 @@ El pago por el proceso de evaluación no garantiza la obtención del sello edito
    ↓
 4. Evaluación técnica por criterios
    ↓
+   ├─ 4a. Equipo evaluador solicita cambios → editor corrige y reenvía
+   │       (sin costo adicional, vuelve al paso 4)
+   ↓
 5A. Cumple criterios → Sello editorial
 5B. No cumple → Informe técnico
    ↓
-6. Posibilidad de nueva evaluación
+6. Posibilidad de nueva evaluación (nuevo ciclo, con costo)
 ```
 
 ### Frase institucional del modelo
