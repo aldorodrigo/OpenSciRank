@@ -188,7 +188,7 @@ class ProductSeeder extends Seeder
             [
                 'slug' => 'action-plan-consulting',
                 'primary_locale' => 'es',
-                'price' => 59.00,
+                'price' => 215.00,
                 'currency' => 'USD',
                 'is_active' => true,
                 'name' => [

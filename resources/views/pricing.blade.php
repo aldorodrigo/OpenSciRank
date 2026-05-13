@@ -231,7 +231,7 @@
                                     <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Action Plan + Consulting') }}</h3>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Specific recommendations per criterion, 30-min consulting session with the evaluator and a prioritized roadmap.') }}</p>
                                 </div>
-                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['action-plan-consulting']?->price ? number_format($products['action-plan-consulting']->price, 0) : '59' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
+                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['action-plan-consulting']?->price ? number_format($products['action-plan-consulting']->price, 0) : '215' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
                             </div>
                         </div>
                     </div>
