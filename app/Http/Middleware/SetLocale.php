@@ -59,8 +59,14 @@ class SetLocale
         // Persistir el locale efectivo en el usuario autenticado antes de procesar
         // el request, así cualquier notification disparada durante este request
         // se traduce al idioma correcto del destinatario vía HasLocalePreference.
+        // Defensivo: si la columna users.locale aún no existe (migración pendiente)
+        // no rompemos el request — las notificaciones caen a config('app.locale').
         if (auth()->check() && auth()->user()->locale !== $locale) {
-            auth()->user()->forceFill(['locale' => $locale])->save();
+            try {
+                auth()->user()->forceFill(['locale' => $locale])->save();
+            } catch (\Throwable $e) {
+                // Migración add_locale_to_users pendiente o columna inaccesible.
+            }
         }
 
         $response = $next($request);
