@@ -24,6 +24,7 @@ class CmsPostResource extends Resource
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
     protected static string | UnitEnum | null $navigationGroup = 'Contenido';
     protected static ?string $navigationLabel = 'Blog';
+    protected static ?int $navigationSort = 3;
     protected static ?string $modelLabel = 'Artículo';
     protected static ?string $pluralModelLabel = 'Artículos';
 

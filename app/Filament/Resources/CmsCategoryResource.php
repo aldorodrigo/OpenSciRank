@@ -22,10 +22,10 @@ class CmsCategoryResource extends Resource
 
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-tag';
     protected static string | UnitEnum | null $navigationGroup = 'Contenido';
-    protected static ?string $navigationLabel = 'Categorías';
+    protected static ?string $navigationLabel = 'Categorías Blog';
     protected static ?string $modelLabel = 'Categoría';
     protected static ?string $pluralModelLabel = 'Categorías';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
 
     protected static array $palettes = [
         'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400' => 'Indigo',

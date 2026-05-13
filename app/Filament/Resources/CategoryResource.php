@@ -18,8 +18,10 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-tag';
+    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-group';
     protected static string | UnitEnum | null $navigationGroup = 'Evaluación';
+    protected static ?string $navigationLabel = 'Categorías Master';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $form): Schema
     {

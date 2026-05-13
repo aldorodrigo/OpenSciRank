@@ -26,13 +26,13 @@ class SlaSettings extends Page implements HasForms
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Configuración';
+    protected static string|UnitEnum|null $navigationGroup = 'Sistema';
 
     protected static ?string $navigationLabel = 'Plazos SLA';
 
     protected static ?string $title = 'Plazos y SLA';
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 50;
 
     protected string $view = 'filament.pages.sla-settings';
 
@@ -137,7 +137,7 @@ class SlaSettings extends Page implements HasForms
 
     public static function getNavigationGroup(): ?string
     {
-        return __('Configuración');
+        return __('Sistema');
     }
 
     public static function getNavigationLabel(): string
