@@ -486,6 +486,21 @@
                                     {{-- Columna Sello --}}
                                     <td class="px-6 py-4">
                                         @if($journal->seal_expires_at)
+                                            @php
+                                                // Diff custom (no diffForHumans): texto controlado para el badge "Vence en X días".
+                                                $sealDaysDiff = (int) now()->startOfDay()->diffInDays($journal->seal_expires_at->copy()->startOfDay(), false);
+                                                $sealIsPast = $sealDaysDiff < 0;
+                                                $sealAbsDays = abs($sealDaysDiff);
+                                                $showCountdown = $sealIsPast
+                                                    || ($sealDaysDiff <= 60 && in_array($journal->seal_status, ['active', 'expiring_soon'], true));
+                                                if ($sealIsPast) {
+                                                    $countdownClasses = 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400';
+                                                } elseif ($sealDaysDiff <= 30) {
+                                                    $countdownClasses = 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400';
+                                                } else {
+                                                    $countdownClasses = 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400';
+                                                }
+                                            @endphp
                                             @if($journal->seal_expires_at->isPast())
                                                 <span class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/40 dark:text-red-400">
                                                     🔴 {{ __('Expired') }}
@@ -504,6 +519,26 @@
                                                 <a href="{{ route('app.badge', $journal) }}" class="mt-1 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
                                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                                     {{ __('View Seal') }}
+                                                </a>
+                                            @endif
+
+                                            @if($showCountdown)
+                                                <p class="mt-2">
+                                                    <span class="inline-flex items-center gap-1 rounded-full {{ $countdownClasses }} px-2.5 py-0.5 text-xs font-semibold">
+                                                        @if($sealIsPast)
+                                                            {{ __('Expired :days days ago', ['days' => $sealAbsDays]) }}
+                                                        @else
+                                                            {{ __('Expires in :days days', ['days' => $sealDaysDiff]) }}
+                                                        @endif
+                                                    </span>
+                                                </p>
+                                            @endif
+
+                                            @if(in_array($journal->seal_status, ['expiring_soon', 'expired'], true) || $journal->seal_expires_at->isPast())
+                                                <a href="{{ route('app.renew', $journal) }}"
+                                                    class="mt-2 inline-flex items-center gap-1.5 rounded-lg {{ $journal->seal_expires_at->isPast() ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500' }} px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition">
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                                    {{ __('Renew') }}
                                                 </a>
                                             @endif
                                         @elseif($journal->status === 'listed')

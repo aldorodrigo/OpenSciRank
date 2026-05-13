@@ -26,7 +26,7 @@
         <div class="container mx-auto px-4">
             <h2 class="mb-12 text-center text-3xl font-bold text-gray-900 dark:text-white">{{ __('Scientific Journals') }}</h2>
 
-            <div class="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
+            <div class="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
                 {{-- Free Listing --}}
                 <div class="flex flex-col rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-700">
                     <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
@@ -103,40 +103,7 @@
                     </a>
                 </div>
 
-                {{-- Institutional --}}
-                <div class="flex flex-col rounded-2xl bg-white p-8 shadow-lg ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-700">
-                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/50">
-                        <svg class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ __('Institutional Package') }}</h3>
-                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ __('Evaluation of 3 journals for universities and publishers.') }}</p>
-                    <div class="mt-6">
-                        <span class="text-4xl font-extrabold text-gray-900 dark:text-white">${{ $products['institutional-pack']?->price ? number_format($products['institutional-pack']->price, 0) : '199' }}</span>
-                        <span class="text-sm text-gray-500 dark:text-gray-400"> USD</span>
-                    </div>
-                    <p class="mt-1 text-xs text-emerald-600 dark:text-emerald-400">{{ __('Save $:amount vs. 3 individual evaluations', ['amount' => $products['journal-evaluation']?->price ? number_format($products['journal-evaluation']->price * 3 - $products['institutional-pack']->price, 0) : '98']) }}</p>
-                    <ul class="mt-8 flex-1 space-y-3">
-                        <li class="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            {{ __('3 complete editorial evaluations') }}
-                        </li>
-                        <li class="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            {{ __('Individual technical report per journal') }}
-                        </li>
-                        <li class="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            {{ __('Institutional billing') }}
-                        </li>
-                        <li class="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-400">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                            {{ __('Institutional reports') }}
-                        </li>
-                    </ul>
-                    <a href="/contact" class="mt-8 block w-full rounded-xl border-2 border-purple-300 py-3 text-center text-sm font-bold text-purple-600 transition hover:border-purple-400 hover:bg-purple-50 dark:border-purple-600 dark:text-purple-400 dark:hover:border-purple-500 dark:hover:bg-purple-900/20">
-                        {{ __('Contact') }}
-                    </a>
-                </div>
+                {{-- Bloque institucional desactivado 2026-05-10, ver roadmap #22 --}}
             </div>
 
             {{-- Book Listing --}}
@@ -281,7 +248,7 @@
                         [__('Are books also evaluated?'), __('No. The platform includes an academic book index to facilitate their discovery, but does not perform editorial evaluation of books.')],
                         [__('Does the seal have a validity period?'), __('Yes. The Editorial Standards Seal has a validity of 1 year. Once the period ends, the journal can request a renewal or a new evaluation.')],
                         [__('Can I request a review of the result?'), __('Yes. Evaluated journals can request a review when they consider there is an error. The request must include evidence supporting the claim.')],
-                        [__('Do you offer evaluation for institutions with multiple journals?'), __('Yes. The Institutional Package includes evaluation of 3 journals with a discount. For more journals, contact our team for a personalized proposal.')],
+                        [__('Do you offer evaluation for institutions with multiple journals?'), __('Yes. For institutions managing several journals, please contact our team to receive a personalized proposal.')],
                     ];
                 @endphp
                 @foreach($faqs as $faq)

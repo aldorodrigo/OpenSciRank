@@ -6,5 +6,21 @@
     "Casos de Éxito": "Success Stories",
     "Novedades": "News",
     "Categories": "Categories",
-    "All categories": "All categories"
+    "All categories": "All categories",
+    "payment_orphan.subject": "Alert: orphan payment recorded — transaction :id",
+    "payment_orphan.greeting": "Hello :name,",
+    "payment_orphan.intro": "An **orphan payment** has been recorded on the platform. The payment was charged in Stripe but the linked resource was not found in the database when processing the webhook (it may have been deleted between the checkout start and payment confirmation).",
+    "payment_orphan.session_id": "**Stripe Session ID:** :session_id",
+    "payment_orphan.transaction_id": "**Transaction ID (Payment Intent):** :transaction_id",
+    "payment_orphan.amount": "**Amount charged:** $:amount :currency",
+    "payment_orphan.payable": "**Resource not found:** :type #:id",
+    "payment_orphan.payment_id": "**Payment ID on the platform:** :id",
+    "payment_orphan.instruction": "Action required: review the payment in the admin panel and determine whether a manual refund should be issued or the payment should be linked to another resource.",
+    "payment_orphan.cta": "View payment in panel",
+    "checkout.evaluation_invalid_status": "This journal does not require an initial evaluation in its current status.",
+    "checkout.reevaluation_invalid_status": "This journal cannot request a re-evaluation in its current status.",
+    "checkout.renewal_no_seal": "This journal has never obtained the editorial seal and cannot renew it.",
+    "Renew": "Renew",
+    "Expires in :days days": "Expires in :days days",
+    "Expired :days days ago": "Expired :days days ago"
 }

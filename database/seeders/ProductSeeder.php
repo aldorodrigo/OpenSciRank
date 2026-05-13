@@ -116,12 +116,13 @@ class ProductSeeder extends Seeder
                     'pt' => 'Complemento que amplia o relatório técnico padrão com recomendações específicas de melhoria para cada critério avaliado, exemplos de boas práticas editoriais e um plano de ação priorizado para alcançar ou melhorar o Editorial Standards Seal.',
                 ],
             ],
+            // Paquete institucional desactivado 2026-05-10, ver roadmap #22 — se conserva el diseño para una posible reactivación futura.
             [
                 'slug' => 'institutional-pack',
                 'primary_locale' => 'es',
                 'price' => 199.00,
                 'currency' => 'USD',
-                'is_active' => true,
+                'is_active' => false,
                 'name' => [
                     'es' => 'Paquete Institucional — 3 Revistas',
                     'en' => 'Institutional Pack — 3 Journals',

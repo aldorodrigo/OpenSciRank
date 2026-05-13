@@ -2,19 +2,23 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Livewire\Attributes\Computed;
 use App\Models\Journal;
 use App\Models\Product;
 use App\Services\StripePaymentService;
+use App\Support\ProductValidator;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
 
 class PaymentCheckout extends Component
 {
     public Journal $journal;
+
     public bool $isRenewal = false;
 
     public ?int $selectedPlan = null;
+
     public array $selectedAddons = [];
+
     public bool $processing = false;
 
     public function mount(Journal $journal)
@@ -31,6 +35,18 @@ class PaymentCheckout extends Component
         $firstProduct = $this->products->first();
         if ($firstProduct) {
             $this->selectedPlan = $firstProduct->id;
+
+            // Frontend guard: reject forbidden product × journal combinations
+            // before rendering the checkout form. The Stripe service applies
+            // the same check as a second line of defense.
+            try {
+                ProductValidator::validateForJournal($firstProduct, $this->journal);
+            } catch (\InvalidArgumentException $e) {
+                session()->flash('error', $e->getMessage());
+                $this->redirect(route('app.dashboard'), navigate: true);
+
+                return;
+            }
         }
     }
 
@@ -41,6 +57,22 @@ class PaymentCheckout extends Component
             return Product::where('is_active', true)
                 ->where('slug', 'seal-renewal-2y')
                 ->get();
+        }
+
+        // Si el journal tuvo sello alguna vez y está certificado o evaluado,
+        // mostramos ambas opciones lado a lado: renovar el sello o re-evaluar
+        // para mejorar el puntaje. El editor decide en el mismo checkout.
+        if (
+            in_array($this->journal->status, ['certified', 'evaluated'], true)
+            && in_array($this->journal->seal_status, ['active', 'expiring_soon', 'expired'], true)
+            && $this->journal->seal_awarded_at !== null
+        ) {
+            return Product::where('is_active', true)
+                ->whereIn('slug', ['seal-renewal-2y', 'journal-reevaluation'])
+                ->get()
+                // Forzamos el orden: renovación primero, re-evaluación después.
+                ->sortBy(fn ($p) => $p->slug === 'seal-renewal-2y' ? 0 : 1)
+                ->values();
         }
 
         // Show evaluation products based on journal status
@@ -91,6 +123,7 @@ class PaymentCheckout extends Component
                 $total += $addon->price;
             }
         }
+
         return $total;
     }
 
@@ -102,7 +135,9 @@ class PaymentCheckout extends Component
     public function processPayment()
     {
         $product = Product::find($this->selectedPlan);
-        if (!$product) return;
+        if (! $product) {
+            return;
+        }
 
         $this->processing = true;
 
@@ -117,7 +152,7 @@ class PaymentCheckout extends Component
                 user: auth()->user(),
                 product: $product,
                 payable: $this->journal,
-                successUrl: route('app.checkout.success', ['journal' => $this->journal->id]) . '?session_id={CHECKOUT_SESSION_ID}',
+                successUrl: route('app.checkout.success', ['journal' => $this->journal->id]).'?session_id={CHECKOUT_SESSION_ID}',
                 cancelUrl: route($cancelRoute, ['journal' => $this->journal->id]),
                 metadata: [
                     'is_renewal' => $this->isRenewal ? '1' : '0',
@@ -136,7 +171,7 @@ class PaymentCheckout extends Component
     public function render()
     {
         return view('livewire.payment-checkout')->layout('components.layouts.app', [
-            'title' => __('Payment') . ' - ' . $this->journal->getTranslationWithFallback('title') . ' - Editorial Standards Platform',
+            'title' => __('Payment').' - '.$this->journal->getTranslationWithFallback('title').' - Editorial Standards Platform',
         ]);
     }
 }

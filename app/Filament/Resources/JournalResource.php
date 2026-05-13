@@ -816,6 +816,7 @@ class JournalResource extends Resource
     {
         return [
             RelationManagers\HarvestedArticlesRelationManager::class,
+            \App\Filament\RelationManagers\PaymentsRelationManager::class,
             \App\Filament\RelationManagers\ActivitiesRelationManager::class,
         ];
     }

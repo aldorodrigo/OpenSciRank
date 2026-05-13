@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Payments\Tables;
 
 use App\Filament\Exports\PaymentExporter;
+use App\Filament\Resources\BookResource;
+use App\Filament\Resources\JournalResource;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ViewAction;
@@ -27,6 +27,38 @@ class PaymentsTable
                     ->formatStateUsing(fn ($record): string => $record->product?->getTranslationWithFallback('name') ?? '')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('payable_id')
+                    ->label('Revista / Libro')
+                    ->formatStateUsing(function ($record): string {
+                        if ($record->payable === null) {
+                            return 'Pago huérfano';
+                        }
+
+                        $tipo = match ($record->payable_type) {
+                            'App\\Models\\Journal' => 'Revista',
+                            'App\\Models\\Book' => 'Libro',
+                            default => $record->payable_type,
+                        };
+
+                        $nombre = $record->payable->getTranslationWithFallback('title');
+
+                        return "[{$tipo}] {$nombre}";
+                    })
+                    ->color(fn ($record): string => $record->payable === null ? 'danger' : 'primary')
+                    ->url(fn ($record): ?string => match (true) {
+                        $record->payable === null => null,
+                        $record->payable_type === 'App\\Models\\Journal' => JournalResource::getUrl('edit', ['record' => $record->payable_id]),
+                        $record->payable_type === 'App\\Models\\Book' => BookResource::getUrl('edit', ['record' => $record->payable_id]),
+                        default => null,
+                    })
+                    ->openUrlInNewTab()
+                    ->searchable(query: function ($query, string $search): void {
+                        $query->whereHasMorph(
+                            'payable',
+                            [\App\Models\Journal::class, \App\Models\Book::class],
+                            fn ($q) => $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(title, '$.*')) LIKE ?", ["%{$search}%"])
+                        );
+                    }),
                 TextColumn::make('amount')
                     ->label('Monto')
                     ->money(fn ($record) => $record->currency ?? 'USD')
@@ -65,6 +97,13 @@ class PaymentsTable
                         'failed' => 'Fallido',
                         'refunded' => 'Reembolsado',
                     ]),
+                \Filament\Tables\Filters\TernaryFilter::make('orphan')
+                    ->label('Pagos huérfanos')
+                    ->nullable()
+                    ->attribute('error_note')
+                    ->trueLabel('Solo huérfanos')
+                    ->falseLabel('Sin errores')
+                    ->placeholder('Todos'),
             ])
             ->headerActions([
                 ExportAction::make()
