@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Book;
+use App\Models\Payment;
 use App\Observers\BookObserver;
+use App\Observers\PaymentObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
         // Sprint 3.6 #32: auto-cerrar admin_tasks de review_listing_book
         // cuando el admin cambia el status del libro a listed/rejected.
         Book::observe(BookObserver::class);
+
+        // Sprint 3.6 #32 sub-tarea 10: auto-cancelar admin_tasks asociadas
+        // cuando un Payment pasa a status `refunded` (hook para Sprint 4 #6).
+        Payment::observe(PaymentObserver::class);
     }
 
     protected function configureTranslatable(): void

@@ -33,6 +33,7 @@
     "admin_tasks.widget.unassigned_desc": "Waiting for assignment",
     "admin_tasks.widget.completed_week": "Completed this week",
     "admin_tasks.widget.completed_week_desc": "Closed in the last 7 days",
+    "admin_tasks.cancelled_by_refund": "Cancelled automatically: payment refunded (tx :tx)",
     "Guías": "Guides",
     "Ciencia Abierta": "Open Science",
     "Indexación": "Indexing",

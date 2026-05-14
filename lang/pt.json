@@ -33,6 +33,7 @@
     "admin_tasks.widget.unassigned_desc": "Esperando atribuição",
     "admin_tasks.widget.completed_week": "Concluídas esta semana",
     "admin_tasks.widget.completed_week_desc": "Encerradas nos últimos 7 dias",
+    "admin_tasks.cancelled_by_refund": "Cancelada automaticamente: pagamento reembolsado (tx :tx)",
     "(and :count more error)": "(e mais :count erro)",
     "(and :count more errors)": "(e mais :count erro)|(e mais :count erros)|(e mais :count erros)",
     "A decryption key is required.": "Uma chave de descriptografia é necessária.",
