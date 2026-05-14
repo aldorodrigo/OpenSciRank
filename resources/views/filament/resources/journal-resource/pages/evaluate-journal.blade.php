@@ -38,7 +38,7 @@
                         </svg>
                     </div>
                     <div class="flex-1 space-y-1">
-                        <h3 class="text-base font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                        <h3 class="text-base font-semibold uppercase tracking-wide text-amber-900 dark:text-amber-200">
                             {{ __('evaluate.renewal_banner_title') }}
                         </h3>
                         <p class="text-sm font-medium text-amber-800 dark:text-amber-300">
@@ -126,13 +126,13 @@
                             <div class="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-800/50 shadow-inner ring-4 {{ $score >= 80 ? 'ring-emerald-500' : ($score >= 50 ? 'ring-amber-500' : 'ring-rose-500') }} transition-all duration-500">
                                 <span class="text-3xl font-black text-white">{{ number_format($score, 0) }}<span class="text-lg opacity-60">%</span></span>
                             </div>
-                            <span class="mt-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Puntaje Final</span>
+                            <span class="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Puntaje Final</span>
                         </div>
 
                         <div class="hidden flex-col gap-3 sm:flex">
                             <div class="flex items-center gap-4 rounded-xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-sm">
                                 <div class="flex-1 space-y-1">
-                                    <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                    <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
                                         <span>Progreso de Evaluación</span>
                                         <span>{{ $this->getCompletionPercentage() }}%</span>
                                     </div>
@@ -142,7 +142,7 @@
                                 </div>
                                 <div class="text-center">
                                     <span class="block text-lg font-black leading-none text-white">{{ $this->getCompletedCount() }}</span>
-                                    <span class="text-[10px] font-bold text-slate-500">/{{ $this->getTotalCount() }}</span>
+                                    <span class="text-xs font-bold text-slate-500">/{{ $this->getTotalCount() }}</span>
                                 </div>
                             </div>
 
@@ -162,7 +162,7 @@
         </div>        {{-- JOURNAL DETAIL PANEL (collapsible) --}}
         <div x-data="{ showDetails: false }" class="mt-[-1rem]">
             <button type="button" @click="showDetails = !showDetails"
-                    class="group flex w-full items-center justify-center gap-2 rounded-b-2xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-bold uppercase tracking-widest text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800">
+                    class="group flex w-full items-center justify-center gap-2 rounded-b-2xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800">
                 <span x-show="!showDetails" class="flex items-center gap-2">
                     <svg class="h-4 w-4 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                     Ver detalles de la revista
@@ -178,7 +178,7 @@
                 @php($journalDescription = $record->getTranslationWithFallback('description'))
                 @if($journalDescription)
                     <div class="border-b border-slate-100 p-6 dark:border-slate-800">
-                        <h4 class="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Descripción Editorial</h4>
+                        <h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Descripción Editorial</h4>
                         <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ $journalDescription }}</p>
                     </div>
                 @endif
@@ -186,7 +186,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {{-- SECTION: Identification --}}
                     <div class="border-b border-slate-100 p-5 dark:border-slate-800 sm:border-r">
-                        <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-indigo-500">
+                        <h5 class="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-indigo-500">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" /></svg>
                             Identificación
                         </h5>
@@ -208,7 +208,7 @@
                                 <span class="text-xs font-bold text-slate-400">Áreas temáticas</span>
                                 <div class="flex flex-wrap gap-1">
                                     @foreach($record->subject_areas as $area)
-                                        <span class="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-400">{{ $area }}</span>
+                                        <span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-400">{{ $area }}</span>
                                     @endforeach
                                 </div>
                             </div>
@@ -218,7 +218,7 @@
 
                     {{-- SECTION: Open Access --}}
                     <div class="border-b border-slate-100 p-5 dark:border-slate-800 lg:border-r">
-                        <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-emerald-500">
+                        <h5 class="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-500">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
                             Acceso Abierto
                         </h5>
@@ -248,7 +248,7 @@
 
                     {{-- SECTION: Editorial --}}
                     <div class="border-b border-slate-100 p-5 dark:border-slate-800">
-                        <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-blue-500">
+                        <h5 class="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-500">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" /></svg>
                             Editorial y Pares
                         </h5>
@@ -274,7 +274,7 @@
                 </div>
 
                 {{-- Admin Footer --}}
-                <div class="flex flex-wrap items-center gap-6 bg-slate-50/50 px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:bg-slate-900/50">
+                <div class="flex flex-wrap items-center gap-6 bg-slate-50/50 px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:bg-slate-900/50">
                     <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span> Propietario: <span class="text-slate-600 dark:text-slate-300">{{ $record->user->name ?? '—' }}</span></div>
                     @if($record->assignedEvaluator)
                         <div class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span> Evaluador: <span class="text-slate-600 dark:text-slate-300">{{ $record->assignedEvaluator->name }}</span></div>
@@ -297,7 +297,7 @@
                             ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-200 dark:shadow-none translate-y-[-2px]' 
                             : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800'">
                     
-                    <div class="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-black"
+                    <div class="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
                          :class="activeCategory === '{{ addslashes($categoryName) }}' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'">
                         @if($allDone)
                             <svg class="h-4 w-4 text-emerald-500" :class="activeCategory === '{{ addslashes($categoryName) }}' ? 'text-white' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
@@ -332,16 +332,16 @@
                             <div class="flex h-1.5 w-24 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                                 <div class="h-full transition-all duration-500 {{ $allDone ? 'bg-emerald-500' : 'bg-indigo-500' }}" style="width: {{ $catPercent }}%"></div>
                             </div>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $prog['completed'] }} de {{ $prog['total'] }} indicadores</span>
+                            <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $prog['completed'] }} de {{ $prog['total'] }} indicadores</span>
                         </div>
                     </div>
                     <div class="flex gap-2">
                         <button type="button" wire:click="toggleAllInCategory('{{ addslashes($categoryName) }}', true)"
-                                class="rounded-lg bg-slate-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-indigo-400 dark:hover:bg-slate-700">
+                                class="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-indigo-400 dark:hover:bg-slate-700">
                             Marcar todos
                         </button>
                         <button type="button" wire:click="toggleAllInCategory('{{ addslashes($categoryName) }}', false)"
-                                class="rounded-lg bg-slate-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 transition hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700">
+                                class="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 transition hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700">
                             Desmarcar
                         </button>
                     </div>
@@ -377,7 +377,7 @@
                                     {{-- Content --}}
                                     <div class="flex-1 space-y-2">
                                         <div class="flex flex-wrap items-center gap-2">
-                                            <span class="rounded bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                            <span class="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                                                 {{ $item->code }}
                                             </span>
                                             
@@ -387,7 +387,7 @@
                                             </h3>
 
                                             @if($item->is_core)
-                                                <div class="flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-rose-600 ring-1 ring-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/20">
+                                                <div class="flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-rose-600 ring-1 ring-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:ring-rose-500/20">
                                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
                                                     Excluyente
                                                 </div>
@@ -404,14 +404,14 @@
                                     {{-- Metadata / Labeling --}}
                                     <div class="flex shrink-0 flex-col items-end gap-2 text-right">
                                         <div class="flex items-center gap-2">
-                                            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider
+                                            <span class="rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wider
                                                 {{ $item->type === 'core' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' : '' }}
                                                 {{ $item->type === 'advanced' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' : '' }}
                                                 {{ $item->type === 'excellence' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400' : '' }}
                                             ">
                                                 {{ $item->type }}
                                             </span>
-                                            <span class="text-[10px] font-black text-slate-300 dark:text-slate-600">
+                                            <span class="text-xs font-semibold text-slate-300 dark:text-slate-600">
                                                 W: {{ $item->weight }}
                                             </span>
                                         </div>
@@ -433,7 +433,7 @@
         {{-- EVALUATION NOTES --}}
         <div class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/50">
-                <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-500">
+                <h3 class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                     Observaciones Técnicas
                 </h3>
@@ -462,13 +462,13 @@
                         {{-- Live Stats Pill --}}
                         <div class="hidden items-center gap-6 rounded-xl bg-slate-900 px-6 py-2.5 text-white shadow-inner sm:flex dark:bg-black">
                             <div class="flex flex-col">
-                                <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">Completado</span>
-                                <span class="text-sm font-black">{{ $this->getCompletedCount() }} / {{ $this->getTotalCount() }}</span>
+                                <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Completado</span>
+                                <span class="text-sm font-bold">{{ $this->getCompletedCount() }} / {{ $this->getTotalCount() }}</span>
                             </div>
                             <div class="h-8 w-px bg-slate-800"></div>
                             <div class="flex flex-col">
-                                <span class="text-[9px] font-black uppercase tracking-widest text-slate-500">Nota Actual</span>
-                                <span class="text-sm font-black {{ $this->calculateScore() >= 80 ? 'text-emerald-400' : ($this->calculateScore() >= 50 ? 'text-amber-400' : 'text-rose-400') }}">
+                                <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Nota Actual</span>
+                                <span class="text-sm font-bold {{ $this->calculateScore() >= 80 ? 'text-emerald-400' : ($this->calculateScore() >= 50 ? 'text-amber-400' : 'text-rose-400') }}">
                                     {{ $this->calculateScore() }}%
                                 </span>
                             </div>
@@ -482,7 +482,7 @@
                             </button>
 
                             <button wire:click="confirmSave" wire:loading.attr="disabled"
-                                    class="relative overflow-hidden rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-black text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-indigo-300 active:scale-95 dark:shadow-none">
+                                    class="relative overflow-hidden rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-indigo-300 active:scale-95 dark:shadow-none">
                                 Finalizar Evaluación
                             </button>
                         </div>
@@ -512,13 +512,13 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
                                 <span class="block text-3xl font-black text-slate-900 dark:text-white">{{ $this->getCompletedCount() }}</span>
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Indicadores</span>
+                                <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Indicadores</span>
                             </div>
                             <div class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
                                 <span class="block text-3xl font-black {{ $this->calculateScore() >= 50 ? 'text-emerald-500' : 'text-rose-500' }}">
                                     {{ $this->calculateScore() }}%
                                 </span>
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Nota Final</span>
+                                <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nota Final</span>
                             </div>
                         </div>
 
@@ -534,8 +534,8 @@
                                         <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] {{ $this->qualifiesForSeal() ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500' }}">Editorial Standards Seal</h4>
-                                        <p class="text-xs font-black {{ $this->qualifiesForSeal() ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400' }}">
+                                        <h4 class="text-xs font-semibold uppercase tracking-wide {{ $this->qualifiesForSeal() ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500' }}">Editorial Standards Seal</h4>
+                                        <p class="text-sm font-semibold {{ $this->qualifiesForSeal() ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400' }}">
                                             {{ $this->qualifiesForSeal() ? 'Sello Editorial Otorgado' : 'Sello No Otorgado (Min. 75% + Críticos)' }}
                                         </p>
                                     </div>
@@ -543,7 +543,7 @@
                                 
                                 @if($this->qualifiesForSeal())
                                     <div class="relative z-10 flex flex-col items-end">
-                                        <span class="inline-flex animate-pulse items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-[10px] font-black tracking-wide text-white shadow-lg shadow-emerald-500/30">
+                                        <span class="inline-flex animate-pulse items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-semibold tracking-wide text-white shadow-lg shadow-emerald-500/30">
                                             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                                             CALIFICA
                                         </span>
@@ -553,15 +553,15 @@
 
                             {{-- Database Categories Summary --}}
                             <div class="mt-4 grid grid-cols-1 gap-2 border-t border-slate-100 pt-3 dark:border-slate-700">
-                                <p class="mb-1 text-[9px] font-black uppercase tracking-widest text-slate-400">Resumen por Categorías</p>
+                                <p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Resumen por Categorías</p>
                                 @foreach($this->getCategoryProgress() as $categoryName => $stats)
                                     <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">{{ $categoryName }}</span>
+                                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400">{{ $categoryName }}</span>
                                         <div class="flex items-center gap-2">
                                             <div class="h-1 w-12 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                                                 <div class="h-full bg-indigo-500" style="width: {{ ($stats['completed'] / $stats['total']) * 100 }}%"></div>
                                             </div>
-                                            <span class="text-[9px] font-black text-slate-500">
+                                            <span class="text-xs font-semibold text-slate-500">
                                                 {{ $stats['completed'] }}/{{ $stats['total'] }}
                                             </span>
                                         </div>
@@ -579,7 +579,7 @@
 
                         <div class="mt-8">
                             <div class="space-y-2">
-                                <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Estado de Evaluación</label>
+                                <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Estado de Evaluación</label>
                                 <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
                                     <option value="certified">Evaluada con Sello Editorial ✅</option>
                                     <option value="evaluated">Evaluada sin Sello Editorial 📄</option>
@@ -595,7 +595,7 @@
                         <button wire:click="cancelSave" class="rounded-xl px-5 py-2.5 text-sm font-bold text-slate-500 transition hover:bg-slate-200/50 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-white">
                             Cancelar
                         </button>
-                        <button wire:click="save" wire:loading.attr="disabled" class="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-2.5 text-sm font-black text-white transition hover:bg-indigo-700 active:scale-95">
+                        <button wire:click="save" wire:loading.attr="disabled" class="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 active:scale-95">
                             <span wire:loading.remove wire:target="save">Confirmar Registro</span>
                             <span wire:loading wire:target="save">Procesando...</span>
                         </button>
