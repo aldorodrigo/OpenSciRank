@@ -652,6 +652,81 @@ class JournalResource extends Resource
                     ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation', 'evaluated']))
                     ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
 
+                // Sprint 3.6 #36: Forzar evaluación sin pago. Casos de uso:
+                // evaluación de cortesía, casos institucionales, evaluación
+                // interna de prueba. Sube status a submitted, crea AdminTask
+                // sin payment_id con metadata.manual_override = motivo.
+                \Filament\Actions\Action::make('force_evaluation')
+                    ->label('Evaluar sin pago')
+                    ->icon('heroicon-o-gift')
+                    ->color('emerald')
+                    ->visible(fn (Journal $record): bool => in_array(
+                        $record->status,
+                        ['draft', 'listed', 'evaluated', 'certified', 'rejected'],
+                        true
+                    ))
+                    ->requiresConfirmation()
+                    ->modalHeading('Forzar evaluación sin pago')
+                    ->modalDescription('La revista pasará a estado "Submitted" y se generará una tarea de evaluación cortesía. Este flujo es para casos institucionales, evaluaciones de prueba o regalos puntuales.')
+                    ->schema([
+                        \Filament\Forms\Components\Textarea::make('reason')
+                            ->label('Motivo (interno)')
+                            ->helperText('Queda registrado en el activity log y en la metadata de la tarea.')
+                            ->required()
+                            ->minLength(10)
+                            ->maxLength(500)
+                            ->rows(3),
+                    ])
+                    ->action(function (Journal $record, array $data): void {
+                        $reason = trim($data['reason']);
+                        $previousStatus = $record->status;
+
+                        // Determinar tipo de task según el status previo
+                        $taskType = in_array($previousStatus, ['draft', 'listed'], true)
+                            ? \App\Models\AdminTask::TYPE_EVALUATE_JOURNAL
+                            : \App\Models\AdminTask::TYPE_REEVALUATE_JOURNAL;
+
+                        $record->update([
+                            'status' => 'submitted',
+                            'submitted_at' => now(),
+                        ]);
+
+                        \App\Models\AdminTask::create([
+                            'type' => $taskType,
+                            'title_key' => $taskType === \App\Models\AdminTask::TYPE_EVALUATE_JOURNAL
+                                ? 'tasks.evaluate_journal'
+                                : 'tasks.reevaluate_journal',
+                            'title_params' => [
+                                'name' => $record->getTranslationWithFallback('title'),
+                            ],
+                            'payment_id' => null,
+                            'related_type' => Journal::class,
+                            'related_id' => $record->id,
+                            'status' => \App\Models\AdminTask::STATUS_PENDING,
+                            'priority' => \App\Models\AdminTask::PRIORITY_NORMAL,
+                            'due_at' => \App\Models\AdminTask::calculateDueAt($taskType),
+                            'notes' => "Cortesía — sin pago.\n\nMotivo: {$reason}\n\nAutorizado por: ".(auth()->user()?->name ?? 'admin').".\nStatus previo: {$previousStatus}",
+                        ]);
+
+                        activity()
+                            ->performedOn($record)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'previous_status' => $previousStatus,
+                                'new_status' => 'submitted',
+                                'manual_override' => true,
+                                'reason' => $reason,
+                                'task_type' => $taskType,
+                            ])
+                            ->log("Evaluación forzada sin pago (cortesía): {$reason}");
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Evaluación creada sin pago')
+                            ->body('La revista entró al flujo de evaluación. Se generó una tarea para el equipo de evaluadores.')
+                            ->success()
+                            ->send();
+                    }),
+
                 \Filament\Actions\Action::make('review_listing')
                     ->label('Revisar Solicitud de Listado')
                     ->icon('heroicon-o-clipboard-document-check')
