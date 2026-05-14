@@ -121,7 +121,7 @@
 
                     {{-- Right: Animated Score Circle --}}
                     <div class="flex items-center gap-8">
-                        @php $score = $this->calculateScore(); @endphp
+                        @php($score = $this->calculateScore())
                         <div class="relative flex flex-col items-center">
                             <div class="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-800/50 shadow-inner ring-4 {{ $score >= 80 ? 'ring-emerald-500' : ($score >= 50 ? 'ring-amber-500' : 'ring-rose-500') }} transition-all duration-500">
                                 <span class="text-3xl font-black text-white">{{ number_format($score, 0) }}<span class="text-lg opacity-60">%</span></span>
