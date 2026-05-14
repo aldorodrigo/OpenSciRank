@@ -7,6 +7,7 @@
         confirmMessage: '',
         confirmUrl: '',
         confirmAction: '',
+        paymentsModal: false,
         openConfirm(title, message, url, action) {
             this.confirmTitle = title;
             this.confirmMessage = message;
@@ -22,12 +23,12 @@
                 <p class="mt-1 text-gray-600 dark:text-gray-400">{{ __('Manage your journals and books') }}</p>
             </div>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('app.payments') }}" class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                <button type="button" @click="paymentsModal = true" class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>
                     </svg>
                     {{ __('Mis pagos') }}
-                </a>
+                </button>
                 <a href="{{ route('app.submit') }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -1176,6 +1177,38 @@
                     class="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500">
                     <span x-text="confirmAction"></span>
                 </a>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Mis Pagos --}}
+    <div x-show="paymentsModal"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:p-6"
+         style="background-color: rgba(0,0,0,0.5);"
+         @keydown.escape.window="paymentsModal = false"
+         x-cloak>
+        <div x-show="paymentsModal"
+             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+             @click.outside="paymentsModal = false"
+             class="relative my-auto w-full max-w-6xl rounded-2xl bg-white shadow-2xl dark:bg-gray-900">
+
+            {{-- Header del modal --}}
+            <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('Mis pagos') }}</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Historial de pagos realizados en la plataforma.') }}</p>
+                </div>
+                <button type="button" @click="paymentsModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            {{-- Contenido: componente Livewire embebido --}}
+            <div class="max-h-[75vh] overflow-y-auto px-6 py-4">
+                @livewire('my-payments', ['asModal' => true])
             </div>
         </div>
     </div>

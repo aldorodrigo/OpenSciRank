@@ -28,6 +28,9 @@ class MyPayments extends Component
 
     public ?int $selectedPaymentId = null;
 
+    /** Modo embebido en otro componente (sin header del site ni padding extra). */
+    public bool $asModal = false;
+
     protected $queryString = [
         'statusFilter' => ['except' => ''],
         'productFilter' => ['except' => ''],

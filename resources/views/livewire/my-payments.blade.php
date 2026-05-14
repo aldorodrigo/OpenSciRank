@@ -1,19 +1,23 @@
-<x-slot:header>true</x-slot:header>
+@if(!$asModal)
+    <x-slot:header>true</x-slot:header>
+@endif
 
-<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="{{ $asModal ? '' : 'mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8' }}">
 
-    {{-- Header --}}
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Mis pagos') }}</h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Historial de pagos realizados en la plataforma.') }}</p>
+    {{-- Header (solo modo pagina completa, en modal el header lo da el wrapper del modal) --}}
+    @unless($asModal)
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Mis pagos') }}</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Historial de pagos realizados en la plataforma.') }}</p>
+            </div>
+            <a href="{{ route('app.dashboard') }}"
+               class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                {{ __('Volver al dashboard') }}
+            </a>
         </div>
-        <a href="{{ route('app.dashboard') }}"
-           class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            {{ __('Volver al dashboard') }}
-        </a>
-    </div>
+    @endunless
 
     {{-- Filtros --}}
     <div class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
