@@ -40,12 +40,7 @@ class PaymentInfolist
                     ->badge()
                     ->color('warning')
                     ->icon('heroicon-o-bolt')
-                    ->getStateUsing(function ($record): string {
-                        $isExpress = $record->metadata['is_express'] ?? false;
-                        return $isExpress
-                            ? 'Sí (+$' . number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 0) . ')'
-                            : 'No';
-                    }),
+                    ->getStateUsing(fn ($record): string => ($record->metadata['is_express'] ?? false) ? 'Sí' : 'No'),
                 TextEntry::make('status')
                     ->label('Estado'),
                 TextEntry::make('created_at')

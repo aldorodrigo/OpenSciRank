@@ -180,10 +180,7 @@ class AdminTaskInfolist
                             ->icon('heroicon-o-bolt')
                             ->getStateUsing(function (AdminTask $record): ?string {
                                 $isExpress = $record->payment?->metadata['is_express'] ?? false;
-                                if (! $isExpress) {
-                                    return null;
-                                }
-                                return __('Sí (+$:amount)', ['amount' => number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 0)]);
+                                return $isExpress ? __('Sí') : null;
                             })
                             ->placeholder(__('No'))
                             ->columnSpanFull(),

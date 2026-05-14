@@ -121,7 +121,7 @@ class AdminTasksTable
                     ->icon('heroicon-o-bolt')
                     ->getStateUsing(fn (AdminTask $record): ?string => ($record->payment?->metadata['is_express'] ?? false) ? __('Express') : null)
                     ->placeholder('—')
-                    ->tooltip(__('Pago con servicio Express (+$50). Resultado en plazo reducido.'))
+                    ->tooltip(__('Pago con servicio Express. Resultado en plazo reducido.'))
                     ->toggleable(),
 
                 // 6. Asignado a
@@ -429,12 +429,21 @@ class AdminTasksTable
                                 ->send();
                         }),
 
-                    // Marcar completada
+                    // Marcar completada — sólo visible en tipos que NO auto-completan
+                    // por hook (consulting y orphan_payment). Las evaluaciones y
+                    // revisiones de listado se cierran solas al guardar el trabajo
+                    // (EvaluateJournal::save / ReviewListing::save / BookObserver).
+                    // Si el evaluador marcara completada antes de guardar, dejaría
+                    // un estado inconsistente: task=completed pero status=submitted.
                     Action::make('complete')
                         ->label(__('Marcar completada'))
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->visible(fn (AdminTask $record): bool => $record->isOpen())
+                        ->visible(fn (AdminTask $record): bool => $record->isOpen() && in_array(
+                            $record->type,
+                            [AdminTask::TYPE_CONSULTING, AdminTask::TYPE_ORPHAN_PAYMENT],
+                            true
+                        ))
                         ->requiresConfirmation()
                         ->modalHeading(__('Completar tarea'))
                         ->modalDescription(__('Esta acción cerrará la tarea. Podés agregar una nota opcional.'))
@@ -577,22 +586,35 @@ class AdminTasksTable
                         ->modalDescription(__('¿Marcar todas las tareas abiertas seleccionadas como completadas?'))
                         ->action(function (Collection $records): void {
                             $count = 0;
+                            $skipped = 0;
 
                             foreach ($records as $record) {
-                                if ($record->isOpen()) {
-                                    $record->complete();
-
-                                    activity()
-                                        ->performedOn($record)
-                                        ->causedBy(auth()->user())
-                                        ->log(__('Tarea completada (bulk)'));
-
-                                    $count++;
+                                if (! $record->isOpen()) {
+                                    continue;
                                 }
+
+                                // Solo tipos que NO auto-completan vía hook
+                                if (! in_array($record->type, [AdminTask::TYPE_CONSULTING, AdminTask::TYPE_ORPHAN_PAYMENT], true)) {
+                                    $skipped++;
+                                    continue;
+                                }
+
+                                $record->complete();
+
+                                activity()
+                                    ->performedOn($record)
+                                    ->causedBy(auth()->user())
+                                    ->log(__('Tarea completada (bulk)'));
+
+                                $count++;
                             }
 
+                            $title = $skipped > 0
+                                ? __(':count tarea(s) marcadas, :skipped omitida(s) (auto-completan al guardar)', ['count' => $count, 'skipped' => $skipped])
+                                : __(':count tarea(s) marcadas como completadas', ['count' => $count]);
+
                             Notification::make()
-                                ->title(__(':count tarea(s) marcadas como completadas', ['count' => $count]))
+                                ->title($title)
                                 ->success()
                                 ->send();
                         })

@@ -41,8 +41,7 @@
                         {{ __('Evaluación Express') }}
                     </h3>
                     <p class="mt-0.5 text-sm text-amber-800 dark:text-amber-300">
-                        {{ __('El editor pagó el servicio Express (+$:amount). Entrega comprometida en :days días hábiles.', [
-                            'amount' => number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 0),
+                        {{ __('El editor pagó el servicio Express. Entrega comprometida en :days días hábiles.', [
                             'days' => \App\Models\Setting::get('sla_evaluation_express_business_days', 5),
                         ]) }}
                     </p>

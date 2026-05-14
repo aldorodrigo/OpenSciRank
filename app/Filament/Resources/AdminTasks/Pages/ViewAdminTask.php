@@ -172,11 +172,19 @@ class ViewAdminTask extends ViewRecord
                 }),
 
             // Marcar completada
+            // Marcar completada — sólo para tipos que NO auto-completan vía
+            // hook (consulting, orphan_payment). Las evaluaciones y revisiones
+            // de listado se cierran al guardar el trabajo en EvaluateJournal,
+            // ReviewListing o vía BookObserver.
             Action::make('complete')
                 ->label(__('Marcar completada'))
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
-                ->visible(fn (): bool => $this->record->isOpen())
+                ->visible(fn (): bool => $this->record->isOpen() && in_array(
+                    $this->record->type,
+                    [AdminTask::TYPE_CONSULTING, AdminTask::TYPE_ORPHAN_PAYMENT],
+                    true
+                ))
                 ->requiresConfirmation()
                 ->modalHeading(__('Completar tarea'))
                 ->modalDescription(__('Esta acción cerrará la tarea. Podés agregar una nota opcional.'))

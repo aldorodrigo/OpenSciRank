@@ -71,7 +71,7 @@ class PaymentsTable
                     ->icon('heroicon-o-bolt')
                     ->getStateUsing(fn ($record): ?string => ($record->metadata['is_express'] ?? false) ? 'Express' : null)
                     ->placeholder('—')
-                    ->tooltip('Pago con servicio Express (+$50). Resultado en plazo reducido.')
+                    ->tooltip('Pago con servicio Express. Resultado en plazo reducido.')
                     ->toggleable(),
                 TextColumn::make('provider')
                     ->label('Proveedor')
