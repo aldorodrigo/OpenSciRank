@@ -349,9 +349,17 @@ class AdminTasksTable
                     // pertenecen al admin actual — atajo para volver al
                     // trabajo sin pasar por el detalle de la task.
                     Action::make('continue_work')
-                        ->label(__('Continuar'))
+                        ->label(fn (AdminTask $record): string => match ($record->type) {
+                            AdminTask::TYPE_EVALUATE_JOURNAL,
+                            AdminTask::TYPE_REEVALUATE_JOURNAL,
+                            AdminTask::TYPE_RENEWAL_EVALUATION => __('Continuar evaluación'),
+                            AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+                            AdminTask::TYPE_REVIEW_LISTING_BOOK => __('Continuar revisión'),
+                            AdminTask::TYPE_ORPHAN_PAYMENT => __('Seguir investigando'),
+                            default => __('Continuar'),
+                        })
                         ->icon('heroicon-o-arrow-right-circle')
-                        ->color('info')
+                        ->color(fn (AdminTask $record): string => $record->isOverdue() ? 'danger' : 'info')
                         ->visible(fn (AdminTask $record): bool => $record->status === AdminTask::STATUS_IN_PROGRESS)
                         ->url(fn (AdminTask $record): string => $record->workUrl()),
 

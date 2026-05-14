@@ -98,9 +98,17 @@ class ViewAdminTask extends ViewRecord
 
             // Continuar (Fase 1 UX): atajo si la task ya esta in_progress
             Action::make('continue_work')
-                ->label(__('Continuar'))
+                ->label(fn (): string => match ($this->record->type) {
+                    AdminTask::TYPE_EVALUATE_JOURNAL,
+                    AdminTask::TYPE_REEVALUATE_JOURNAL,
+                    AdminTask::TYPE_RENEWAL_EVALUATION => __('Continuar evaluación'),
+                    AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+                    AdminTask::TYPE_REVIEW_LISTING_BOOK => __('Continuar revisión'),
+                    AdminTask::TYPE_ORPHAN_PAYMENT => __('Seguir investigando'),
+                    default => __('Continuar'),
+                })
                 ->icon('heroicon-o-arrow-right-circle')
-                ->color('info')
+                ->color(fn (): string => $this->record->isOverdue() ? 'danger' : 'info')
                 ->visible(fn (): bool => $this->record->status === AdminTask::STATUS_IN_PROGRESS)
                 ->url(fn (): string => $this->record->workUrl()),
 
