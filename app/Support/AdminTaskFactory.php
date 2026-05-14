@@ -71,6 +71,59 @@ class AdminTaskFactory
     }
 
     /**
+     * Sprint 3.6 #37: cuando el editor resubmite un journal tras un pedido
+     * de cambios (vía SubmissionWizard::submit bypass), buscamos la task
+     * abierta asociada, le agregamos una nota con la fecha de resubmisión
+     * y notificamos al asignado (o al super_admin si está sin asignar).
+     *
+     * No crea task nueva — la existente (in_progress) sigue siendo la misma
+     * unidad de trabajo, solo necesita una señal para el admin.
+     *
+     * @return int  cantidad de tasks afectadas (0 si no había ninguna abierta).
+     */
+    public static function notifyJournalResubmission(Journal $journal): int
+    {
+        $tasks = AdminTask::query()
+            ->where('related_type', Journal::class)
+            ->where('related_id', $journal->id)
+            ->whereIn('type', [
+                AdminTask::TYPE_EVALUATE_JOURNAL,
+                AdminTask::TYPE_REEVALUATE_JOURNAL,
+                AdminTask::TYPE_RENEWAL_EVALUATION,
+                AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+            ])
+            ->whereIn('status', AdminTask::STATUSES_OPEN)
+            ->get();
+
+        if ($tasks->isEmpty()) {
+            return 0;
+        }
+
+        $superAdmin = \App\Models\User::where('email', config('app.admin_email', 'admin@editorialstandards.com'))->first();
+
+        foreach ($tasks as $task) {
+            $task->update([
+                'notes' => trim(
+                    ($task->notes ? $task->notes."\n\n" : '').
+                    '↻ '.__('Editor resubmitted on :date', ['date' => now()->format('d/m/Y H:i')])
+                ),
+            ]);
+
+            activity()
+                ->performedOn($task)
+                ->withProperties(['resubmitted_at' => now()->toIso8601String()])
+                ->log(__('Editor resubmitted journal'));
+
+            $recipient = $task->assignee ?? $superAdmin;
+            if ($recipient) {
+                $recipient->notify(new \App\Notifications\TaskResubmitted($task));
+            }
+        }
+
+        return $tasks->count();
+    }
+
+    /**
      * Task generada cuando un editor solicita listing gratuito de revista.
      * Llamado desde SubmissionWizard::listJournal() (sin pago de por medio).
      */

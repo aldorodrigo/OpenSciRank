@@ -414,6 +414,8 @@ class SubmissionWizard extends Component
                 'status' => 'submitted',
                 'submitted_at' => now(),
             ]);
+            // Sprint 3.6 #37: avisar al evaluador asignado que hay trabajo nuevo
+            \App\Support\AdminTaskFactory::notifyJournalResubmission($this->journal);
             session()->flash('message', __('Your journal was resubmitted for evaluation. The renewal is still in progress.'));
             return redirect()->route('app.dashboard');
         }
@@ -426,6 +428,8 @@ class SubmissionWizard extends Component
                 'status' => 'submitted',
                 'submitted_at' => now(),
             ]);
+            // Sprint 3.6 #37: avisar al evaluador asignado que hay trabajo nuevo
+            \App\Support\AdminTaskFactory::notifyJournalResubmission($this->journal);
             session()->flash('message', __('Your corrections were submitted. The evaluation will resume shortly.'));
             return redirect()->route('app.dashboard');
         }
