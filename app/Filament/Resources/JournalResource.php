@@ -468,12 +468,26 @@ class JournalResource extends Resource
                     ->sortable()
                     ->wrap()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('issn_print')
+                    ->label('ISSN')
+                    ->placeholder('—')
+                    ->formatStateUsing(fn (Journal $record): string => $record->issn_print ?: ($record->issn_online ?: '—'))
+                    ->description(fn (Journal $record): ?string =>
+                        $record->issn_print && $record->issn_online ? 'Online: '.$record->issn_online : null
+                    )
+                    ->searchable(query: fn ($query, string $search) =>
+                        $query->where('issn_print', 'like', "%{$search}%")
+                            ->orWhere('issn_online', 'like', "%{$search}%")
+                    )
+                    ->copyable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Propietario')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Estado')
+                    ->sortable()
                     ->badge()
                     ->color(fn (string $state, Journal $record): string =>
                         $state === 'certified' && $record->seal_expires_at?->isPast() ? 'gray' :
@@ -511,11 +525,14 @@ class JournalResource extends Resource
                 Tables\Columns\TextColumn::make('assignedEvaluator.name')
                     ->label('Evaluador')
                     ->placeholder('Sin asignar')
+                    ->searchable()
+                    ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('current_score')
                     ->label('Nota')
                     ->numeric(2)
                     ->suffix('%')
+                    ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('listed_at')
                     ->label('Listado')
