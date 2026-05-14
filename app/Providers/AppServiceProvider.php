@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Book;
+use App\Observers\BookObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +28,14 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureTranslatable();
+        $this->registerObservers();
+    }
+
+    protected function registerObservers(): void
+    {
+        // Sprint 3.6 #32: auto-cerrar admin_tasks de review_listing_book
+        // cuando el admin cambia el status del libro a listed/rejected.
+        Book::observe(BookObserver::class);
     }
 
     protected function configureTranslatable(): void

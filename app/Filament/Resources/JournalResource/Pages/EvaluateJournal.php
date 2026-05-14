@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\JournalResource\Pages;
 
 use App\Filament\Resources\JournalResource;
+use App\Models\AdminTask;
 use App\Models\CriteriaItem;
 use App\Models\Journal;
 use App\Models\JournalEvaluationScore;
@@ -317,6 +318,28 @@ class EvaluateJournal extends Page
                 $owner->notify(new ChangesRequested($this->record, 'evaluation', $this->evaluation_notes));
             } else {
                 $owner->notify(new EvaluationCompleted($this->record->fresh()));
+            }
+        }
+
+        // Sprint 3.6 #32: auto-cerrar admin_tasks asociadas cuando llegamos
+        // a status terminal (certified/evaluated/rejected). Si es
+        // requires_changes_evaluation, la task queda abierta — el admin sigue
+        // trabajando, solo pausa para que el editor corrija.
+        $terminalStatuses = ['certified', 'evaluated', 'rejected'];
+        if (in_array($this->assigned_status, $terminalStatuses, true)) {
+            $taskTypes = $isRenewalFlow
+                ? [AdminTask::TYPE_RENEWAL_EVALUATION]
+                : [AdminTask::TYPE_EVALUATE_JOURNAL, AdminTask::TYPE_REEVALUATE_JOURNAL];
+
+            $closed = AdminTask::query()
+                ->where('related_type', Journal::class)
+                ->where('related_id', $this->record->id)
+                ->whereIn('type', $taskTypes)
+                ->whereIn('status', AdminTask::STATUSES_OPEN)
+                ->get();
+
+            foreach ($closed as $task) {
+                $task->complete("Cerrada automáticamente: evaluación finalizada con status {$this->assigned_status}, score {$score}%");
             }
         }
 
