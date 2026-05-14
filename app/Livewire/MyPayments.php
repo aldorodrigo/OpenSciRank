@@ -68,7 +68,7 @@ class MyPayments extends Component
     {
         return Payment::query()
             ->where('user_id', auth()->id())
-            ->with(['product', 'payable'])
+            ->with(['product', 'payable', 'adminTasks'])
             ->when($this->statusFilter, fn (Builder $q) => $q->where('status', $this->statusFilter))
             ->when($this->productFilter, fn (Builder $q) => $q->whereHas('product', fn ($q2) => $q2->where('slug', $this->productFilter)))
             ->latest('created_at')

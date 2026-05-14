@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\AdminTask;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -54,6 +55,73 @@ class Payment extends Model
     public function payable()
     {
         return $this->morphTo();
+    }
+
+    public function adminTasks()
+    {
+        return $this->hasMany(AdminTask::class);
+    }
+
+    /**
+     * Estado del SERVICIO desde la perspectiva del editor. Diferente del
+     * `status` raw del payment (que es financiero — completed/refunded/etc).
+     *
+     * Resuelve mirando las admin_tasks asociadas:
+     *  - failed/refunded → refleja el status del payment
+     *  - pending (payment no completed) → 'pending_payment'
+     *  - completed payment + sin tasks asociadas → 'completed' (instantáneo, ej. featured)
+     *  - completed payment + tasks abiertas pending sin iniciar → 'pending_work'
+     *  - completed payment + alguna task in_progress → 'in_progress'
+     *  - completed payment + tasks abiertas + cerradas → 'partial'
+     *  - completed payment + todas las tasks cerradas (completed o cancelled) → 'completed'
+     */
+    public function serviceStatus(): string
+    {
+        return match ($this->status) {
+            'failed' => 'failed',
+            'refunded' => 'refunded',
+            'pending' => 'pending_payment',
+            'completed' => $this->resolveCompletedServiceStatus(),
+            default => $this->status,
+        };
+    }
+
+    protected function resolveCompletedServiceStatus(): string
+    {
+        $tasks = $this->adminTasks;
+
+        if ($tasks->isEmpty()) {
+            return 'completed';
+        }
+
+        $openCount = $tasks->whereIn('status', AdminTask::STATUSES_OPEN)->count();
+        $closedCount = $tasks->whereIn('status', AdminTask::STATUSES_TERMINAL)->count();
+        $totalCount = $tasks->count();
+
+        if ($openCount === 0) {
+            return 'completed';
+        }
+
+        $inProgress = $tasks->whereIn('status', [
+            AdminTask::STATUS_IN_PROGRESS,
+            AdminTask::STATUS_SCHEDULED,
+            AdminTask::STATUS_IN_SESSION,
+        ])->count();
+
+        if ($inProgress > 0 && $closedCount > 0) {
+            return 'partial';
+        }
+
+        if ($inProgress > 0) {
+            return 'in_progress';
+        }
+
+        // openCount > 0, ninguno in_progress, ninguno cerrado → todo pendiente
+        if ($closedCount === 0) {
+            return 'pending_work';
+        }
+
+        return 'partial';
     }
 
     /**

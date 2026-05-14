@@ -95,20 +95,26 @@
                                     ${{ number_format($payment->amount, 0) }} {{ $payment->currency }}
                                 </td>
                                 <td class="px-4 py-3 text-center">
+                                    @php($svc = $payment->serviceStatus())
                                     <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-                                        @if($payment->status === 'completed') bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
-                                        @elseif($payment->status === 'pending') bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
-                                        @elseif($payment->status === 'failed') bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300
-                                        @elseif($payment->status === 'refunded') bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300
+                                        @if($svc === 'completed') bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
+                                        @elseif($svc === 'in_progress') bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300
+                                        @elseif($svc === 'pending_work' || $svc === 'pending_payment') bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
+                                        @elseif($svc === 'partial') bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300
+                                        @elseif($svc === 'failed') bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300
+                                        @elseif($svc === 'refunded') bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300
                                         @else bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300
                                         @endif
                                     ">
-                                        {{ match($payment->status) {
-                                            'completed' => __('Completado'),
-                                            'pending' => __('Pendiente'),
-                                            'failed' => __('Fallido'),
+                                        {{ match($svc) {
+                                            'completed' => __('Servicio completado'),
+                                            'in_progress' => __('En proceso'),
+                                            'pending_work' => __('Pendiente de iniciar'),
+                                            'pending_payment' => __('Pago pendiente'),
+                                            'partial' => __('Parcialmente completado'),
+                                            'failed' => __('Pago fallido'),
                                             'refunded' => __('Reembolsado'),
-                                            default => ucfirst($payment->status),
+                                            default => ucfirst($svc),
                                         } }}
                                     </span>
                                 </td>
