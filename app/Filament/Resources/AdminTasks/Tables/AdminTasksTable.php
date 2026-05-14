@@ -132,7 +132,21 @@ class AdminTasksTable
                     ->searchable()
                     ->toggleable(),
 
-                // 6. Pagado el
+                // Monto de la tarea (sólo super_admin). Cada task muestra el
+                // monto que le corresponde, no el total del payment. Ejemplo:
+                // task evaluate_journal con Express muestra $149 ($99+$50),
+                // mientras que la task consulting del MISMO pago muestra $215.
+                TextColumn::make('task_amount')
+                    ->label(__('Monto'))
+                    ->getStateUsing(fn (AdminTask $record): ?string => $record->taskAmount() !== null
+                        ? '$'.number_format($record->taskAmount(), 0).' '.($record->payment?->currency ?? 'USD')
+                        : null
+                    )
+                    ->placeholder('—')
+                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
+                    ->toggleable(),
+
+                // 7. Pagado el
                 TextColumn::make('payment.created_at')
                     ->label(__('Pagado el'))
                     ->dateTime('d/m/Y H:i')

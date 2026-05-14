@@ -41,6 +41,28 @@ class PaymentInfolist
                     ->color('warning')
                     ->icon('heroicon-o-bolt')
                     ->getStateUsing(fn ($record): string => ($record->metadata['is_express'] ?? false) ? 'Sí' : 'No'),
+                // Desglose del pago: items + total. Util para finanzas.
+                TextEntry::make('breakdown')
+                    ->label('Desglose')
+                    ->getStateUsing(function ($record): string {
+                        $b = $record->breakdown();
+                        $lines = [];
+                        $lines[] = $b['main']['name'].': $'.number_format($b['main']['price'], 0);
+                        if ($b['express']) {
+                            $lines[] = 'Express: $'.number_format($b['express'], 0);
+                        }
+                        foreach ($b['addons'] as $addon) {
+                            $lines[] = $addon['name'].': $'.number_format($addon['price'], 0);
+                        }
+                        if ($b['discount'] > 0) {
+                            $lines[] = 'Descuento: −$'.number_format($b['discount'], 0);
+                        }
+                        $lines[] = '**Total: $'.number_format($b['amount'], 0).' '.$b['currency'].'**';
+
+                        return implode("\n", $lines);
+                    })
+                    ->markdown()
+                    ->columnSpanFull(),
                 TextEntry::make('status')
                     ->label('Estado'),
                 TextEntry::make('created_at')

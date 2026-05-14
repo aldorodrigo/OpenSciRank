@@ -55,4 +55,65 @@ class Payment extends Model
     {
         return $this->morphTo();
     }
+
+    /**
+     * Itemiza el pago en sus componentes: producto principal, Express si aplica,
+     * addons (resueltos vía addon_slugs en metadata), y el total efectivamente
+     * cobrado (que puede no coincidir con la suma si hubo cupón aplicado).
+     *
+     * Estructura:
+     *  [
+     *    'main'    => ['name' => 'Evaluación Editorial', 'price' => 99.0],
+     *    'express' => 50.0 | null,
+     *    'addons'  => [['name' => 'Plan de Acción', 'slug' => '...', 'price' => 215.0], ...],
+     *    'subtotal' => 364.0,        // suma de los items arriba
+     *    'amount'   => 364.0,        // lo que efectivamente cobró Stripe (post-cupón)
+     *    'discount' => 0.0,          // subtotal - amount (positivo si hubo cupón)
+     *  ]
+     */
+    public function breakdown(): array
+    {
+        $main = [
+            'name' => $this->product?->getTranslationWithFallback('name') ?? '—',
+            'slug' => $this->product?->slug ?? null,
+            'price' => (float) ($this->product?->price ?? 0),
+        ];
+
+        $isExpress = (bool) ($this->metadata['is_express'] ?? false);
+        $expressAmount = $isExpress ? \App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT : null;
+
+        $addonSlugsCsv = $this->metadata['addon_slugs'] ?? '';
+        $addonSlugs = is_array($addonSlugsCsv)
+            ? array_filter($addonSlugsCsv)
+            : array_filter(array_map('trim', explode(',', (string) $addonSlugsCsv)));
+
+        $addons = [];
+        if (! empty($addonSlugs)) {
+            $addons = Product::whereIn('slug', $addonSlugs)
+                ->get()
+                ->map(fn (Product $p) => [
+                    'name' => $p->getTranslationWithFallback('name'),
+                    'slug' => $p->slug,
+                    'price' => (float) $p->price,
+                ])
+                ->all();
+        }
+
+        $subtotal = $main['price']
+            + ($expressAmount ?? 0)
+            + array_sum(array_column($addons, 'price'));
+
+        $amount = (float) $this->amount;
+        $discount = max(0.0, $subtotal - $amount);
+
+        return [
+            'main' => $main,
+            'express' => $expressAmount,
+            'addons' => $addons,
+            'subtotal' => $subtotal,
+            'amount' => $amount,
+            'discount' => $discount,
+            'currency' => $this->currency ?? 'USD',
+        ];
+    }
 }

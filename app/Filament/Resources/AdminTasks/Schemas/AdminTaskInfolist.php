@@ -144,10 +144,39 @@ class AdminTaskInfolist
                             ->columnSpanFull(),
                     ]),
 
-                // ── 3. Pago relacionado ───────────────────────────────────────
-                Section::make(__('Pago relacionado'))
-                    ->columns(2)
+                // ── 3a. Detalle de esta tarea (visible para todos, sin total del pago) ──
+                Section::make(__('Detalle'))
                     ->visible(fn (AdminTask $record): bool => $record->payment !== null)
+                    ->schema([
+                        TextEntry::make('task_amount')
+                            ->label(__('Monto correspondiente a esta tarea'))
+                            ->getStateUsing(fn (AdminTask $record): string => $record->taskAmount() !== null
+                                ? '$'.number_format($record->taskAmount(), 2).' '.($record->payment?->currency ?? 'USD')
+                                : '—'
+                            ),
+
+                        // Servicio Express si aplica (sin monto)
+                        TextEntry::make('express_indicator')
+                            ->label(__('Servicio Express'))
+                            ->badge()
+                            ->color('warning')
+                            ->icon('heroicon-o-bolt')
+                            ->getStateUsing(function (AdminTask $record): ?string {
+                                $isExpress = $record->payment?->metadata['is_express'] ?? false;
+                                return $isExpress ? __('Sí') : null;
+                            })
+                            ->placeholder(__('No')),
+                    ]),
+
+                // ── 3b. Pago completo (sólo super_admin) ──────────────────────
+                // Muestra el desglose del pago: cada producto + addons + total.
+                // Los evaluadores no ven esta sección — sólo necesitan saber
+                // qué hacer, no cuánto pagó el editor por todo el bundle.
+                Section::make(__('Información del pago (admin)'))
+                    ->columns(2)
+                    ->visible(fn (AdminTask $record): bool => $record->payment !== null
+                        && (auth()->user()?->hasRole('super_admin') ?? false)
+                    )
                     ->schema([
                         TextEntry::make('payment.id')
                             ->label(__('ID de pago'))
@@ -158,31 +187,37 @@ class AdminTaskInfolist
                             ->openUrlInNewTab()
                             ->placeholder('—'),
 
-                        TextEntry::make('payment.amount')
-                            ->label(__('Monto'))
-                            ->money(fn (AdminTask $record) => $record->payment?->currency ?? 'USD')
-                            ->placeholder('—'),
-
-                        TextEntry::make('payment.currency')
-                            ->label(__('Moneda'))
-                            ->placeholder('—'),
-
                         TextEntry::make('payment.created_at')
                             ->label(__('Fecha de pago'))
                             ->dateTime('d/m/Y H:i')
                             ->placeholder('—'),
 
-                        // Servicio Express (uplift +$50) si aplica
-                        TextEntry::make('express_indicator')
-                            ->label(__('Servicio Express'))
-                            ->badge()
-                            ->color('warning')
-                            ->icon('heroicon-o-bolt')
-                            ->getStateUsing(function (AdminTask $record): ?string {
-                                $isExpress = $record->payment?->metadata['is_express'] ?? false;
-                                return $isExpress ? __('Sí') : null;
+                        // Breakdown del pago completo
+                        TextEntry::make('payment_breakdown')
+                            ->label(__('Desglose del pago'))
+                            ->getStateUsing(function (AdminTask $record): string {
+                                $b = $record->payment?->breakdown();
+                                if (! $b) {
+                                    return '—';
+                                }
+
+                                $currency = $b['currency'];
+                                $lines = [];
+                                $lines[] = $b['main']['name'].': $'.number_format($b['main']['price'], 0);
+                                if ($b['express']) {
+                                    $lines[] = __('Express').': $'.number_format($b['express'], 0);
+                                }
+                                foreach ($b['addons'] as $addon) {
+                                    $lines[] = $addon['name'].': $'.number_format($addon['price'], 0);
+                                }
+                                if ($b['discount'] > 0) {
+                                    $lines[] = __('Descuento').': −$'.number_format($b['discount'], 0);
+                                }
+                                $lines[] = '**'.__('Total').': $'.number_format($b['amount'], 0).' '.$currency.'**';
+
+                                return implode("\n", $lines);
                             })
-                            ->placeholder(__('No'))
+                            ->markdown()
                             ->columnSpanFull(),
                     ]),
 

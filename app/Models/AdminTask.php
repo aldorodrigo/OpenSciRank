@@ -197,6 +197,37 @@ class AdminTask extends Model
     }
 
     /**
+     * Monto correspondiente sólo a esta task (no al pago total).
+     *
+     * Un mismo pago puede generar varias tasks (ej. evaluation + consulting).
+     * Acá devolvemos cuánto del pago corresponde específicamente a esta task:
+     *  - evaluate/reevaluate/renewal: precio del producto principal + Express si aplica
+     *  - consulting: precio del addon action-plan-consulting
+     *  - review_listing_book: precio del book-listing
+     *  - review_listing_journal: 0 (es flujo gratuito, no hay payment)
+     *  - orphan_payment: total del payment (admin investiga sin contexto granular)
+     *
+     * Devuelve null si no hay payment asociado.
+     */
+    public function taskAmount(): ?float
+    {
+        if (! $this->payment) {
+            return null;
+        }
+
+        return match ($this->type) {
+            self::TYPE_EVALUATE_JOURNAL,
+            self::TYPE_REEVALUATE_JOURNAL,
+            self::TYPE_RENEWAL_EVALUATION => (float) ($this->payment->product?->price ?? 0)
+                + (($this->payment->metadata['is_express'] ?? false) ? \App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT : 0),
+            self::TYPE_CONSULTING => (float) (\App\Models\Product::where('slug', 'action-plan-consulting')->value('price') ?? 0),
+            self::TYPE_REVIEW_LISTING_BOOK => (float) ($this->payment->product?->price ?? 0),
+            self::TYPE_ORPHAN_PAYMENT => (float) $this->payment->amount,
+            default => null,
+        };
+    }
+
+    /**
      * URL donde el admin realmente hace el trabajo asociado a esta task.
      * El listado de admin_tasks redirige acá tras "Iniciar" para evitar
      * la fricción de navegar manualmente al recurso.
