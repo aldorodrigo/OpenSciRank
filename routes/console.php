@@ -20,3 +20,11 @@ Schedule::command('books:check-featured')
     ->dailyAt('04:00')
     ->withoutOverlapping()
     ->onOneServer();
+
+// Sprint 3.6 #32: detecta admin_tasks vencidas y manda TaskOverdue al
+// assignee (o super_admin si no hay asignado). Cooldown de 24h en cache
+// para no re-notificar la misma task en corridas sucesivas.
+Schedule::command('tasks:check-overdue')
+    ->dailyAt('09:00')
+    ->withoutOverlapping()
+    ->onOneServer();
