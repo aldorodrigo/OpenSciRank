@@ -171,6 +171,22 @@ class AdminTaskInfolist
                             ->label(__('Fecha de pago'))
                             ->dateTime('d/m/Y H:i')
                             ->placeholder('—'),
+
+                        // Servicio Express (uplift +$50) si aplica
+                        TextEntry::make('express_indicator')
+                            ->label(__('Servicio Express'))
+                            ->badge()
+                            ->color('warning')
+                            ->icon('heroicon-o-bolt')
+                            ->getStateUsing(function (AdminTask $record): ?string {
+                                $isExpress = $record->payment?->metadata['is_express'] ?? false;
+                                if (! $isExpress) {
+                                    return null;
+                                }
+                                return __('Sí (+$:amount)', ['amount' => number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 0)]);
+                            })
+                            ->placeholder(__('No'))
+                            ->columnSpanFull(),
                     ]),
 
                 // ── 4. Recurso relacionado ────────────────────────────────────

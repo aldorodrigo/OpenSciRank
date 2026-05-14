@@ -113,7 +113,18 @@ class AdminTasksTable
                     ->sortable()
                     ->toggleable(),
 
-                // 5. Asignado a
+                // 5. Express (badge ámbar visible si el pago incluyó uplift Express +$50)
+                TextColumn::make('payment.metadata.is_express')
+                    ->label(__('Express'))
+                    ->badge()
+                    ->color('warning')
+                    ->icon('heroicon-o-bolt')
+                    ->getStateUsing(fn (AdminTask $record): ?string => ($record->payment?->metadata['is_express'] ?? false) ? __('Express') : null)
+                    ->placeholder('—')
+                    ->tooltip(__('Pago con servicio Express (+$50). Resultado en plazo reducido.'))
+                    ->toggleable(),
+
+                // 6. Asignado a
                 TextColumn::make('assignee.name')
                     ->label(__('Asignado'))
                     ->placeholder(__('Sin asignar'))

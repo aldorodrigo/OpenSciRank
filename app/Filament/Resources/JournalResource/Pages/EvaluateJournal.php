@@ -52,6 +52,18 @@ class EvaluateJournal extends Page
             ->first();
     }
 
+    /**
+     * True si la evaluación en curso viene de un pago Express (+$50).
+     * El evaluador necesita saberlo para priorizar — entrega en plazo
+     * reducido (sla_evaluation_express_business_days, default 5d).
+     */
+    public function getIsExpressEvaluationProperty(): bool
+    {
+        $payment = $this->currentTask?->payment;
+
+        return (bool) ($payment?->metadata['is_express'] ?? false);
+    }
+
     public function mount(int | string $record): void
     {
         $this->record = $this->resolveRecord($record);

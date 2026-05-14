@@ -28,6 +28,28 @@
             </div>
         @endif
 
+        {{-- BANNER EXPRESS (Sprint 3.6: indicador visual para el evaluador) --}}
+        @if($this->isExpressEvaluation)
+            <div class="flex items-center gap-4 rounded-xl border-2 border-amber-400 bg-gradient-to-r from-amber-50 to-yellow-50 p-4 shadow-sm dark:border-amber-500 dark:from-amber-950/40 dark:to-yellow-950/40">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/20 ring-2 ring-amber-500/40">
+                    <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-sm font-semibold uppercase tracking-wide text-amber-900 dark:text-amber-200">
+                        {{ __('Evaluación Express') }}
+                    </h3>
+                    <p class="mt-0.5 text-sm text-amber-800 dark:text-amber-300">
+                        {{ __('El editor pagó el servicio Express (+$:amount). Entrega comprometida en :days días hábiles.', [
+                            'amount' => number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 0),
+                            'days' => \App\Models\Setting::get('sla_evaluation_express_business_days', 5),
+                        ]) }}
+                    </p>
+                </div>
+            </div>
+        @endif
+
         {{-- BANNER DE RENOVACIÓN PENDIENTE (Opción B, 2026-05-10) --}}
         @if($record->pending_renewal_years !== null)
             <div class="rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 p-5 shadow-md dark:border-amber-500 dark:from-amber-950/40 dark:to-orange-950/40">
