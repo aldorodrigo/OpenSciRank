@@ -1182,11 +1182,12 @@
     </div>
 
     {{-- Modal Mis Pagos --}}
+    {{-- z-index ALTO porque el site-header del portal usa z-index: 9999 --}}
     <div x-show="paymentsModal"
          x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
          x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:p-6"
-         style="background-color: rgba(0,0,0,0.5);"
+         class="fixed inset-0 flex items-center justify-center overflow-y-auto p-4 sm:p-6"
+         style="background-color: rgba(0,0,0,0.5); z-index: 10000;"
          @keydown.escape.window="paymentsModal = false"
          x-cloak>
         <div x-show="paymentsModal"
