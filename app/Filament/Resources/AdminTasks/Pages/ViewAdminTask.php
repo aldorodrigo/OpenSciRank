@@ -57,30 +57,52 @@ class ViewAdminTask extends ViewRecord
                     $this->refreshFormData(['status', 'assigned_to']);
                 }),
 
-            // Iniciar
+            // Iniciar (Fase 1 UX): auto-asigna y redirige al workUrl
             Action::make('start')
-                ->label(__('Iniciar'))
+                ->label(fn (): string => match ($this->record->type) {
+                    AdminTask::TYPE_EVALUATE_JOURNAL => __('Iniciar evaluación'),
+                    AdminTask::TYPE_REEVALUATE_JOURNAL => __('Iniciar re-evaluación'),
+                    AdminTask::TYPE_RENEWAL_EVALUATION => __('Iniciar eval. renovación'),
+                    AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+                    AdminTask::TYPE_REVIEW_LISTING_BOOK => __('Revisar listado'),
+                    AdminTask::TYPE_CONSULTING => __('Iniciar consultoría'),
+                    AdminTask::TYPE_ORPHAN_PAYMENT => __('Investigar pago'),
+                    default => __('Iniciar'),
+                })
                 ->icon('heroicon-o-play')
                 ->color('warning')
                 ->visible(fn (): bool => $this->record->status === AdminTask::STATUS_PENDING)
-                ->requiresConfirmation()
-                ->modalHeading(__('Iniciar tarea'))
-                ->modalDescription(__('¿Marcar esta tarea como "En progreso"?'))
-                ->action(function (): void {
+                ->action(function () {
+                    $autoAssigned = false;
+                    if (! $this->record->assigned_to) {
+                        $this->record->update(['assigned_to' => auth()->id()]);
+                        $autoAssigned = true;
+                    }
+
                     $this->record->start();
 
                     activity()
                         ->performedOn($this->record)
                         ->causedBy(auth()->user())
+                        ->withProperties(['auto_assigned' => $autoAssigned])
                         ->log(__('Tarea iniciada'));
 
                     Notification::make()
-                        ->title(__('Tarea marcada como En progreso'))
+                        ->title(__('Tarea iniciada'))
+                        ->body($autoAssigned ? __('Asignada a ti automáticamente. Redirigiendo al trabajo…') : __('Redirigiendo al trabajo…'))
                         ->success()
                         ->send();
 
-                    $this->refreshFormData(['status', 'started_at']);
+                    return redirect()->to($this->record->workUrl());
                 }),
+
+            // Continuar (Fase 1 UX): atajo si la task ya esta in_progress
+            Action::make('continue_work')
+                ->label(__('Continuar'))
+                ->icon('heroicon-o-arrow-right-circle')
+                ->color('info')
+                ->visible(fn (): bool => $this->record->status === AdminTask::STATUS_IN_PROGRESS)
+                ->url(fn (): string => $this->record->workUrl()),
 
             // Marcar agendada (solo consulting)
             Action::make('schedule')

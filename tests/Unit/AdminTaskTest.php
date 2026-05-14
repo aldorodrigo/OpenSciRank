@@ -131,6 +131,47 @@ class AdminTaskTest extends TestCase
         $this->assertSame(1, AdminTask::overdue()->count());
     }
 
+    public function test_work_url_routes_by_type(): void
+    {
+        $eval = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'related_type' => 'App\Models\Journal',
+            'related_id' => 42,
+            'status' => AdminTask::STATUS_PENDING,
+            'priority' => AdminTask::PRIORITY_NORMAL,
+        ]);
+        $this->assertSame('/admin/journals/42/evaluate', $eval->workUrl());
+
+        $listing = AdminTask::create([
+            'type' => AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+            'title_key' => 'tasks.review_listing_journal',
+            'related_type' => 'App\Models\Journal',
+            'related_id' => 7,
+            'status' => AdminTask::STATUS_PENDING,
+            'priority' => AdminTask::PRIORITY_NORMAL,
+        ]);
+        $this->assertSame('/admin/journals/7/review-listing', $listing->workUrl());
+
+        $book = AdminTask::create([
+            'type' => AdminTask::TYPE_REVIEW_LISTING_BOOK,
+            'title_key' => 'tasks.review_listing_book',
+            'related_type' => 'App\Models\Book',
+            'related_id' => 9,
+            'status' => AdminTask::STATUS_PENDING,
+            'priority' => AdminTask::PRIORITY_NORMAL,
+        ]);
+        $this->assertSame('/admin/books/9/edit', $book->workUrl());
+
+        $consulting = AdminTask::create([
+            'type' => AdminTask::TYPE_CONSULTING,
+            'title_key' => 'tasks.consulting',
+            'status' => AdminTask::STATUS_PENDING,
+            'priority' => AdminTask::PRIORITY_NORMAL,
+        ]);
+        $this->assertSame("/admin/admin-tasks/{$consulting->id}", $consulting->workUrl());
+    }
+
     public function test_cancel_by_payment_cascades_open_tasks(): void
     {
         // Setup mínimo de un Payment real (FK constraint en payment_id).

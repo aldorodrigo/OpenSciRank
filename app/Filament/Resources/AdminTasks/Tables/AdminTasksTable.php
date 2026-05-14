@@ -303,28 +303,57 @@ class AdminTasksTable
                                 ->send();
                         }),
 
-                    // Iniciar
+                    // Iniciar (Fase 1 UX): auto-asigna al admin actual si
+                    // estaba sin asignar y redirige a la pagina donde se hace
+                    // el trabajo (workUrl segun el tipo de task).
                     Action::make('start')
-                        ->label(__('Iniciar'))
+                        ->label(fn (AdminTask $record): string => match ($record->type) {
+                            AdminTask::TYPE_EVALUATE_JOURNAL => __('Iniciar evaluación'),
+                            AdminTask::TYPE_REEVALUATE_JOURNAL => __('Iniciar re-evaluación'),
+                            AdminTask::TYPE_RENEWAL_EVALUATION => __('Iniciar eval. renovación'),
+                            AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+                            AdminTask::TYPE_REVIEW_LISTING_BOOK => __('Revisar listado'),
+                            AdminTask::TYPE_CONSULTING => __('Iniciar consultoría'),
+                            AdminTask::TYPE_ORPHAN_PAYMENT => __('Investigar pago'),
+                            default => __('Iniciar'),
+                        })
                         ->icon('heroicon-o-play')
                         ->color('warning')
                         ->visible(fn (AdminTask $record): bool => $record->status === AdminTask::STATUS_PENDING)
-                        ->requiresConfirmation()
-                        ->modalHeading(__('Iniciar tarea'))
-                        ->modalDescription(__('¿Marcar esta tarea como "En progreso"?'))
-                        ->action(function (AdminTask $record): void {
+                        ->action(function (AdminTask $record) {
+                            // Auto-asignar al admin actual si la task estaba sin asignar
+                            $autoAssigned = false;
+                            if (! $record->assigned_to) {
+                                $record->update(['assigned_to' => auth()->id()]);
+                                $autoAssigned = true;
+                            }
+
                             $record->start();
 
                             activity()
                                 ->performedOn($record)
                                 ->causedBy(auth()->user())
+                                ->withProperties(['auto_assigned' => $autoAssigned])
                                 ->log(__('Tarea iniciada'));
 
                             Notification::make()
-                                ->title(__('Tarea marcada como En progreso'))
+                                ->title(__('Tarea iniciada'))
+                                ->body($autoAssigned ? __('Asignada a ti automáticamente. Redirigiendo al trabajo…') : __('Redirigiendo al trabajo…'))
                                 ->success()
                                 ->send();
+
+                            return redirect()->to($record->workUrl());
                         }),
+
+                    // Continuar (Fase 1 UX): para tasks ya in_progress que
+                    // pertenecen al admin actual — atajo para volver al
+                    // trabajo sin pasar por el detalle de la task.
+                    Action::make('continue_work')
+                        ->label(__('Continuar'))
+                        ->icon('heroicon-o-arrow-right-circle')
+                        ->color('info')
+                        ->visible(fn (AdminTask $record): bool => $record->status === AdminTask::STATUS_IN_PROGRESS)
+                        ->url(fn (AdminTask $record): string => $record->workUrl()),
 
                     // Marcar agendada (solo consulting)
                     Action::make('schedule')

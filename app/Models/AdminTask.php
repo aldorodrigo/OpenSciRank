@@ -196,6 +196,34 @@ class AdminTask extends Model
         return in_array($this->status, self::STATUSES_TERMINAL, true);
     }
 
+    /**
+     * URL donde el admin realmente hace el trabajo asociado a esta task.
+     * El listado de admin_tasks redirige acá tras "Iniciar" para evitar
+     * la fricción de navegar manualmente al recurso.
+     */
+    public function workUrl(): string
+    {
+        return match ($this->type) {
+            self::TYPE_EVALUATE_JOURNAL,
+            self::TYPE_REEVALUATE_JOURNAL,
+            self::TYPE_RENEWAL_EVALUATION => $this->related_id
+                ? "/admin/journals/{$this->related_id}/evaluate"
+                : "/admin/admin-tasks/{$this->id}",
+            self::TYPE_REVIEW_LISTING_JOURNAL => $this->related_id
+                ? "/admin/journals/{$this->related_id}/review-listing"
+                : "/admin/admin-tasks/{$this->id}",
+            self::TYPE_REVIEW_LISTING_BOOK => $this->related_id
+                ? "/admin/books/{$this->related_id}/edit"
+                : "/admin/admin-tasks/{$this->id}",
+            self::TYPE_ORPHAN_PAYMENT => $this->payment_id
+                ? "/admin/payments/{$this->payment_id}"
+                : "/admin/admin-tasks/{$this->id}",
+            // Consulting y default: View page de la task (donde están las
+            // acciones para programar/iniciar sesión/marcar completada).
+            default => "/admin/admin-tasks/{$this->id}",
+        };
+    }
+
     // ── Acciones del lifecycle ────────────────────────────────────────
 
     /**
