@@ -31,6 +31,27 @@ class EvaluateJournal extends Page
     public string $assigned_level = '';
     public string $assigned_status = 'evaluated';
 
+    /**
+     * Sprint 3.6 #32 Fase 2 UX: la task abierta de evaluación asociada
+     * a este journal (si existe). Se muestra como banner contextual en
+     * la vista para que el admin sepa que está "trabajando en una task"
+     * y pueda volver al listado o ver el detalle.
+     */
+    public function getCurrentTaskProperty(): ?AdminTask
+    {
+        return AdminTask::query()
+            ->where('related_type', Journal::class)
+            ->where('related_id', $this->record->id)
+            ->whereIn('type', [
+                AdminTask::TYPE_EVALUATE_JOURNAL,
+                AdminTask::TYPE_REEVALUATE_JOURNAL,
+                AdminTask::TYPE_RENEWAL_EVALUATION,
+            ])
+            ->whereIn('status', AdminTask::STATUSES_OPEN)
+            ->orderByDesc('created_at')
+            ->first();
+    }
+
     public function mount(int | string $record): void
     {
         $this->record = $this->resolveRecord($record);

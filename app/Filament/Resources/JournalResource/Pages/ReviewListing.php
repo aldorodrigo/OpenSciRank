@@ -25,6 +25,21 @@ class ReviewListing extends Page
     public string $assigned_status = 'listed';
     public bool $showConfirmModal = false;
 
+    /**
+     * Sprint 3.6 #32 Fase 2 UX: la task abierta de listing asociada
+     * a este journal (si existe) — banner contextual.
+     */
+    public function getCurrentTaskProperty(): ?AdminTask
+    {
+        return AdminTask::query()
+            ->where('related_type', Journal::class)
+            ->where('related_id', $this->record->id)
+            ->where('type', AdminTask::TYPE_REVIEW_LISTING_JOURNAL)
+            ->whereIn('status', AdminTask::STATUSES_OPEN)
+            ->orderByDesc('created_at')
+            ->first();
+    }
+
     public function mount(int | string $record): void
     {
         $this->record = $this->resolveRecord($record);

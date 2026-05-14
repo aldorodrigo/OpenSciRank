@@ -4,6 +4,30 @@
         setCategory(name) { this.activeCategory = name; }
     }" class="space-y-6">
 
+        {{-- BANNER DE TAREA EN CURSO (Sprint 3.6 #32 Fase 2 UX) --}}
+        @php($currentTask = $this->currentTask)
+        @if($currentTask)
+            <div class="flex items-center justify-between gap-4 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm dark:border-indigo-800 dark:bg-indigo-950/40">
+                <div class="flex items-center gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <div>
+                        <span class="font-semibold text-indigo-900 dark:text-indigo-200">{{ __('Trabajando en tarea') }} #{{ $currentTask->id }}</span>
+                        @if($currentTask->started_at)
+                            <span class="text-indigo-700 dark:text-indigo-300"> · {{ __('iniciada') }} {{ $currentTask->started_at->diffForHumans() }}</span>
+                        @endif
+                        @if($currentTask->assignee)
+                            <span class="text-indigo-700 dark:text-indigo-300"> · {{ __('asignada a') }} {{ $currentTask->assignee->name }}</span>
+                        @endif
+                    </div>
+                </div>
+                <a href="{{ url('/admin/admin-tasks/' . $currentTask->id) }}"
+                   class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
+                    {{ __('Ver tarea') }}
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+        @endif
+
         {{-- BANNER DE RENOVACIÓN PENDIENTE (Opción B, 2026-05-10) --}}
         @if($record->pending_renewal_years !== null)
             <div class="rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 p-5 shadow-md dark:border-amber-500 dark:from-amber-950/40 dark:to-orange-950/40">
