@@ -127,6 +127,7 @@ foreach ($nonDefaultLocales as $locale) {
 $authenticatedRoutes = function () {
     Route::get('/', EditorDashboard::class)->name('dashboard');
     Route::get('/profile', UserProfile::class)->name('profile');
+    Route::get('/payments', \App\Livewire\MyPayments::class)->name('payments');
 
     // Journal routes
     Route::get('/submit', SubmissionWizard::class)->name('submit');
