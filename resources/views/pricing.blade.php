@@ -71,7 +71,7 @@
                         <span class="text-4xl font-extrabold">${{ $products['journal-evaluation']?->price ? number_format($products['journal-evaluation']->price, 0) : '99' }}</span>
                         <span class="text-sm text-indigo-200"> USD</span>
                     </div>
-                    <p class="mt-1 text-xs text-indigo-300">{{ __('Standard timeframe: 15 business days') }}</p>
+                    <p class="mt-1 text-xs text-indigo-300">{{ __('Standard timeframe: :days business days', ['days' => \App\Models\Setting::get('sla_evaluation_business_days', 15)]) }}</p>
                     <ul class="mt-8 flex-1 space-y-3">
                         <li class="flex items-start gap-3 text-sm">
                             <svg class="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -282,7 +282,11 @@
 
                 {{-- Express se ofrece como uplift en el checkout (roadmap #15) --}}
                 <p class="mx-auto mt-8 max-w-3xl text-center text-sm text-gray-500 dark:text-gray-400">
-                    {{ __('Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (5 business days instead of 15).', ['amount' => 50]) }}
+                    {{ __('Express service is available as a +$:amount upgrade during evaluation or re-evaluation checkout (:express business days instead of :standard).', [
+                        'amount' => 50,
+                        'express' => \App\Models\Setting::get('sla_evaluation_express_business_days', 5),
+                        'standard' => \App\Models\Setting::get('sla_evaluation_business_days', 15),
+                    ]) }}
                 </p>
             </div>
         </div>

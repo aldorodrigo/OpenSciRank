@@ -155,7 +155,10 @@
                                     <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('Express service +$:amount', ['amount' => number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 0)]) }}</h3>
                                     <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">+${{ number_format(\App\Livewire\PaymentCheckout::EXPRESS_UPLIFT_AMOUNT, 2) }}</span>
                                 </div>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Result in 5 business days instead of 15.') }}</p>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Result in :express business days instead of :standard.', [
+                                    'express' => \App\Models\Setting::get('sla_evaluation_express_business_days', 5),
+                                    'standard' => \App\Models\Setting::get('sla_evaluation_business_days', 15),
+                                ]) }}</p>
                             </div>
                         </label>
                     </div>
