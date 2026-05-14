@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Notifications\NewRenewalEvaluation;
 use App\Notifications\PaymentOrphan;
+use App\Support\AdminTaskFactory;
 use App\Support\ProductValidator;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -196,6 +197,13 @@ class StripePaymentService
                 ])
                 ->log('Pago huérfano registrado: payable no encontrado al procesar el webhook');
 
+            // Generar task de seguimiento (Sprint 3.6 #32)
+            AdminTaskFactory::forOrphanPayment(
+                $payment,
+                $metadata->payable_type,
+                (int) $metadata->payable_id
+            );
+
             // Notificar al admin
             $admin = \App\Models\User::where('email', config('app.admin_email', 'admin@editorialstandards.com'))->first();
             if ($admin) {
@@ -272,6 +280,11 @@ class StripePaymentService
                 'submitted_at' => now(),
             ]);
         }
+
+        // Sprint 3.6 #32: generar task(s) de admin a partir del pago.
+        // El factory decide qué tipo según el slug del producto + flags
+        // (is_renewal, is_express) y los addons del checkout.
+        AdminTaskFactory::fromPayment($payment, $payable, (array) $metadata);
 
         return $payment;
     }

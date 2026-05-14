@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\BusinessDays;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -288,28 +289,33 @@ class AdminTask extends Model
     /**
      * Calcula `due_at` según el tipo de task y los SLA configurables.
      * Lee de la tabla `settings` vía Setting::get(), cacheado 1h.
+     *
+     * Devuelve CarbonInterface (puede ser Carbon o CarbonImmutable según
+     * el contexto). El cast `datetime` de Eloquent normaliza al guardarse.
      */
-    public static function calculateDueAt(string $type, bool $express = false, ?Carbon $from = null): ?Carbon
+    public static function calculateDueAt(string $type, bool $express = false, ?CarbonInterface $from = null): ?CarbonInterface
     {
         $from ??= now();
+        // Forzamos Carbon mutable para que ->copy()->addDays(...) devuelva Carbon.
+        $base = Carbon::parse($from);
 
         return match ($type) {
             self::TYPE_EVALUATE_JOURNAL,
             self::TYPE_REEVALUATE_JOURNAL,
             self::TYPE_RENEWAL_EVALUATION => BusinessDays::addBusinessDays(
-                $from,
+                $base,
                 $express
                     ? (int) Setting::get('sla_evaluation_express_business_days', 5)
                     : (int) Setting::get('sla_evaluation_business_days', 15)
             ),
             self::TYPE_REVIEW_LISTING_JOURNAL,
-            self::TYPE_REVIEW_LISTING_BOOK => $from->copy()->addDays(
+            self::TYPE_REVIEW_LISTING_BOOK => $base->copy()->addDays(
                 (int) Setting::get('sla_listing_calendar_days', 7)
             ),
-            self::TYPE_CONSULTING => $from->copy()->addDays(
+            self::TYPE_CONSULTING => $base->copy()->addDays(
                 (int) Setting::get('sla_consulting_calendar_days', 7)
             ),
-            self::TYPE_ORPHAN_PAYMENT => $from->copy()->addDays(
+            self::TYPE_ORPHAN_PAYMENT => $base->copy()->addDays(
                 (int) Setting::get('sla_orphan_calendar_days', 2)
             ),
             default => null,

@@ -443,10 +443,16 @@ class SubmissionWizard extends Component
     public function listJournal()
     {
         $this->saveDraft();
-        $this->journal->update(['status' => 'pending_listing']);
+        $this->journal->update([
+            'status' => 'pending_listing',
+            'submitted_at' => now(),
+        ]);
 
         // Notify user that listing request was received
         auth()->user()->notify(new ListingRequested($this->journal));
+
+        // Sprint 3.6 #32: generar task de revisión de listado para el admin.
+        \App\Support\AdminTaskFactory::forJournalListing($this->journal);
 
         session()->flash('message', __('Your request to list the journal has been submitted.'));
         return redirect()->route('app.dashboard');
