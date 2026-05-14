@@ -343,6 +343,38 @@ class AdminTask extends Model
         return $this;
     }
 
+    /**
+     * Reactivar una task cancelada. Solo aplica a tasks cancelled —
+     * las completed no se reactivan (son cierres legítimos).
+     *
+     * Vuelve a `pending` y limpia los campos terminales para que entre
+     * de nuevo al queue. Conserva la razón de cancelación en `notes`
+     * para auditoría.
+     */
+    public function reactivate(?string $reason = null): self
+    {
+        if ($this->status !== self::STATUS_CANCELLED) {
+            return $this;
+        }
+
+        $note = trim(sprintf(
+            "Reactivada por %s.\nRazón cancelación previa: %s%s",
+            auth()->user()?->name ?? 'admin',
+            $this->cancelled_reason ?? '—',
+            $reason ? "\nMotivo reactivación: ".$reason : ''
+        ));
+
+        $this->update([
+            'status' => self::STATUS_PENDING,
+            'cancelled_reason' => null,
+            'completed_at' => null,
+            'started_at' => null,
+            'notes' => trim(($this->notes ? $this->notes."\n\n" : '').$note),
+        ]);
+
+        return $this;
+    }
+
     // ── Factories estáticos por tipo ──────────────────────────────────
 
     /**

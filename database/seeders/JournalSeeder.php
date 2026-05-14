@@ -161,16 +161,30 @@ class JournalSeeder extends Seeder
 
             // Matcheamos por slug (string plano) porque title es JSON multilingüe
             // tras el upgrade a HasTranslations — un WHERE por título-string falla.
-            $slug = Str::slug($data['title']);
+            $titleString = $data['title'];
+            $slug = Str::slug($titleString);
+            $publisher = $data['publisher'];
+            $publishingInstitution = $data['publishing_institution'] ?? $publisher;
+
+            // Campos traducibles: title y publishing_institution son nombres
+            // propios (no traducen), pero los guardamos en es+en para que
+            // HasTranslations tenga ambos locales. description sí traduce.
+            unset($data['title'], $data['publishing_institution']);
 
             Journal::updateOrCreate(
                 ['slug' => $slug],
                 array_merge($data, [
                     'user_id'                 => $userId,
+                    'primary_locale'          => 'es',
+                    'title'                   => ['es' => $titleString, 'en' => $titleString],
+                    'publishing_institution'  => ['es' => $publishingInstitution, 'en' => $publishingInstitution],
                     'status'                  => 'listed',
                     'listed_at'               => now(),
                     'target_audience'         => ['Academic', 'Researchers'],
-                    'description'             => "Revista científica publicada por {$data['publisher']}.",
+                    'description'             => [
+                        'es' => "Revista científica publicada por {$publisher}.",
+                        'en' => "Scientific journal published by {$publisher}.",
+                    ],
                     'editorial_board_visible' => true,
                     'current_score'           => null,
                     'evaluated_at'            => null,

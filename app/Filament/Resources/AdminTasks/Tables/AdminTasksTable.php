@@ -493,7 +493,7 @@ class AdminTasksTable
                         )
                         ->requiresConfirmation()
                         ->modalHeading(__('Cancelar tarea'))
-                        ->modalDescription(__('Esta acción es irreversible. Ingresá la razón de cancelación.'))
+                        ->modalDescription(__('La tarea quedará en estado cancelada. Un super_admin podrá reactivarla más adelante si hace falta.'))
                         ->form([
                             Textarea::make('reason')
                                 ->label(__('Razón de cancelación'))
@@ -514,6 +514,43 @@ class AdminTasksTable
                             Notification::make()
                                 ->title(__('Tarea cancelada'))
                                 ->warning()
+                                ->send();
+                        }),
+
+                    // Reactivar (solo super_admin, solo tasks cancelled)
+                    Action::make('reactivate')
+                        ->label(__('Reactivar'))
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('warning')
+                        ->visible(fn (AdminTask $record): bool => $record->status === AdminTask::STATUS_CANCELLED
+                            && (auth()->user()?->hasRole('super_admin') ?? false)
+                        )
+                        ->requiresConfirmation()
+                        ->modalHeading(__('Reactivar tarea'))
+                        ->modalDescription(__('La tarea volverá a estado pendiente y aparecerá en el queue. La razón de cancelación previa se guarda en las notas.'))
+                        ->form([
+                            Textarea::make('reason')
+                                ->label(__('Motivo de reactivación (opcional)'))
+                                ->maxLength(500)
+                                ->rows(2),
+                        ])
+                        ->action(function (AdminTask $record, array $data): void {
+                            $previousReason = $record->cancelled_reason;
+                            $record->reactivate(filled($data['reason'] ?? null) ? trim($data['reason']) : null);
+
+                            activity()
+                                ->performedOn($record)
+                                ->causedBy(auth()->user())
+                                ->withProperties([
+                                    'reactivation_reason' => $data['reason'] ?? null,
+                                    'previous_cancelled_reason' => $previousReason,
+                                ])
+                                ->log(__('Tarea reactivada'));
+
+                            Notification::make()
+                                ->title(__('Tarea reactivada'))
+                                ->body(__('Volvió al queue como pendiente.'))
+                                ->success()
                                 ->send();
                         }),
                 ])->tooltip(__('Acciones'))->icon('heroicon-m-ellipsis-vertical'),
