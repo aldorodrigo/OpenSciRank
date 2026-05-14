@@ -97,7 +97,7 @@
         {{-- JOURNAL DETAIL PANEL (expanded by default for listing review) --}}
         <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             {{-- Description --}}
-            @php $journalDescription = $record->getTranslationWithFallback('description'); @endphp
+            @php($journalDescription = $record->getTranslationWithFallback('description'))
             @if($journalDescription)
                 <div class="border-b border-slate-100 p-6 dark:border-slate-800">
                     <h4 class="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Descripción Editorial</h4>

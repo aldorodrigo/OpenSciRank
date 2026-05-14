@@ -175,7 +175,7 @@
 
             <div x-show="showDetails" x-collapse x-cloak class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 {{-- Description --}}
-                @php $journalDescription = $record->getTranslationWithFallback('description'); @endphp
+                @php($journalDescription = $record->getTranslationWithFallback('description'))
                 @if($journalDescription)
                     <div class="border-b border-slate-100 p-6 dark:border-slate-800">
                         <h4 class="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Descripción Editorial</h4>
@@ -285,7 +285,7 @@
         </div>
 
         {{-- NEW CATEGORY NAVIGATION (Tabs) --}}
-        @php $categoryProgress = $this->getCategoryProgress(); @endphp
+        @php($categoryProgress = $this->getCategoryProgress())
         <div class="no-scrollbar flex gap-2 overflow-x-auto pb-4">
             @foreach($this->getCriteriaByCategory() as $categoryName => $items)
                 @php
@@ -354,7 +354,7 @@
                 {{-- Criteria Cards Grid --}}
                 <div class="grid grid-cols-1 gap-3">
                     @foreach($items as $item)
-                        @php $isChecked = !empty($scores[$item->id]); @endphp
+                        @php($isChecked = !empty($scores[$item->id]))
                         <div class="relative group">
                             <label class="relative block cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300
                                 {{ $isChecked 
