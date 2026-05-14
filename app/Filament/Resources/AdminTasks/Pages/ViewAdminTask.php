@@ -46,7 +46,8 @@ class ViewAdminTask extends ViewRecord
                         ])
                         ->log(__('Tarea asignada a :name', ['name' => $user->name]));
 
-                    // TODO sub-tarea 7: disparar TaskAssigned notification al usuario asignado.
+                    // Notificar al asignado (Sprint 3.6 #32 sub-tarea 7)
+                    $user->notify(new \App\Notifications\TaskAssigned($this->record->fresh()));
 
                     Notification::make()
                         ->title(__('Tarea asignada a :name', ['name' => $user->name]))
