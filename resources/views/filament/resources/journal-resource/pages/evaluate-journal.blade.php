@@ -288,10 +288,8 @@
         @php($categoryProgress = $this->getCategoryProgress())
         <div class="no-scrollbar flex gap-2 overflow-x-auto pb-4">
             @foreach($this->getCriteriaByCategory() as $categoryName => $items)
-                @php
-                    $prog = $categoryProgress[$categoryName] ?? ['completed' => 0, 'total' => 0];
-                    $allDone = $prog['completed'] === $prog['total'];
-                @endphp
+                @php($prog = $categoryProgress[$categoryName] ?? ['completed' => 0, 'total' => 0])
+                @php($allDone = $prog['completed'] === $prog['total'])
                 <button type="button"
                         @click="setCategory('{{ addslashes($categoryName) }}')"
                         class="relative flex shrink-0 items-center gap-3 rounded-xl border px-4 py-3 transition-all duration-300"
@@ -321,11 +319,9 @@
 
         {{-- CRITERIA PANELS --}}
         @foreach($this->getCriteriaByCategory() as $categoryName => $items)
-            @php
-                $prog = $categoryProgress[$categoryName] ?? ['completed' => 0, 'total' => 0];
-                $allDone = $prog['completed'] === $prog['total'];
-                $catPercent = $prog['total'] > 0 ? round(($prog['completed'] / $prog['total']) * 100) : 0;
-            @endphp
+            @php($prog = $categoryProgress[$categoryName] ?? ['completed' => 0, 'total' => 0])
+            @php($allDone = $prog['completed'] === $prog['total'])
+            @php($catPercent = $prog['total'] > 0 ? round(($prog['completed'] / $prog['total']) * 100) : 0)
             <div x-show="activeCategory === '{{ addslashes($categoryName) }}'" x-cloak class="space-y-4">
 
                 {{-- Category Header & Quick Actions --}}
