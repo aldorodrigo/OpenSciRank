@@ -649,7 +649,7 @@ class JournalResource extends Resource
                     ->label('Evaluar')
                     ->icon('heroicon-o-clipboard-document-check')
                     ->color('warning')
-                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation', 'evaluated']))
+                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation']))
                     ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
 
                 // Sprint 3.6 #36: Forzar evaluación sin pago. Casos de uso:
@@ -735,10 +735,14 @@ class JournalResource extends Resource
                     ->url(fn (Journal $record): string => static::getUrl('review_listing', ['record' => $record])),
 
                 \Filament\Actions\Action::make('view_evaluation')
-                    ->label('Ver')
+                    ->label('Ver evaluación')
                     ->icon('heroicon-o-eye')
                     ->color('gray')
-                    ->visible(fn (Journal $record): bool => $record->isEvaluated())
+                    ->visible(fn (Journal $record): bool => in_array(
+                        $record->status,
+                        ['evaluated', 'certified', 'rejected'],
+                        true
+                    ))
                     ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
 
                 \Filament\Actions\Action::make('harvest_oai')
