@@ -1,10 +1,20 @@
-# Brand Brief — Editorial Standards
+# Brand Brief — Editorial Standards Platform
 
-**Versión:** 1.0 · **Fecha:** 2026-05-16 · **Sprint:** 5 (EPIC #49 · Sub-issue #50)
+**Versión:** 1.1 · **Fecha:** 2026-05-16 · **Sprint:** 5 (EPIC #49 · Sub-issue #50)
 
 Este documento captura las decisiones de marca tomadas en la sesión de Brand Brief del Sprint A. Es la base sobre la que se construye `BRAND_DIRECTION.md` (dirección visual elegida) y eventualmente `BRAND.md` (manual de marca consolidado).
 
 Las respuestas son del usuario; los comentarios y síntesis son del proceso de facilitación.
+
+## Convención del nombre de marca
+
+| Forma | Uso |
+|---|---|
+| **Editorial Standards Platform** | Nombre canónico y legal. Documentos formales, footer legal, primer mención. |
+| **Editorial Standards** | Wordmark / marketing — abreviación natural (como "Stripe" vs "Stripe, Inc."). |
+| **ESP** | Initialism — sólo monograma/favicon o referencias internas. |
+
+A lo largo de este documento usamos las tres formas según el contexto. El wordmark final del logo lo decide el diseñador profesional (ver `LOGO_BRIEF.md`).
 
 ---
 
@@ -41,7 +51,7 @@ Ambos perfiles deciden compra. Los editores/directores son el caso individual; l
 
 ### 7. Promesa central
 **Versión completa (manifiesto):**
-> "Editorial Standards es el lugar donde una revista acredita el cumplimiento de buenas prácticas editoriales mediante evaluación técnica independiente, y se distingue en el mercado académico con un sello reconocible."
+> "Editorial Standards Platform es el lugar donde una revista acredita el cumplimiento de buenas prácticas editoriales mediante evaluación técnica independiente, y se distingue en el mercado académico con un sello reconocible."
 
 **Versión hero (titular):**
 > "Acreditación editorial técnica con sello reconocible."
@@ -74,7 +84,7 @@ Síntesis de tensión: somos técnicos y rigurosos sin ser distantes ni anticuad
 
 ### 11. Tono editorial
 - **Voz:** Usted (formal académico). Aplica a textos del sitio público, emails transaccionales y comunicación con editores.
-- **Persona:** Tercera persona institucional ("Editorial Standards evalúa...", "La plataforma certifica...").
+- **Persona:** Tercera persona institucional ("Editorial Standards Platform evalúa...", "La plataforma certifica...").
 - **No usar:** Tú/vos, ni primera persona conversacional ("Te ayudamos a...", "Sabemos que...").
 
 Esto vale para textos comerciales y operativos. En documentación técnica interna o mensajería con el equipo, puede relajarse.

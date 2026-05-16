@@ -1,10 +1,12 @@
-# Brand Direction — Editorial Standards
+# Brand Direction — Editorial Standards Platform
 
-**Versión:** 1.0 · **Fecha:** 2026-05-16 · **Sprint:** 5 (EPIC #49 · Sub-issue #50)
+**Versión:** 1.1 · **Fecha:** 2026-05-16 · **Sprint:** 5 (EPIC #49 · Sub-issue #50)
 
 Documento de cierre del Sprint A. Captura la dirección visual elegida que va a guiar Sprint B (Identidad: paleta, tipografía, sello) y Sprint C (Unificación quirúrgica + `DESIGN.md`).
 
 Construido sobre [`BRAND_BRIEF.md`](BRAND_BRIEF.md). Si las respuestas del brief cambian, este documento debe revisarse.
+
+**Convención de naming:** "Editorial Standards Platform" = nombre canónico. "Editorial Standards" = wordmark/marketing. "ESP" = initialism para monograma. Ver `LOGO_BRIEF.md` para detalle de uso en el sistema de identidad.
 
 ---
 
@@ -86,7 +88,7 @@ Working values usando OKLCH (coherente con `app.css` actual) y mapeo a Tailwind 
 | Body | 400 | `text-base` | Texto corrido |
 | Body énfasis | 500 | `text-base` | Negrita semántica leve |
 | Caption / metadata | 400-500 | `text-xs` a `text-sm` | Pie de cards, timestamps, labels |
-| Wordmark / brand | 600 | variable | "Editorial Standards" en logo, sello, header |
+| Wordmark / brand | 600 | variable | "Editorial Standards Platform" (canónico) o "Editorial Standards" (wordmark) en logo, sello, header. Decisión final en `LOGO_BRIEF.md`. |
 
 **Reglas:**
 - **No usar `font-black` (peso 900) nunca más.** Restricción dura — apareció en el drift actual de `evaluate-journal.blade.php` (fixeado en #48), `review-listing.blade.php` y `journal/show.blade.php` (pendientes de fixear en Sprint C).
