@@ -7,21 +7,21 @@
         {{-- BANNER DE TAREA EN CURSO (Sprint 3.6 #32 Fase 2 UX) --}}
         @php($currentTask = $this->currentTask)
         @if($currentTask)
-            <div class="flex items-center justify-between gap-4 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm dark:border-indigo-800 dark:bg-indigo-950/40">
+            <div class="flex items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm dark:border-amber-800 dark:bg-amber-950/40">
                 <div class="flex items-center gap-3">
-                    <svg class="h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <svg class="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     <div>
-                        <span class="font-semibold text-indigo-900 dark:text-indigo-200">{{ __('Trabajando en tarea') }} #{{ $currentTask->id }}</span>
+                        <span class="font-semibold text-amber-900 dark:text-amber-200">{{ __('Trabajando en tarea') }} #{{ $currentTask->id }}</span>
                         @if($currentTask->started_at)
-                            <span class="text-indigo-700 dark:text-indigo-300"> · {{ __('iniciada') }} {{ $currentTask->started_at->diffForHumans() }}</span>
+                            <span class="text-amber-700 dark:text-amber-300"> · {{ __('iniciada') }} {{ $currentTask->started_at->diffForHumans() }}</span>
                         @endif
                         @if($currentTask->assignee)
-                            <span class="text-indigo-700 dark:text-indigo-300"> · {{ __('asignada a') }} {{ $currentTask->assignee->name }}</span>
+                            <span class="text-amber-700 dark:text-amber-300"> · {{ __('asignada a') }} {{ $currentTask->assignee->name }}</span>
                         @endif
                     </div>
                 </div>
                 <a href="{{ url('/admin/admin-tasks/' . $currentTask->id) }}"
-                   class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
+                   class="inline-flex items-center gap-1 rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-500 dark:bg-amber-500 dark:hover:bg-amber-400">
                     {{ __('Ver tarea') }}
                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -30,7 +30,7 @@
 
         {{-- BANNER EXPRESS (Sprint 3.6: indicador visual para el evaluador) --}}
         @if($this->isExpressEvaluation)
-            <div class="flex items-center gap-4 rounded-xl border-2 border-amber-400 bg-gradient-to-r from-amber-50 to-yellow-50 p-4 shadow-sm dark:border-amber-500 dark:from-amber-950/40 dark:to-yellow-950/40">
+            <div class="flex items-center gap-4 rounded-xl border-2 border-amber-400 bg-amber-50 p-4 shadow-sm dark:border-amber-500 dark:bg-amber-950/40">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/20 ring-2 ring-amber-500/40">
                     <svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
@@ -51,7 +51,7 @@
 
         {{-- BANNER DE RENOVACIÓN PENDIENTE (Opción B, 2026-05-10) --}}
         @if($record->pending_renewal_years !== null)
-            <div class="rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-50 to-orange-50 p-5 shadow-md dark:border-amber-500 dark:from-amber-950/40 dark:to-orange-950/40">
+            <div class="rounded-2xl border-2 border-amber-400 bg-amber-50 p-5 shadow-sm dark:border-amber-500 dark:bg-amber-950/40">
                 <div class="flex items-start gap-4">
                     <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-amber-500/20 ring-2 ring-amber-500/40">
                         <svg class="h-6 w-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -78,12 +78,8 @@
             </div>
         @endif
 
-        {{-- NEW PREMIUM HERO HEADER --}}
-        <div class="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-xl lg:shadow-2xl">
-            {{-- Background decorative elements --}}
-            <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl"></div>
-            <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl"></div>
-            
+        {{-- HERO HEADER --}}
+        <div class="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-sm">
             <div class="relative z-10 p-6 lg:p-10">
                 <div class="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
                     {{-- Left: Journal Info --}}
@@ -104,7 +100,7 @@
                         </div>
 
                         <div>
-                            <h1 class="text-2xl font-black tracking-tight text-white lg:text-4xl">
+                            <h1 class="text-2xl font-bold text-white lg:text-3xl">
                                 {{ $record->getTranslationWithFallback('title') }}
                             </h1>
                             @if($record->getTranslationWithFallback('abbreviated_name'))
@@ -145,29 +141,29 @@
                         @php($score = $this->calculateScore())
                         <div class="relative flex flex-col items-center">
                             <div class="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-800/50 shadow-inner ring-4 {{ $score >= 80 ? 'ring-emerald-500' : ($score >= 50 ? 'ring-amber-500' : 'ring-rose-500') }} transition-all duration-500">
-                                <span class="text-3xl font-black text-white">{{ number_format($score, 0) }}<span class="text-lg opacity-60">%</span></span>
+                                <span class="text-3xl font-semibold text-white">{{ number_format($score, 0) }}<span class="text-lg opacity-60">%</span></span>
                             </div>
                             <span class="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Puntaje Final</span>
                         </div>
 
                         <div class="hidden flex-col gap-3 sm:flex">
-                            <div class="flex items-center gap-4 rounded-xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-sm">
+                            <div class="flex items-center gap-4 rounded-xl bg-white/5 p-3 ring-1 ring-white/10">
                                 <div class="flex-1 space-y-1">
                                     <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
                                         <span>Progreso de Evaluación</span>
                                         <span>{{ $this->getCompletionPercentage() }}%</span>
                                     </div>
                                     <div class="h-1.5 w-40 overflow-hidden rounded-full bg-slate-700">
-                                        <div class="h-full bg-indigo-500 transition-all duration-700" style="width: {{ $this->getCompletionPercentage() }}%"></div>
+                                        <div class="h-full bg-amber-500 transition-all duration-700" style="width: {{ $this->getCompletionPercentage() }}%"></div>
                                     </div>
                                 </div>
                                 <div class="text-center">
-                                    <span class="block text-lg font-black leading-none text-white">{{ $this->getCompletedCount() }}</span>
+                                    <span class="block text-lg font-semibold leading-none text-white">{{ $this->getCompletedCount() }}</span>
                                     <span class="text-xs font-bold text-slate-500">/{{ $this->getTotalCount() }}</span>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-3 rounded-xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-sm">
+                            <div class="flex items-center gap-3 rounded-xl bg-white/5 p-3 ring-1 ring-white/10">
                                 @if($this->getCoresFailedCount() > 0)
                                     <svg class="h-5 w-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
                                     <span class="text-xs font-bold text-rose-400">{{ $this->getCoresFailedCount() }} Criterios Excluyentes sin cumplir</span>
@@ -207,7 +203,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {{-- SECTION: Identification --}}
                     <div class="border-b border-slate-100 p-5 dark:border-slate-800 sm:border-r">
-                        <h5 class="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-indigo-500">
+                        <h5 class="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-amber-500">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" /></svg>
                             Identificación
                         </h5>
@@ -315,7 +311,7 @@
                         @click="setCategory('{{ addslashes($categoryName) }}')"
                         class="relative flex shrink-0 items-center gap-3 rounded-xl border px-4 py-3 transition-all duration-300"
                         :class="activeCategory === '{{ addslashes($categoryName) }}' 
-                            ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-200 dark:shadow-none translate-y-[-2px]' 
+                            ? 'bg-amber-600 border-amber-500 text-white shadow-sm'
                             : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800'">
                     
                     <div class="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
@@ -327,7 +323,7 @@
                         @endif
                     </div>
                     
-                    <span class="text-sm font-bold tracking-tight">{{ $categoryName }}</span>
+                    <span class="text-sm font-semibold">{{ $categoryName }}</span>
 
                     @if($allDone)
                         <div class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-white ring-2 ring-white shadow-sm dark:ring-slate-900">
@@ -348,17 +344,17 @@
                 {{-- Category Header & Quick Actions --}}
                 <div class="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
                     <div class="flex flex-col gap-1">
-                        <h2 class="text-xl font-black tracking-tight text-slate-800 dark:text-white">{{ $categoryName }}</h2>
+                        <h2 class="text-xl font-semibold text-slate-800 dark:text-white">{{ $categoryName }}</h2>
                         <div class="flex items-center gap-3">
                             <div class="flex h-1.5 w-24 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                                <div class="h-full transition-all duration-500 {{ $allDone ? 'bg-emerald-500' : 'bg-indigo-500' }}" style="width: {{ $catPercent }}%"></div>
+                                <div class="h-full transition-all duration-500 {{ $allDone ? 'bg-emerald-500' : 'bg-amber-500' }}" style="width: {{ $catPercent }}%"></div>
                             </div>
                             <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $prog['completed'] }} de {{ $prog['total'] }} indicadores</span>
                         </div>
                     </div>
                     <div class="flex gap-2">
                         <button type="button" wire:click="toggleAllInCategory('{{ addslashes($categoryName) }}', true)"
-                                class="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-indigo-600 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-indigo-400 dark:hover:bg-slate-700">
+                                class="rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-amber-600 transition hover:bg-slate-100 dark:bg-slate-800 dark:text-amber-400 dark:hover:bg-slate-700">
                             Marcar todos
                         </button>
                         <button type="button" wire:click="toggleAllInCategory('{{ addslashes($categoryName) }}', false)"
@@ -376,7 +372,7 @@
                             <label class="relative block cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300
                                 {{ $isChecked 
                                     ? 'bg-emerald-50/30 border-emerald-200 dark:bg-emerald-500/5 dark:border-emerald-500/20' 
-                                    : ($item->is_core ? 'bg-white border-slate-200 hover:border-rose-300 dark:bg-slate-900 dark:border-slate-800' : 'bg-white border-slate-200 hover:border-indigo-300 dark:bg-slate-900 dark:border-slate-800') 
+                                    : ($item->is_core ? 'bg-white border-slate-200 hover:border-rose-300 dark:bg-slate-900 dark:border-slate-800' : 'bg-white border-slate-200 hover:border-amber-300 dark:bg-slate-900 dark:border-slate-800') 
                                 }}">
                                 
                                 {{-- Selection Indicator Bar --}}
@@ -402,7 +398,7 @@
                                                 {{ $item->code }}
                                             </span>
                                             
-                                            <h3 class="text-sm font-bold tracking-tight transition-all duration-300
+                                            <h3 class="text-sm font-semibold transition-all duration-300
                                                 {{ $isChecked ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-200' }}">
                                                 {{ $item->name }}
                                             </h3>
@@ -463,15 +459,15 @@
                 <textarea
                     wire:model="evaluation_notes"
                     rows="4"
-                    class="block w-full rounded-xl border-slate-200 bg-slate-50/50 p-4 text-sm transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-300 dark:focus:border-indigo-500 dark:focus:bg-slate-900"
+                    class="block w-full rounded-xl border-slate-200 bg-slate-50/50 p-4 text-sm transition focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-300 dark:focus:border-amber-500 dark:focus:bg-slate-900"
                     placeholder="Escribe aquí cualquier observación relevante sobre la calidad editorial o técnica detectada..."
                 ></textarea>
             </div>
         </div>
 
-        {{-- NEW GLASSMORPHY STICKY FOOTER --}}
+        {{-- STICKY FOOTER --}}
         <div class="sticky bottom-6 z-30 mt-10">
-            <div class="rounded-2xl border border-white/20 bg-white/80 p-4 shadow-2xl backdrop-blur-xl dark:border-slate-700/30 dark:bg-slate-900/80">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                 <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
                     <a href="{{ \App\Filament\Resources\JournalResource::getUrl('index') }}"
                        class="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-slate-200">
@@ -503,7 +499,7 @@
                             </button>
 
                             <button wire:click="confirmSave" wire:loading.attr="disabled"
-                                    class="relative overflow-hidden rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-indigo-300 active:scale-95 dark:shadow-none">
+                                    class="rounded-lg bg-amber-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-500 active:scale-95">
                                 Finalizar Evaluación
                             </button>
                         </div>
@@ -512,18 +508,17 @@
             </div>
         </div>
 
-        {{-- PREMIUM CONFIRMATION MODAL --}}
+        {{-- CONFIRMATION MODAL --}}
         @if($showConfirmModal)
-            <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md bg-slate-900/60 transition-opacity">
-                <div x-data x-init="$el.focus()" class="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 animate-in zoom-in duration-200 dark:bg-slate-900 dark:ring-slate-800">
+            <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 transition-opacity">
+                <div x-data x-init="$el.focus()" class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-slate-200 animate-in zoom-in duration-200 dark:bg-slate-900 dark:ring-slate-800">
                     {{-- Modal Header --}}
                     <div class="relative bg-slate-900 px-8 py-10 text-white overflow-hidden">
-                        <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl"></div>
                         <div class="relative z-10 flex flex-col items-center text-center">
-                            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500 shadow-lg shadow-indigo-500/40">
+                            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500 shadow-sm">
                                 <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                             </div>
-                            <h3 class="text-2xl font-black tracking-tight">¿Confirmar Evaluación?</h3>
+                            <h3 class="text-2xl font-semibold">¿Confirmar Evaluación?</h3>
                             <p class="mt-2 text-sm font-medium text-slate-400">{{ $record->getTranslationWithFallback('title') }}</p>
                         </div>
                     </div>
@@ -532,11 +527,11 @@
                     <div class="px-8 py-8">
                         <div class="grid grid-cols-2 gap-4">
                             <div class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
-                                <span class="block text-3xl font-black text-slate-900 dark:text-white">{{ $this->getCompletedCount() }}</span>
+                                <span class="block text-3xl font-semibold text-slate-900 dark:text-white">{{ $this->getCompletedCount() }}</span>
                                 <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Indicadores</span>
                             </div>
                             <div class="rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
-                                <span class="block text-3xl font-black {{ $this->calculateScore() >= 50 ? 'text-emerald-500' : 'text-rose-500' }}">
+                                <span class="block text-3xl font-semibold {{ $this->calculateScore() >= 50 ? 'text-emerald-500' : 'text-rose-500' }}">
                                     {{ $this->calculateScore() }}%
                                 </span>
                                 <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nota Final</span>
@@ -544,14 +539,10 @@
                         </div>
 
                         {{-- Quality Seal Status (Master Document Rule) --}}
-                        <div class="mt-6 overflow-hidden rounded-2xl border transition-all duration-500 {{ $this->qualifiesForSeal() ? 'bg-emerald-50/50 border-emerald-200 shadow-lg shadow-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20 dark:shadow-none' : 'bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-800' }}">
+                        <div class="mt-6 overflow-hidden rounded-2xl border transition-all duration-500 {{ $this->qualifiesForSeal() ? 'bg-emerald-50/50 border-emerald-200 dark:bg-emerald-500/5 dark:border-emerald-500/20' : 'bg-slate-50 border-slate-200 dark:bg-slate-800/50 dark:border-slate-800' }}">
                             <div class="relative flex items-center justify-between p-5">
-                                @if($this->qualifiesForSeal())
-                                    <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-2xl"></div>
-                                @endif
-                                
                                 <div class="relative z-10 flex items-center gap-4">
-                                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl {{ $this->qualifiesForSeal() ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/40 rotate-3' : 'bg-slate-200 text-slate-400 dark:bg-slate-700' }} transition-transform duration-700">
+                                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl {{ $this->qualifiesForSeal() ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-400 dark:bg-slate-700' }}">
                                         <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>
                                     </div>
                                     <div>
@@ -564,7 +555,7 @@
                                 
                                 @if($this->qualifiesForSeal())
                                     <div class="relative z-10 flex flex-col items-end">
-                                        <span class="inline-flex animate-pulse items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-semibold tracking-wide text-white shadow-lg shadow-emerald-500/30">
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-xs font-semibold tracking-wide text-white">
                                             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                                             CALIFICA
                                         </span>
@@ -580,7 +571,7 @@
                                         <span class="text-xs font-bold text-slate-600 dark:text-slate-400">{{ $categoryName }}</span>
                                         <div class="flex items-center gap-2">
                                             <div class="h-1 w-12 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                                                <div class="h-full bg-indigo-500" style="width: {{ ($stats['completed'] / $stats['total']) * 100 }}%"></div>
+                                                <div class="h-full bg-amber-500" style="width: {{ ($stats['completed'] / $stats['total']) * 100 }}%"></div>
                                             </div>
                                             <span class="text-xs font-semibold text-slate-500">
                                                 {{ $stats['completed'] }}/{{ $stats['total'] }}
@@ -601,11 +592,11 @@
                         <div class="mt-8">
                             <div class="space-y-2">
                                 <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Estado de Evaluación</label>
-                                <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
-                                    <option value="certified">Evaluada con Sello Editorial ✅</option>
-                                    <option value="evaluated">Evaluada sin Sello Editorial 📄</option>
-                                    <option value="requires_changes_evaluation">Requiere Cambios 🔄</option>
-                                    <option value="rejected">Rechazada ❌</option>
+                                <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-amber-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
+                                    <option value="certified">Evaluada con Sello Editorial</option>
+                                    <option value="evaluated">Evaluada sin Sello Editorial</option>
+                                    <option value="requires_changes_evaluation">Requiere Cambios</option>
+                                    <option value="rejected">Rechazada</option>
                                 </select>
                             </div>
                         </div>
@@ -616,7 +607,7 @@
                         <button wire:click="cancelSave" class="rounded-xl px-5 py-2.5 text-sm font-bold text-slate-500 transition hover:bg-slate-200/50 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-white">
                             Cancelar
                         </button>
-                        <button wire:click="save" wire:loading.attr="disabled" class="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 active:scale-95">
+                        <button wire:click="save" wire:loading.attr="disabled" class="flex items-center gap-2 rounded-xl bg-amber-600 px-8 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-700 active:scale-95">
                             <span wire:loading.remove wire:target="save">Confirmar Registro</span>
                             <span wire:loading wire:target="save">Procesando...</span>
                         </button>
