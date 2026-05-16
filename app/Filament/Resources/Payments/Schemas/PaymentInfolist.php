@@ -14,36 +14,36 @@ class PaymentInfolist
         return $schema
             ->components([
                 TextEntry::make('user.name')
-                    ->label('Comprador')
+                    ->label(__('admin.payment.buyer'))
                     ->placeholder('-'),
                 TextEntry::make('product.name')
-                    ->label('Producto')
+                    ->label(__('admin.payment.product'))
                     ->formatStateUsing(fn ($record): string => $record->product?->getTranslationWithFallback('name') ?? '-')
                     ->placeholder('-'),
                 TextEntry::make('coupon_id')
-                    ->label('Cupón')
+                    ->label(__('admin.payment.coupon'))
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('provider')
-                    ->label('Proveedor'),
+                    ->label(__('admin.payment.provider')),
                 TextEntry::make('transaction_id')
-                    ->label('ID Transacción')
+                    ->label(__('admin.payment.transaction_id_short'))
                     ->placeholder('-'),
                 TextEntry::make('amount')
-                    ->label('Monto')
+                    ->label(__('admin.payment.amount'))
                     ->money(fn ($record) => $record->currency ?? 'USD'),
                 TextEntry::make('currency')
-                    ->label('Moneda'),
+                    ->label(__('admin.payment.currency')),
                 // Servicio Express uplift (Sprint 3.6: indicador visual)
                 TextEntry::make('express_indicator')
-                    ->label('Servicio Express')
+                    ->label(__('admin.payment.express'))
                     ->badge()
                     ->color('warning')
                     ->icon('heroicon-o-bolt')
                     ->getStateUsing(fn ($record): string => ($record->metadata['is_express'] ?? false) ? 'Sí' : 'No'),
                 // Desglose del pago: items + total. Util para finanzas.
                 TextEntry::make('breakdown')
-                    ->label('Desglose')
+                    ->label(__('admin.payment.breakdown'))
                     ->getStateUsing(function ($record): string {
                         $b = $record->breakdown();
                         $lines = [];
@@ -64,29 +64,32 @@ class PaymentInfolist
                     ->markdown()
                     ->columnSpanFull(),
                 TextEntry::make('status')
-                    ->label('Estado'),
+                    ->label(__('admin.payment.status')),
                 TextEntry::make('created_at')
-                    ->label('Fecha de creación')
+                    ->label(__('admin.payment.created_at'))
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
-                    ->label('Última actualización')
+                    ->label(__('admin.payment.updated_at'))
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('-'),
                 TextEntry::make('payable_id')
-                    ->label('Revista / Libro')
+                    ->label(__('admin.payment.related_resource'))
                     ->formatStateUsing(function ($record): string {
                         if ($record->payable === null) {
-                            return 'Pago huérfano (registro eliminado)';
+                            return __('admin.payment.orphan_label');
                         }
 
                         $tipo = match ($record->payable_type) {
                             'App\\Models\\Journal' => 'Revista',
                             'App\\Models\\Book' => 'Libro',
+                            'App\\Models\\User' => __('Editor'),
                             default => $record->payable_type,
                         };
 
-                        $nombre = $record->payable->getTranslationWithFallback('title');
+                        // Sprint 3.7 #46: User no tiene getTranslationWithFallback;
+                        // delegamos al helper centralizado.
+                        $nombre = \App\Support\PaymentPayableResolver::payableDisplayName($record->payable);
 
                         return "[{$tipo}] {$nombre}";
                     })
@@ -98,7 +101,7 @@ class PaymentInfolist
                         default => null,
                     })
                     ->openUrlInNewTab()
-                    ->placeholder('Sin asociar'),
+                    ->placeholder(__('admin.common.not_associated')),
             ]);
     }
 }

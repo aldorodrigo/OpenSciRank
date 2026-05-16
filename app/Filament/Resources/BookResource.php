@@ -41,7 +41,7 @@ class BookResource extends Resource
                         // ============================================
                         // TAB 1: Identificación Básica
                         // ============================================
-                        Tab::make('Identificación Básica')
+                        Tab::make(__('admin.book.tab_basic'))
                             ->schema([
                                 Tabs::make('title_tabs')
                                     ->columnSpanFull()
@@ -65,7 +65,7 @@ class BookResource extends Resource
                                         ]),
                                     ]),
                                 Forms\Components\Select::make('primary_locale')
-                                    ->label('Idioma principal')
+                                    ->label(__('admin.book.f.primary_locale'))
                                     ->options(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'])
                                     ->default('es')
                                     ->required(),
@@ -92,16 +92,16 @@ class BookResource extends Resource
                                         ]),
                                     ]),
                                 Forms\Components\Select::make('book_type')
-                                    ->label('Tipo de Obra')
+                                    ->label(__('admin.book.f.book_type'))
                                     ->options([
-                                        'libro_cientifico' => 'Libro Científico',
-                                        'libro_academico' => 'Libro Académico',
-                                        'libro_tecnico' => 'Libro Técnico',
-                                        'manual' => 'Manual',
-                                        'capitulo_libro' => 'Capítulo de Libro',
+                                        'libro_cientifico' => __('admin.book.type_scientific'),
+                                        'libro_academico' => __('admin.book.type_academic'),
+                                        'libro_tecnico' => __('admin.book.type_technical'),
+                                        'manual' => __('admin.book.type_manual'),
+                                        'capitulo_libro' => __('admin.book.type_chapter'),
                                     ]),
                                 Forms\Components\Select::make('primary_language')
-                                    ->label('Idioma Principal')
+                                    ->label(__('admin.book.f.primary_language'))
                                     ->options([
                                         'es' => 'Español',
                                         'en' => 'Inglés',
@@ -113,7 +113,7 @@ class BookResource extends Resource
                                     ])
                                     ->searchable(),
                                 Forms\Components\Select::make('secondary_language')
-                                    ->label('Idioma Secundario')
+                                    ->label(__('admin.book.f.secondary_language'))
                                     ->options([
                                         'es' => 'Español',
                                         'en' => 'Inglés',
@@ -125,12 +125,12 @@ class BookResource extends Resource
                                     ])
                                     ->searchable(),
                                 Forms\Components\TextInput::make('publication_year')
-                                    ->label('Año de Publicación')
+                                    ->label(__('admin.book.f.publication_year'))
                                     ->numeric()
                                     ->minValue(1900)
                                     ->maxValue(2100),
                                 Forms\Components\TextInput::make('edition')
-                                    ->label('Edición')
+                                    ->label(__('admin.book.f.edition'))
                                     ->placeholder('1ª, 2ª, revisada, etc.')
                                     ->maxLength(100),
                                 Forms\Components\TextInput::make('isbn')
@@ -140,17 +140,17 @@ class BookResource extends Resource
                                     ->label('DOI')
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('landing_url')
-                                    ->label('URL del Libro / Landing Page')
+                                    ->label(__('admin.book.f.landing_url'))
                                     ->url()
                                     ->maxLength(255),
                                 Forms\Components\FileUpload::make('cover_image')
-                                    ->label('Portada del Libro')
+                                    ->label(__('admin.book.f.cover_image'))
                                     ->image()
                                     ->directory('book-covers')
                                     ->columnSpanFull(),
                                 Forms\Components\Select::make('user_id')
                                     ->relationship('user', 'name')
-                                    ->label('Propietario')
+                                    ->label(__('admin.book.owner'))
                                     ->searchable()
                                     ->preload()
                                     ->required(),
@@ -159,24 +159,24 @@ class BookResource extends Resource
                         // ============================================
                         // TAB 2: Autores y Responsabilidades
                         // ============================================
-                        Tab::make('Autores y Responsabilidades')
+                        Tab::make(__('admin.book.tab_authors'))
                             ->schema([
                                 Forms\Components\Repeater::make('authors')
-                                    ->label('Autores / Editores / Traductores')
+                                    ->label(__('admin.book.f.authors'))
                                     ->relationship()
                                     ->schema([
                                         Forms\Components\Select::make('role')
-                                            ->label('Rol')
+                                            ->label(__('admin.book.f.author_role'))
                                             ->options([
-                                                'author' => 'Autor',
-                                                'editor' => 'Editor Académico',
-                                                'translator' => 'Traductor',
-                                                'coordinator' => 'Coordinador / Compilador',
+                                                'author' => __('admin.book.f.author_role_author'),
+                                                'editor' => __('admin.book.f.author_role_editor'),
+                                                'translator' => __('admin.book.f.author_role_translator'),
+                                                'coordinator' => __('admin.book.f.author_role_coordinator'),
                                             ])
                                             ->default('author')
                                             ->required(),
                                         Forms\Components\TextInput::make('full_name')
-                                            ->label('Nombre Completo')
+                                            ->label(__('admin.book.f.author_full_name'))
                                             ->required()
                                             ->maxLength(255),
                                         Forms\Components\TextInput::make('orcid')
@@ -184,10 +184,10 @@ class BookResource extends Resource
                                             ->placeholder('0000-0000-0000-0000')
                                             ->maxLength(19),
                                         Forms\Components\TextInput::make('affiliation')
-                                            ->label('Afiliación Institucional')
+                                            ->label(__('admin.book.f.author_affiliation'))
                                             ->maxLength(255),
                                         Forms\Components\TextInput::make('country_code')
-                                            ->label('País')
+                                            ->label(__('admin.book.f.author_country'))
                                             ->maxLength(2)
                                             ->placeholder('PE, MX, ES...'),
                                         Forms\Components\Hidden::make('order'),
@@ -203,16 +203,16 @@ class BookResource extends Resource
                         // ============================================
                         // TAB 3: Editorial y Publicación
                         // ============================================
-                        Tab::make('Editorial y Publicación')
+                        Tab::make(__('admin.book.tab_publishing'))
                             ->schema([
                                 Forms\Components\TextInput::make('publisher')
-                                    ->label('Editorial')
+                                    ->label(__('admin.book.f.publisher'))
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('publisher_country')
-                                    ->label('País de la Editorial')
+                                    ->label(__('admin.book.f.publisher_country'))
                                     ->maxLength(100),
                                 Forms\Components\TextInput::make('publisher_city')
-                                    ->label('Ciudad')
+                                    ->label(__('admin.book.f.publisher_city'))
                                     ->maxLength(100),
                                 Tabs::make('collection_series_tabs')
                                     ->columnSpanFull()
@@ -254,25 +254,25 @@ class BookResource extends Resource
                                         ]),
                                     ]),
                                 Forms\Components\DatePicker::make('exact_publication_date')
-                                    ->label('Fecha Exacta de Publicación'),
+                                    ->label(__('admin.book.f.exact_pub_date')),
                                 Forms\Components\TextInput::make('total_pages')
-                                    ->label('Número Total de Páginas')
+                                    ->label(__('admin.book.f.total_pages'))
                                     ->numeric()
                                     ->minValue(1),
                                 Forms\Components\Select::make('format')
-                                    ->label('Formato')
+                                    ->label(__('admin.book.f.format'))
                                     ->options([
                                         'pdf' => 'PDF',
                                         'epub' => 'EPUB',
-                                        'print' => 'Impreso',
-                                        'hybrid' => 'Híbrido',
+                                        'print' => __('admin.book.f.format_print'),
+                                        'hybrid' => __('admin.book.f.format_hybrid'),
                                     ]),
                             ])->columns(2),
 
                         // ============================================
                         // TAB 4: Resumen y Contenido Académico
                         // ============================================
-                        Tab::make('Contenido Académico')
+                        Tab::make(__('admin.book.tab_academic'))
                             ->schema([
                                 Tabs::make('abstract_tabs')
                                     ->columnSpanFull()
@@ -294,23 +294,23 @@ class BookResource extends Resource
                                         ]),
                                     ]),
                                 Forms\Components\TagsInput::make('keywords')
-                                    ->label('Palabras Clave (Keywords)')
+                                    ->label(__('admin.book.f.keywords'))
                                     ->columnSpanFull(),
                                 Forms\Components\TagsInput::make('knowledge_areas')
-                                    ->label('Áreas del Conocimiento')
+                                    ->label(__('admin.book.f.knowledge_areas'))
                                     ->columnSpanFull(),
                                 Forms\Components\TextInput::make('main_discipline')
-                                    ->label('Disciplina Principal')
+                                    ->label(__('admin.book.f.main_discipline'))
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('secondary_discipline')
-                                    ->label('Disciplina Secundaria')
+                                    ->label(__('admin.book.f.secondary_discipline'))
                                     ->maxLength(255),
                                 Forms\Components\Select::make('academic_level')
-                                    ->label('Nivel Académico')
+                                    ->label(__('admin.book.f.academic_level'))
                                     ->options([
-                                        'pregrado' => 'Pregrado',
-                                        'posgrado' => 'Posgrado',
-                                        'investigacion' => 'Investigación',
+                                        'pregrado' => __('admin.book.f.level_undergrad'),
+                                        'posgrado' => __('admin.book.f.level_postgrad'),
+                                        'investigacion' => __('admin.book.f.level_research'),
                                     ]),
                                 Tabs::make('table_of_contents_tabs')
                                     ->columnSpanFull()
@@ -332,7 +332,7 @@ class BookResource extends Resource
                                         ]),
                                     ]),
                                 Forms\Components\FileUpload::make('table_of_contents_file')
-                                    ->label('Tabla de Contenidos (Archivo)')
+                                    ->label(__('admin.book.f.toc_file'))
                                     ->directory('book-toc')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->columnSpanFull(),
@@ -341,21 +341,21 @@ class BookResource extends Resource
                         // ============================================
                         // TAB 5: Acceso Abierto y Derechos
                         // ============================================
-                        Tab::make('Acceso Abierto y Derechos')
+                        Tab::make(__('admin.book.tab_open_access'))
                             ->schema([
                                 Forms\Components\Toggle::make('is_open_access')
-                                    ->label('¿Es de Acceso Abierto?')
+                                    ->label(__('admin.book.f.is_open_access'))
                                     ->live(),
                                 Forms\Components\Select::make('access_type')
-                                    ->label('Tipo de Acceso')
+                                    ->label(__('admin.book.f.access_type'))
                                     ->options([
-                                        'immediate' => 'Abierto Inmediato',
-                                        'embargo' => 'Embargo',
-                                        'closed' => 'Cerrado',
+                                        'immediate' => __('admin.book.f.access_immediate'),
+                                        'embargo' => __('admin.book.f.access_embargo'),
+                                        'closed' => __('admin.book.f.access_closed'),
                                     ])
                                     ->visible(fn (Get $get) => $get('is_open_access')),
                                 Forms\Components\Select::make('license_type')
-                                    ->label('Licencia')
+                                    ->label(__('admin.book.f.license'))
                                     ->options([
                                         'CC-BY' => 'CC BY',
                                         'CC-BY-SA' => 'CC BY-SA',
@@ -363,8 +363,8 @@ class BookResource extends Resource
                                         'CC-BY-ND' => 'CC BY-ND',
                                         'CC-BY-NC-SA' => 'CC BY-NC-SA',
                                         'CC-BY-NC-ND' => 'CC BY-NC-ND',
-                                        'copyright' => 'Copyright Tradicional',
-                                        'other' => 'Otra',
+                                        'copyright' => __('admin.book.f.license_copyright'),
+                                        'other' => __('admin.book.f.license_other'),
                                     ]),
                                 Tabs::make('rights_holder_tabs')
                                     ->columnSpanFull()
@@ -386,41 +386,41 @@ class BookResource extends Resource
                                         ]),
                                     ]),
                                 Forms\Components\Toggle::make('allows_reuse')
-                                    ->label('¿Permite Reutilización?'),
+                                    ->label(__('admin.book.f.allows_reuse')),
                                 Forms\Components\Toggle::make('allows_commercial_use')
-                                    ->label('¿Permite Uso Comercial?'),
+                                    ->label(__('admin.book.f.allows_commercial_use')),
                             ])->columns(2),
 
                         // ============================================
                         // TAB 6: Modelo de Negocio
                         // ============================================
-                        Tab::make('Modelo de Negocio')
+                        Tab::make(__('admin.book.tab_business'))
                             ->schema([
                                 Forms\Components\Select::make('publication_model')
-                                    ->label('Modelo de Publicación')
+                                    ->label(__('admin.book.f.publication_model'))
                                     ->options([
-                                        'free' => 'Gratuito',
-                                        'pay_download' => 'Pago por Descarga',
-                                        'pay_print' => 'Pago por Impresión',
-                                        'sponsored' => 'Patrocinado',
+                                        'free' => __('admin.book.f.model_free'),
+                                        'pay_download' => __('admin.book.f.model_pay_download'),
+                                        'pay_print' => __('admin.book.f.model_pay_print'),
+                                        'sponsored' => __('admin.book.f.model_sponsored'),
                                     ])
                                     ->live(),
                                 Forms\Components\TextInput::make('access_cost')
-                                    ->label('Costo de Acceso (USD)')
+                                    ->label(__('admin.book.f.access_cost'))
                                     ->numeric()
                                     ->prefix('$')
                                     ->visible(fn (Get $get) => in_array($get('publication_model'), ['pay_download', 'pay_print'])),
                                 Forms\Components\TextInput::make('author_apc')
-                                    ->label('Costo de Publicación para Autores (APC)')
+                                    ->label(__('admin.book.f.author_apc'))
                                     ->numeric()
                                     ->prefix('$'),
                                 Forms\Components\CheckboxList::make('funded_by')
-                                    ->label('Financiado por')
+                                    ->label(__('admin.book.f.funded_by'))
                                     ->options([
-                                        'university' => 'Universidad',
-                                        'project' => 'Proyecto',
-                                        'author' => 'Autor',
-                                        'other' => 'Otro',
+                                        'university' => __('admin.book.f.funded_university'),
+                                        'project' => __('admin.book.f.funded_project'),
+                                        'author' => __('admin.book.f.funded_author'),
+                                        'other' => __('admin.book.f.funded_other'),
                                     ])
                                     ->columns(2),
                             ])->columns(2),
@@ -428,38 +428,38 @@ class BookResource extends Resource
                         // ============================================
                         // TAB 7: Calidad y Evaluación Editorial
                         // ============================================
-                        Tab::make('Calidad Editorial')
+                        Tab::make(__('admin.book.tab_quality'))
                             ->schema([
                                 Forms\Components\Toggle::make('has_peer_review')
-                                    ->label('¿Revisión por Pares?')
+                                    ->label(__('admin.book.f.has_peer_review'))
                                     ->live(),
                                 Forms\Components\Select::make('review_type')
-                                    ->label('Tipo de Revisión')
+                                    ->label(__('admin.book.f.review_type'))
                                     ->options([
-                                        'single_blind' => 'Simple Ciego',
-                                        'double_blind' => 'Doble Ciego',
+                                        'single_blind' => __('admin.book.f.review_single_blind'),
+                                        'double_blind' => __('admin.book.f.review_double_blind'),
                                     ])
                                     ->visible(fn (Get $get) => $get('has_peer_review')),
                                 Forms\Components\Toggle::make('has_editorial_committee')
-                                    ->label('¿Comité Editorial Identificado?'),
+                                    ->label(__('admin.book.f.has_editorial_committee')),
                                 Forms\Components\Toggle::make('has_editorial_standards')
-                                    ->label('¿Normas Editoriales Declaradas?'),
+                                    ->label(__('admin.book.f.has_editorial_standards')),
                                 Forms\Components\Toggle::make('has_antiplagiarism')
-                                    ->label('¿Antiplagio Aplicado?'),
+                                    ->label(__('admin.book.f.has_antiplagiarism')),
                                 Forms\Components\Toggle::make('has_ethics_code')
-                                    ->label('¿Código de Ética Editorial?'),
+                                    ->label(__('admin.book.f.has_ethics_code')),
                             ])->columns(2),
 
                         // ============================================
                         // TAB 8: Indexación y Visibilidad
                         // ============================================
-                        Tab::make('Indexación y Visibilidad')
+                        Tab::make(__('admin.book.tab_indexing'))
                             ->schema([
                                 Forms\Components\Toggle::make('is_indexed')
-                                    ->label('¿Está Indexado?')
+                                    ->label(__('admin.book.f.is_indexed'))
                                     ->live(),
                                 Forms\Components\CheckboxList::make('indexes')
-                                    ->label('Índices donde Aparece')
+                                    ->label(__('admin.book.f.indexes'))
                                     ->options([
                                         'google_books' => 'Google Books',
                                         'google_scholar' => 'Google Scholar',
@@ -467,12 +467,12 @@ class BookResource extends Resource
                                         'latindex' => 'Latindex Libros',
                                         'scopus' => 'Scopus',
                                         'wos' => 'Web of Science',
-                                        'other' => 'Otros',
+                                        'other' => __('admin.book.f.index_other'),
                                     ])
                                     ->columns(2)
                                     ->visible(fn (Get $get) => $get('is_indexed')),
                                 Forms\Components\TextInput::make('citation_count')
-                                    ->label('Número de Citas')
+                                    ->label(__('admin.book.f.citation_count'))
                                     ->numeric()
                                     ->minValue(0),
                                 Tabs::make('available_metrics_tabs')
@@ -500,21 +500,21 @@ class BookResource extends Resource
                         // ============================================
                         // TAB 9: Archivos y Recursos
                         // ============================================
-                        Tab::make('Archivos y Recursos')
+                        Tab::make(__('admin.book.tab_files'))
                             ->schema([
                                 Forms\Components\FileUpload::make('main_file')
-                                    ->label('Archivo Principal del Libro')
+                                    ->label(__('admin.book.f.main_file'))
                                     ->directory('books')
                                     ->acceptedFileTypes(['application/pdf', 'application/epub+zip'])
                                     ->columnSpanFull(),
                                 Forms\Components\Repeater::make('chapter_files')
-                                    ->label('Capítulos Individuales')
+                                    ->label(__('admin.book.f.chapter_files'))
                                     ->schema([
                                         Forms\Components\TextInput::make('chapter_name')
-                                            ->label('Nombre del Capítulo')
+                                            ->label(__('admin.book.f.chapter_name'))
                                             ->required(),
                                         Forms\Components\FileUpload::make('file')
-                                            ->label('Archivo')
+                                            ->label(__('admin.book.f.file'))
                                             ->directory('book-chapters')
                                             ->acceptedFileTypes(['application/pdf']),
                                     ])
@@ -522,74 +522,74 @@ class BookResource extends Resource
                                     ->collapsible()
                                     ->columnSpanFull(),
                                 Forms\Components\Repeater::make('supplementary_files')
-                                    ->label('Material Complementario')
+                                    ->label(__('admin.book.f.supplementary_files'))
                                     ->schema([
                                         Forms\Components\TextInput::make('name')
-                                            ->label('Nombre')
+                                            ->label(__('admin.book.f.supp_name'))
                                             ->required(),
                                         Forms\Components\FileUpload::make('file')
-                                            ->label('Archivo')
+                                            ->label(__('admin.book.f.file'))
                                             ->directory('book-supplementary'),
                                     ])
                                     ->columns(2)
                                     ->collapsible()
                                     ->columnSpanFull(),
                                 Forms\Components\TextInput::make('download_url')
-                                    ->label('URL de Descarga')
+                                    ->label(__('admin.book.f.download_url'))
                                     ->url()
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('file_size')
-                                    ->label('Tamaño del Archivo')
+                                    ->label(__('admin.book.f.file_size'))
                                     ->placeholder('10 MB')
                                     ->maxLength(50),
                                 Forms\Components\TextInput::make('file_checksum')
-                                    ->label('Checksum / Hash')
+                                    ->label(__('admin.book.f.file_checksum'))
                                     ->maxLength(255),
                             ])->columns(2),
 
                         // ============================================
                         // TAB 10: Estado Interno (Sistema)
                         // ============================================
-                        Tab::make('Estado Interno')
+                        Tab::make(__('admin.book.tab_internal'))
                             ->schema([
                                 Forms\Components\Select::make('status')
-                                    ->label('Estado')
+                                    ->label(__('admin.book.status'))
                                     ->options([
-                                        'draft' => 'Borrador',
-                                        'submitted' => 'Enviado',
-                                        'requires_changes_listing' => 'Correcciones (Listado)',
-                                        'listed' => 'Libro Listado',
+                                        'draft' => __('admin.book.status_draft'),
+                                        'submitted' => __('admin.book.status_submitted'),
+                                        'requires_changes_listing' => __('admin.book.f.status_changes_listing'),
+                                        'listed' => __('admin.book.f.status_listed_book'),
                                     ])
                                     ->required()
                                     ->default('draft'),
                                 Forms\Components\DatePicker::make('submission_date')
-                                    ->label('Fecha de Postulación'),
+                                    ->label(__('admin.book.f.submission_date')),
                                 Forms\Components\DatePicker::make('approval_date')
-                                    ->label('Fecha de Aprobación'),
+                                    ->label(__('admin.book.f.approval_date')),
                                 Forms\Components\Select::make('responsible_editor_id')
-                                    ->label('Editor Responsable')
+                                    ->label(__('admin.book.f.responsible_editor'))
                                     ->relationship('responsibleEditor', 'name')
                                     ->searchable()
                                     ->preload(),
                                 Forms\Components\Textarea::make('internal_notes')
-                                    ->label('Observaciones Internas')
+                                    ->label(__('admin.book.f.internal_notes'))
                                     ->rows(4)
                                     ->columnSpanFull(),
                                 Forms\Components\TextInput::make('current_score')
-                                    ->label('Puntuación Actual')
+                                    ->label(__('admin.book.f.current_score'))
                                     ->numeric()
                                     ->disabled(),
                                 Forms\Components\TextInput::make('current_level')
-                                    ->label('Nivel Actual')
+                                    ->label(__('admin.book.f.current_level'))
                                     ->disabled(),
                                 // Sprint 3 #20: el admin puede activar/extender
                                 // el destacado manualmente (regalos, soporte, etc.).
                                 Forms\Components\Toggle::make('is_featured')
-                                    ->label('¿Listing Destacado?')
-                                    ->helperText('Aparece con posición preferente y badge en el directorio público.'),
+                                    ->label(__('admin.book.f.is_featured'))
+                                    ->helperText(__('admin.book.f.is_featured_help')),
                                 Forms\Components\DatePicker::make('featured_until')
-                                    ->label('Destacado hasta')
-                                    ->helperText('Fecha en que vence el beneficio del destacado.'),
+                                    ->label(__('admin.book.f.featured_until'))
+                                    ->helperText(__('admin.book.f.featured_until_help')),
                             ])->columns(2),
                     ])
                     ->columnSpanFull()
@@ -601,30 +601,30 @@ class BookResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('cover_image')
-                    ->label('Portada')
+                    ->label(__('admin.book.cover'))
                     ->circular(false)
                     ->width(50)
                     ->height(70),
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Título')
+                    ->label(__('admin.book.title'))
                     ->formatStateUsing(fn (Book $record): string => $record->getTranslationWithFallback('title'))
                     ->searchable()
                     ->limit(40),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Propietario'),
+                    ->label(__('admin.book.owner')),
                 Tables\Columns\TextColumn::make('book_type')
-                    ->label('Tipo')
+                    ->label(__('admin.book.type'))
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'libro_cientifico' => 'Científico',
-                        'libro_academico' => 'Académico',
-                        'libro_tecnico' => 'Técnico',
-                        'manual' => 'Manual',
-                        'capitulo_libro' => 'Capítulo',
+                        'libro_cientifico' => __('admin.book.type_scientific'),
+                        'libro_academico' => __('admin.book.type_academic'),
+                        'libro_tecnico' => __('admin.book.type_technical'),
+                        'manual' => __('admin.book.type_manual'),
+                        'capitulo_libro' => __('admin.book.type_chapter'),
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Estado')
+                    ->label(__('admin.book.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
@@ -634,22 +634,22 @@ class BookResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'draft' => 'Borrador',
-                        'submitted' => 'Enviado',
-                        'requires_changes_listing' => 'Correcciones',
-                        'listed' => 'Listado',
+                        'draft' => __('admin.book.status_draft'),
+                        'submitted' => __('admin.book.status_submitted'),
+                        'requires_changes_listing' => __('admin.book.status_changes'),
+                        'listed' => __('admin.book.status_listed'),
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('publication_year')
-                    ->label('Año')
+                    ->label(__('admin.book.year'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('current_score')
-                    ->label('Puntuación')
+                    ->label(__('admin.book.score'))
                     ->sortable(),
                 // Sprint 3 #20: columna "Destacado" — sólo prende si el flag está
                 // activo Y el featured_until aún no venció.
                 Tables\Columns\TextColumn::make('is_featured')
-                    ->label('Destacado')
+                    ->label(__('admin.book.featured'))
                     ->badge()
                     ->sortable()
                     ->formatStateUsing(function ($state, Book $record): string {
@@ -657,7 +657,7 @@ class BookResource extends Resource
                             && $record->featured_until
                             && $record->featured_until->toDateString() >= now()->toDateString();
                         return $active
-                            ? '★ Destacado'
+                            ? __('admin.book.featured_badge')
                             : '—';
                     })
                     ->color(fn (Book $record): string => ($record->is_featured
@@ -668,31 +668,31 @@ class BookResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Estado')
+                    ->label(__('admin.book.status'))
                     ->options([
-                        'draft' => 'Borrador',
-                        'submitted' => 'Enviado',
-                        'requires_changes_listing' => 'Correcciones (Listado)',
-                        'listed' => 'Listado',
+                        'draft' => __('admin.book.status_draft'),
+                        'submitted' => __('admin.book.status_submitted'),
+                        'requires_changes_listing' => __('admin.book.status_changes'),
+                        'listed' => __('admin.book.status_listed'),
                     ]),
                 Tables\Filters\SelectFilter::make('book_type')
-                    ->label('Tipo')
+                    ->label(__('admin.book.type'))
                     ->options([
-                        'libro_cientifico' => 'Libro Científico',
-                        'libro_academico' => 'Libro Académico',
-                        'libro_tecnico' => 'Libro Técnico',
-                        'manual' => 'Manual',
-                        'capitulo_libro' => 'Capítulo de Libro',
+                        'libro_cientifico' => __('admin.book.type_scientific'),
+                        'libro_academico' => __('admin.book.type_academic'),
+                        'libro_tecnico' => __('admin.book.type_technical'),
+                        'manual' => __('admin.book.type_manual'),
+                        'capitulo_libro' => __('admin.book.type_chapter'),
                     ]),
                 Tables\Filters\TernaryFilter::make('is_open_access')
-                    ->label('Acceso Abierto'),
+                    ->label(__('admin.book.filter_open_access')),
                 // Sprint 3 #20: filtro "Destacado". El estado true sólo trae los
                 // realmente vigentes; el estado false trae todos los demás.
                 Tables\Filters\TernaryFilter::make('is_featured')
-                    ->label('Destacado')
-                    ->placeholder('Todos')
-                    ->trueLabel('Solo destacados')
-                    ->falseLabel('Solo no destacados')
+                    ->label(__('admin.book.filter_featured'))
+                    ->placeholder(__('admin.common.all'))
+                    ->trueLabel(__('admin.book.filter_featured_only'))
+                    ->falseLabel(__('admin.book.filter_featured_none'))
                     ->queries(
                         true: fn ($query) => $query->where('is_featured', true)
                             ->where('featured_until', '>=', now()->toDateString()),
@@ -706,7 +706,7 @@ class BookResource extends Resource
             ])
             ->headerActions([
                 ExportAction::make()
-                    ->label('Exportar')
+                    ->label(__('admin.common.export'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
                     ->exporter(BookExporter::class),
@@ -721,12 +721,12 @@ class BookResource extends Resource
                     // sumamos 12 meses para no quitarle valor al editor (misma
                     // lógica de extensión que StripePaymentService::applyBookFeatured).
                     \Filament\Actions\BulkAction::make('feature_one_year')
-                        ->label('Destacar 1 año')
+                        ->label(__('admin.book.action_feature_year'))
                         ->icon('heroicon-o-star')
                         ->color('warning')
                         ->requiresConfirmation()
-                        ->modalHeading('Destacar libros seleccionados por 1 año')
-                        ->modalDescription('Si alguno ya tenía destacado vigente, se le suman 12 meses al vencimiento actual.')
+                        ->modalHeading(__('admin.book.modal_feature_heading'))
+                        ->modalDescription(__('admin.book.modal_feature_desc'))
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
                             $today = now()->toDateString();
                             $count = 0;
@@ -742,19 +742,19 @@ class BookResource extends Resource
                             }
 
                             \Filament\Notifications\Notification::make()
-                                ->title('Libros destacados')
-                                ->body("Destacados o extendidos: {$count}")
+                                ->title(__('admin.book.notif_featured'))
+                                ->body(__('admin.book.notif_featured_body', ['count' => $count]))
                                 ->success()
                                 ->send();
                         })
                         ->deselectRecordsAfterCompletion(),
                     \Filament\Actions\BulkAction::make('unfeature')
-                        ->label('Quitar destacado')
+                        ->label(__('admin.book.action_unfeature'))
                         ->icon('heroicon-o-no-symbol')
                         ->color('gray')
                         ->requiresConfirmation()
-                        ->modalHeading('Quitar destacado de libros seleccionados')
-                        ->modalDescription('Se baja el flag de destacado de inmediato. featured_until queda registrado para auditoría.')
+                        ->modalHeading(__('admin.book.modal_unfeature_heading'))
+                        ->modalDescription(__('admin.book.modal_unfeature_desc'))
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
                             $count = $records->count();
                             foreach ($records as $book) {
@@ -762,14 +762,14 @@ class BookResource extends Resource
                             }
 
                             \Filament\Notifications\Notification::make()
-                                ->title('Destacado removido')
-                                ->body("Libros actualizados: {$count}")
+                                ->title(__('admin.book.notif_unfeatured'))
+                                ->body(__('admin.book.notif_unfeatured_body', ['count' => $count]))
                                 ->success()
                                 ->send();
                         })
                         ->deselectRecordsAfterCompletion(),
                     ExportBulkAction::make()
-                        ->label('Exportar seleccionados')
+                        ->label(__('admin.common.export_selected'))
                         ->icon('heroicon-o-arrow-down-tray')
                         ->exporter(BookExporter::class),
                     \Filament\Actions\DeleteBulkAction::make(),

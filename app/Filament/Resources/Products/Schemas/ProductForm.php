@@ -17,25 +17,25 @@ class ProductForm
     {
         return $schema
             ->schema([
-                Section::make('Contenido')
+                Section::make(__('admin.product.section_content'))
                     ->schema([
                         Tabs::make('name_tabs')
                             ->columnSpanFull()
                             ->tabs([
                                 Tab::make('ES')->schema([
                                     TextInput::make('name.es')
-                                        ->label('Nombre del Producto (ES)')
+                                        ->label(__('admin.product.name') . ' (' . __('admin.common.lang_suffix.es') . ')')
                                         ->required()
                                         ->maxLength(255),
                                 ]),
                                 Tab::make('EN')->schema([
                                     TextInput::make('name.en')
-                                        ->label('Product Name (EN)')
+                                        ->label(__('admin.product.name') . ' (' . __('admin.common.lang_suffix.en') . ')')
                                         ->maxLength(255),
                                 ]),
                                 Tab::make('PT')->schema([
                                     TextInput::make('name.pt')
-                                        ->label('Nome do Produto (PT)')
+                                        ->label(__('admin.product.name') . ' (' . __('admin.common.lang_suffix.pt') . ')')
                                         ->maxLength(255),
                                 ]),
                             ]),
@@ -45,56 +45,60 @@ class ProductForm
                             ->tabs([
                                 Tab::make('ES')->schema([
                                     RichEditor::make('description.es')
-                                        ->label('Descripción (ES)'),
+                                        ->label(__('admin.product.description') . ' (' . __('admin.common.lang_suffix.es') . ')'),
                                 ]),
                                 Tab::make('EN')->schema([
                                     RichEditor::make('description.en')
-                                        ->label('Description (EN)'),
+                                        ->label(__('admin.product.description') . ' (' . __('admin.common.lang_suffix.en') . ')'),
                                 ]),
                                 Tab::make('PT')->schema([
                                     RichEditor::make('description.pt')
-                                        ->label('Descrição (PT)'),
+                                        ->label(__('admin.product.description') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
                                 ]),
                             ]),
 
                         Select::make('primary_locale')
-                            ->label('Idioma principal')
-                            ->options(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'])
+                            ->label(__('admin.common.language_primary'))
+                            ->options([
+                                'es' => __('admin.common.language_options.es'),
+                                'en' => __('admin.common.language_options.en'),
+                                'pt' => __('admin.common.language_options.pt'),
+                            ])
                             ->default('es')
                             ->required(),
 
                         TextInput::make('slug')
-                            ->label('Slug')
+                            ->label(__('admin.product.slug'))
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
-                            ->helperText('Identificador interno (ej: journal-evaluation). No traducible.'),
+                            ->helperText(__('admin.product.slug_help')),
                     ])
                     ->columns(2),
 
-                Section::make('Precio y disponibilidad')
+                Section::make(__('admin.product.section_pricing'))
                     ->schema([
                         TextInput::make('price')
-                            ->label('Precio')
+                            ->label(__('admin.product.price'))
                             ->required()
                             ->numeric()
                             ->prefix('$'),
 
                         Select::make('currency')
-                            ->label('Moneda')
+                            ->label(__('admin.product.currency'))
                             ->options([
-                                'USD' => 'USD - Dólar Estadounidense',
-                                'ARS' => 'ARS - Peso Argentino',
-                                'EUR' => 'EUR - Euro',
-                                'MXN' => 'MXN - Peso Mexicano',
-                                'COP' => 'COP - Peso Colombiano',
-                                'CLP' => 'CLP - Peso Chileno',
-                                'PEN' => 'PEN - Sol Peruano',
+                                'USD' => __('admin.product.currencies.USD'),
+                                'ARS' => __('admin.product.currencies.ARS'),
+                                'EUR' => __('admin.product.currencies.EUR'),
+                                'MXN' => __('admin.product.currencies.MXN'),
+                                'COP' => __('admin.product.currencies.COP'),
+                                'CLP' => __('admin.product.currencies.CLP'),
+                                'PEN' => __('admin.product.currencies.PEN'),
                             ])
                             ->required()
                             ->default('USD'),
 
                         Toggle::make('is_active')
-                            ->label('Activo (Disponible para compra)')
+                            ->label(__('admin.product.active_buy'))
                             ->default(true)
                             ->required(),
                     ])

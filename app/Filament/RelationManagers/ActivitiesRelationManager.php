@@ -12,13 +12,22 @@ class ActivitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'activitiesAsSubject';
 
-    protected static ?string $title = 'Historial';
-
-    protected static ?string $modelLabel = 'Evento';
-
-    protected static ?string $pluralModelLabel = 'Eventos';
-
     protected static string | BackedEnum | null $icon = 'heroicon-o-clock';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('admin.activity.title');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.activity.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.activity.plural');
+    }
 
     public function isReadOnly(): bool
     {
@@ -31,19 +40,19 @@ class ActivitiesRelationManager extends RelationManager
             ->recordTitleAttribute('description')
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Fecha')
+                    ->label(__('admin.activity.date'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
-                    ->description(fn (Model $record): string => $record->created_at->locale('es')->diffForHumans()),
+                    ->description(fn (Model $record): string => $record->created_at->locale(app()->getLocale())->diffForHumans()),
 
                 Tables\Columns\TextColumn::make('causer.name')
-                    ->label('Usuario')
-                    ->placeholder('Sistema')
+                    ->label(__('admin.activity.user'))
+                    ->placeholder(__('admin.common.system'))
                     ->description(fn (Model $record): ?string => $record->causer?->email)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('description')
-                    ->label('Evento')
+                    ->label(__('admin.activity.event'))
                     ->badge()
                     ->color(fn (Model $record): string => match ($record->event) {
                         'created' => 'success',
@@ -55,7 +64,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('changes')
-                    ->label('Cambios')
+                    ->label(__('admin.activity.changes'))
                     ->getStateUsing(function (Model $record): string {
                         // En Spatie v5 los diffs automáticos viven en attribute_changes.
                         // En manuales (withProperties) viven en properties.
@@ -95,12 +104,12 @@ class ActivitiesRelationManager extends RelationManager
             ->defaultPaginationPageOption(25)
             ->filters([
                 Tables\Filters\SelectFilter::make('event')
-                    ->label('Tipo de evento')
+                    ->label(__('admin.activity.event_type'))
                     ->options([
-                        'created' => 'Creado',
-                        'updated' => 'Actualizado',
-                        'deleted' => 'Eliminado',
-                        'restored' => 'Restaurado',
+                        'created' => __('admin.activity.event_created'),
+                        'updated' => __('admin.activity.event_updated'),
+                        'deleted' => __('admin.activity.event_deleted'),
+                        'restored' => __('admin.activity.event_restored'),
                     ]),
             ])
             ->headerActions([])

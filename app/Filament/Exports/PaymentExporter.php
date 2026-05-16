@@ -16,28 +16,28 @@ class PaymentExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')->label('ID'),
-            ExportColumn::make('created_at')->label('Fecha'),
-            ExportColumn::make('user.name')->label('Comprador'),
-            ExportColumn::make('user.email')->label('Email Comprador'),
+            ExportColumn::make('id')->label(__('admin.export.payment.id')),
+            ExportColumn::make('created_at')->label(__('admin.export.payment.date')),
+            ExportColumn::make('user.name')->label(__('admin.export.payment.buyer')),
+            ExportColumn::make('user.email')->label(__('admin.export.payment.buyer_email')),
             ExportColumn::make('product.name')
-                ->label('Producto')
+                ->label(__('admin.export.payment.product'))
                 ->formatStateUsing(fn (Payment $record): string => $record->product?->getTranslationWithFallback('name') ?? ''),
             ExportColumn::make('payable_type')
-                ->label('Tipo')
+                ->label(__('admin.export.payment.type'))
                 ->formatStateUsing(fn (?string $state): string => match ($state) {
                     Journal::class => 'Revista',
                     Book::class => 'Libro',
                     default => $state ?? '',
                 }),
-            ExportColumn::make('payable_id')->label('ID Entidad'),
-            ExportColumn::make('amount')->label('Monto'),
-            ExportColumn::make('currency')->label('Moneda'),
-            ExportColumn::make('status')->label('Estado'),
-            ExportColumn::make('provider')->label('Proveedor'),
-            ExportColumn::make('transaction_id')->label('ID Transacción'),
-            ExportColumn::make('stripe_session_id')->label('ID Sesión Stripe'),
-            ExportColumn::make('coupon.code')->label('Cupón'),
+            ExportColumn::make('payable_id')->label(__('admin.export.payment.entity_id')),
+            ExportColumn::make('amount')->label(__('admin.export.payment.amount')),
+            ExportColumn::make('currency')->label(__('admin.export.payment.currency')),
+            ExportColumn::make('status')->label(__('admin.export.payment.status')),
+            ExportColumn::make('provider')->label(__('admin.export.payment.provider')),
+            ExportColumn::make('transaction_id')->label(__('admin.export.payment.transaction_id')),
+            ExportColumn::make('stripe_session_id')->label(__('admin.export.payment.stripe_session')),
+            ExportColumn::make('coupon.code')->label(__('admin.export.payment.coupon')),
         ];
     }
 

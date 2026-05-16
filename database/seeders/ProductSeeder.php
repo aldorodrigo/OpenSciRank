@@ -205,6 +205,52 @@ class ProductSeeder extends Seeder
                 ],
             ],
 
+            // Sprint 3.7 #38: Pack Lanzamiento Editorial — producto standalone
+            // para editores que aún no tienen revista (Payment.payable=User).
+            // 3 sesiones de consultoría + dominio + hosting OJS por 12 meses.
+            [
+                'slug' => 'new-journal-consulting',
+                'primary_locale' => 'es',
+                'price' => 1500.00,
+                'currency' => 'USD',
+                'is_active' => true,
+                'name' => [
+                    'es' => 'Pack Lanzamiento Editorial',
+                    'en' => 'Editorial Launch Pack',
+                    'pt' => 'Pacote Lançamento Editorial',
+                ],
+                'description' => [
+                    'es' => "Todo lo que necesitás para crear y lanzar una revista científica con estándares internacionales.\n\n**Asesoría editorial (3 sesiones de 60 min):**\n- Definición de scope, audiencia y política editorial\n- Diseño del proceso de revisión por pares (doble ciego, abierta, etc.)\n- Adhesión a buenas prácticas COPE, política antiplagio y de conflictos de interés\n- Plantillas de políticas (autoría, copyright, acceso abierto), guías para autores y revisores\n- Estructura del comité editorial\n\n**Asesoría técnica:**\n- Configuración inicial OJS/PKP (Open Journal Systems)\n- Workflow de envío → revisión → publicación\n- Asignación de DOI y registro en sistemas de indexación iniciales\n- Configuración de OAI-PMH para futuros indexadores\n\n**Infraestructura incluida (12 meses):**\n- Dominio personalizado .org o .com (registro y renovación primer año)\n- Hosting OJS gestionado con backups diarios\n- Certificado SSL\n- Soporte técnico durante los 12 meses\n\n**Acompañamiento al lanzamiento:**\n- Revisión final del sitio antes del go-live\n- Apoyo en el primer call for papers\n- Recomendaciones para los primeros indexadores a perseguir (DOAJ, Latindex, etc.)",
+                    'en' => "Everything you need to create and launch a scientific journal up to international standards.\n\n**Editorial consulting (3 sessions of 60 min each):**\n- Scope, audience and editorial policy definition\n- Peer review process design (double blind, open, etc.)\n- COPE adherence, anti-plagiarism and conflict-of-interest policies\n- Policy templates (authorship, copyright, open access), guidelines for authors and reviewers\n- Editorial board structure\n\n**Technical consulting:**\n- Initial OJS/PKP setup (Open Journal Systems)\n- Submission → review → publication workflow\n- DOI assignment and initial indexer registration\n- OAI-PMH configuration for future indexers\n\n**Infrastructure included (12 months):**\n- Custom .org or .com domain (registration and first-year renewal)\n- Managed OJS hosting with daily backups\n- SSL certificate\n- Technical support during the 12 months\n\n**Launch accompaniment:**\n- Final site review before go-live\n- First call-for-papers support\n- Recommendations on initial indexers to pursue (DOAJ, Latindex, etc.)",
+                    'pt' => "Tudo o que você precisa para criar e lançar uma revista científica com padrões internacionais.\n\n**Consultoria editorial (3 sessões de 60 min):**\n- Definição de escopo, público e política editorial\n- Design do processo de revisão por pares (duplo cego, aberta, etc.)\n- Adesão a boas práticas COPE, política antiplágio e de conflitos de interesse\n- Templates de políticas (autoria, copyright, acesso aberto), diretrizes para autores e revisores\n- Estrutura do comitê editorial\n\n**Consultoria técnica:**\n- Configuração inicial OJS/PKP (Open Journal Systems)\n- Workflow de envio → revisão → publicação\n- Atribuição de DOI e registro em sistemas iniciais de indexação\n- Configuração de OAI-PMH para futuros indexadores\n\n**Infraestrutura incluída (12 meses):**\n- Domínio personalizado .org ou .com (registro e renovação no primeiro ano)\n- Hospedagem OJS gerenciada com backups diários\n- Certificado SSL\n- Suporte técnico durante os 12 meses\n\n**Acompanhamento no lançamento:**\n- Revisão final do site antes do go-live\n- Apoio no primeiro call for papers\n- Recomendações para os primeiros indexadores a buscar (DOAJ, Latindex, etc.)",
+                ],
+            ],
+
+            // Sprint 3.7 #46 — Crédito de Soporte: producto bajo pedido del
+            // admin para soportes extraordinarios. NO se publica en /pricing
+            // (la página es estática); sólo aparece en el selector de
+            // productos del modal "Crear tarea con link de pago" en
+            // MessageThread. Payable = User (el editor mismo). Cuando el
+            // webhook confirma, la task pre-creada en awaiting_payment
+            // pasa a pending vía StripePaymentService::activateAfterPayment().
+            [
+                'slug' => 'support-credit',
+                'primary_locale' => 'es',
+                'price' => 55.00,
+                'currency' => 'USD',
+                'is_active' => true,
+                'name' => [
+                    'es' => 'Crédito de Soporte',
+                    'en' => 'Support Credit',
+                    'pt' => 'Crédito de Suporte',
+                ],
+                'description' => [
+                    'es' => 'Asistencia personalizada para resolver una consulta o caso puntual. Cubre 1 caso completo hasta su resolución, sin límite estricto de tiempo. Ideal para dudas técnicas, problemas con el flujo, configuraciones especiales o cualquier situación que requiera acompañamiento del equipo. Disponible bajo pedido del administrador.',
+                    'en' => 'Personalized assistance to resolve one inquiry or specific case. Covers 1 complete case until resolved, with no strict time limit. Ideal for technical questions, workflow issues, special configurations or any situation requiring team support. Available on admin request.',
+                    'pt' => 'Assistência personalizada para resolver uma consulta ou caso pontual. Cobre 1 caso completo até sua resolução, sem limite estrito de tempo. Ideal para dúvidas técnicas, problemas no fluxo, configurações especiais ou qualquer situação que exija acompanhamento da equipe. Disponível mediante solicitação do administrador.',
+                ],
+            ],
+
             // Paquete institucional desactivado 2026-05-10, ver roadmap #22 — se conserva el diseño para una posible reactivación futura.
             [
                 'slug' => 'institutional-pack',

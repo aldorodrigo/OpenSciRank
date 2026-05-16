@@ -19,12 +19,16 @@ class CategoryResource extends Resource
     protected static ?string $model = Category::class;
 
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-group';
-    protected static ?string $navigationLabel = 'Categorías Master';
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationGroup(): ?string
     {
         return __('navigation.evaluation');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.category.navigation');
     }
 
     public static function form(Schema $form): Schema

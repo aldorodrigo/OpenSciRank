@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Book;
 use App\Models\Journal;
 use App\Models\Product;
+use App\Models\User;
 
 class ProductValidator
 {
@@ -88,6 +89,27 @@ class ProductValidator
                     __('checkout.featured_requires_listed')
                 );
             }
+        }
+    }
+
+    /**
+     * Sprint 3.7 #38, #46 — validar productos con payable=User (standalone).
+     *
+     * Productos válidos con payable=User:
+     *  - `new-journal-consulting` (#38): Pack Lanzamiento Editorial
+     *  - `support-credit` (#46): Crédito de Soporte
+     *
+     * Cualquier otro slug con payable=User es inválido.
+     */
+    public static function validateForUser(Product $product, User $user): void
+    {
+        $slug = $product->slug;
+        $allowedUserPayableSlugs = ['new-journal-consulting', 'support-credit'];
+
+        if (! in_array($slug, $allowedUserPayableSlugs, true)) {
+            throw new \InvalidArgumentException(
+                __('Este producto no se puede comprar sin asociarlo a una revista o libro.')
+            );
         }
     }
 }

@@ -4,10 +4,9 @@ namespace App\Filament\Resources\AdminTasks\Schemas;
 
 use App\Filament\Resources\BookResource;
 use App\Filament\Resources\JournalResource;
-use App\Filament\Resources\Payments\PaymentResource;
 use App\Models\AdminTask;
+use App\Models\ConsultingProposal;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -47,30 +46,83 @@ class AdminTaskInfolist
                                 default => $state,
                             }),
 
+                        // Sprint 3.7: recurso relacionado con doble acceso:
+                        //   • "Editar (admin)" → Filament resource (interno)
+                        //   • "Ver ficha pública" → vista pública /journal/{slug} o /book/{slug}
+                        // Para User payable (support-credit, new-journal-consulting)
+                        // solo aparece el botón admin (no hay ficha pública de usuario).
                         TextEntry::make('related_id')
                             ->label(__('Recurso'))
-                            ->formatStateUsing(fn (AdminTask $record): string => $record->related
-                                ? $record->related->getTranslationWithFallback('title')
-                                : '—'
-                            )
-                            ->url(fn (AdminTask $record): ?string => match (true) {
-                                $record->related === null => null,
-                                $record->related_type === 'App\\Models\\Journal' => JournalResource::getUrl('edit', ['record' => $record->related_id]),
-                                $record->related_type === 'App\\Models\\Book' => BookResource::getUrl('edit', ['record' => $record->related_id]),
-                                default => null,
-                            })
-                            ->openUrlInNewTab()
-                            ->placeholder('—'),
+                            ->html()
+                            ->getStateUsing(function (AdminTask $record): string {
+                                if (! $record->related) {
+                                    return '<span class="text-sm italic text-gray-400">—</span>';
+                                }
+
+                                $name = e(\App\Support\PaymentPayableResolver::payableDisplayName($record->related));
+
+                                $adminUrl = match (true) {
+                                    $record->related_type === 'App\\Models\\Journal' => JournalResource::getUrl('edit', ['record' => $record->related_id]),
+                                    $record->related_type === 'App\\Models\\Book' => BookResource::getUrl('edit', ['record' => $record->related_id]),
+                                    $record->related_type === 'App\\Models\\User' => \App\Filament\Resources\Users\UserResource::getUrl('edit', ['record' => $record->related_id]),
+                                    default => null,
+                                };
+
+                                $publicUrl = null;
+                                $resourceTypeLabel = __('recurso');
+                                if ($record->related_type === 'App\\Models\\Journal' && filled($record->related->slug ?? null)) {
+                                    $publicUrl = route('journal.show', ['slug' => $record->related->slug]);
+                                    $resourceTypeLabel = __('revista');
+                                } elseif ($record->related_type === 'App\\Models\\Book' && filled($record->related->slug ?? null)) {
+                                    $publicUrl = route('book.show', ['slug' => $record->related->slug]);
+                                    $resourceTypeLabel = __('libro');
+                                } elseif ($record->related_type === 'App\\Models\\User') {
+                                    $resourceTypeLabel = __('editor');
+                                }
+
+                                $editLabel = e(__('Editar (admin)'));
+                                $publicLabel = e(__('Ver ficha pública'));
+                                $typeLabel = e(__(':type', ['type' => ucfirst($resourceTypeLabel)]));
+
+                                $html = '<div class="space-y-2">';
+                                $html .= '<div class="flex items-baseline gap-2"><span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">'.$typeLabel.'</span><span class="text-sm font-semibold text-gray-900 dark:text-gray-100">'.$name.'</span></div>';
+                                $html .= '<div class="flex flex-wrap items-center gap-2">';
+
+                                if ($adminUrl) {
+                                    $editIcon = '<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
+                                    $html .= '<a href="'.e($adminUrl).'" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200 transition hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 dark:ring-indigo-800 dark:hover:bg-indigo-900/60">'.$editIcon.$editLabel.'</a>';
+                                }
+
+                                if ($publicUrl) {
+                                    $eyeIcon = '<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>';
+                                    $html .= '<a href="'.e($publicUrl).'" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200 transition hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-800 dark:hover:bg-emerald-900/60">'.$eyeIcon.$publicLabel.'</a>';
+                                }
+
+                                $html .= '</div></div>';
+                                return $html;
+                            }),
 
                         TextEntry::make('title_key')
                             ->label(__('Tarea'))
                             ->formatStateUsing(fn (AdminTask $record): string => $record->renderedTitle())
                             ->columnSpanFull()
                             ->weight('semibold'),
+
+                        // Sprint 3.7: badge "Cortesía" para tareas sin pago.
+                        // Solo visible en admin (este infolist) — el editor no
+                        // tiene acceso a /admin/admin-tasks.
+                        TextEntry::make('is_complimentary')
+                            ->label('')
+                            ->visible(fn (AdminTask $record): bool => $record->isComplimentary())
+                            ->getStateUsing(fn (): string => __('Cortesía — sin pago'))
+                            ->badge()
+                            ->color('emerald')
+                            ->icon('heroicon-o-gift')
+                            ->columnSpanFull(),
                     ]),
 
-                // ── 2. Estado y prioridad ─────────────────────────────────────
-                Section::make(__('Estado y prioridad'))
+                // ── 2. Estado, prioridad y asignación (unificado) ─────────────
+                Section::make(__('Estado, prioridad y asignación'))
                     ->icon('heroicon-o-signal')
                     ->columns(['default' => 1, 'md' => 3])
                     ->schema([
@@ -79,8 +131,10 @@ class AdminTaskInfolist
                             ->badge()
                             ->size(\Filament\Support\Enums\TextSize::Medium)
                             ->color(fn (string $state): string => match ($state) {
+                                AdminTask::STATUS_AWAITING_PAYMENT => 'warning',
                                 AdminTask::STATUS_PENDING => 'gray',
                                 AdminTask::STATUS_IN_PROGRESS => 'info',
+                                AdminTask::STATUS_PROPOSAL_SENT => 'indigo',
                                 AdminTask::STATUS_SCHEDULED => 'indigo',
                                 AdminTask::STATUS_IN_SESSION => 'warning',
                                 AdminTask::STATUS_COMPLETED => 'success',
@@ -88,8 +142,10 @@ class AdminTaskInfolist
                                 default => 'gray',
                             })
                             ->formatStateUsing(fn (string $state): string => match ($state) {
+                                AdminTask::STATUS_AWAITING_PAYMENT => __('Pago pendiente'),
                                 AdminTask::STATUS_PENDING => __('Pendiente'),
                                 AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                                AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada'),
                                 AdminTask::STATUS_SCHEDULED => __('Agendada'),
                                 AdminTask::STATUS_IN_SESSION => __('En sesión'),
                                 AdminTask::STATUS_COMPLETED => __('Completada'),
@@ -143,18 +199,14 @@ class AdminTaskInfolist
                                     return 'danger';
                                 }
                                 $days = $record->daysUntilDue();
+
                                 return $days < 3 ? 'danger' : ($days < 7 ? 'warning' : 'success');
                             })
                             ->weight('semibold'),
-                    ]),
 
-                // ── 3. Asignación ─────────────────────────────────────────────
-                Section::make(__('Asignación'))
-                    ->icon('heroicon-o-user-circle')
-                    ->columns(['default' => 1, 'md' => 3])
-                    ->schema([
                         TextEntry::make('assignee.name')
                             ->label(__('Asignado a'))
+                            ->icon('heroicon-o-user-circle')
                             ->placeholder(__('Sin asignar'))
                             ->color(fn (AdminTask $record): string => $record->assignee ? 'gray' : 'warning'),
 
@@ -175,63 +227,7 @@ class AdminTaskInfolist
                             ->columnSpanFull(),
                     ]),
 
-                // ── 4. Detalle de esta tarea (visible para todos, sin total del pago) ──
-                Section::make(__('Detalle de esta tarea'))
-                    ->icon('heroicon-o-document-check')
-                    ->visible(fn (AdminTask $record): bool => $record->payment !== null)
-                    ->columns(['default' => 1, 'md' => 2])
-                    ->schema([
-                        TextEntry::make('task_amount')
-                            ->label(__('Monto correspondiente a esta tarea'))
-                            ->getStateUsing(fn (AdminTask $record): string => $record->taskAmount() !== null
-                                ? '$'.number_format($record->taskAmount(), 0).' '.($record->payment?->currency ?? 'USD')
-                                : '—'
-                            )
-                            ->size(\Filament\Support\Enums\TextSize::Large)
-                            ->weight('bold'),
-
-                        TextEntry::make('express_indicator')
-                            ->label(__('Servicio Express'))
-                            ->badge()
-                            ->color('warning')
-                            ->icon('heroicon-o-bolt')
-                            ->getStateUsing(function (AdminTask $record): ?string {
-                                $isExpress = $record->payment?->metadata['is_express'] ?? false;
-                                return $isExpress ? __('Sí') : null;
-                            })
-                            ->placeholder(__('No')),
-                    ]),
-
-                // ── 5. Pago completo (sólo super_admin) — TABLA con todos los items ──
-                Section::make(__('Información del pago'))
-                    ->description(__('Detalle de la transacción completa. Filas resaltadas pertenecen a esta tarea.'))
-                    ->icon('heroicon-o-banknotes')
-                    ->visible(fn (AdminTask $record): bool => $record->payment !== null
-                        && (auth()->user()?->hasRole('super_admin') ?? false)
-                    )
-                    ->columns(['default' => 1, 'md' => 2])
-                    ->schema([
-                        TextEntry::make('payment.id')
-                            ->label(__('ID de pago'))
-                            ->prefix('#')
-                            ->url(fn (AdminTask $record): ?string => $record->payment
-                                ? PaymentResource::getUrl('view', ['record' => $record->payment_id])
-                                : null
-                            )
-                            ->openUrlInNewTab()
-                            ->placeholder('—'),
-
-                        TextEntry::make('payment.created_at')
-                            ->label(__('Fecha de pago'))
-                            ->dateTime('d/m/Y H:i')
-                            ->placeholder('—'),
-
-                        ViewEntry::make('payment_breakdown_table')
-                            ->view('filament.admin-tasks.payment-breakdown-table')
-                            ->columnSpanFull(),
-                    ]),
-
-                // ── 6. Notas internas ─────────────────────────────────────────
+                // ── 3. Notas internas ─────────────────────────────────────────
                 Section::make(__('Notas internas'))
                     ->icon('heroicon-o-pencil-square')
                     ->visible(fn (AdminTask $record): bool => filled($record->notes))
@@ -242,7 +238,7 @@ class AdminTaskInfolist
                             ->columnSpanFull(),
                     ]),
 
-                // ── 7. Detalles de consultoría (solo type=consulting) ─────────
+                // ── 4. Detalles de consultoría (solo type=consulting) ─────────
                 Section::make(__('Detalles de consultoría'))
                     ->icon('heroicon-o-calendar')
                     ->visible(fn (AdminTask $record): bool => $record->type === AdminTask::TYPE_CONSULTING)
@@ -253,11 +249,23 @@ class AdminTaskInfolist
                             ->dateTime('d/m/Y H:i')
                             ->placeholder(__('Sin agendar')),
 
+                        TextEntry::make('consulting_meet_url')
+                            ->label(__('URL de la reunión'))
+                            ->placeholder(__('Sin URL'))
+                            ->url(fn (AdminTask $record): ?string => $record->consulting_meet_url)
+                            ->openUrlInNewTab(),
+
+                        TextEntry::make('proposal_count_sent')
+                            ->label(__('Rondas de propuesta enviadas'))
+                            ->placeholder('0')
+                            ->formatStateUsing(fn ($state): string => (string) ($state ?? 0)),
+
                         TextEntry::make('consulting_status_label')
                             ->label(__('Etapa actual'))
                             ->badge()
                             ->color(fn (AdminTask $record): string => match ($record->status) {
                                 AdminTask::STATUS_PENDING => 'gray',
+                                AdminTask::STATUS_PROPOSAL_SENT => 'indigo',
                                 AdminTask::STATUS_SCHEDULED => 'indigo',
                                 AdminTask::STATUS_IN_SESSION => 'warning',
                                 AdminTask::STATUS_COMPLETED => 'success',
@@ -267,12 +275,75 @@ class AdminTaskInfolist
                             ->getStateUsing(fn (AdminTask $record): string => match ($record->status) {
                                 AdminTask::STATUS_PENDING => __('Sin agendar'),
                                 AdminTask::STATUS_IN_PROGRESS => __('En preparación'),
+                                AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada — esperando respuesta del editor'),
                                 AdminTask::STATUS_SCHEDULED => __('Agendada — esperando sesión'),
                                 AdminTask::STATUS_IN_SESSION => __('Sesión en curso'),
                                 AdminTask::STATUS_COMPLETED => __('Sesión completada'),
                                 AdminTask::STATUS_CANCELLED => __('Cancelada'),
                                 default => $record->status,
                             }),
+
+                        TextEntry::make('client_visible_notes')
+                            ->label(__('Resumen visible al cliente'))
+                            ->placeholder(__('Sin resumen'))
+                            ->columnSpanFull()
+                            ->visible(fn (AdminTask $record): bool => filled($record->client_visible_notes)),
+                    ]),
+
+                // ── 5. Propuestas de fecha (solo type=consulting) ─────────────
+                Section::make(__('Propuestas de fecha'))
+                    ->icon('heroicon-o-clock')
+                    ->visible(fn (AdminTask $record): bool => $record->type === AdminTask::TYPE_CONSULTING
+                        && $record->proposals()->exists()
+                    )
+                    ->schema([
+                        TextEntry::make('proposals_summary')
+                            ->hiddenLabel()
+                            ->columnSpanFull()
+                            ->getStateUsing(fn (AdminTask $record): string => '')
+                            ->formatStateUsing(function (AdminTask $record): string {
+                                $proposals = $record->proposals()->with(['proposedBy', 'acceptedBy'])->get();
+
+                                if ($proposals->isEmpty()) {
+                                    return __('Sin propuestas registradas.');
+                                }
+
+                                $lines = $proposals->map(function (ConsultingProposal $p): string {
+                                    $slot = $p->proposed_slot
+                                        ? $p->proposed_slot->format('d/m/Y H:i').' UTC'
+                                        : '—';
+
+                                    $statusLabel = match ($p->status) {
+                                        ConsultingProposal::STATUS_ACTIVE => __('Activa'),
+                                        ConsultingProposal::STATUS_ACCEPTED => __('Aceptada'),
+                                        ConsultingProposal::STATUS_REJECTED => __('Rechazada'),
+                                        ConsultingProposal::STATUS_EXPIRED => __('Expirada'),
+                                        ConsultingProposal::STATUS_SUPERSEDED => __('Superada'),
+                                        default => $p->status,
+                                    };
+
+                                    $proposer = $p->proposedBy?->name ?? '—';
+                                    $notes = filled($p->notes) ? ' · '.$p->notes : '';
+                                    $accepted = '';
+
+                                    if ($p->status === ConsultingProposal::STATUS_ACCEPTED && $p->acceptedBy) {
+                                        $accepted = ' · '.__('Aceptada por: ').$p->acceptedBy->name;
+                                        if ($p->accepted_at) {
+                                            $accepted .= ' ('.$p->accepted_at->format('d/m/Y H:i').')';
+                                        }
+                                    }
+
+                                    $expires = '';
+                                    if ($p->status === ConsultingProposal::STATUS_ACTIVE && $p->expires_at) {
+                                        $expires = ' · '.__('Expira: ').$p->expires_at->format('d/m/Y');
+                                    }
+
+                                    return "**{$slot}** [{$statusLabel}] · ".__('Propuesta por: ').$proposer.$notes.$accepted.$expires;
+                                })->implode("\n\n");
+
+                                return $lines;
+                            })
+                            ->markdown(),
                     ]),
             ]);
     }

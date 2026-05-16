@@ -14,39 +14,39 @@ class BookExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')->label('ID'),
+            ExportColumn::make('id')->label(__('admin.export.book.id')),
             ExportColumn::make('title')
-                ->label('Título')
+                ->label(__('admin.export.book.title'))
                 ->formatStateUsing(fn (Book $record): string => $record->getTranslationWithFallback('title')),
-            ExportColumn::make('slug')->label('Slug'),
+            ExportColumn::make('slug')->label(__('admin.export.book.slug')),
             ExportColumn::make('subtitle')
-                ->label('Subtítulo')
+                ->label(__('admin.export.book.subtitle'))
                 ->formatStateUsing(fn (Book $record): string => $record->getTranslationWithFallback('subtitle')),
-            ExportColumn::make('user.name')->label('Propietario'),
-            ExportColumn::make('user.email')->label('Email Propietario'),
-            ExportColumn::make('status')->label('Estado'),
-            ExportColumn::make('isbn')->label('ISBN'),
-            ExportColumn::make('isbn_print')->label('ISBN Impreso'),
-            ExportColumn::make('isbn_online')->label('ISBN Online'),
-            ExportColumn::make('doi')->label('DOI'),
-            ExportColumn::make('publisher')->label('Editorial'),
-            ExportColumn::make('publisher_country')->label('País Editorial'),
-            ExportColumn::make('publisher_city')->label('Ciudad Editorial'),
-            ExportColumn::make('publication_year')->label('Año Publicación'),
-            ExportColumn::make('primary_language')->label('Idioma Principal'),
-            ExportColumn::make('book_type')->label('Tipo de Libro'),
-            ExportColumn::make('total_pages')->label('Páginas'),
+            ExportColumn::make('user.name')->label(__('admin.export.book.owner')),
+            ExportColumn::make('user.email')->label(__('admin.export.book.owner_email')),
+            ExportColumn::make('status')->label(__('admin.export.book.status')),
+            ExportColumn::make('isbn')->label(__('admin.export.book.isbn')),
+            ExportColumn::make('isbn_print')->label(__('admin.export.book.isbn_print')),
+            ExportColumn::make('isbn_online')->label(__('admin.export.book.isbn_online')),
+            ExportColumn::make('doi')->label(__('admin.export.book.doi')),
+            ExportColumn::make('publisher')->label(__('admin.export.book.publisher')),
+            ExportColumn::make('publisher_country')->label(__('admin.export.book.publisher_country')),
+            ExportColumn::make('publisher_city')->label(__('admin.export.book.publisher_city')),
+            ExportColumn::make('publication_year')->label(__('admin.export.book.pub_year')),
+            ExportColumn::make('primary_language')->label(__('admin.export.book.language')),
+            ExportColumn::make('book_type')->label(__('admin.export.book.type')),
+            ExportColumn::make('total_pages')->label(__('admin.export.book.pages')),
             ExportColumn::make('is_open_access')
-                ->label('Acceso Abierto')
+                ->label(__('admin.export.book.open_access'))
                 ->formatStateUsing(fn ($state): string => $state === null ? '' : ($state ? 'Sí' : 'No')),
-            ExportColumn::make('license_type')->label('Licencia'),
+            ExportColumn::make('license_type')->label(__('admin.export.book.license')),
             ExportColumn::make('has_peer_review')
-                ->label('Revisión por Pares')
+                ->label(__('admin.export.book.peer_review'))
                 ->formatStateUsing(fn ($state): string => $state === null ? '' : ($state ? 'Sí' : 'No')),
-            ExportColumn::make('current_score')->label('Puntuación'),
-            ExportColumn::make('listed_at')->label('Fecha Listado'),
-            ExportColumn::make('approval_date')->label('Fecha Aprobación'),
-            ExportColumn::make('created_at')->label('Fecha Registro'),
+            ExportColumn::make('current_score')->label(__('admin.export.book.score')),
+            ExportColumn::make('listed_at')->label(__('admin.export.book.listed_at')),
+            ExportColumn::make('approval_date')->label(__('admin.export.book.approved_at')),
+            ExportColumn::make('created_at')->label(__('admin.export.book.created_at')),
         ];
     }
 

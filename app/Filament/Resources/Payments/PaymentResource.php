@@ -23,13 +23,22 @@ class PaymentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
-    protected static ?string $navigationLabel = 'Pagos';
-
-    protected static ?string $modelLabel = 'Pago';
-
-    protected static ?string $pluralModelLabel = 'Pagos';
-
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.payment.navigation');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.payment.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.payment.plural');
+    }
 
     public static function getNavigationGroup(): ?string
     {

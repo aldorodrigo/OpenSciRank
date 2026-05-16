@@ -47,7 +47,7 @@ class ReviewListing extends Page
         static::authorizeResourceAccess();
 
         $this->evaluation_notes = $this->record->evaluation_notes ?? '';
-        
+
         // If it's already listed/rejected/requires_changes_listing, keep that status
         if (in_array($this->record->status, ['listed', 'rejected', 'requires_changes_listing'])) {
             $this->assigned_status = $this->record->status;
@@ -58,7 +58,9 @@ class ReviewListing extends Page
 
     public function getTitle(): string | Htmlable
     {
-        return 'Revisar Solicitud de Listado: ' . $this->record->getTranslationWithFallback('title');
+        $title = $this->record->getTranslationWithFallback('title');
+
+        return __('admin.review_page.title', ['name' => $title]);
     }
 
     public function confirmSave(): void
@@ -87,10 +89,10 @@ class ReviewListing extends Page
         $this->record->update($updateData);
 
         $statusText = match ($this->assigned_status) {
-            'listed' => 'listada',
-            'rejected' => 'rechazada',
-            'requires_changes_listing' => 'enviada para correcciones',
-            default => 'actualizada',
+            'listed' => __('admin.review_page.status_listed'),
+            'rejected' => __('admin.review_page.status_rejected'),
+            'requires_changes_listing' => __('admin.review_page.status_changes'),
+            default => __('admin.review_page.status_updated'),
         };
 
         // Notify journal owner via email
@@ -129,8 +131,8 @@ class ReviewListing extends Page
             ->log("Revisión de listado: {$statusText}");
 
         Notification::make()
-            ->title('Revisión completada')
-            ->body("La revista ha sido {$statusText} correctamente.")
+            ->title(__('admin.review_page.completed'))
+            ->body(__('admin.review_page.body', ['status' => $statusText]))
             ->success()
             ->send();
 

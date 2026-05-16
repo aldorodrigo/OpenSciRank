@@ -5,8 +5,10 @@ namespace App\Actions\Fortify;
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Models\User;
+use App\Support\TimezoneHelper;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
@@ -23,6 +25,8 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
+            // Sprint 3.7 #41 — timezone explícita en registro
+            'timezone' => ['required', 'string', Rule::in(TimezoneHelper::allValidZones())],
         ])->validate();
 
         return User::create([
@@ -30,6 +34,7 @@ class CreateNewUser implements CreatesNewUsers
             'email' => $input['email'],
             'password' => $input['password'],
             'locale' => App::getLocale(),
+            'timezone' => $input['timezone'] ?? config('app.timezone'),
         ]);
     }
 }

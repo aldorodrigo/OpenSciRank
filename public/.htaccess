@@ -23,3 +23,81 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# ════════════════════════════════════════════════════════════════════
+# Security headers — endurece la respuesta HTTP contra XSS, clickjacking,
+# MIME sniffing, leaking de framework y descarga involuntaria de contenido.
+# ════════════════════════════════════════════════════════════════════
+<IfModule mod_headers.c>
+    # 🛡️ Anti-clickjacking: prohíbe que el sitio se cargue dentro de un <iframe>
+    # de otro dominio. Stripe Checkout funciona por redirect, no por iframe, así
+    # que SAMEORIGIN no rompe nada nuestro.
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # 🛡️ Anti-MIME-sniffing: el navegador respeta el Content-Type que enviamos
+    # y no "adivina" que un .txt puede ser ejecutable. Mitiga XSS via assets.
+    Header always set X-Content-Type-Options "nosniff"
+
+    # 🛡️ Referrer-Policy: cuando un usuario clickea un link a otro dominio, no
+    # mandamos el path completo (ej. /admin/journals/105/edit) como referer.
+    # Solo origen + path en mismo origen; cross-origin solo manda el dominio.
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # 🛡️ Permissions-Policy: deshabilita features del browser que NO necesitamos.
+    # Si una librería intenta abrir cámara/micrófono/GPS sin permiso, el browser
+    # bloquea silenciosamente. Reduce superficie de ataque.
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(self 'https://checkout.stripe.com'), fullscreen=(self)"
+
+    # 🛡️ HSTS — fuerza HTTPS en todas las requests futuras durante 1 año.
+    # SOLO se envía sobre conexiones HTTPS (env=HTTPS), no rompe local HTTP.
+    # `includeSubDomains` aplica a todos los subdominios (app.esp.u-cal.org, etc.).
+    # `preload` permite incluir el dominio en la HSTS preload list de browsers.
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" "expr=%{HTTPS} == 'on'"
+
+    # 🛡️ Content Security Policy — controla qué scripts/estilos/imágenes puede
+    # cargar el navegador. Permisivo intencional (unsafe-inline para Livewire/
+    # Alpine y unsafe-eval para Filament), pero bloquea inyección de dominios
+    # ajenos. Endurecer a futuro con nonces o hashes cuando todo esté en VPS.
+    #
+    # Whitelist actual:
+    #   - 'self'                                → mismo dominio
+    #   - fonts.bunny.net                       → fuentes
+    #   - trello-backgrounds.s3.amazonaws.com   → background del board (legacy)
+    #   - *.stripe.com / *.stripe.network        → Stripe Checkout JS
+    #   - https://images.unsplash.com           → backgrounds CMS si los hay
+    #   - data: blob:                           → uploads + previews
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' data: https://fonts.bunny.net; img-src 'self' data: blob: https: ; connect-src 'self' https://api.stripe.com https://checkout.stripe.com; frame-src 'self' https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com; form-action 'self' https://checkout.stripe.com; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+
+    # 🚫 Quita el header X-Powered-By que Apache/PHP agregan por default
+    # ("X-Powered-By: PHP/8.4.x"). Delata versión PHP — útil para atacantes
+    # que buscan CVEs específicos por versión.
+    Header always unset X-Powered-By
+    Header always unset Server
+
+    # 🚫 Anti-MIME confusion para JSON/HTML APIs (Cross-Origin-Resource-Policy)
+    Header always set Cross-Origin-Resource-Policy "same-site"
+
+    # 🛡️ Cache de assets estáticos (long cache + immutable para versionados por Vite)
+    <FilesMatch "\.(css|js|woff2|svg|jpg|jpeg|png|gif|webp|ico)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # 🛡️ NO cachear HTML — siempre revalidar
+    <FilesMatch "\.(html|php)$">
+        Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
+</IfModule>
+
+# 🛡️ Bloquear acceso a archivos sensibles
+<FilesMatch "^\.(env|env\.example|env\.production\.example|htaccess|htpasswd|gitignore|gitattributes)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(composer\.(json|lock)|package\.(json|lock)|package-lock\.json|yarn\.lock|README\.md|CHANGELOG\.md|artisan|webpack\.mix\.js|vite\.config\.js)$">
+    Require all denied
+</FilesMatch>
+
+# 🛡️ Bloquear directorios sensibles desde public/ (defense in depth)
+<DirectoryMatch "(^|/)(vendor|node_modules|\.git|tests|database|storage/logs|storage/framework|bootstrap/cache)(/|$)">
+    Require all denied
+</DirectoryMatch>

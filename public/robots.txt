@@ -1,11 +1,37 @@
 User-agent: *
+
+# Áreas privadas / autenticadas
 Disallow: /app/
 Disallow: /admin/
 Disallow: /stripe/
+
+# Endpoints de autenticación (sin valor SEO)
 Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /email/verify
+Disallow: /confirm-password
+Disallow: /two-factor-challenge
+
+# Checkout y signed URLs (efímeras, sin contenido público)
+Disallow: /checkout/
+Disallow: /book/checkout/
+Disallow: /messages/attachments/
+
+# Preview de errores (solo entorno local)
+Disallow: /preview/
+
+# Endpoints técnicos de Livewire
+Disallow: /livewire/
+
+# Todo lo demás es indexable
 Allow: /
 
-Sitemap: https://editorialstandards.org/sitemap.xml
+# Crawlers conocidos como ruidosos (descomenta si los detectás en logs)
+# User-agent: AhrefsBot
+# Disallow: /
+# User-agent: SemrushBot
+# Disallow: /
+
+Sitemap: https://esp.u-cal.org/sitemap.xml

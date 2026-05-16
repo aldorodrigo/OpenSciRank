@@ -20,13 +20,22 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationLabel = 'Usuarios';
-
-    protected static ?string $modelLabel = 'Usuario';
-
-    protected static ?string $pluralModelLabel = 'Usuarios';
-
     protected static ?int $navigationSort = 1;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.user.navigation');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.user.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.user.plural');
+    }
 
     public static function getNavigationGroup(): ?string
     {

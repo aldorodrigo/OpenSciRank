@@ -45,11 +45,11 @@ class JournalResource extends Resource
             ->schema([
                 Tabs::make('Journal Details')
                     ->tabs([
-                        Tab::make('Información Básica')
+                        Tab::make(__('admin.journal.tab_basic'))
                             ->schema([
                                 Forms\Components\FileUpload::make('logo')
-                                    ->label('Logo de la Revista')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Imagen del logo oficial de la revista. Máximo 2 MB.')
+                                    ->label(__('admin.journal.logo'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.logo_tooltip'))
                                     ->image()
                                     ->imageEditor()
                                     ->directory('journal-logos')
@@ -60,31 +60,35 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\TextInput::make('title.es')
-                                                ->label('Título (ES)')
-                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Nombre completo y oficial de la revista.')
+                                                ->label(__('admin.journal.title') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.title_tooltip'))
                                                 ->maxLength(255)
                                                 ->live(onBlur: true)
                                                 ->afterStateUpdated(fn (Set $set, ?string $state) => filled($state) ? $set('slug', \Illuminate\Support\Str::slug($state)) : null),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\TextInput::make('title.en')
-                                                ->label('Title (EN)')
+                                                ->label(__('admin.journal.title') . ' (' . __('admin.common.lang_suffix.en') . ')')
                                                 ->maxLength(255),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\TextInput::make('title.pt')
-                                                ->label('Título (PT)')
+                                                ->label(__('admin.journal.title') . ' (' . __('admin.common.lang_suffix.pt') . ')')
                                                 ->maxLength(255),
                                         ]),
                                     ]),
                                 Forms\Components\Select::make('primary_locale')
-                                    ->label('Idioma principal')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Idioma principal del registro; se usa como fallback cuando una traducción está vacía.')
-                                    ->options(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'])
+                                    ->label(__('admin.common.language_primary'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.language_primary_tooltip'))
+                                    ->options([
+                                        'es' => __('admin.common.language_options.es'),
+                                        'en' => __('admin.common.language_options.en'),
+                                        'pt' => __('admin.common.language_options.pt'),
+                                    ])
                                     ->default('es')
                                     ->required(),
                                 Forms\Components\TextInput::make('slug')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'URL amigable generada automáticamente a partir del título.')
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.slug_tooltip'))
                                     ->required()
                                     ->maxLength(255),
                                 Tabs::make('abbreviated_name_tabs')
@@ -92,74 +96,74 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\TextInput::make('abbreviated_name.es')
-                                                ->label('Nombre Abreviado (ES)')
-                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Abreviatura estándar según ISO 4, si existe.')
+                                                ->label(__('admin.journal.short_name') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.short_name_tooltip'))
                                                 ->maxLength(255),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\TextInput::make('abbreviated_name.en')
-                                                ->label('Abbreviated name (EN)')
+                                                ->label(__('admin.journal.short_name') . ' (' . __('admin.common.lang_suffix.en') . ')')
                                                 ->maxLength(255),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\TextInput::make('abbreviated_name.pt')
-                                                ->label('Nome Abreviado (PT)')
+                                                ->label(__('admin.journal.short_name') . ' (' . __('admin.common.lang_suffix.pt') . ')')
                                                 ->maxLength(255),
                                         ]),
                                     ]),
                                 Forms\Components\Select::make('user_id')
                                     ->relationship('user', 'name')
-                                    ->label('Propietario')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Usuario que registró la revista en el sistema.')
+                                    ->label(__('admin.journal.owner'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.owner_tooltip'))
                                     ->searchable()
                                     ->preload()
                                     ->required(),
                                 Forms\Components\Select::make('status')
-                                    ->label('Estado')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Estado actual del proceso de publicación/indexación.')
+                                    ->label(__('admin.journal.status'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.status_tooltip'))
                                     ->options([
-                                        'draft' => 'Borrador',
-                                        'submitted' => 'Enviada para Evaluación',
-                                        'requires_changes_listing' => 'Correcciones (Listado)',
-                                        'requires_changes_evaluation' => 'Correcciones (Evaluación)',
-                                        'pending_listing' => 'Pendiente de Listar',
-                                        'listed' => 'Revista Listada',
-                                        'evaluated' => 'Revista Evaluada',
-                                        'certified' => 'Revista Certificada',
-                                        'rejected' => 'Rechazada',
+                                        'draft' => __('admin.journal_status.draft'),
+                                        'submitted' => __('admin.journal_status.submitted'),
+                                        'requires_changes_listing' => __('admin.journal_status.requires_changes_listing'),
+                                        'requires_changes_evaluation' => __('admin.journal_status.requires_changes_evaluation'),
+                                        'pending_listing' => __('admin.journal_status.pending_listing'),
+                                        'listed' => __('admin.journal_status.listed'),
+                                        'evaluated' => __('admin.journal_status.evaluated'),
+                                        'certified' => __('admin.journal_status.certified'),
+                                        'rejected' => __('admin.journal_status.rejected'),
                                     ])
                                     ->required()
                                     ->default('draft'),
                                 Forms\Components\Select::make('assigned_evaluator_id')
-                                    ->label('Evaluador Asignado')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Evaluador responsable de revisar esta revista.')
+                                    ->label(__('admin.journal.evaluator'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.evaluator_tooltip'))
                                     ->relationship('assignedEvaluator', 'name')
                                     ->searchable()
                                     ->preload(),
                                 Forms\Components\TextInput::make('issn_print')
-                                    ->label('ISSN (Impreso)')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Número de serie internacional para la versión impresa.')
+                                    ->label(__('admin.journal.issn_print'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_issn_print'))
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('issn_online')
-                                    ->label('ISSN (Online)')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Número de serie internacional para la versión electrónica.')
+                                    ->label(__('admin.journal.issn_online'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_issn_online'))
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('publisher')
-                                    ->label('Editorial')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Nombre de la editorial o casa publicadora.')
+                                    ->label(__('admin.journal.publisher'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_publisher'))
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('url')
-                                    ->label('URL')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Dirección web principal de la revista.')
+                                    ->label(__('admin.journal.url'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_url'))
                                     ->url()
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('country_code')
-                                    ->label('Código País')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Código ISO de 2 letras del país de la editorial.')
+                                    ->label(__('admin.journal.country_code'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_country_code'))
                                     ->maxLength(2),
                                 Forms\Components\TextInput::make('start_year')
-                                    ->label('Año de Inicio')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Año en que la revista comenzó a publicarse.')
+                                    ->label(__('admin.journal.start_year'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_start_year'))
                                     ->numeric()
                                     ->minValue(1900)
                                     ->maxValue(2100),
@@ -168,69 +172,69 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\Textarea::make('description.es')
-                                                ->label('Descripción (ES)')
-                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Enfoque temático, misión y alcance editorial de la revista.'),
+                                                ->label(__('admin.journal.description') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.description_tooltip')),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\Textarea::make('description.en')
-                                                ->label('Description (EN)'),
+                                                ->label(__('admin.journal.description') . ' (' . __('admin.common.lang_suffix.en') . ')'),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\Textarea::make('description.pt')
-                                                ->label('Descrição (PT)'),
+                                                ->label(__('admin.journal.description') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
                                         ]),
                                     ]),
                                 Forms\Components\TagsInput::make('subject_areas')
-                                    ->label('Áreas Temáticas')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Disciplinas principales que cubre la revista.'),
+                                    ->label(__('admin.journal.topics'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_topics')),
                                 Forms\Components\TagsInput::make('target_audience')
-                                    ->label('Público Objetivo')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'A quién está dirigida la revista.'),
+                                    ->label(__('admin.journal.target_audience'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_audience')),
                                 Forms\Components\TagsInput::make('publication_languages')
-                                    ->label('Idiomas de Publicación')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Idiomas en los que se publican artículos.'),
+                                    ->label(__('admin.journal.publication_languages'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_pub_languages')),
                             ])->columns(2),
 
-                        Tab::make('Acceso Abierto')
+                        Tab::make(__('admin.journal.tab_open_access'))
                             ->schema([
                                 Forms\Components\Toggle::make('is_open_access')
-                                    ->label('Es Acceso Abierto')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Indica si todos los artículos están disponibles gratuitamente.')
+                                    ->label(__('admin.journal.is_open_access'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_is_open_access'))
                                     ->live(),
                                 Forms\Components\Select::make('access_type')
-                                    ->label('Tipo de Acceso')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Completo: todo gratuito. Híbrido: parcial. Restringido: suscripción.')
+                                    ->label(__('admin.journal.access_type'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_access_type'))
                                     ->options([
-                                        'full_oa' => 'Acceso Abierto Completo',
-                                        'hybrid' => 'Híbrido',
-                                        'restricted' => 'Restringido',
+                                        'full_oa' => __('admin.journal.access_full_open'),
+                                        'hybrid' => __('admin.journal.access_hybrid'),
+                                        'restricted' => __('admin.journal.access_restricted'),
                                     ]),
                                 Forms\Components\Toggle::make('articles_accessible_without_registration')
-                                    ->label('Artículos Accesibles sin Registro')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Se pueden leer sin crear una cuenta?'),
+                                    ->label(__('admin.journal.open_articles'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_open_articles')),
                                 Forms\Components\Toggle::make('allows_self_archiving')
-                                    ->label('Permite Auto-archivo')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Los autores pueden depositar sus artículos en repositorios?'),
+                                    ->label(__('admin.journal.self_archiving'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_self_archiving')),
                                 Forms\Components\TextInput::make('open_access_policy_url')
-                                    ->label('URL Política de Acceso Abierto')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Enlace a la página de la política de acceso abierto.')
+                                    ->label(__('admin.journal.oa_policy_url'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_oa_policy_url'))
                                     ->url(),
                                 Forms\Components\Toggle::make('has_embargo')
-                                    ->label('Tiene Embargo')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Los artículos tienen restricción temporal antes de ser abiertos?')
+                                    ->label(__('admin.journal.has_embargo'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_has_embargo'))
                                     ->live(),
                                 Forms\Components\TextInput::make('embargo_months')
-                                    ->label('Meses de Embargo')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Duración del período de restricción.')
+                                    ->label(__('admin.journal.embargo_months'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_embargo_months'))
                                     ->numeric()
                                     ->visible(fn (Get $get) => $get('has_embargo')),
                             ])->columns(2),
 
-                        Tab::make('Copyright y Licencias')
+                        Tab::make(__('admin.journal.tab_copyright'))
                             ->schema([
                                 Forms\Components\Select::make('license_type')
-                                    ->label('Tipo de Licencia')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Licencia bajo la cual se publican los artículos.')
+                                    ->label(__('admin.journal.license_type'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_license_type'))
                                     ->options([
                                         'CC-BY' => 'CC-BY',
                                         'CC-BY-SA' => 'CC-BY-SA',
@@ -239,57 +243,57 @@ class JournalResource extends Resource
                                         'CC-BY-NC-SA' => 'CC-BY-NC-SA',
                                         'CC-BY-NC-ND' => 'CC-BY-NC-ND',
                                         'Copyright' => 'Copyright',
-                                        'Other' => 'Otra',
+                                        'Other' => __('admin.journal.license_other'),
                                     ]),
                                 Forms\Components\TextInput::make('license_url')
-                                    ->label('URL de Licencia')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Enlace al texto completo de la licencia.')
+                                    ->label(__('admin.journal.license_url'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_license_url'))
                                     ->url(),
                                 Forms\Components\Toggle::make('authors_retain_copyright')
-                                    ->label('Autores Retienen Copyright')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Los autores mantienen los derechos de autor tras publicar?'),
+                                    ->label(__('admin.journal.authors_retain_copyright'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_authors_retain')),
                                 Forms\Components\Toggle::make('allows_commercial_reuse')
-                                    ->label('Permite Uso Comercial')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Se permite reutilizar el contenido con fines comerciales?'),
+                                    ->label(__('admin.journal.allows_commercial_use'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_commercial')),
                                 Tabs::make('copyright_policy_tabs')
                                     ->columnSpanFull()
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\Textarea::make('copyright_policy.es')
-                                                ->label('Política de Copyright (ES)')
-                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Texto o URL de la política de derechos de autor.'),
+                                                ->label(__('admin.journal.copyright_policy') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_copyright_policy')),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\Textarea::make('copyright_policy.en')
-                                                ->label('Copyright Policy (EN)'),
+                                                ->label(__('admin.journal.copyright_policy') . ' (' . __('admin.common.lang_suffix.en') . ')'),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\Textarea::make('copyright_policy.pt')
-                                                ->label('Política de Copyright (PT)'),
+                                                ->label(__('admin.journal.copyright_policy') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
                                         ]),
                                     ]),
                                 Forms\Components\Toggle::make('licenses_visible_in_articles')
-                                    ->label('Licencias Visibles en Artículos')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Cada artículo muestra la licencia bajo la que se publica?'),
+                                    ->label(__('admin.journal.licenses_visible'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_licenses_visible')),
                             ])->columns(2),
 
-                        Tab::make('Editorial')
+                        Tab::make(__('admin.journal.tab_editorial'))
                             ->schema([
                                 Tabs::make('publishing_institution_tabs')
                                     ->columnSpanFull()
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\TextInput::make('publishing_institution.es')
-                                                ->label('Institución Editora (ES)')
-                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Universidad u organización que publica la revista.'),
+                                                ->label(__('admin.journal.editorial_institution') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_inst')),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\TextInput::make('publishing_institution.en')
-                                                ->label('Publishing Institution (EN)'),
+                                                ->label(__('admin.journal.editorial_institution') . ' (' . __('admin.common.lang_suffix.en') . ')'),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\TextInput::make('publishing_institution.pt')
-                                                ->label('Instituição Editora (PT)'),
+                                                ->label(__('admin.journal.editorial_institution') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
                                         ]),
                                     ]),
                                 Tabs::make('editor_name_tabs')
@@ -297,145 +301,145 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\TextInput::make('editor_name.es')
-                                                ->label('Nombre del Editor (ES)')
-                                                ->hintIcon('heroicon-o-information-circle', tooltip: 'Director/a o editor/a jefe de la revista.'),
+                                                ->label(__('admin.journal.editor_name') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_editor')),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\TextInput::make('editor_name.en')
-                                                ->label('Editor Name (EN)'),
+                                                ->label(__('admin.journal.editor_name') . ' (' . __('admin.common.lang_suffix.en') . ')'),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\TextInput::make('editor_name.pt')
-                                                ->label('Nome do Editor (PT)'),
+                                                ->label(__('admin.journal.editor_name') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
                                         ]),
                                     ]),
                                 Forms\Components\TextInput::make('institutional_email')
-                                    ->label('Email Institucional')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Correo con dominio institucional (no Gmail/Yahoo).')
+                                    ->label(__('admin.journal.institutional_email'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_inst_email'))
                                     ->email(),
                                 Forms\Components\Toggle::make('editorial_board_visible')
-                                    ->label('Comité Editorial Visible')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿El sitio web muestra nombres y afiliaciones del comité?'),
+                                    ->label(__('admin.journal.editorial_board_visible'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_board')),
                                 Forms\Components\TextInput::make('editorial_board_url')
-                                    ->label('URL Comité Editorial')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Enlace a la página donde se lista el comité.')
+                                    ->label(__('admin.journal.editorial_board_url'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_board_url'))
                                     ->url(),
                                 Forms\Components\Select::make('peer_review_type')
-                                    ->label('Tipo de Revisión por Pares')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Método de evaluación de artículos por expertos.')
+                                    ->label(__('admin.journal.peer_review_type'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_peer_type'))
                                     ->options([
-                                        'double_blind' => 'Doble Ciego',
-                                        'single_blind' => 'Simple Ciego',
-                                        'open' => 'Abierta',
-                                        'post_publication' => 'Post Publicación',
+                                        'double_blind' => __('admin.journal.peer_double_blind'),
+                                        'single_blind' => __('admin.journal.peer_single_blind'),
+                                        'open' => __('admin.journal.peer_open'),
+                                        'post_publication' => __('admin.journal.peer_post_publication'),
                                     ]),
                                 Forms\Components\Select::make('publication_frequency')
-                                    ->label('Frecuencia de Publicación')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Con qué frecuencia se publican nuevos números.')
+                                    ->label(__('admin.journal.frequency'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_frequency'))
                                     ->options([
-                                        'annual' => 'Anual',
-                                        'biannual' => 'Semestral',
-                                        'quarterly' => 'Trimestral',
-                                        'bimonthly' => 'Bimestral',
-                                        'monthly' => 'Mensual',
-                                        'continuous' => 'Continua',
+                                        'annual' => __('admin.journal.freq_annual'),
+                                        'biannual' => __('admin.journal.freq_biannual'),
+                                        'quarterly' => __('admin.journal.freq_quarterly'),
+                                        'bimonthly' => __('admin.journal.freq_bimonthly'),
+                                        'monthly' => __('admin.journal.freq_monthly'),
+                                        'continuous' => __('admin.journal.freq_continuous'),
                                     ]),
                             ])->columns(2),
 
-                        Tab::make('Modelo de Negocio')
+                        Tab::make(__('admin.journal.tab_business'))
                             ->schema([
                                 Forms\Components\Toggle::make('charges_apc')
-                                    ->label('Cobra APC')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Los autores pagan para publicar?')
+                                    ->label(__('admin.journal.charges_apc'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_charges_apc'))
                                     ->live(),
                                 Forms\Components\TextInput::make('apc_amount')
-                                    ->label('Monto APC')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Costo por artículo publicado.')
+                                    ->label(__('admin.journal.apc_amount'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_apc_amount'))
                                     ->numeric()
                                     ->visible(fn (Get $get) => $get('charges_apc')),
                                 Forms\Components\TextInput::make('apc_currency')
-                                    ->label('Moneda APC')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Moneda del cobro (ej. USD, EUR).')
+                                    ->label(__('admin.journal.apc_currency'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_apc_currency'))
                                     ->maxLength(3)
                                     ->visible(fn (Get $get) => $get('charges_apc')),
                                 Forms\Components\Toggle::make('has_apc_waivers')
-                                    ->label('Tiene Exenciones de APC')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Se ofrecen descuentos o exenciones?')
+                                    ->label(__('admin.journal.apc_waivers'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_apc_waivers'))
                                     ->visible(fn (Get $get) => $get('charges_apc')),
                                 Forms\Components\TagsInput::make('funding_sources')
-                                    ->label('Fuentes de Financiamiento')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Cómo se financia la publicación?'),
+                                    ->label(__('admin.journal.funding_sources'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_funding')),
                                 Forms\Components\Toggle::make('has_advertising')
-                                    ->label('Tiene Publicidad')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿El sitio muestra anuncios publicitarios?'),
+                                    ->label(__('admin.journal.has_ads'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_ads')),
                                 Forms\Components\Toggle::make('business_model_transparent')
-                                    ->label('Modelo de Negocio Transparente')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Se publica información clara sobre costos y financiamiento?'),
+                                    ->label(__('admin.journal.transparent_business'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_transparent')),
                             ])->columns(2),
 
-                        Tab::make('Ética')
+                        Tab::make(__('admin.journal.tab_ethics'))
                             ->schema([
                                 Forms\Components\Toggle::make('has_ethics_policy')
-                                    ->label('Tiene Política de Ética')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Tiene publicada una política de ética editorial?'),
+                                    ->label(__('admin.journal.has_ethics_policy'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_ethics')),
                                 Forms\Components\Toggle::make('adheres_to_cope')
-                                    ->label('Adhiere a COPE')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Sigue las directrices del Committee on Publication Ethics?'),
+                                    ->label(__('admin.journal.cope_member'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_cope')),
                                 Forms\Components\Toggle::make('has_antiplagiarism_policy')
-                                    ->label('Tiene Política Antiplagio')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Verifica la originalidad con herramientas antiplagio?'),
+                                    ->label(__('admin.journal.has_antiplagiarism'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_antiplag')),
                                 Forms\Components\TextInput::make('antiplagiarism_tool')
-                                    ->label('Herramienta Antiplagio')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Software utilizado (ej. Turnitin, iThenticate).'),
+                                    ->label(__('admin.journal.antiplagiarism_tool'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_antiplag_tool')),
                                 Forms\Components\Toggle::make('has_conflict_of_interest_policy')
-                                    ->label('Tiene Política de Conflicto de Interés')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Se exige declarar conflictos de interés?'),
+                                    ->label(__('admin.journal.has_coi_policy'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_coi')),
                                 Forms\Components\Toggle::make('declares_ai_use')
-                                    ->label('Declara Uso de IA')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Tiene política sobre el uso de IA en artículos?'),
+                                    ->label(__('admin.journal.declares_ai_use'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_ai')),
                                 Forms\Components\Toggle::make('assigns_doi')
-                                    ->label('Asigna DOI')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: '¿Cada artículo tiene un DOI único?'),
+                                    ->label(__('admin.journal.assigns_doi'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_doi')),
                             ])->columns(2),
 
-                        Tab::make('Evaluación')
+                        Tab::make(__('admin.journal.tab_evaluation'))
                             ->schema([
                                 Forms\Components\TextInput::make('current_score')
-                                    ->label('Puntuación Actual')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Resultado numérico de la evaluación (0-100).')
+                                    ->label(__('admin.journal.current_score'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_score'))
                                     ->numeric()
                                     ->suffix('%')
                                     ->disabled(),
                                 Forms\Components\TextInput::make('current_level')
-                                    ->label('Nivel Actual')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Nivel asignado según la puntuación (A, B, C).')
+                                    ->label(__('admin.journal.current_level'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_level'))
                                     ->disabled(),
                                 Forms\Components\DateTimePicker::make('evaluated_at')
-                                    ->label('Fecha de Evaluación')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Fecha de la última evaluación realizada.')
+                                    ->label(__('admin.journal.evaluation_date'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_eval_date'))
                                     ->disabled(),
                                 Forms\Components\Textarea::make('evaluation_notes')
-                                    ->label('Observaciones de Evaluación')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Notas del evaluador sobre la revista.')
+                                    ->label(__('admin.journal.evaluation_notes'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_eval_notes'))
                                     ->rows(4)
                                     ->columnSpanFull(),
                             ])->columns(2),
 
-                        Tab::make('OAI Cosecha')
+                        Tab::make(__('admin.journal.tab_oai'))
                             ->schema([
                                 Forms\Components\TextInput::make('oai_base_url')
-                                    ->label('URL Base OAI-PMH')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Endpoint OAI-PMH para cosechar artículos automáticamente.')
+                                    ->label(__('admin.journal.oai_base_url'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_oai_base'))
                                     ->placeholder('https://revista.edu/oai')
                                     ->url()
                                     ->dehydrated(),
                                 Forms\Components\TextInput::make('oai_set_spec')
-                                    ->label('Set Spec (opcional)')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Subconjunto de registros a cosechar.')
+                                    ->label(__('admin.journal.oai_set_spec'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_oai_set'))
                                     ->dehydrated(),
                                 Forms\Components\Select::make('oai_metadata_prefix')
-                                    ->label('Prefijo de Metadatos')
-                                    ->hintIcon('heroicon-o-information-circle', tooltip: 'Formato de metadatos del endpoint.')
+                                    ->label(__('admin.journal.oai_metadata_prefix'))
+                                    ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_oai_prefix'))
                                     ->options([
                                         'oai_dc' => 'Dublin Core (oai_dc)',
                                         'marcxml' => 'MARCXML',
@@ -444,11 +448,11 @@ class JournalResource extends Resource
                                     ->default('oai_dc')
                                     ->dehydrated(),
                                 Forms\Components\Placeholder::make('oai_last_harvested_at')
-                                    ->label('Última Cosecha')
-                                    ->content(fn (?Journal $record): string => $record?->oai_last_harvested_at?->format('d/m/Y H:i') ?? 'Nunca')
+                                    ->label(__('admin.journal.oai_last_harvest'))
+                                    ->content(fn (?Journal $record): string => $record?->oai_last_harvested_at?->format('d/m/Y H:i') ?? '—')
                                     ->hiddenOn('create'),
                                 Forms\Components\Placeholder::make('articles_count')
-                                    ->label('Artículos Cosechados')
+                                    ->label(__('admin.journal.oai_articles_harvested'))
                                     ->content(fn (?Journal $record): string => $record ? (string) $record->harvestedArticles()->count() : '0')
                                     ->hiddenOn('create'),
                             ])->columns(2),
@@ -462,7 +466,7 @@ class JournalResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->label('Título')
+                    ->label(__('admin.journal.title'))
                     ->formatStateUsing(fn (Journal $record): string => $record->getTranslationWithFallback('title'))
                     ->searchable()
                     ->sortable()
@@ -482,11 +486,11 @@ class JournalResource extends Resource
                     ->copyable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Propietario')
+                    ->label(__('admin.journal.owner'))
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Estado')
+                    ->label(__('admin.journal.status'))
                     ->sortable()
                     ->badge()
                     ->color(fn (string $state, Journal $record): string =>
@@ -506,50 +510,50 @@ class JournalResource extends Resource
                     )
                     ->formatStateUsing(fn (string $state, Journal $record): string =>
                         $state === 'certified' && $record->seal_expires_at?->isPast()
-                            ? '<s>Certificada</s>'
+                            ? '<s>' . __('admin.journal_status.certified_short') . '</s>'
                             : match ($state) {
-                                'draft' => 'Borrador',
-                                'submitted' => 'Enviada',
-                                'requires_changes_listing' => 'Correcciones (Listado)',
-                                'requires_changes_evaluation' => 'Correcciones (Evaluación)',
-                                'pending_listing' => 'Pendiente de Listar',
-                                'listed' => 'Listada',
-                                'evaluated' => 'Evaluada',
-                                'certified' => 'Certificada',
-                                'rejected' => 'Rechazada',
+                                'draft' => __('admin.journal_status.draft'),
+                                'submitted' => __('admin.journal_status.submitted'),
+                                'requires_changes_listing' => __('admin.journal_status.requires_changes_listing'),
+                                'requires_changes_evaluation' => __('admin.journal_status.requires_changes_evaluation'),
+                                'pending_listing' => __('admin.journal_status.pending_listing'),
+                                'listed' => __('admin.journal_status.listed_short'),
+                                'evaluated' => __('admin.journal_status.evaluated_short'),
+                                'certified' => __('admin.journal_status.certified_short'),
+                                'rejected' => __('admin.journal_status.rejected'),
                                 default => $state,
                             }
                     )
                     ->html()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('assignedEvaluator.name')
-                    ->label('Evaluador')
-                    ->placeholder('Sin asignar')
+                    ->label(__('admin.journal.evaluator_short'))
+                    ->placeholder(__('admin.common.unassigned'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('current_score')
-                    ->label('Nota')
+                    ->label(__('admin.journal.score_short'))
                     ->numeric(2)
                     ->suffix('%')
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('listed_at')
-                    ->label('Listado')
+                    ->label(__('admin.journal.listed_short'))
                     ->date('d/m/Y')
                     ->placeholder('—')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('evaluated_at')
-                    ->label('Evaluado')
+                    ->label(__('admin.journal.evaluated_short'))
                     ->date('d/m/Y')
                     ->placeholder('—')
                     ->description(fn (Journal $record): string =>
-                        $record->evaluated_at ? $record->evaluated_at->locale('es')->diffForHumans() : ''
+                        $record->evaluated_at ? $record->evaluated_at->locale(app()->getLocale())->diffForHumans() : ''
                     )
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('seal_expires_at')
-                    ->label('Vence Sello')
+                    ->label(__('admin.journal.seal_expires_short'))
                     ->date('d/m/Y')
                     ->placeholder('—')
                     ->sortable()
@@ -571,43 +575,43 @@ class JournalResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Estado')
+                    ->label(__('admin.journal.status'))
                     ->options([
-                        'draft' => 'Borrador',
-                        'submitted' => 'Enviada',
-                        'requires_changes_listing' => 'Correcciones (Listado)',
-                        'requires_changes_evaluation' => 'Correcciones (Evaluación)',
-                        'pending_listing' => 'Pendiente de Listar',
-                        'listed' => 'Listada',
-                        'evaluated' => 'Evaluada',
-                        'certified' => 'Certificada',
-                        'rejected' => 'Rechazada',
+                        'draft' => __('admin.journal_status.draft'),
+                        'submitted' => __('admin.journal_status.submitted'),
+                        'requires_changes_listing' => __('admin.journal_status.requires_changes_listing'),
+                        'requires_changes_evaluation' => __('admin.journal_status.requires_changes_evaluation'),
+                        'pending_listing' => __('admin.journal_status.pending_listing'),
+                        'listed' => __('admin.journal_status.listed_short'),
+                        'evaluated' => __('admin.journal_status.evaluated_short'),
+                        'certified' => __('admin.journal_status.certified_short'),
+                        'rejected' => __('admin.journal_status.rejected'),
                     ]),
                 Tables\Filters\SelectFilter::make('assigned_evaluator_id')
-                    ->label('Evaluador')
+                    ->label(__('admin.journal.evaluator_short'))
                     ->relationship('assignedEvaluator', 'name'),
                 Tables\Filters\SelectFilter::make('seal_status')
-                    ->label('Estado del Sello')
+                    ->label(__('admin.journal.filter_seal_status'))
                     ->options([
-                        'active' => 'Activo',
-                        'expiring_soon' => 'Próximo a vencer',
-                        'expired' => 'Vencido',
+                        'active' => __('admin.seal_status.active'),
+                        'expiring_soon' => __('admin.seal_status.expiring_soon'),
+                        'expired' => __('admin.seal_status.expired'),
                     ]),
                 Tables\Filters\Filter::make('seal_expiring_30d')
-                    ->label('Sello vence en 30 días')
+                    ->label(__('admin.journal.filter_seal_expiring_30'))
                     ->query(fn ($query) => $query
                         ->whereNotNull('seal_expires_at')
                         ->where('seal_expires_at', '>', now())
                         ->where('seal_expires_at', '<=', now()->addDays(30))
                     ),
                 Tables\Filters\Filter::make('seal_expired')
-                    ->label('Sello vencido')
+                    ->label(__('admin.journal.filter_seal_expired'))
                     ->query(fn ($query) => $query
                         ->whereNotNull('seal_expires_at')
                         ->where('seal_expires_at', '<', now())
                     ),
                 Tables\Filters\Filter::make('seal_not_notified')
-                    ->label('Sin notificar')
+                    ->label(__('admin.journal.filter_not_notified'))
                     ->query(fn ($query) => $query
                         ->whereNotNull('seal_expires_at')
                         ->where('seal_expires_at', '<=', now()->addDays(30))
@@ -617,7 +621,7 @@ class JournalResource extends Resource
             ])
             ->headerActions([
                 ExportAction::make()
-                    ->label('Exportar')
+                    ->label(__('admin.common.export'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
                     ->exporter(JournalExporter::class),
@@ -625,13 +629,13 @@ class JournalResource extends Resource
             ->actions([
                 \Filament\Actions\ActionGroup::make([
                 \Filament\Actions\Action::make('assign_evaluator')
-                    ->label('Asignar')
+                    ->label(__('admin.journal.action_assign'))
                     ->icon('heroicon-o-user-plus')
                     ->color('info')
                     ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation', 'evaluated']))
                     ->form([
                         Forms\Components\Select::make('assigned_evaluator_id')
-                            ->label('Evaluador')
+                            ->label(__('admin.journal.evaluator_short'))
                             ->options(fn () => \App\Models\User::role('evaluator')->pluck('name', 'id'))
                             ->searchable()
                             ->required(),
@@ -657,13 +661,13 @@ class JournalResource extends Resource
                         }
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Evaluador asignado correctamente')
+                            ->title(__('admin.journal.notif_evaluator_assigned'))
                             ->success()
                             ->send();
                     }),
 
                 \Filament\Actions\Action::make('evaluate')
-                    ->label('Evaluar')
+                    ->label(__('admin.journal.action_evaluate'))
                     ->icon('heroicon-o-clipboard-document-check')
                     ->color('warning')
                     ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation']))
@@ -674,7 +678,7 @@ class JournalResource extends Resource
                 // interna de prueba. Sube status a submitted, crea AdminTask
                 // sin payment_id con metadata.manual_override = motivo.
                 \Filament\Actions\Action::make('force_evaluation')
-                    ->label('Evaluar sin pago')
+                    ->label(__('admin.journal.action_evaluate_no_payment'))
                     ->icon('heroicon-o-gift')
                     ->color('emerald')
                     ->visible(fn (Journal $record): bool => in_array(
@@ -683,12 +687,12 @@ class JournalResource extends Resource
                         true
                     ))
                     ->requiresConfirmation()
-                    ->modalHeading('Forzar evaluación sin pago')
-                    ->modalDescription('La revista pasará a estado "Submitted" y se generará una tarea de evaluación cortesía. Este flujo es para casos institucionales, evaluaciones de prueba o regalos puntuales.')
+                    ->modalHeading(__('admin.journal.modal_force_eval_heading'))
+                    ->modalDescription(__('admin.journal.modal_force_eval_desc'))
                     ->schema([
                         \Filament\Forms\Components\Textarea::make('reason')
-                            ->label('Motivo (interno)')
-                            ->helperText('Queda registrado en el activity log y en la metadata de la tarea.')
+                            ->label(__('admin.journal.force_eval_reason'))
+                            ->helperText(__('admin.journal.force_eval_reason_help'))
                             ->required()
                             ->minLength(10)
                             ->maxLength(500)
@@ -738,21 +742,21 @@ class JournalResource extends Resource
                             ->log("Evaluación forzada sin pago (cortesía): {$reason}");
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Evaluación creada sin pago')
-                            ->body('La revista entró al flujo de evaluación. Se generó una tarea para el equipo de evaluadores.')
+                            ->title(__('admin.journal.notif_eval_created'))
+                            ->body(__('admin.journal.notif_eval_created_body'))
                             ->success()
                             ->send();
                     }),
 
                 \Filament\Actions\Action::make('review_listing')
-                    ->label('Revisar Solicitud de Listado')
+                    ->label(__('admin.journal.action_review_listing'))
                     ->icon('heroicon-o-clipboard-document-check')
                     ->color('info')
                     ->visible(fn (Journal $record): bool => in_array($record->status, ['pending_listing', 'requires_changes_listing']))
                     ->url(fn (Journal $record): string => static::getUrl('review_listing', ['record' => $record])),
 
                 \Filament\Actions\Action::make('view_evaluation')
-                    ->label('Ver evaluación')
+                    ->label(__('admin.journal.action_view_evaluation'))
                     ->icon('heroicon-o-eye')
                     ->color('gray')
                     ->visible(fn (Journal $record): bool => in_array(
@@ -763,13 +767,13 @@ class JournalResource extends Resource
                     ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
 
                 \Filament\Actions\Action::make('harvest_oai')
-                    ->label('Cosechar')
+                    ->label(__('admin.journal.action_harvest'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('success')
                     ->visible(fn (Journal $record): bool => !empty($record->oai_base_url))
                     ->requiresConfirmation()
-                    ->modalHeading('Cosechar Artículos OAI-PMH')
-                    ->modalDescription('Se obtendrán artículos del endpoint OAI-PMH configurado. Esto puede tardar unos minutos.')
+                    ->modalHeading(__('admin.journal.modal_harvest_heading'))
+                    ->modalDescription(__('admin.journal.modal_harvest_desc'))
                     ->action(function (Journal $record): void {
                         try {
                             $service = app(OaiPmhService::class);
@@ -785,8 +789,8 @@ class JournalResource extends Resource
                                 ->log("Cosecha OAI-PMH ejecutada: {$count} artículo(s)");
 
                             Notification::make()
-                                ->title('✅ Cosecha completada')
-                                ->body("{$count} artículo(s) obtenidos.")
+                                ->title(__('admin.journal.notif_harvest_ok'))
+                                ->body(__('admin.journal.notif_harvest_ok_body', ['count' => $count]))
                                 ->success()
                                 ->duration(8000)
                                 ->send();
@@ -798,7 +802,7 @@ class JournalResource extends Resource
                                 ->log('Cosecha OAI-PMH fallida');
 
                             Notification::make()
-                                ->title('❌ Error en la cosecha')
+                                ->title(__('admin.journal.notif_harvest_err'))
                                 ->body($e->getMessage())
                                 ->danger()
                                 ->duration(8000)
@@ -807,7 +811,7 @@ class JournalResource extends Resource
                     }),
 
                 \Filament\Actions\Action::make('notify_seal')
-                    ->label('Notificar')
+                    ->label(__('admin.journal.action_notify'))
                     ->icon('heroicon-o-bell')
                     ->color('warning')
                     ->visible(fn (Journal $record): bool =>
@@ -815,7 +819,7 @@ class JournalResource extends Resource
                         && $record->seal_expires_at->lte(now()->addDays(30))
                     )
                     ->requiresConfirmation()
-                    ->modalHeading('Enviar recordatorio de renovación')
+                    ->modalHeading(__('admin.journal.modal_reminder_heading'))
                     ->modalDescription(fn (Journal $record): string =>
                         $record->seal_notified_at
                             ? "Ya se envió un recordatorio el {$record->seal_notified_at->format('d/m/Y H:i')}. ¿Deseas enviar otro?"
@@ -846,8 +850,8 @@ class JournalResource extends Resource
                             ->log($isPast ? 'Recordatorio enviado: sello vencido' : 'Recordatorio enviado: sello por vencer');
 
                         Notification::make()
-                            ->title('Recordatorio enviado')
-                            ->body("Se notificó a {$owner->name} ({$owner->email})")
+                            ->title(__('admin.journal.notif_reminder_sent'))
+                            ->body(__('admin.journal.notif_reminder_sent_body', ['name' => $owner->name, 'email' => $owner->email]))
                             ->success()
                             ->send();
                     }),
@@ -856,17 +860,17 @@ class JournalResource extends Resource
                 \Filament\Actions\DeleteAction::make(),
                 \Filament\Actions\ForceDeleteAction::make(),
                 \Filament\Actions\RestoreAction::make(),
-                ])->tooltip('Acciones')->icon('heroicon-m-ellipsis-vertical'),
+                ])->tooltip(__('admin.common.actions'))->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
                     \Filament\Actions\BulkAction::make('bulk_notify_seal')
-                        ->label('Enviar recordatorio de renovación')
+                        ->label(__('admin.journal.action_send_renewal_reminder'))
                         ->icon('heroicon-o-bell')
                         ->color('warning')
                         ->requiresConfirmation()
-                        ->modalHeading('Enviar recordatorio masivo')
-                        ->modalDescription('Se enviará un email de recordatorio de renovación a los editores de las revistas seleccionadas que tengan sello por vencer o vencido.')
+                        ->modalHeading(__('admin.journal.modal_reminder_bulk_heading'))
+                        ->modalDescription(__('admin.journal.modal_reminder_bulk_desc'))
                         ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
                             $sent = 0;
                             $skipped = 0;
@@ -895,14 +899,14 @@ class JournalResource extends Resource
                             }
 
                             Notification::make()
-                                ->title('Recordatorios enviados')
-                                ->body("Enviados: {$sent} | Omitidos: {$skipped}")
+                                ->title(__('admin.journal.notif_reminders_sent'))
+                                ->body(__('admin.journal.notif_reminders_sent_body', ['sent' => $sent, 'skipped' => $skipped]))
                                 ->success()
                                 ->send();
                         })
                         ->deselectRecordsAfterCompletion(),
                     ExportBulkAction::make()
-                        ->label('Exportar seleccionados')
+                        ->label(__('admin.common.export_selected'))
                         ->icon('heroicon-o-arrow-down-tray')
                         ->exporter(JournalExporter::class),
                     \Filament\Actions\DeleteBulkAction::make(),

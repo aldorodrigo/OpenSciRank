@@ -394,6 +394,17 @@ class SubmissionWizard extends Component
 
         if ($this->journal) {
             unset($data['slug']);
+
+            // Sprint 3.7 — guard contra downgrade de estados terminales.
+            // saveDraft() es genérico y por default setea status='draft', lo cual
+            // sobreescribe revistas ya certified/evaluated/listed/rejected si el
+            // editor entra al wizard a actualizar metadatos. Solo permitimos el
+            // reseteo a draft cuando la revista está EN ESTADOS EDITABLES.
+            $editableStatuses = ['draft', 'requires_changes_evaluation', 'requires_changes_listing'];
+            if (! in_array($this->journal->status, $editableStatuses, true)) {
+                unset($data['status']);
+            }
+
             $this->journal->update($data);
         } else {
             $data['user_id'] = auth()->id();

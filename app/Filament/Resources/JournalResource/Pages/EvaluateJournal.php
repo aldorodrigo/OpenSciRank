@@ -90,7 +90,9 @@ class EvaluateJournal extends Page
 
     public function getTitle(): string | Htmlable
     {
-        return 'Evaluar: ' . $this->record->getTranslationWithFallback('title');
+        $title = $this->record->getTranslationWithFallback('title');
+
+        return __('admin.eval_page.title', ['name' => $title]);
     }
 
     public function getCriteriaByCategory(): Collection
@@ -99,7 +101,7 @@ class EvaluateJournal extends Page
             ->with('category')
             ->orderBy('order')
             ->get()
-            ->groupBy(fn ($item) => $item->category?->name ?? 'Sin categoría');
+            ->groupBy(fn ($item) => $item->category?->name ?? __('admin.eval_page.no_category'));
     }
 
     public function getCompletedCount(): int
@@ -121,7 +123,7 @@ class EvaluateJournal extends Page
     public function calculateScore(): float
     {
         $criteria = CriteriaItem::active()->get()->keyBy('id');
-        
+
         $totalWeight = 0;
         $earnedWeight = 0;
         $coresFailed = false;
@@ -158,11 +160,11 @@ class EvaluateJournal extends Page
     public function getSuggestedLevel(): string
     {
         $score = $this->calculateScore();
-        
+
         if ($score >= 80) return 'A';
         if ($score >= 60) return 'B';
         if ($score >= 40) return 'C';
-        
+
         return '';
     }
 
@@ -229,7 +231,7 @@ class EvaluateJournal extends Page
             ->with('category')
             ->orderBy('order')
             ->get()
-            ->filter(fn ($item) => ($item->category?->name ?? 'Sin categoría') === $categoryName);
+            ->filter(fn ($item) => ($item->category?->name ?? __('admin.eval_page.no_category')) === $categoryName);
 
         foreach ($items as $item) {
             $this->scores[$item->id] = $value;
@@ -242,7 +244,7 @@ class EvaluateJournal extends Page
     public function confirmSave(): void
     {
         $this->assigned_level = $this->getSuggestedLevel();
-        
+
         // Sugerir estado basado en si califica para el sello
         if ($this->qualifiesForSeal()) {
             $this->assigned_status = 'certified';
@@ -330,9 +332,9 @@ class EvaluateJournal extends Page
         }
 
         $coresFailed = $this->getCoresFailedCount();
-        $body = "Nota final: {$score}%";
+        $body = __('admin.eval_page.final_score', ['score' => $score]);
         if ($coresFailed > 0) {
-            $body .= " — ⚠️ {$coresFailed} criterio(s) excluyente(s) no cumplido(s), nota limitada al 49%";
+            $body .= __('admin.eval_page.cores_failed', ['count' => $coresFailed]);
         }
 
         // Notify journal owner via email
@@ -398,7 +400,7 @@ class EvaluateJournal extends Page
             ->log(($isRenewalFlow ? 'Renovación evaluada' : 'Evaluación completada') . ": {$score}% — estado: {$this->assigned_status}");
 
         Notification::make()
-            ->title('Evaluación completada')
+            ->title(__('admin.eval_page.completed'))
             ->body($body)
             ->success()
             ->send();
@@ -426,9 +428,11 @@ class EvaluateJournal extends Page
             'evaluation_notes' => $this->evaluation_notes,
         ]);
 
+        $marked = $this->getCompletedCount();
+
         Notification::make()
-            ->title('Borrador guardado')
-            ->body('Progreso: ' . $this->getCompletedCount() . '/' . $this->getTotalCount() . ' criterios marcados')
+            ->title(__('admin.eval_page.draft_saved'))
+            ->body(__('admin.eval_page.draft_progress', ['marked' => $marked]))
             ->success()
             ->send();
     }

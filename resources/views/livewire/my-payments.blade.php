@@ -82,11 +82,25 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
+                                    {{-- Sprint 3.7 #46: payable puede ser User (support-credit, new-journal-consulting).
+                                         Solo Journal/Book tienen ficha pública linkeable; User se muestra como pago general. --}}
                                     @if($payment->payable)
-                                        <a href="{{ $payment->payable_type === 'App\\Models\\Journal' ? '/journal/'.$payment->payable->slug : '/book/'.$payment->payable->slug }}"
-                                           class="text-indigo-600 hover:underline dark:text-indigo-400">
-                                            {{ $payment->payable->getTranslationWithFallback('title') }}
-                                        </a>
+                                        @if($payment->payable_type === 'App\\Models\\Journal')
+                                            <a href="{{ '/journal/'.$payment->payable->slug }}"
+                                               class="text-indigo-600 hover:underline dark:text-indigo-400">
+                                                {{ $payment->payable->getTranslationWithFallback('title') }}
+                                            </a>
+                                        @elseif($payment->payable_type === 'App\\Models\\Book')
+                                            <a href="{{ '/book/'.$payment->payable->slug }}"
+                                               class="text-indigo-600 hover:underline dark:text-indigo-400">
+                                                {{ $payment->payable->getTranslationWithFallback('title') }}
+                                            </a>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                                                <svg class="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                                {{ __('Pago general (sin revista/libro)') }}
+                                            </span>
+                                        @endif
                                     @else
                                         <span class="text-gray-400 italic">{{ __('Recurso eliminado') }}</span>
                                     @endif
@@ -205,10 +219,20 @@
                 @if($selectedPayment->payable)
                     <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
                         {{ __('Aplicado a') }}:
-                        <a href="{{ $selectedPayment->payable_type === 'App\\Models\\Journal' ? '/journal/'.$selectedPayment->payable->slug : '/book/'.$selectedPayment->payable->slug }}"
-                           class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">
-                            {{ $selectedPayment->payable->getTranslationWithFallback('title') }}
-                        </a>
+                        {{-- Sprint 3.7 #46: payable User (support-credit) no tiene ficha pública. --}}
+                        @if($selectedPayment->payable_type === 'App\\Models\\Journal')
+                            <a href="{{ '/journal/'.$selectedPayment->payable->slug }}"
+                               class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+                                {{ $selectedPayment->payable->getTranslationWithFallback('title') }}
+                            </a>
+                        @elseif($selectedPayment->payable_type === 'App\\Models\\Book')
+                            <a href="{{ '/book/'.$selectedPayment->payable->slug }}"
+                               class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+                                {{ $selectedPayment->payable->getTranslationWithFallback('title') }}
+                            </a>
+                        @else
+                            <span class="font-medium text-gray-700 dark:text-gray-300">{{ __('Pago general (sin revista/libro)') }}</span>
+                        @endif
                     </p>
                 @endif
 

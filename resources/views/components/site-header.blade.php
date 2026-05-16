@@ -1,5 +1,13 @@
 @php
     $isSearchActive = request()->routeIs('search');
+    // Badge de mensajes para usuarios autenticados
+    $unreadMessages = 0;
+    if (auth()->check()) {
+        $unreadMessages = \App\Models\Conversation::forUser(auth()->user())
+            ->where('status', 'open')
+            ->get()
+            ->sum(fn ($c) => $c->unreadCountFor(auth()->user()));
+    }
 @endphp
 <header class="{{ request()->is('admin*') ? 'relative' : 'sticky top-0' }} w-full border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80" style="{{ request()->is('admin*') ? 'z-index: 50;' : 'z-index: 9999;' }}" x-data="{ mobileOpen: false }">
     <div class="container mx-auto flex h-16 items-center justify-between px-4">
@@ -49,6 +57,19 @@
                 <a href="{{ locale_path('/app') }}" class="rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50">
                     {{ __('My Dashboard') }}
                 </a>
+                {{-- Mensajes badge --}}
+                <a href="{{ route('app.messages') }}"
+                   class="relative flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/>
+                    </svg>
+                    Mensajes
+                    @if($unreadMessages > 0)
+                        <span class="absolute -right-1.5 -top-1.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-indigo-600 px-1 text-xs font-bold text-white">
+                            {{ $unreadMessages > 99 ? '99+' : $unreadMessages }}
+                        </span>
+                    @endif
+                </a>
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
                         <span>{{ Auth::user()->name }}</span>
@@ -68,8 +89,20 @@
                         <div class="py-1">
                             @if(Auth::user()->hasRole('super_admin'))
                                 <a href="/admin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('Administration') }}</a>
+                                <a href="{{ route('admin.conversations') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                                    Conversaciones admin
+                                    @if($unreadMessages > 0)
+                                        <span class="rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">{{ $unreadMessages }}</span>
+                                    @endif
+                                </a>
                             @endif
                             <a href="{{ route('app.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('My Dashboard') }}</a>
+                            <a href="{{ route('app.messages') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                                Mensajes
+                                @if($unreadMessages > 0)
+                                    <span class="rounded-full bg-indigo-600 px-1.5 text-xs font-bold text-white">{{ $unreadMessages }}</span>
+                                @endif
+                            </a>
                             <a href="{{ route('app.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('My Profile') }}</a>
                         </div>
                         <hr class="border-gray-200 dark:border-gray-700">
@@ -118,6 +151,12 @@
             <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
             @auth
                 <a href="{{ locale_path('/app') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/30">{{ __('My Dashboard') }}</a>
+                <a href="{{ route('app.messages') }}" class="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                    Mensajes
+                    @if($unreadMessages > 0)
+                        <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-bold text-white">{{ $unreadMessages }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('app.profile') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">{{ __('My Profile') }}</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

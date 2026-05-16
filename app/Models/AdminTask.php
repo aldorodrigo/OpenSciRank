@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -34,6 +35,8 @@ class AdminTask extends Model
     public const TYPE_REVIEW_LISTING_BOOK = 'review_listing_book';
     public const TYPE_CONSULTING = 'consulting';
     public const TYPE_ORPHAN_PAYMENT = 'orphan_payment';
+    // Sprint 3.7 #44 — task genérica creada manualmente por admin desde un mensaje.
+    public const TYPE_SUPPORT = 'support';
 
     public const TYPES = [
         self::TYPE_EVALUATE_JOURNAL,
@@ -43,22 +46,52 @@ class AdminTask extends Model
         self::TYPE_REVIEW_LISTING_BOOK,
         self::TYPE_CONSULTING,
         self::TYPE_ORPHAN_PAYMENT,
+        self::TYPE_SUPPORT,
+    ];
+
+    // Tipos que un admin puede elegir manualmente desde el modal "Crear tarea
+    // desde mensaje". orphan_payment se omite porque es del sistema.
+    public const TYPES_MANUALLY_CREATABLE = [
+        self::TYPE_SUPPORT,
+        self::TYPE_EVALUATE_JOURNAL,
+        self::TYPE_REEVALUATE_JOURNAL,
+        self::TYPE_RENEWAL_EVALUATION,
+        self::TYPE_REVIEW_LISTING_JOURNAL,
+        self::TYPE_REVIEW_LISTING_BOOK,
+        self::TYPE_CONSULTING,
     ];
 
     // ── Estados ───────────────────────────────────────────────────────
+    public const STATUS_AWAITING_PAYMENT = 'awaiting_payment'; // Sprint 3.7 #44 — task creada con link de pago, esperando que el editor pague
     public const STATUS_PENDING = 'pending';
     public const STATUS_IN_PROGRESS = 'in_progress';
+    public const STATUS_PROPOSAL_SENT = 'proposal_sent';  // Sprint 3.7 #39 — solo consulting
     public const STATUS_SCHEDULED = 'scheduled';      // solo consulting
     public const STATUS_IN_SESSION = 'in_session';    // solo consulting
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_CANCELLED = 'cancelled';
 
     public const STATUSES_OPEN = [
+        self::STATUS_AWAITING_PAYMENT,
         self::STATUS_PENDING,
         self::STATUS_IN_PROGRESS,
+        self::STATUS_PROPOSAL_SENT,
         self::STATUS_SCHEDULED,
         self::STATUS_IN_SESSION,
     ];
+
+    // Estados que aparecen en la queue de trabajo normal "Por hacer".
+    // Excluye awaiting_payment (queue separada, todavía no se cobró).
+    public const STATUSES_WORK_QUEUE = [
+        self::STATUS_PENDING,
+        self::STATUS_IN_PROGRESS,
+        self::STATUS_PROPOSAL_SENT,
+        self::STATUS_SCHEDULED,
+        self::STATUS_IN_SESSION,
+    ];
+
+    // Cap de rondas de propuesta antes de escalar a super_admin (Sprint 3.7 #39)
+    public const MAX_PROPOSAL_ROUNDS = 3;
 
     public const STATUSES_TERMINAL = [
         self::STATUS_COMPLETED,
@@ -77,21 +110,28 @@ class AdminTask extends Model
         'payment_id',
         'related_type',
         'related_id',
+        'source_message_id',
         'assigned_to',
         'status',
         'priority',
         'due_at',
         'scheduled_for',
+        'consulting_reminder_sent_at',
+        'proposal_count_sent',
+        'reschedule_count',
+        'consulting_meet_url',
         'started_at',
         'completed_at',
         'cancelled_reason',
         'notes',
+        'client_visible_notes',
     ];
 
     protected $casts = [
         'title_params' => 'array',
         'due_at' => 'datetime',
         'scheduled_for' => 'datetime',
+        'consulting_reminder_sent_at' => 'datetime',
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
@@ -117,6 +157,150 @@ class AdminTask extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function proposals(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ConsultingProposal::class)->orderBy('proposed_slot');
+    }
+
+    public function activeProposals(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ConsultingProposal::class)
+            ->where('status', ConsultingProposal::STATUS_ACTIVE)
+            ->orderBy('proposed_slot');
+    }
+
+    /**
+     * Hilo de mensajes anclado a esta task (1:1). Si no existe, devuelve null.
+     */
+    public function conversation(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(Conversation::class, 'subject');
+    }
+
+    /**
+     * Sprint 3.7 #44 — mensaje origen desde el cual el admin creó esta task.
+     * Null si la task fue creada por flujo automático (pago, listing, etc.).
+     */
+    public function sourceMessage(): BelongsTo
+    {
+        return $this->belongsTo(Message::class, 'source_message_id');
+    }
+
+    /**
+     * Sprint 3.7 #44 — pago solicitado por esta task (link de pago).
+     * Distinto de payment() (pago que originó la task).
+     * Una task de support puede tener un solicitedPayment cuando el admin
+     * generó un checkout link y el editor lo pagó.
+     */
+    public function solicitedPayment(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Payment::class, 'solicited_by_admin_task_id');
+    }
+
+    /**
+     * Sprint 3.7 #46 — accessor unificado del Payment asociado a esta task,
+     * sin importar si vino del flujo viejo (webhook genera task tras pago →
+     * `payment_id` directo) o del flujo nuevo #44 (admin crea task con link →
+     * payment llega después y se asocia vía `solicited_by_admin_task_id`).
+     *
+     * Uso: `$task->effectivePayment` en lugar de `$task->payment` o
+     * `$task->solicitedPayment` cuando necesitás cualquiera de los dos.
+     */
+    public function getEffectivePaymentAttribute(): ?Payment
+    {
+        return $this->payment ?? $this->solicitedPayment;
+    }
+
+    /**
+     * Sprint 3.7 — tarea "de cortesía": no tiene ni pago asociado ni link de
+     * pago pendiente. Casos típicos:
+     *  - Evaluación forzada (#36) sin pago para instituciones / prueba
+     *  - Listing gratuito de revista (`forJournalListing`)
+     *  - Resubmisiones post-`requires_changes_*` (gratis por design)
+     *  - Tareas manuales del admin sin cobro
+     *
+     * NO es cortesía:
+     *  - status=awaiting_payment (esperando que el editor pague el link)
+     *  - tiene effective_payment (vía payment_id o solicited_by_admin_task_id)
+     *
+     * Solo se muestra en el admin panel — el editor no tiene visibilidad.
+     */
+    public function isComplimentary(): bool
+    {
+        if ($this->effective_payment !== null) {
+            return false;
+        }
+
+        if ($this->status === self::STATUS_AWAITING_PAYMENT) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Sprint 3.7 #44 — genera el signed checkout URL para esta task si tiene
+     * un producto configurado. El admin lo comparte con el editor (manualmente
+     * o vía mensaje automático en el hilo). Vence en 30 días.
+     *
+     * Retorna null si la task no tiene producto asociado.
+     */
+    public function paymentLinkUrl(): ?string
+    {
+        $productId = $this->title_params['product_id'] ?? null;
+        if (! $productId) return null;
+
+        // Si ya hay un payment completado, el link queda muerto.
+        if ($this->solicitedPayment?->status === 'completed') return null;
+
+        return \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'checkout.from-task',
+            now()->addDays(30),
+            ['task' => $this->id]
+        );
+    }
+
+    /**
+     * Resuelve el editor (cliente) detrás de la task.
+     *
+     * - Si `related` es User (caso new-journal-consulting standalone) → ese user.
+     * - Si `related` es Journal/Book → `related->user` (dueño del recurso).
+     * - Si no aplica (huérfanos, tasks manuales) → null.
+     */
+    public function editor(): ?User
+    {
+        $related = $this->related;
+        if ($related instanceof User) return $related;
+        return $related?->user ?? null;
+    }
+
+    /**
+     * Destinatarios para notificaciones de consultoría: editor + evaluador
+     * asignado, ambos deduplicados (puede pasar que el evaluador sea el
+     * mismo registro que el editor en pruebas internas).
+     *
+     * @return array<int, \App\Models\User>
+     */
+    public function consultingRecipients(): array
+    {
+        $editor = $this->editor();
+        $assignee = $this->assignee;
+
+        $recipients = array_filter([$editor, $assignee]);
+
+        // Deduplicar por id
+        $seen = [];
+        $unique = [];
+        foreach ($recipients as $user) {
+            if (! isset($seen[$user->id])) {
+                $seen[$user->id] = true;
+                $unique[] = $user;
+            }
+        }
+
+        return $unique;
     }
 
     public function related(): MorphTo
@@ -286,15 +470,138 @@ class AdminTask extends Model
 
     /**
      * Marcar consultoría como agendada para una fecha.
+     *
+     * Resetea `consulting_reminder_sent_at` para que el cron diario
+     * `consulting:send-reminders` vuelva a considerar este registro
+     * cuando se reagenda (ej. el editor pide cambio de fecha).
+     *
+     * Si `$notify` es true (default), envía `ConsultingScheduled` al editor
+     * y al evaluador asignado. Pasar `false` desactiva el envío en flujos
+     * batch o de seed.
+     *
+     * Si `$isRescheduling` es true, la notificación usa el subject de
+     * reagendamiento ("Tu sesión fue reagendada para …").
      */
-    public function markScheduled(Carbon $scheduledFor): self
+    public function markScheduled(CarbonInterface $scheduledFor, bool $notify = true, bool $isRescheduling = false): self
     {
         $this->update([
             'status' => self::STATUS_SCHEDULED,
             'scheduled_for' => $scheduledFor,
+            'consulting_reminder_sent_at' => null,
         ]);
 
+        if ($notify) {
+            $recipients = $this->consultingRecipients();
+            if (! empty($recipients)) {
+                NotificationFacade::send(
+                    $recipients,
+                    new \App\Notifications\ConsultingScheduled($this->fresh(), $isRescheduling)
+                );
+            }
+        }
+
         return $this;
+    }
+
+    /**
+     * Sprint 3.7 #39 — enviar propuestas de fecha al editor.
+     *
+     * Crea N ConsultingProposal records (status=active), pone la task en
+     * STATUS_PROPOSAL_SENT e incrementa el contador de rondas. Si excede
+     * MAX_PROPOSAL_ROUNDS dispara `ConsultingProposalsEscalated` al super_admin.
+     *
+     * @param  array<int, array{slot: CarbonInterface, notes?: ?string}> $slots
+     */
+    public function sendProposals(array $slots, User $proposedBy, ?int $expiresInDays = null): array
+    {
+        $expiresInDays ??= 5; // business days default — TODO Sprint 4: usar SlaSettings
+        $expiresAt = now()->addDays($expiresInDays);
+
+        $created = [];
+        foreach ($slots as $entry) {
+            $created[] = $this->proposals()->create([
+                'proposed_by_user_id' => $proposedBy->id,
+                'proposed_slot' => $entry['slot'],
+                'notes' => $entry['notes'] ?? null,
+                'status' => ConsultingProposal::STATUS_ACTIVE,
+                'expires_at' => $expiresAt,
+            ]);
+        }
+
+        $this->update([
+            'status' => self::STATUS_PROPOSAL_SENT,
+            'proposal_count_sent' => $this->proposal_count_sent + 1,
+        ]);
+
+        // Notificación al editor con los slots propuestos
+        $editor = $this->editor();
+        if ($editor) {
+            $editor->notify(new \App\Notifications\ConsultingProposalSent($this->fresh()));
+        }
+
+        // Escalamiento si excede cap de rondas
+        if ($this->fresh()->proposal_count_sent >= self::MAX_PROPOSAL_ROUNDS) {
+            $admin = User::role('super_admin')->first();
+            if ($admin) {
+                $admin->notify(new \App\Notifications\ConsultingProposalsEscalated($this->fresh()));
+            }
+        }
+
+        return $created;
+    }
+
+    /**
+     * Sprint 3.7 #39 — el editor acepta una propuesta puntual.
+     *
+     * - Marca la propuesta aceptada como `accepted`.
+     * - Marca las demás propuestas activas del mismo task como `superseded`.
+     * - Llama a markScheduled() con la fecha aceptada (que envía
+     *   ConsultingScheduled a ambos).
+     */
+    public function acceptProposal(ConsultingProposal $proposal, User $acceptedBy): self
+    {
+        if ($proposal->admin_task_id !== $this->id) {
+            throw new \InvalidArgumentException('Proposal does not belong to this task.');
+        }
+        if (! $proposal->isActive()) {
+            throw new \LogicException('Cannot accept a non-active proposal.');
+        }
+
+        // Marcar la propuesta aceptada
+        $proposal->update([
+            'status' => ConsultingProposal::STATUS_ACCEPTED,
+            'accepted_at' => now(),
+            'accepted_by_user_id' => $acceptedBy->id,
+        ]);
+
+        // Las demás propuestas activas → superseded
+        $this->activeProposals()
+            ->where('id', '!=', $proposal->id)
+            ->each(fn (ConsultingProposal $p) => $p->markSuperseded());
+
+        // Agenda
+        $this->markScheduled($proposal->proposed_slot);
+
+        return $this->fresh();
+    }
+
+    /**
+     * Sprint 3.7 #39 — el editor rechaza todas las propuestas activas.
+     * Devuelve la task a PENDING para que el evaluador proponga nuevas.
+     */
+    public function rejectAllProposals(User $rejectedBy, ?string $reason = null): self
+    {
+        $this->activeProposals()->each(fn (ConsultingProposal $p) => $p->markRejected());
+
+        $this->update(['status' => self::STATUS_PENDING]);
+
+        // Notificar al evaluador (y al admin) que el editor pidió otras fechas
+        $assignee = $this->assignee;
+        if ($assignee) {
+            $assignee->notify(new \App\Notifications\ConsultingProposalsRejected($this->fresh(), $reason));
+        }
+
+        return $this->fresh();
     }
 
     /**
@@ -316,13 +623,81 @@ class AdminTask extends Model
             return $this;
         }
 
+        // Sprint 3.7 #44 — bloqueo: tasks awaiting_payment NO se pueden completar
+        // manualmente. El admin debe esperar que el editor pague o cancelar
+        // explícitamente la task si la necesidad ya no aplica.
+        if ($this->status === self::STATUS_AWAITING_PAYMENT) {
+            throw new \LogicException(
+                'No se puede marcar como completada una tarea con pago pendiente. '
+                .'Esperá que el editor pague, o cancelá la tarea si ya no aplica.'
+            );
+        }
+
         $this->update([
             'status' => self::STATUS_COMPLETED,
             'completed_at' => now(),
             'notes' => $note ? trim(($this->notes ? $this->notes."\n\n" : '').$note) : $this->notes,
         ]);
 
+        // Sprint 3.7 #44 Fase 2 — side effects al cerrar manualmente.
+        $this->handleCompletionSideEffects();
+
         return $this;
+    }
+
+    /**
+     * Sprint 3.7 #44 — transición awaiting_payment → pending cuando se confirma
+     * el pago vía webhook. Idempotente: si la task ya no está awaiting_payment,
+     * no hace nada.
+     */
+    public function activateAfterPayment(): self
+    {
+        if ($this->status !== self::STATUS_AWAITING_PAYMENT) {
+            return $this;
+        }
+
+        $this->update([
+            'status' => self::STATUS_PENDING,
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Side effects al marcar la task como completada manualmente.
+     *
+     * - Consulting con propuestas activas → marcarlas superseded.
+     * - Consulting con solicitedPayment pendiente → avisar al editor que ya
+     *   no necesita pagar (caso típico: admin resolvió el caso por otra vía).
+     */
+    protected function handleCompletionSideEffects(): void
+    {
+        if ($this->type === self::TYPE_CONSULTING) {
+            // Marcar propuestas activas como superseded
+            $this->activeProposals()->each(
+                fn (ConsultingProposal $p) => $p->markSuperseded()
+            );
+        }
+
+        // Aplicable a CUALQUIER tipo con link de pago pendiente: si el editor
+        // no pagó todavía y la task se cierra, el link queda sin sentido.
+        // El admin debería decidir explícitamente si quiere cobrarle igual
+        // (entonces no cierra la task) o si quiere liberar al editor (cierra
+        // la task y le avisamos).
+        $solicited = $this->solicitedPayment;
+        if ($solicited && $solicited->status !== 'completed') {
+            $editor = $this->editor();
+            if ($editor) {
+                try {
+                    $editor->notify(new \App\Notifications\TaskCompletedPaymentCancelled($this->fresh()));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Failed to notify editor about cancelled payment link', [
+                        'task_id' => $this->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+        }
     }
 
     /**
@@ -408,6 +783,10 @@ class AdminTask extends Model
             ),
             self::TYPE_ORPHAN_PAYMENT => $base->copy()->addDays(
                 (int) Setting::get('sla_orphan_calendar_days', 2)
+            ),
+            // Sprint 3.7 #44 — task de soporte creada manualmente desde mensaje.
+            self::TYPE_SUPPORT => $base->copy()->addDays(
+                (int) Setting::get('sla_support_calendar_days', 7)
             ),
             default => null,
         };

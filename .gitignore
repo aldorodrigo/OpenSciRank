@@ -31,3 +31,4 @@ index.php
 
 # Claude Code local settings
 .claude/
+.mcp.json

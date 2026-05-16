@@ -46,6 +46,7 @@ class StripePaymentService
         array $metadata = [],
         array $addonProductIds = [],
         bool $expressUplift = false,
+        ?int $adminTaskId = null,
     ): Session {
         $currency = strtolower($product->currency);
 
@@ -56,7 +57,7 @@ class StripePaymentService
                     'product_data' => [
                         'name' => $product->getTranslationWithFallback('name'),
                         'description' => $product->getTranslationWithFallback('description')
-                            ?: "Plan {$product->getTranslationWithFallback('name')} - {$payable->getTranslationWithFallback('title')}",
+                            ?: "Plan {$product->getTranslationWithFallback('name')} - ".\App\Support\PaymentPayableResolver::payableDisplayName($payable),
                     ],
                     'unit_amount' => (int) ($product->price * 100), // Stripe uses cents
                 ],
@@ -117,6 +118,10 @@ class StripePaymentService
                 'payable_id' => $payable->id,
                 'coupon_code' => $couponCode,
                 'addon_slugs' => $addonSlugsCsv,
+                // Sprint 3.7 #44 — si el checkout proviene de una task con link
+                // de pago solicitado, lo guardamos para que el webhook setee
+                // Payment::solicited_by_admin_task_id.
+                'admin_task_id' => $adminTaskId,
             ], $metadata),
         ];
 
@@ -135,6 +140,11 @@ class StripePaymentService
 
         if ($payable instanceof Book) {
             ProductValidator::validateForBook($product, $payable);
+        }
+
+        // Sprint 3.7 #38 — payable=User: solo válido para new-journal-consulting.
+        if ($payable instanceof \App\Models\User) {
+            ProductValidator::validateForUser($product, $payable);
         }
 
         return Session::create($sessionParams);
@@ -162,6 +172,12 @@ class StripePaymentService
             ? 'Payable no encontrado al procesar el webhook (posible soft-delete)'
             : null;
 
+        // Sprint 3.7 #44 — si el checkout vino de una task con link de pago,
+        // capturamos el admin_task_id desde el metadata para asociar el Payment.
+        $solicitedByAdminTaskId = isset($metadata->admin_task_id) && $metadata->admin_task_id !== null && $metadata->admin_task_id !== ''
+            ? (int) $metadata->admin_task_id
+            : null;
+
         $payment = Payment::create([
             'user_id' => $metadata->user_id,
             'product_id' => $metadata->product_id,
@@ -172,6 +188,7 @@ class StripePaymentService
             'status' => 'completed',
             'payable_type' => $metadata->payable_type,
             'payable_id' => $metadata->payable_id,
+            'solicited_by_admin_task_id' => $solicitedByAdminTaskId,
             'metadata' => [
                 'stripe_session_id' => $session->id,
                 'payment_intent' => $session->payment_intent,
@@ -179,6 +196,12 @@ class StripePaymentService
                 // Roadmap #15: registramos si el pago incluyó el uplift Express
                 // para que el admin pueda priorizar la evaluación (5d vs 15d).
                 'is_express' => (($metadata->express ?? '0') === '1'),
+                // Persistimos addons y cupón en el Payment para que el infolist
+                // del admin pueda reconstruir el desglose completo aunque el
+                // StripeObject ya no esté disponible (Sprint 3.6 #31).
+                'addon_slugs' => $metadata->addon_slugs ?? '',
+                'coupon_code' => $metadata->coupon_code ?? null,
+                'is_renewal' => (($metadata->is_renewal ?? '0') === '1'),
             ],
             'error_note' => $errorNote,
         ]);
@@ -248,12 +271,12 @@ class StripePaymentService
             // addon de la compra del listing inicial. Buscamos su slug en
             // ambos lugares.
             $mainSlug = $payment->product?->slug;
-            $addonSlugs = (array) ($metadata->addon_slugs ?? []);
-            if (is_string($addonSlugs)) {
-                // Stripe metadata sólo soporta strings escalares: aceptamos
-                // CSV ("slug1,slug2") como respaldo al formato por línea.
-                $addonSlugs = array_filter(array_map('trim', explode(',', $addonSlugs)));
-            }
+            // Stripe metadata sólo soporta strings escalares: el addon_slugs
+            // llega como CSV ("slug1,slug2"). Lo descomponemos directamente.
+            $rawAddonSlugs = $metadata->addon_slugs ?? '';
+            $addonSlugs = is_string($rawAddonSlugs) && $rawAddonSlugs !== ''
+                ? array_filter(array_map('trim', explode(',', $rawAddonSlugs)))
+                : (is_array($rawAddonSlugs) ? array_filter(array_map('trim', $rawAddonSlugs)) : []);
             $boughtFeatured = $mainSlug === 'book-listing-featured-1y'
                 || in_array('book-listing-featured-1y', $addonSlugs, true);
 
@@ -274,6 +297,10 @@ class StripePaymentService
                     'submitted_at' => now(),
                 ]);
             }
+        } elseif ($payable instanceof User) {
+            // Sprint 3.7 #38 — new-journal-consulting standalone. El payable
+            // es el editor que aún no creó revista; no hay que mutar status.
+            // La task de consultoría se crea abajo vía AdminTaskFactory.
         } else {
             $payable->update([
                 'status' => 'submitted',
@@ -281,10 +308,47 @@ class StripePaymentService
             ]);
         }
 
+        // Sprint 3.7 #44 — si este pago fue solicitado por una admin_task
+        // (link de pago desde mensaje), activar la task (awaiting_payment → pending)
+        // y disparar sus side effects ahora que se confirmó el cobro.
+        if ($solicitedByAdminTaskId) {
+            $solicitingTask = \App\Models\AdminTask::find($solicitedByAdminTaskId);
+            if ($solicitingTask && $solicitingTask->status === \App\Models\AdminTask::STATUS_AWAITING_PAYMENT) {
+                $solicitingTask->activateAfterPayment();
+
+                // Re-disparar side effects que se postergaron al crear la task
+                // (journal → submitted, etc.). Sólo si aplica al tipo.
+                AdminTaskFactory::applyTypeSideEffects(
+                    $solicitingTask->fresh(),
+                    $solicitingTask->type,
+                    $solicitingTask->related,
+                );
+
+                // Notificar al admin asignado (o super_admin si está sin asignar)
+                // que el pago llegó y ya puede empezar el trabajo.
+                $recipient = $solicitingTask->assignee
+                    ?? User::role('super_admin')->first();
+
+                if ($recipient) {
+                    try {
+                        $recipient->notify(new \App\Notifications\TaskPaymentReceived($solicitingTask->fresh()));
+                    } catch (\Throwable $e) {
+                        \Illuminate\Support\Facades\Log::warning('TaskPaymentReceived notification failed', [
+                            'task_id' => $solicitingTask->id,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+            }
+        }
+
         // Sprint 3.6 #32: generar task(s) de admin a partir del pago.
         // El factory decide qué tipo según el slug del producto + flags
         // (is_renewal, is_express) y los addons del checkout.
-        AdminTaskFactory::fromPayment($payment, $payable, (array) $metadata);
+        // OJO: (array) sobre un Stripe\StripeObject no expone las keys de
+        // usuario, sino propiedades internas con nombres mangleados ("\0 * \0_values"…).
+        // Hay que llamar ->toArray() para obtener el array plano real.
+        AdminTaskFactory::fromPayment($payment, $payable, $metadata->toArray());
 
         return $payment;
     }

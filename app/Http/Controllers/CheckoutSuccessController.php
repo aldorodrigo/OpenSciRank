@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Journal;
 use App\Models\Payment;
+use App\Models\User;
+use App\Notifications\ConsultingPaymentConfirmed;
 use App\Notifications\PaymentConfirmed;
 use App\Services\StripePaymentService;
 use Illuminate\Database\Eloquent\Model;
@@ -86,8 +88,16 @@ class CheckoutSuccessController extends Controller
             }
 
             // Ensure status is updated (skip for renewals — handled by createPaymentFromSession)
+            // Sprint 3.7: guard contra downgrade de estados terminales. Si el
+            // editor llega al success URL con una sesión vieja sobre una revista
+            // ya certified/evaluated, NO debemos resetear su estado a submitted.
+            // Solo aplicar el reset cuando viene de un estado pre-evaluación.
             $isRenewal = ($session->metadata->is_renewal ?? '0') === '1';
-            if (!$isRenewal && $payable->status !== 'submitted') {
+            $preEvaluationStatuses = ['draft', 'requires_changes_evaluation', 'pending_listing', 'requires_changes_listing', 'listed'];
+            if (! $isRenewal
+                && $payable->status !== 'submitted'
+                && in_array($payable->status, $preEvaluationStatuses, true)
+            ) {
                 $payable->update([
                     'status' => 'submitted',
                     'submitted_at' => now(),
@@ -101,7 +111,18 @@ class CheckoutSuccessController extends Controller
                 ->first();
 
             if ($payment) {
-                $payable->user->notify(new PaymentConfirmed($payment));
+                // Sprint 3.7 #38: para SKUs de consultoría enviamos un mail
+                // específico con los próximos pasos (qué esperar, cuándo).
+                // Para new-journal-consulting payable=User → $payable es el
+                // editor mismo, no tiene relación `user`.
+                $editor = $payable instanceof User ? $payable : $payable->user;
+                $slug = $payment->product?->slug;
+
+                if (in_array($slug, ['action-plan-consulting', 'new-journal-consulting'], true)) {
+                    $editor->notify(new ConsultingPaymentConfirmed($payment));
+                } else {
+                    $editor->notify(new PaymentConfirmed($payment));
+                }
             }
 
             return ['paid' => true, 'is_renewal' => $isRenewal];

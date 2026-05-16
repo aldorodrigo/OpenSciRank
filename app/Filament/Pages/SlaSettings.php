@@ -28,10 +28,6 @@ class SlaSettings extends Page implements HasForms
 
     protected static string|UnitEnum|null $navigationGroup = 'Sistema';
 
-    protected static ?string $navigationLabel = 'Plazos SLA';
-
-    protected static ?string $title = 'Plazos y SLA';
-
     protected static ?int $navigationSort = 50;
 
     protected string $view = 'filament.pages.sla-settings';
@@ -46,6 +42,7 @@ class SlaSettings extends Page implements HasForms
             'sla_consulting_calendar_days' => Setting::get('sla_consulting_calendar_days', 7),
             'sla_listing_calendar_days' => Setting::get('sla_listing_calendar_days', 7),
             'sla_orphan_calendar_days' => Setting::get('sla_orphan_calendar_days', 2),
+            'sla_support_calendar_days' => Setting::get('sla_support_calendar_days', 7),
         ]);
     }
 
@@ -54,20 +51,20 @@ class SlaSettings extends Page implements HasForms
         return $schema
             ->statePath('data')
             ->components([
-                Section::make('Evaluaciones')
-                    ->description('Plazos para evaluación inicial y re-evaluación de revistas. Días hábiles (L-V).')
+                Section::make(__('admin.sla.section_evaluations'))
+                    ->description(__('admin.sla.section_evaluations_desc'))
                     ->schema([
                         TextInput::make('sla_evaluation_business_days')
-                            ->label('Plazo estándar (días hábiles)')
-                            ->helperText('Tiempo máximo para completar una evaluación o re-evaluación regular.')
+                            ->label(__('admin.sla.standard'))
+                            ->helperText(__('admin.sla.standard_help'))
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(60)
                             ->required(),
 
                         TextInput::make('sla_evaluation_express_business_days')
-                            ->label('Plazo Express (días hábiles)')
-                            ->helperText('Tiempo máximo para evaluaciones con uplift Express (+$50).')
+                            ->label(__('admin.sla.express'))
+                            ->helperText(__('admin.sla.express_help'))
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(30)
@@ -75,31 +72,41 @@ class SlaSettings extends Page implements HasForms
                     ])
                     ->columns(2),
 
-                Section::make('Otros procesos')
-                    ->description('Plazos en días calendario.')
+                Section::make(__('admin.sla.section_other'))
+                    ->description(__('admin.sla.section_other_desc'))
                     ->schema([
                         TextInput::make('sla_listing_calendar_days')
-                            ->label('Revisión de listado (días)')
-                            ->helperText('Tiempo para revisar y aprobar listings gratuitos de revistas o de libros pagos.')
+                            ->label(__('admin.sla.listing'))
+                            ->helperText(__('admin.sla.listing_help'))
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(30)
                             ->required(),
 
                         TextInput::make('sla_consulting_calendar_days')
-                            ->label('Plan de Acción + Consultoría (días)')
-                            ->helperText('Tiempo para programar y dar la sesión de consultoría tras el pago.')
+                            ->label(__('admin.sla.consulting'))
+                            ->helperText(__('admin.sla.consulting_help'))
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(30)
                             ->required(),
 
                         TextInput::make('sla_orphan_calendar_days')
-                            ->label('Pago huérfano (días)')
-                            ->helperText('Tiempo para resolver un pago cuyo recurso no se encontró al procesar el webhook.')
+                            ->label(__('admin.sla.orphan'))
+                            ->helperText(__('admin.sla.orphan_help'))
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(14)
+                            ->required(),
+
+                        // Sprint 3.7 #44 — SLA para tasks de soporte creadas
+                        // manualmente desde el modal de mensaje.
+                        TextInput::make('sla_support_calendar_days')
+                            ->label(__('admin.sla.support'))
+                            ->helperText(__('admin.sla.support_help'))
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(30)
                             ->required(),
                     ])
                     ->columns(3),
@@ -113,7 +120,7 @@ class SlaSettings extends Page implements HasForms
     {
         return [
             Action::make('save')
-                ->label('Guardar cambios')
+                ->label(__('admin.common.save_changes'))
                 ->icon('heroicon-o-check')
                 ->color('primary')
                 ->action('save'),
@@ -129,8 +136,8 @@ class SlaSettings extends Page implements HasForms
         }
 
         Notification::make()
-            ->title('Configuración SLA actualizada')
-            ->body('Los nuevos plazos se aplicarán a las próximas tareas generadas.')
+            ->title(__('admin.sla.saved'))
+            ->body(__('admin.sla.saved_body'))
             ->success()
             ->send();
     }
@@ -142,11 +149,11 @@ class SlaSettings extends Page implements HasForms
 
     public static function getNavigationLabel(): string
     {
-        return __('Plazos SLA');
+        return __('admin.sla.navigation');
     }
 
     public function getTitle(): string
     {
-        return __('Plazos y SLA');
+        return __('admin.sla.title');
     }
 }

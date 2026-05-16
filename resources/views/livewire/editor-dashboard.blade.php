@@ -29,6 +29,33 @@
                     </svg>
                     {{ __('Mis pagos') }}
                 </button>
+
+                {{-- Sprint 3.7 #39 — link a Consultorías con badge de acción requerida --}}
+                @php
+                    $uid = auth()->id();
+                    $journalIds = \App\Models\Journal::where('user_id', $uid)->withTrashed()->pluck('id');
+                    $consultingActionCount = \App\Models\AdminTask::where('type', 'consulting')
+                        ->where('status', 'proposal_sent')
+                        ->where(function ($q) use ($uid, $journalIds) {
+                            $q->where(function ($q2) use ($journalIds) {
+                                $q2->where('related_type', \App\Models\Journal::class)->whereIn('related_id', $journalIds);
+                            })->orWhere(function ($q2) use ($uid) {
+                                $q2->where('related_type', \App\Models\User::class)->where('related_id', $uid);
+                            });
+                        })
+                        ->count();
+                @endphp
+                <a href="{{ route('app.consulting') }}" class="relative inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
+                    </svg>
+                    {{ __('Consultorías') }}
+                    @if($consultingActionCount > 0)
+                        <span class="ml-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                            {{ $consultingActionCount }}
+                        </span>
+                    @endif
+                </a>
                 <a href="{{ route('app.submit') }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />

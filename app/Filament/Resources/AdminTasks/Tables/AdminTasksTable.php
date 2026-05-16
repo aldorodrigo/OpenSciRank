@@ -11,8 +11,10 @@ use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -74,7 +76,40 @@ class AdminTasksTable
                     ->wrap()
                     ->toggleable(),
 
-                // 3. Relacionado a (Journal o Book link polimórfico)
+                // 2b. Sprint 3.7 — Cortesía (sin pago). Solo visible al admin.
+                // Aparece como pill compacto. Si no aplica, columna vacía.
+                TextColumn::make('complimentary')
+                    ->label(__('Pago'))
+                    ->getStateUsing(fn (AdminTask $record): string => $record->isComplimentary()
+                        ? 'complimentary'
+                        : ($record->effective_payment ? 'paid' : 'awaiting')
+                    )
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'complimentary' => 'emerald',
+                        'paid' => 'success',
+                        'awaiting' => 'warning',
+                        default => 'gray',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'complimentary' => 'heroicon-o-gift',
+                        'paid' => 'heroicon-o-banknotes',
+                        'awaiting' => 'heroicon-o-clock',
+                        default => 'heroicon-o-question-mark-circle',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'complimentary' => __('Cortesía'),
+                        'paid' => __('Pagado'),
+                        'awaiting' => __('Pendiente'),
+                        default => $state,
+                    })
+                    ->tooltip(fn (AdminTask $record): ?string => $record->isComplimentary()
+                        ? __('Tarea de cortesía: sin pago asociado.')
+                        : null
+                    )
+                    ->toggleable(),
+
+                // 3. Relacionado a (Journal/Book/User link polimórfico)
                 TextColumn::make('related_id')
                     ->label(__('Relacionado a'))
                     ->formatStateUsing(function (AdminTask $record): string {
@@ -82,12 +117,15 @@ class AdminTasksTable
                             return '—';
                         }
 
-                        return $record->related->getTranslationWithFallback('title');
+                        // Sprint 3.7 #46: User payable (support-credit, new-journal-consulting)
+                        // no tiene getTranslationWithFallback. Delegamos al helper.
+                        return \App\Support\PaymentPayableResolver::payableDisplayName($record->related);
                     })
                     ->url(fn (AdminTask $record): ?string => match (true) {
                         $record->related === null => null,
                         $record->related_type === 'App\\Models\\Journal' => JournalResource::getUrl('edit', ['record' => $record->related_id]),
                         $record->related_type === 'App\\Models\\Book' => BookResource::getUrl('edit', ['record' => $record->related_id]),
+                        $record->related_type === 'App\\Models\\User' => \App\Filament\Resources\Users\UserResource::getUrl('edit', ['record' => $record->related_id]),
                         default => null,
                     })
                     ->openUrlInNewTab()
@@ -203,8 +241,10 @@ class AdminTasksTable
                     ->label(__('Estado'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
+                        AdminTask::STATUS_AWAITING_PAYMENT => 'warning',
                         AdminTask::STATUS_PENDING => 'gray',
                         AdminTask::STATUS_IN_PROGRESS => 'info',
+                        AdminTask::STATUS_PROPOSAL_SENT => 'indigo',
                         AdminTask::STATUS_SCHEDULED => 'indigo',
                         AdminTask::STATUS_IN_SESSION => 'warning',
                         AdminTask::STATUS_COMPLETED => 'success',
@@ -212,8 +252,10 @@ class AdminTasksTable
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
+                        AdminTask::STATUS_AWAITING_PAYMENT => __('Pago pendiente'),
                         AdminTask::STATUS_PENDING => __('Pendiente'),
                         AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                        AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada'),
                         AdminTask::STATUS_SCHEDULED => __('Agendada'),
                         AdminTask::STATUS_IN_SESSION => __('En sesión'),
                         AdminTask::STATUS_COMPLETED => __('Completada'),
@@ -245,8 +287,10 @@ class AdminTasksTable
                     ->label(__('Estado'))
                     ->multiple()
                     ->options([
+                        AdminTask::STATUS_AWAITING_PAYMENT => __('Pago pendiente'),
                         AdminTask::STATUS_PENDING => __('Pendiente'),
                         AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                        AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada'),
                         AdminTask::STATUS_SCHEDULED => __('Agendada'),
                         AdminTask::STATUS_IN_SESSION => __('En sesión'),
                         AdminTask::STATUS_COMPLETED => __('Completada'),
@@ -284,6 +328,18 @@ class AdminTasksTable
                     ->query(fn (Builder $query) => $query->whereHas('payment', function (Builder $q): void {
                         $q->whereJsonContains('metadata->is_express', true);
                     }))
+                    ->toggle(),
+
+                // Sprint 3.7 — Sólo cortesías (sin payment_id ni solicitedPayment,
+                // y NO en awaiting_payment). Útil para reportes de uso del cupo
+                // de cortesía y trazabilidad de evaluaciones forzadas.
+                Filter::make('complimentary')
+                    ->label(__('Solo cortesías'))
+                    ->query(fn (Builder $query) => $query
+                        ->whereNull('payment_id')
+                        ->where('status', '!=', AdminTask::STATUS_AWAITING_PAYMENT)
+                        ->whereDoesntHave('solicitedPayment')
+                    )
                     ->toggle(),
             ])
 
@@ -388,13 +444,65 @@ class AdminTasksTable
                         ->visible(fn (AdminTask $record): bool => $record->status === AdminTask::STATUS_IN_PROGRESS)
                         ->url(fn (AdminTask $record): string => $record->workUrl()),
 
-                    // Marcar agendada (solo consulting)
-                    Action::make('schedule')
-                        ->label(__('Marcar agendada'))
+                    // ── Sprint 3.7 #39: Proponer fechas (desde tabla) ──────────
+                    Action::make('propose_dates')
+                        ->label(__('Proponer fechas'))
                         ->icon('heroicon-o-calendar-days')
                         ->color('indigo')
                         ->visible(fn (AdminTask $record): bool => $record->type === AdminTask::TYPE_CONSULTING
-                            && in_array($record->status, [AdminTask::STATUS_PENDING, AdminTask::STATUS_IN_PROGRESS], true)
+                            && in_array($record->status, [
+                                AdminTask::STATUS_PENDING,
+                                AdminTask::STATUS_IN_PROGRESS,
+                            ], true)
+                        )
+                        ->form([
+                            Repeater::make('slots')
+                                ->label(__('Fechas propuestas'))
+                                ->schema([
+                                    DateTimePicker::make('slot')
+                                        ->label(__('Fecha y hora'))
+                                        ->required()
+                                        ->native(false)
+                                        ->minDate(now()->addHours(2)),
+                                    TextInput::make('notes')
+                                        ->label(__('Notas para el editor (opcional)'))
+                                        ->maxLength(200),
+                                ])
+                                ->minItems(1)
+                                ->maxItems(3)
+                                ->reorderable(false)
+                                ->addActionLabel(__('Agregar fecha')),
+                        ])
+                        ->action(function (AdminTask $record, array $data): void {
+                            $slots = collect($data['slots'])->map(fn (array $entry) => [
+                                'slot' => Carbon::parse($entry['slot']),
+                                'notes' => filled($entry['notes'] ?? null) ? $entry['notes'] : null,
+                            ])->all();
+
+                            $record->sendProposals($slots, auth()->user());
+
+                            $count = count($slots);
+
+                            activity()
+                                ->performedOn($record)
+                                ->causedBy(auth()->user())
+                                ->withProperties(['proposal_count' => $count])
+                                ->log(__('Propuestas de fecha enviadas: :count slot(s)', ['count' => $count]));
+
+                            Notification::make()
+                                ->title(__('Propuestas enviadas — el editor recibió un email con :count fechas.', ['count' => $count]))
+                                ->success()
+                                ->send();
+                        }),
+
+                    // Marcar agendada (solo super_admin — bypass de propuesta)
+                    Action::make('schedule')
+                        ->label(__('Agendar directo'))
+                        ->icon('heroicon-o-bolt')
+                        ->color('gray')
+                        ->visible(fn (AdminTask $record): bool => $record->type === AdminTask::TYPE_CONSULTING
+                            && $record->status === AdminTask::STATUS_PENDING
+                            && (auth()->user()?->hasRole('super_admin') ?? false)
                         )
                         ->form([
                             DateTimePicker::make('scheduled_for')
@@ -404,6 +512,8 @@ class AdminTasksTable
                                 ->minDate(now()),
                         ])
                         ->action(function (AdminTask $record, array $data): void {
+                            // markScheduled() ya envía ConsultingScheduled al
+                            // editor + evaluador asignado.
                             $record->markScheduled(Carbon::parse($data['scheduled_for']));
 
                             activity()
@@ -414,6 +524,7 @@ class AdminTasksTable
 
                             Notification::make()
                                 ->title(__('Consultoría agendada'))
+                                ->body(__('Se notificó al editor y al evaluador con la fecha de la sesión.'))
                                 ->success()
                                 ->send();
                         }),
@@ -647,6 +758,7 @@ class AdminTasksTable
                                 // Solo tipos que NO auto-completan vía hook
                                 if (! in_array($record->type, [AdminTask::TYPE_CONSULTING, AdminTask::TYPE_ORPHAN_PAYMENT], true)) {
                                     $skipped++;
+
                                     continue;
                                 }
 

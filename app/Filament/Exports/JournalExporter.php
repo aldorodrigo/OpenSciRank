@@ -14,31 +14,31 @@ class JournalExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')->label('ID'),
+            ExportColumn::make('id')->label(__('admin.export.journal.id')),
             ExportColumn::make('title')
-                ->label('Título')
+                ->label(__('admin.export.journal.title'))
                 ->formatStateUsing(fn (Journal $record): string => $record->getTranslationWithFallback('title')),
-            ExportColumn::make('slug')->label('Slug'),
-            ExportColumn::make('user.name')->label('Propietario'),
-            ExportColumn::make('user.email')->label('Email Propietario'),
-            ExportColumn::make('status')->label('Estado'),
-            ExportColumn::make('current_score')->label('Puntuación (%)'),
-            ExportColumn::make('current_level')->label('Nivel'),
-            ExportColumn::make('assignedEvaluator.name')->label('Evaluador'),
-            ExportColumn::make('issn_print')->label('ISSN Impreso'),
-            ExportColumn::make('issn_online')->label('ISSN Online'),
-            ExportColumn::make('publisher')->label('Editorial'),
-            ExportColumn::make('url')->label('URL'),
-            ExportColumn::make('country_code')->label('País'),
-            ExportColumn::make('start_year')->label('Año Inicio'),
+            ExportColumn::make('slug')->label(__('admin.export.journal.slug')),
+            ExportColumn::make('user.name')->label(__('admin.export.journal.owner')),
+            ExportColumn::make('user.email')->label(__('admin.export.journal.owner_email')),
+            ExportColumn::make('status')->label(__('admin.export.journal.status')),
+            ExportColumn::make('current_score')->label(__('admin.export.journal.score')),
+            ExportColumn::make('current_level')->label(__('admin.export.journal.level')),
+            ExportColumn::make('assignedEvaluator.name')->label(__('admin.export.journal.evaluator')),
+            ExportColumn::make('issn_print')->label(__('admin.export.journal.issn_print')),
+            ExportColumn::make('issn_online')->label(__('admin.export.journal.issn_online')),
+            ExportColumn::make('publisher')->label(__('admin.export.journal.publisher')),
+            ExportColumn::make('url')->label(__('admin.export.journal.url')),
+            ExportColumn::make('country_code')->label(__('admin.export.journal.country')),
+            ExportColumn::make('start_year')->label(__('admin.export.journal.start_year')),
             ExportColumn::make('is_open_access')
-                ->label('Acceso Abierto')
+                ->label(__('admin.export.journal.open_access'))
                 ->formatStateUsing(fn ($state): string => $state ? 'Sí' : 'No'),
-            ExportColumn::make('seal_status')->label('Estado Sello'),
-            ExportColumn::make('seal_expires_at')->label('Sello Vence'),
-            ExportColumn::make('listed_at')->label('Fecha Listado'),
-            ExportColumn::make('evaluated_at')->label('Fecha Evaluación'),
-            ExportColumn::make('created_at')->label('Fecha Registro'),
+            ExportColumn::make('seal_status')->label(__('admin.export.journal.seal_status')),
+            ExportColumn::make('seal_expires_at')->label(__('admin.export.journal.seal_expires')),
+            ExportColumn::make('listed_at')->label(__('admin.export.journal.listed_at')),
+            ExportColumn::make('evaluated_at')->label(__('admin.export.journal.evaluated_at')),
+            ExportColumn::make('created_at')->label(__('admin.export.journal.created_at')),
         ];
     }
 

@@ -14,26 +14,26 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('Nombre')
+                    ->label(__('admin.user.name'))
                     ->required()
                     ->maxLength(255),
                 
                 TextInput::make('email')
-                    ->label('Email')
+                    ->label(__('admin.user.email'))
                     ->email()
                     ->unique(ignoreRecord: true)
                     ->required()
                     ->maxLength(255),
                 
                 \Filament\Forms\Components\Select::make('roles')
-                    ->label('Roles')
+                    ->label(__('admin.user.roles'))
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload()
                     ->searchable(),
 
                 TextInput::make('password')
-                    ->label('Contraseña')
+                    ->label(__('admin.user.password'))
                     ->password()
                     ->dehydrated(fn (?string $state) => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')

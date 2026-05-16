@@ -33,23 +33,23 @@ class SealStatusOverview extends BaseWidget
             ->count();
 
         return [
-            Stat::make('Sellos Activos', $activeSeals)
-                ->description('Certificaciones vigentes')
+            Stat::make(__('admin.seal_widget.active'), $activeSeals)
+                ->description(__('admin.seal_widget.active_desc'))
                 ->descriptionIcon('heroicon-o-check-badge')
                 ->color('success'),
 
-            Stat::make('Próximos a Vencer', $expiringSoon)
-                ->description('Vencen en menos de 30 días')
+            Stat::make(__('admin.seal_widget.expiring'), $expiringSoon)
+                ->description(__('admin.seal_widget.expiring_desc'))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color($expiringSoon > 0 ? 'warning' : 'gray'),
 
-            Stat::make('Sellos Vencidos', $expired)
-                ->description('Requieren renovación')
+            Stat::make(__('admin.seal_widget.expired'), $expired)
+                ->description(__('admin.seal_widget.expired_desc'))
                 ->descriptionIcon('heroicon-o-exclamation-triangle')
                 ->color($expired > 0 ? 'danger' : 'gray'),
 
-            Stat::make('Sin Notificar', $pendingNotification)
-                ->description('No se les ha enviado recordatorio')
+            Stat::make(__('admin.seal_widget.not_notified'), $pendingNotification)
+                ->description(__('admin.seal_widget.not_notified_desc'))
                 ->descriptionIcon('heroicon-o-bell-alert')
                 ->color($pendingNotification > 0 ? 'danger' : 'gray'),
         ];

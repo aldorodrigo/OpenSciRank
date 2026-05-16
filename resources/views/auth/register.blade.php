@@ -60,6 +60,40 @@
                             class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
 
+                    {{-- Sprint 3.7 #41 — timezone explícita (auto-detect JS + dropdown agrupado) --}}
+                    <div>
+                        <label for="timezone" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {{ __('Your timezone') }}
+                            <span class="text-xs font-normal text-gray-500">{{ __('(used for sessions and reminders)') }}</span>
+                        </label>
+                        <select id="timezone" name="timezone" required
+                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            @foreach (\App\Support\TimezoneHelper::commonZones() as $group => $zones)
+                                <optgroup label="{{ $group }}">
+                                    @foreach ($zones as $value => $label)
+                                        <option value="{{ $value }}" @selected(old('timezone') === $value)>{{ $label }}</option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
+                        </select>
+                        @error('timezone')
+                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                        @enderror
+                        <script>
+                            // Auto-detect timezone via Intl API y pre-seleccionar si match exacto.
+                            (function() {
+                                try {
+                                    var detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                                    var select = document.getElementById('timezone');
+                                    var hasOption = Array.from(select.options).some(function (o) { return o.value === detected; });
+                                    if (hasOption && !{{ old('timezone') ? 'true' : 'false' }}) {
+                                        select.value = detected;
+                                    }
+                                } catch (e) {}
+                            })();
+                        </script>
+                    </div>
+
                     <button type="submit" class="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white shadow-lg transition hover:bg-indigo-500">
                         {{ __('Create account') }}
                     </button>

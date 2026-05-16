@@ -15,23 +15,23 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('admin.user.name'))
                     ->searchable()
                     ->sortable(),
                 
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('admin.user.email'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('roles.name')
-                    ->label('Roles')
+                    ->label(__('admin.user.roles'))
                     ->badge()
                     ->color('info')
                     ->searchable(),
                 
                 TextColumn::make('created_at')
-                    ->label('Fecha de creación')
+                    ->label(__('admin.user.created_at'))
                     ->dateTime('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),

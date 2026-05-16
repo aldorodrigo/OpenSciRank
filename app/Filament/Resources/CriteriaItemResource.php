@@ -24,9 +24,15 @@ class CriteriaItemResource extends Resource
         return __('navigation.evaluation');
     }
 
-    protected static ?string $modelLabel = 'Indicador de Evaluación';
+    public static function getModelLabel(): string
+    {
+        return __('admin.criteria.model');
+    }
 
-    protected static ?string $pluralModelLabel = 'Indicadores de Evaluación';
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.criteria.plural');
+    }
 
     protected static ?int $navigationSort = 1;
 
@@ -34,65 +40,65 @@ class CriteriaItemResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Información del Indicador')
+                Section::make(__('admin.criteria.section_info'))
                     ->schema([
                         Forms\Components\TextInput::make('code')
-                            ->label('Código')
+                            ->label(__('admin.criteria.code'))
                             ->required()
                             ->maxLength(10)
-                            ->placeholder('1.1, 2.3, etc.')
+                            ->placeholder(__('admin.criteria.code_ph'))
                             ->unique(ignoreRecord: true),
 
                         Forms\Components\TextInput::make('name')
-                            ->label('Nombre del Indicador')
+                            ->label(__('admin.criteria.name'))
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
 
                         Forms\Components\Select::make('category_id')
-                            ->label('Categoría')
+                            ->label(__('admin.criteria.category'))
                             ->relationship('category', 'name')
                             ->required()
                             ->searchable()
                             ->preload(),
 
                         Forms\Components\Textarea::make('description')
-                            ->label('Descripción')
+                            ->label(__('admin.criteria.description'))
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
 
-                Section::make('Configuración')
+                Section::make(__('admin.criteria.section_config'))
                     ->schema([
                         Forms\Components\TextInput::make('weight')
-                            ->label('Peso')
+                            ->label(__('admin.criteria.weight'))
                             ->numeric()
                             ->default(1)
                             ->minValue(0)
                             ->maxValue(10)
-                            ->helperText('Peso del indicador en el cálculo de la nota (0-10)'),
+                            ->helperText(__('admin.criteria.weight_help')),
 
                         Forms\Components\Select::make('type')
-                            ->label('Tipo')
+                            ->label(__('admin.criteria.type'))
                             ->options([
-                                'core' => 'Core (Básico)',
-                                'advanced' => 'Avanzado',
-                                'excellence' => 'Excelencia',
+                                'core' => __('admin.criteria.type_core'),
+                                'advanced' => __('admin.criteria.type_advanced'),
+                                'excellence' => __('admin.criteria.type_excellence'),
                             ])
                             ->default('core')
                             ->required(),
 
                         Forms\Components\Toggle::make('is_core')
-                            ->label('¿Es Excluyente?')
-                            ->helperText('Si no se cumple, la revista no puede aprobar'),
+                            ->label(__('admin.criteria.is_exclusive'))
+                            ->helperText(__('admin.criteria.is_exclusive_help')),
 
                         Forms\Components\Toggle::make('is_active')
-                            ->label('Activo')
+                            ->label(__('admin.criteria.active'))
                             ->default(true),
 
                         Forms\Components\TextInput::make('order')
-                            ->label('Orden')
+                            ->label(__('admin.criteria.order'))
                             ->numeric()
                             ->default(0),
                     ])
@@ -105,28 +111,28 @@ class CriteriaItemResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
-                    ->label('Código')
+                    ->label(__('admin.criteria.code'))
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Indicador')
+                    ->label(__('admin.criteria.indicator'))
                     ->wrap()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('category.name')
-                    ->label('Categoría')
+                    ->label(__('admin.criteria.category'))
                     ->badge()
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('weight')
-                    ->label('Peso')
+                    ->label(__('admin.criteria.weight'))
                     ->sortable()
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('type')
-                    ->label('Tipo')
+                    ->label(__('admin.criteria.type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'core' => 'primary',
@@ -135,43 +141,43 @@ class CriteriaItemResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'core' => 'Core',
-                        'advanced' => 'Avanzado',
-                        'excellence' => 'Excelencia',
+                        'core' => __('admin.criteria.type_core_short'),
+                        'advanced' => __('admin.criteria.type_advanced'),
+                        'excellence' => __('admin.criteria.type_excellence'),
                         default => $state,
                     })
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_core')
-                    ->label('Excl.')
+                    ->label(__('admin.criteria.is_exclusive_short'))
                     ->boolean()
                     ->trueIcon('heroicon-o-exclamation-triangle')
                     ->trueColor('danger')
                     ->alignCenter(),
 
                 Tables\Columns\IconColumn::make('is_active')
-                    ->label('Activo')
+                    ->label(__('admin.criteria.active'))
                     ->boolean()
                     ->alignCenter(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
-                    ->label('Tipo')
+                    ->label(__('admin.criteria.type'))
                     ->options([
-                        'core' => 'Core',
-                        'advanced' => 'Avanzado',
-                        'excellence' => 'Excelencia',
+                        'core' => __('admin.criteria.type_core_short'),
+                        'advanced' => __('admin.criteria.type_advanced'),
+                        'excellence' => __('admin.criteria.type_excellence'),
                     ]),
 
                 Tables\Filters\SelectFilter::make('category_id')
-                    ->label('Categoría')
+                    ->label(__('admin.criteria.category'))
                     ->relationship('category', 'name'),
 
                 Tables\Filters\TernaryFilter::make('is_core')
-                    ->label('Excluyentes'),
+                    ->label(__('admin.criteria.filter_exclusive')),
 
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Activos'),
+                    ->label(__('admin.criteria.filter_active')),
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),

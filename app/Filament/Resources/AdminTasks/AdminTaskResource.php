@@ -42,7 +42,9 @@ class AdminTaskResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = AdminTask::open()->count();
+        // Sprint 3.7 #44: el badge muestra tasks que requieren trabajo del admin.
+        // No incluye awaiting_payment (espera del editor, no del admin).
+        $count = AdminTask::whereIn('status', AdminTask::STATUSES_WORK_QUEUE)->count();
 
         return $count > 0 ? (string) $count : null;
     }
@@ -53,11 +55,12 @@ class AdminTaskResource extends Resource
     }
 
     /**
-     * AdminTask has no create form — tasks are system-generated.
+     * Sprint 4 #34 — habilitado: super_admin puede crear tasks manualmente
+     * desde Filament (casos ad-hoc, recordatorios internos, follow-ups).
      */
     public static function canCreate(): bool
     {
-        return false;
+        return auth()->user()?->hasRole('super_admin') ?? false;
     }
 
     public static function infolist(Schema $schema): Schema
@@ -81,6 +84,7 @@ class AdminTaskResource extends Resource
     {
         return [
             'index' => ListAdminTasks::route('/'),
+            'create' => \App\Filament\Resources\AdminTasks\Pages\CreateAdminTask::route('/create'),
             'view' => ViewAdminTask::route('/{record}'),
         ];
     }

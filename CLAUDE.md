@@ -62,7 +62,21 @@ Books: `draft → [pay $49] → submitted → pending_listing → listed / rejec
 5. Payment record created, journal/book status updated to `submitted`
 6. `PaymentConfirmed` notification sent
 
-Products identified by `slug`: `journal-evaluation`, `journal-reevaluation`, `seal-renewal-1y`, `seal-renewal-2y`, `seal-renewal-3y`, `book-listing`, `action-plan-consulting`. Express service is no longer a public SKU — it is a +$50 uplift toggled at checkout for evaluation/re-evaluation flows. Legacy slugs kept inactive for FK integrity: `express-evaluation`, `institutional-pack`. The old `premium-report` slug was renamed to `action-plan-consulting` (roadmap #17, 2026-05-13).
+Products identified by `slug`: `journal-evaluation`, `journal-reevaluation`, `seal-renewal-1y`, `seal-renewal-2y`, `seal-renewal-3y`, `book-listing`, `book-listing-featured-1y`, `action-plan-consulting`, `new-journal-consulting`. Express service is no longer a public SKU — it is a +$50 uplift toggled at checkout for evaluation/re-evaluation flows. Legacy slugs kept inactive for FK integrity: `express-evaluation`, `institutional-pack`. The old `premium-report` slug was renamed to `action-plan-consulting` (roadmap #17, 2026-05-13).
+
+**Consulting products:** Two SKUs, both create `AdminTask` of type `consulting`.
+- `action-plan-consulting` (USD 215): add-on to a journal evaluation. `Payment.payable_type=Journal`. 1 session.
+- `new-journal-consulting` (USD 1,500): standalone product for editors creating a new journal. `Payment.payable_type=User` (no journal exists yet). 3 sessions package + domain + OJS hosting for 12 months. "Pack Lanzamiento Editorial".
+
+**Consulting scheduling flow (Sprint 3.6 #39, 2026-05-14):**
+1. Payment confirmed → `AdminTask` created (status `pending`) + `ConsultingPaymentConfirmed` email to editor.
+2. Evaluator action "Proponer fechas" → 1-3 candidate slots → status `proposal_sent` → email to editor with signed accept-URLs.
+3. Editor in `/app/consulting` accepts one slot → status `scheduled` + `.ics` attachment + both parties emailed.
+4. Cron `consulting:send-reminders` 24h before sends `ConsultingReminder`.
+5. Cron `consulting:expire-proposals` daily expires unanswered proposals after 5 business days.
+6. Cancellation policy: >48h reagenda libre, 24-48h una sola vez, <24h pierde la sesión. Override por super_admin con motivo. Tracked en `admin_tasks.reschedule_count` (cap 3 rondas).
+
+**Universal messaging (Sprint 3.6 #40):** Polymorphic `conversations` over Journal/Book/AdminTask/null (general). `messages` with `message_attachments` (max 10 MB, types: PDF/DOCX/XLSX/images/TXT/CSV). Auto-join admin when responding. Read state tracked per `conversation_participants.last_read_at`. Email notification per message with 5-min batching cooldown.
 
 ### Coupons / Discount system (Sprint 3 #13)
 
@@ -130,3 +144,27 @@ Triggered from: `CheckoutSuccessController`, `EvaluateJournal::save()`, `ReviewL
 - **Environment config:** Stripe keys in `.env` (`STRIPE_KEY`, `STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET`). Mail via Mailpit locally, Amazon SES in production.
 - **Confirmation modals:** All destructive or state-changing user actions must have `wire:confirm` or `onclick="return confirm(...)"`.
 - **Seal management:** Admin-driven via Filament (individual + bulk actions). No cron — admin manually notifies via "Notificar" button.
+
+## Git Workflow
+
+**Standing instruction from user (2026-05-15):** Por cada tarea del roadmap completada, crear un commit con el título de la tarea.
+
+**Reglas:**
+
+- Cuando una tarea del roadmap (`memory/project_admin_roadmap.md`) queda completamente terminada (código + tests si aplican + verificación end-to-end), Claude DEBE crear un commit antes de pasar a la siguiente tarea, sin esperar a que el usuario lo pida.
+- **Formato del título del commit:** `[#N] Título corto de la tarea` donde `N` es el ID del roadmap. Ejemplos:
+  - `[#46] Producto Soporte $55 — bajo pedido del admin`
+  - `[#47] Comando mail:health-check para auditoría de deliverability`
+  - `[#37] Fix: resubmisión no genera admin_task`
+- **Cuerpo del commit:** 1-3 líneas resumiendo qué se cambió. Si tocaron varios archivos significativos, listarlos brevemente.
+- **Co-autoría:** incluir el trailer `Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>` al final.
+- **Una tarea = un commit ideal.** Si la tarea fue extensa y se hicieron commits intermedios durante el trabajo, está bien. Lo importante es que el último commit antes de cerrar la tarea tenga el `[#N]` que la cierra.
+- **Si la tarea queda incompleta** (decisión pendiente, código a medio camino, tests fallando): NO commitear con `[#N]` — usar título descriptivo + `WIP` para que quede claro.
+- **Si fueron varios cambios cosméticos no atados a una tarea del roadmap** (ej. fixes durante QA, tweaks de UI): commit normal sin `[#N]`, título descriptivo.
+- **Pre-commit hooks:** si fallan, fijar el problema y crear un commit nuevo (no `--amend` salvo que el usuario lo pida explícito).
+- **NO push automático.** El push lo decide el usuario.
+
+**Excepciones donde NO commitear automáticamente:**
+- Tareas exploratorias sin output de código (research, comparativas, planning).
+- Cambios solo en archivos de configuración local del usuario (`.claude.json`, `.mcp.json`).
+- Edits a archivos fuera del proyecto (memory files de Claude en `C:\Users\...\.claude\`).

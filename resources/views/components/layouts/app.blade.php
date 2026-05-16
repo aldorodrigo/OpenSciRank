@@ -194,6 +194,12 @@
         </div>
         @endif
 
+        {{-- Cookie consent banner — GDPR/LGPD/LFPDPPP --}}
+        <x-cookie-banner />
+
+        {{-- Global loader: barra de progreso top en cada acción Livewire --}}
+        <x-global-loader />
+
         @livewireScripts
     </body>
 </html>

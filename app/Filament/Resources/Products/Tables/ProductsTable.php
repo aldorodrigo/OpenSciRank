@@ -17,22 +17,22 @@ class ProductsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre del Producto')
+                    ->label(__('admin.product.name'))
                     ->formatStateUsing(fn (Product $record): string => $record->getTranslationWithFallback('name'))
                     ->searchable(),
                 TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label(__('admin.product.slug'))
                     ->toggleable()
                     ->searchable(),
                 TextColumn::make('price')
-                    ->label('Precio Base')
+                    ->label(__('admin.product.base_price'))
                     ->money(fn ($record) => $record->currency ?? 'USD')
                     ->sortable(),
                 IconColumn::make('is_active')
-                    ->label('Activo')
+                    ->label(__('admin.product.active'))
                     ->boolean(),
                 TextColumn::make('updated_at')
-                    ->label('Última actualización')
+                    ->label(__('admin.product.updated_at'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),

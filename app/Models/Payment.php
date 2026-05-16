@@ -57,6 +57,15 @@ class Payment extends Model
         return $this->morphTo();
     }
 
+    /**
+     * Sprint 3.7 #44 — task que solicitó este pago (link de pago).
+     * Null para pagos iniciados directamente desde checkout público.
+     */
+    public function solicitingTask()
+    {
+        return $this->belongsTo(AdminTask::class, 'solicited_by_admin_task_id');
+    }
+
     public function adminTasks()
     {
         return $this->hasMany(AdminTask::class);

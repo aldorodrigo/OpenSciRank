@@ -21,10 +21,22 @@ class CmsCategoryResource extends Resource
     protected static ?string $model = CmsCategory::class;
 
     protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-tag';
-    protected static ?string $navigationLabel = 'Categorías Blog';
-    protected static ?string $modelLabel = 'Categoría';
-    protected static ?string $pluralModelLabel = 'Categorías';
     protected static ?int $navigationSort = 4;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.cms_category.navigation');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.cms_category.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.cms_category.plural');
+    }
 
     public static function getNavigationGroup(): ?string
     {
@@ -50,14 +62,14 @@ class CmsCategoryResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Categoría')
+                Section::make(__('admin.cms_category.section'))
                     ->schema([
                         Tabs::make('name_tabs')
                             ->columnSpanFull()
                             ->tabs([
                                 Tab::make('ES')->schema([
                                     Forms\Components\TextInput::make('name.es')
-                                        ->label('Nombre (ES)')
+                                        ->label(__('admin.cms_category.name') . ' (' . __('admin.common.lang_suffix.es') . ')')
                                         ->required()
                                         ->maxLength(255)
                                         ->live(onBlur: true)
@@ -69,36 +81,40 @@ class CmsCategoryResource extends Resource
                                 ]),
                                 Tab::make('EN')->schema([
                                     Forms\Components\TextInput::make('name.en')
-                                        ->label('Name (EN)')
+                                        ->label(__('admin.cms_category.name') . ' (' . __('admin.common.lang_suffix.en') . ')')
                                         ->maxLength(255),
                                 ]),
                                 Tab::make('PT')->schema([
                                     Forms\Components\TextInput::make('name.pt')
-                                        ->label('Nome (PT)')
+                                        ->label(__('admin.cms_category.name') . ' (' . __('admin.common.lang_suffix.pt') . ')')
                                         ->maxLength(255),
                                 ]),
                             ]),
 
                         Forms\Components\TextInput::make('slug')
-                            ->label('Slug')
+                            ->label(__('admin.cms_category.slug'))
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
 
                         Forms\Components\Select::make('primary_locale')
-                            ->label('Idioma principal')
-                            ->options(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'])
+                            ->label(__('admin.common.language_primary'))
+                            ->options([
+                                'es' => __('admin.common.language_options.es'),
+                                'en' => __('admin.common.language_options.en'),
+                                'pt' => __('admin.common.language_options.pt'),
+                            ])
                             ->default('es')
                             ->required(),
 
                         Forms\Components\Select::make('color')
-                            ->label('Color')
+                            ->label(__('admin.cms_category.color'))
                             ->options(self::$palettes)
                             ->searchable()
                             ->nullable(),
 
                         Forms\Components\TextInput::make('sort_order')
-                            ->label('Orden')
+                            ->label(__('admin.cms_category.order'))
                             ->numeric()
                             ->default(0),
                     ])
@@ -111,24 +127,24 @@ class CmsCategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('sort_order')
-                    ->label('Orden')
+                    ->label(__('admin.cms_category.order'))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('admin.cms_category.name'))
                     ->formatStateUsing(fn (CmsCategory $record): string => $record->getTranslationWithFallback('name'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label(__('admin.cms_category.slug'))
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('color')
-                    ->label('Color')
+                    ->label(__('admin.cms_category.color'))
                     ->formatStateUsing(fn (?string $state): string => self::$palettes[$state] ?? '—'),
 
                 Tables\Columns\TextColumn::make('posts_count')
-                    ->label('Posts')
+                    ->label(__('admin.cms_category.posts'))
                     ->counts('posts'),
             ])
             ->defaultSort('sort_order')

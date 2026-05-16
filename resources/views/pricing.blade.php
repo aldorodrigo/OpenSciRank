@@ -212,6 +212,142 @@
         </div>
     </section>
 
+    {{-- Sprint 3.7 #38 — Pack Lanzamiento Editorial (standalone) --}}
+    @php
+        $launchPack = $products['new-journal-consulting'] ?? null;
+    @endphp
+    @if($launchPack && $launchPack->is_active)
+    <section class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-20 dark:from-indigo-950/30 dark:via-gray-900 dark:to-purple-950/30">
+        <div class="container mx-auto px-4">
+            <div class="mx-auto max-w-5xl">
+                <div class="mb-12 text-center">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                        🚀 {{ __('Launch your journal') }}
+                    </span>
+                    <h2 class="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
+                        {{ $launchPack->getTranslationWithFallback('name') }}
+                    </h2>
+                    <p class="mx-auto mt-3 max-w-2xl text-gray-600 dark:text-gray-400">
+                        {{ __('Launch your scientific journal from scratch: 3 one-on-one sessions with expert editors, domain and OJS hosting for 12 months, and full editorial and technical guidance.') }}
+                    </p>
+                </div>
+
+                <div class="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-indigo-200 dark:bg-gray-800 dark:ring-indigo-800">
+                    <div class="grid gap-0 lg:grid-cols-5">
+                        {{-- Lado izquierdo: features --}}
+                        <div class="lg:col-span-3 p-8 lg:p-10">
+                            <div class="grid gap-6 sm:grid-cols-2">
+                                {{-- Editorial consulting --}}
+                                <div>
+                                    <div class="mb-3 flex items-center gap-2">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        </div>
+                                        <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Editorial consulting') }}</h3>
+                                    </div>
+                                    <ul class="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
+                                        <li>{{ __('3 sessions of 60 min with expert editors') }}</li>
+                                        <li>{{ __('Scope and editorial policy') }}</li>
+                                        <li>{{ __('Peer review process design') }}</li>
+                                        <li>{{ __('COPE, anti-plagiarism, conflicts of interest') }}</li>
+                                        <li>{{ __('Editorial board structure') }}</li>
+                                    </ul>
+                                </div>
+
+                                {{-- Technical consulting --}}
+                                <div>
+                                    <div class="mb-3 flex items-center gap-2">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                                        </div>
+                                        <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Technical consulting') }}</h3>
+                                    </div>
+                                    <ul class="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
+                                        <li>{{ __('Initial OJS/PKP setup') }}</li>
+                                        <li>{{ __('Submission → review → publication workflow') }}</li>
+                                        <li>{{ __('DOI assignment and indexer registration') }}</li>
+                                        <li>{{ __('OAI-PMH configuration') }}</li>
+                                    </ul>
+                                </div>
+
+                                {{-- Infrastructure included --}}
+                                <div>
+                                    <div class="mb-3 flex items-center gap-2">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/></svg>
+                                        </div>
+                                        <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Infrastructure (12 months)') }}</h3>
+                                    </div>
+                                    <ul class="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
+                                        <li>{{ __('Custom .org or .com domain') }}</li>
+                                        <li>{{ __('Managed OJS hosting with daily backups') }}</li>
+                                        <li>{{ __('SSL certificate') }}</li>
+                                        <li>{{ __('Technical support 12 months') }}</li>
+                                    </ul>
+                                </div>
+
+                                {{-- Launch accompaniment --}}
+                                <div>
+                                    <div class="mb-3 flex items-center gap-2">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                        </div>
+                                        <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Launch support') }}</h3>
+                                    </div>
+                                    <ul class="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
+                                        <li>{{ __('Final site review before go-live') }}</li>
+                                        <li>{{ __('First call-for-papers support') }}</li>
+                                        <li>{{ __('Recommendations for initial indexers (DOAJ, Latindex, etc.)') }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Lado derecho: precio + CTA --}}
+                        <div class="lg:col-span-2 bg-gradient-to-br from-indigo-600 to-purple-700 p-8 text-white lg:p-10">
+                            <div class="flex h-full flex-col">
+                                <p class="text-sm uppercase tracking-wide text-indigo-200">{{ __('All-inclusive package') }}</p>
+                                <div class="mt-2 flex items-baseline gap-2">
+                                    <span class="text-5xl font-extrabold">${{ number_format($launchPack->price, 0) }}</span>
+                                    <span class="text-xl font-medium text-indigo-200">USD</span>
+                                </div>
+                                <p class="mt-2 text-sm text-indigo-100">{{ __('One-time payment · No recurring fees') }}</p>
+
+                                <ul class="mt-6 space-y-2 text-sm">
+                                    <li class="flex items-start gap-2">
+                                        <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        {{ __('3 consulting sessions') }}
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        {{ __('Domain + hosting for 12 months') }}
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        {{ __('Editorial + technical guidance') }}
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <svg class="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        {{ __('Launch accompaniment') }}
+                                    </li>
+                                </ul>
+
+                                <a href="{{ locale_path('/checkout/new-journal-consulting') }}"
+                                   class="mt-auto block w-full rounded-xl bg-white py-3.5 text-center text-base font-bold text-indigo-700 shadow-lg transition hover:bg-indigo-50">
+                                    {{ __('Start launching your journal →') }}
+                                </a>
+                                <p class="mt-3 text-center text-xs text-indigo-200">
+                                    {{ __('Secure checkout via Stripe') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
     {{-- Add-ons --}}
     <section class="bg-white py-20 dark:bg-gray-900">
         <div class="container mx-auto px-4">
