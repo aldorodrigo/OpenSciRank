@@ -1,21 +1,21 @@
-<x-layouts.app :title="__('Editorial Standards Ranking') . ' - Editorial Standards Platform'" :description="__('Ranking of journals with an active Editorial Standards Seal, sorted by their compliance score against transparent editorial criteria.')">
+<x-layouts.app :title="__('ranking.page_title')" :description="__('ranking.page_description')">
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
     <section class="bg-brand-deep py-14 text-white">
         <div class="container mx-auto px-4 text-center">
             <div class="mb-4 inline-flex items-center rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-                {{ __('Live · ranked by editorial compliance, not by payments') }}
+                {{ __('ranking.live_badge') }}
             </div>
-            <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Editorial Standards Ranking') }}</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-blue-200">{{ __('Scientific journals with an active Editorial Standards Seal, sorted by their compliance score against 18 transparent criteria across 5 evaluation areas.') }}</p>
+            <h1 class="text-4xl font-bold sm:text-5xl">{{ __('ranking.h1') }}</h1>
+            <p class="mx-auto mt-4 max-w-2xl text-blue-200">{{ __('ranking.subtitle') }}</p>
 
             <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
                 <a href="{{ route('search') }}" class="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:bg-white/10">
-                    {{ __('Browse full directory') }}
+                    {{ __('ranking.cta_directory') }}
                 </a>
                 <a href="{{ route('methodology') }}" class="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:bg-white/10">
-                    {{ __('How we evaluate') }}
+                    {{ __('ranking.cta_methodology') }}
                 </a>
             </div>
         </div>
@@ -28,10 +28,16 @@
                 $journals = \App\Models\Journal::where('status', 'certified')
                     ->whereNotNull('seal_expires_at')
                     ->where('seal_expires_at', '>', now())
-                    ->whereNotNull('current_score')
-                    ->orderByDesc('current_score')
+                    ->whereNotNull('h_index')
+                    ->orderByDesc('h_index')
+                    ->orderByDesc('total_citations')
                     ->paginate(20);
             @endphp
+
+            <div class="mb-6 rounded-xl bg-white px-5 py-4 text-sm text-gray-600 shadow-sm dark:bg-gray-900 dark:text-gray-400">
+                <strong class="text-gray-900 dark:text-white">{{ __('ranking.methodology_note_title') }}</strong>
+                <span>{{ __('ranking.methodology_note_body') }}</span>
+            </div>
 
             @if($journals->count() > 0)
             <div class="overflow-hidden rounded-2xl bg-white shadow-lg dark:bg-gray-900">
@@ -49,7 +55,10 @@
                             </div>
                         @endif
                         <p class="mt-2 px-4 text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">{{ $j->getTranslationWithFallback('title') }}</p>
-                        <span class="mt-2 text-xl font-bold text-brand dark:text-blue-400">{{ $j->current_score }}%</span>
+                        <div class="mt-2 flex flex-col items-center">
+                            <span class="text-3xl font-bold text-brand dark:text-blue-400">{{ $j->h_index }}</span>
+                            <span class="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">h-index</span>
+                        </div>
                     </div>
                     @endforeach
                 </div>
@@ -61,10 +70,12 @@
                         <thead>
                             <tr class="border-b border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">#</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Journal') }}</th>
-                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Seal') }}</th>
-                                <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Score') }}</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Country') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('ranking.col_journal') }}</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('ranking.col_h_index') }}</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('ranking.col_citations') }}</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('ranking.col_compliance') }}</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('ranking.col_source') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('ranking.col_country') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
@@ -91,24 +102,41 @@
                                         @endif
                                         <div>
                                             <p class="font-semibold text-gray-900 group-hover:text-brand dark:text-white dark:group-hover:text-blue-400">{{ $j->getTranslationWithFallback('title') }}</p>
-                                            @if($j->publishing_institution)
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $j->getTranslationWithFallback('publishing_institution') }}</p>
-                                            @endif
+                                            <p class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-brand dark:bg-blue-900/50 dark:text-blue-400" title="{{ __('ranking.seal_tooltip', ['date' => $j->seal_expires_at?->format('Y-m-d')]) }}">
+                                                    ✓ {{ __('ranking.seal_chip') }}
+                                                </span>
+                                                @if($j->publishing_institution)
+                                                    <span>{{ $j->getTranslationWithFallback('publishing_institution') }}</span>
+                                                @endif
+                                            </p>
                                         </div>
                                     </a>
                                 </td>
-                                <td class="px-6 py-4 text-center">
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-brand dark:bg-blue-900/50 dark:text-blue-400" title="{{ __('Seal valid until :date', ['date' => $j->seal_expires_at?->format('Y-m-d')]) }}">
-                                        ✓ {{ __('Seal') }}
-                                    </span>
-                                </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-3">
-                                        <div class="h-2 w-24 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                            <div class="h-full rounded-full bg-brand" style="width: {{ min($j->current_score, 100) }}%"></div>
-                                        </div>
-                                        <span class="min-w-[3.5rem] text-right text-sm font-bold text-gray-900 dark:text-white">{{ $j->current_score }}%</span>
-                                    </div>
+                                    <span class="text-lg font-bold text-gray-900 dark:text-white">{{ $j->h_index }}</span>
+                                </td>
+                                <td class="px-6 py-4 text-right text-sm text-gray-700 dark:text-gray-300">
+                                    {{ $j->total_citations !== null ? number_format($j->total_citations) : '—' }}
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    @if($j->current_score !== null)
+                                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" title="{{ __('ranking.compliance_tooltip') }}">
+                                        {{ $j->current_score }}%
+                                    </span>
+                                    @else
+                                    —
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-center text-xs">
+                                    @php $src = $j->metrics_source; @endphp
+                                    @if($src)
+                                    <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                        {{ __('ranking.source_'.$src) }}
+                                    </span>
+                                    @else
+                                    <span class="text-gray-400">—</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                     {{ $j->country_code ? strtoupper($j->country_code) : '—' }}
@@ -129,11 +157,11 @@
             @else
             {{-- Empty state --}}
             <div class="py-24 text-center">
-                <div class="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-3xl dark:bg-blue-900/30">✓</div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('No certified journals yet') }}</h2>
-                <p class="mx-auto mt-3 max-w-md text-gray-600 dark:text-gray-400">{{ __('Be the first to earn the Editorial Standards Seal and lead the ranking.') }}</p>
+                <div class="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-3xl dark:bg-blue-900/30">📊</div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('ranking.empty_title') }}</h2>
+                <p class="mx-auto mt-3 max-w-md text-gray-600 dark:text-gray-400">{{ __('ranking.empty_body') }}</p>
                 <a href="/register" class="mt-8 inline-flex rounded-lg bg-brand px-8 py-3 font-semibold text-white transition hover:bg-blue-500">
-                    {{ __('Register my Journal — Free') }}
+                    {{ __('ranking.empty_cta') }}
                 </a>
             </div>
             @endif
@@ -143,10 +171,10 @@
     {{-- CTA --}}
     <section class="bg-white py-16 dark:bg-gray-900">
         <div class="container mx-auto px-4 text-center">
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Do you want to appear in the ranking?') }}</h2>
-            <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">{{ __('Register your journal or book and get a professional evaluation based on +50 international criteria.') }}</p>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('ranking.cta_section_title') }}</h2>
+            <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">{{ __('ranking.cta_section_body') }}</p>
             <a href="/register" class="mt-8 inline-flex items-center rounded-lg bg-brand px-8 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-500">
-                {{ __('Index my Publication — Free') }}
+                {{ __('ranking.cta_section_button') }}
             </a>
         </div>
     </section>

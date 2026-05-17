@@ -425,6 +425,32 @@ class JournalResource extends Resource
                                     ->columnSpanFull(),
                             ])->columns(2),
 
+                        Tab::make(__('admin.journal.tab_metrics'))
+                            ->schema([
+                                Forms\Components\Placeholder::make('h_index_display')
+                                    ->label(__('admin.journal.metrics_h_index'))
+                                    ->content(fn (?Journal $record): string => $record?->h_index !== null ? (string) $record->h_index : '—'),
+                                Forms\Components\Placeholder::make('total_citations_display')
+                                    ->label(__('admin.journal.metrics_total_citations'))
+                                    ->content(fn (?Journal $record): string => $record?->total_citations !== null ? number_format($record->total_citations) : '—'),
+                                Forms\Components\Placeholder::make('mean_citedness_display')
+                                    ->label(__('admin.journal.metrics_mean_citedness'))
+                                    ->content(fn (?Journal $record): string => $record?->mean_citedness_2y !== null ? number_format((float) $record->mean_citedness_2y, 3) : '—'),
+                                Forms\Components\Placeholder::make('metrics_source_display')
+                                    ->label(__('admin.journal.metrics_source'))
+                                    ->content(fn (?Journal $record): string => $record?->metrics_source ? __('admin.journal.metrics_source_'.$record->metrics_source) : '—'),
+                                Forms\Components\Placeholder::make('metrics_updated_display')
+                                    ->label(__('admin.journal.metrics_updated_at'))
+                                    ->content(fn (?Journal $record): string => $record?->metrics_updated_at?->format('d/m/Y H:i') ?? '—'),
+                                Forms\Components\Placeholder::make('openalex_venue_id_display')
+                                    ->label(__('admin.journal.metrics_openalex_id'))
+                                    ->content(fn (?Journal $record): string => $record?->openalex_venue_id ?: '—'),
+                                Forms\Components\Textarea::make('metrics_notes')
+                                    ->label(__('admin.journal.metrics_notes'))
+                                    ->rows(3)
+                                    ->columnSpanFull(),
+                            ])->columns(2),
+
                         Tab::make(__('admin.journal.tab_oai'))
                             ->schema([
                                 Forms\Components\TextInput::make('oai_base_url')
@@ -905,6 +931,44 @@ class JournalResource extends Resource
                                 ->send();
                         })
                         ->deselectRecordsAfterCompletion(),
+                    \Filament\Actions\BulkAction::make('bulk_refresh_metrics')
+                        ->label(__('admin.journal.action_refresh_metrics'))
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('primary')
+                        ->requiresConfirmation()
+                        ->modalHeading(__('admin.journal.modal_refresh_metrics_heading'))
+                        ->modalDescription(__('admin.journal.modal_refresh_metrics_body'))
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records): void {
+                            $service = app(\App\Services\Metrics\JournalMetricsService::class);
+                            $refreshed = 0;
+                            $skipped = 0;
+
+                            foreach ($records as $record) {
+                                $eligible = $record->status === 'certified'
+                                    && $record->seal_expires_at
+                                    && $record->seal_expires_at->isFuture();
+
+                                if (! $eligible) {
+                                    $skipped++;
+                                    continue;
+                                }
+
+                                try {
+                                    $service->refresh($record);
+                                    $refreshed++;
+                                } catch (\Throwable $e) {
+                                    report($e);
+                                    $skipped++;
+                                }
+                            }
+
+                            Notification::make()
+                                ->title(__('admin.journal.notif_metrics_refreshed'))
+                                ->body(__('admin.journal.notif_metrics_refreshed_body', ['refreshed' => $refreshed, 'skipped' => $skipped]))
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     ExportBulkAction::make()
                         ->label(__('admin.common.export_selected'))
                         ->icon('heroicon-o-arrow-down-tray')
@@ -921,6 +985,8 @@ class JournalResource extends Resource
     {
         return [
             RelationManagers\HarvestedArticlesRelationManager::class,
+            RelationManagers\MetricSnapshotsRelationManager::class,
+            RelationManagers\EditorialMembersRelationManager::class,
             \App\Filament\RelationManagers\PaymentsRelationManager::class,
             \App\Filament\RelationManagers\ActivitiesRelationManager::class,
         ];

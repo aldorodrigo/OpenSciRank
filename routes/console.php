@@ -61,3 +61,11 @@ Schedule::command('sitemap:generate')
     ->dailyAt('03:30')
     ->withoutOverlapping()
     ->onOneServer();
+
+// Roadmap #64 — refresca h-index/citas/2yr_mean_citedness de journals certified
+// vigentes vía OpenAlex (primario) + Crossref (contraste). Primer día del mes
+// a las 03:15 UTC, después del cron de sello y antes del de featured.
+Schedule::command('metrics:refresh-journals')
+    ->monthlyOn(1, '03:15')
+    ->withoutOverlapping()
+    ->onOneServer();

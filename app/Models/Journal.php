@@ -118,6 +118,14 @@ class Journal extends Model
         'oai_set_spec',
         'oai_metadata_prefix',
         'oai_last_harvested_at',
+        // Impact metrics
+        'openalex_venue_id',
+        'h_index',
+        'total_citations',
+        'mean_citedness_2y',
+        'metrics_source',
+        'metrics_updated_at',
+        'metrics_notes',
     ];
 
     protected $casts = [
@@ -153,6 +161,10 @@ class Journal extends Model
         'pending_renewal_years' => 'integer',
         'submitted_at' => 'datetime',
         'oai_last_harvested_at' => 'datetime',
+        'h_index' => 'integer',
+        'total_citations' => 'integer',
+        'mean_citedness_2y' => 'decimal:3',
+        'metrics_updated_at' => 'datetime',
     ];
 
     public function getTranslationWithFallback(string $field): string
@@ -182,6 +194,16 @@ class Journal extends Model
     public function harvestedArticles()
     {
         return $this->hasMany(HarvestedArticle::class);
+    }
+
+    public function metricSnapshots()
+    {
+        return $this->hasMany(JournalMetricSnapshot::class)->orderByDesc('captured_at');
+    }
+
+    public function editorialMembers()
+    {
+        return $this->hasMany(JournalEditorialMember::class)->orderBy('display_order');
     }
 
     // Helper methods

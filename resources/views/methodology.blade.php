@@ -181,6 +181,49 @@
                     </div>
                 </div>
 
+                {{-- Public ranking methodology --}}
+                <div class="mt-16">
+                    <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">{{ __('methodology.ranking_title') }}</h2>
+                    <p class="mb-8 text-gray-600 dark:text-gray-400">{{ __('methodology.ranking_intro') }}</p>
+
+                    <div class="space-y-4">
+                        <div class="rounded-xl border border-gray-200 p-6 dark:border-gray-700">
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('methodology.ranking_gate_title') }}</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ __('methodology.ranking_gate_body') }}</p>
+                        </div>
+
+                        <div class="rounded-xl border border-gray-200 p-6 dark:border-gray-700">
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('methodology.ranking_order_title') }}</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ __('methodology.ranking_order_body') }}</p>
+                        </div>
+
+                        <div class="rounded-xl border border-gray-200 p-6 dark:border-gray-700">
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('methodology.ranking_sources_title') }}</h3>
+                            <ul class="mt-2 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                                <li>• <strong>OpenAlex</strong> — {{ __('methodology.ranking_source_openalex') }}</li>
+                                <li>• <strong>Crossref</strong> — {{ __('methodology.ranking_source_crossref') }}</li>
+                                <li>• <strong>Google Scholar</strong> — {{ __('methodology.ranking_source_scholar') }}</li>
+                                <li>• <strong>ORCID</strong> — {{ __('methodology.ranking_source_orcid') }}</li>
+                            </ul>
+                        </div>
+
+                        <div class="rounded-xl border border-gray-200 p-6 dark:border-gray-700">
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('methodology.ranking_rules_title') }}</h3>
+                            <ol class="mt-2 list-decimal space-y-1 pl-5 text-sm text-gray-600 dark:text-gray-400">
+                                <li>{{ __('methodology.ranking_rule_scholar') }}</li>
+                                <li>{{ __('methodology.ranking_rule_openalex') }}</li>
+                                <li>{{ __('methodology.ranking_rule_missing') }}</li>
+                                <li>{{ __('methodology.ranking_rule_crossref') }}</li>
+                            </ol>
+                        </div>
+
+                        <div class="rounded-xl border border-gray-200 p-6 dark:border-gray-700">
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ __('methodology.ranking_refresh_title') }}</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ __('methodology.ranking_refresh_body') }}</p>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Process Timeline --}}
                 <div class="mt-16">
                     <h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-white">{{ __('Evaluation Process') }}</h2>
