@@ -1708,6 +1708,8 @@
     "Certificate not available — journal is not currently certified.": "Certificado no disponible — la revista no está certificada actualmente.",
     "Evaluation report not available — journal has not been evaluated yet.": "Informe de evaluación no disponible — la revista aún no fue evaluada.",
 
+    "search.sort_h_index": "Mayor h-index",
+
     "ranking.page_title": "Ranking Editorial Standards — Editorial Standards Platform",
     "ranking.page_description": "Ranking de revistas científicas con sello Editorial Standards vigente, ordenadas por h-index a partir de citas reales (OpenAlex).",
     "ranking.live_badge": "Live · ordenado por h-index, gate por compliance editorial",

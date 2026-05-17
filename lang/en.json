@@ -480,6 +480,8 @@
     "Certificate not available — journal is not currently certified.": "Certificate not available — journal is not currently certified.",
     "Evaluation report not available — journal has not been evaluated yet.": "Evaluation report not available — journal has not been evaluated yet.",
 
+    "search.sort_h_index": "Highest h-index",
+
     "ranking.page_title": "Editorial Standards Ranking — Editorial Standards Platform",
     "ranking.page_description": "Ranking of scientific journals with an active Editorial Standards Seal, ordered by h-index from real citation data (OpenAlex).",
     "ranking.live_badge": "Live · ranked by h-index, gated by editorial compliance",

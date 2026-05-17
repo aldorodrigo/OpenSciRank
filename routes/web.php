@@ -150,7 +150,7 @@ $publicRoutes = function () {
 
     Route::get('/journal/{slug}', function (string $slug) {
         $journal = Journal::where('slug', $slug)
-            ->with(['evaluationScores.criteriaItem.category', 'user', 'harvestedArticles'])
+            ->with(['evaluationScores.criteriaItem.category', 'user', 'harvestedArticles', 'editorialMembers'])
             ->firstOrFail();
         return view('journal.show', compact('journal'));
     })->name('journal.show');

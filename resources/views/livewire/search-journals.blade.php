@@ -171,6 +171,7 @@
                         class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="score">{{ __('Highest score') }}</option>
+                        <option value="h_index">{{ __('search.sort_h_index') }}</option>
                         <option value="title">{{ __('Name A-Z') }}</option>
                         <option value="recent">{{ __('Most recent') }}</option>
                     </select>
@@ -314,6 +315,19 @@
                                         <p class="mb-3 text-xs text-gray-400 dark:text-gray-500">
                                             ISSN: {{ $item->issn_online ?? $item->issn_print }}
                                         </p>
+                                    @endif
+
+                                    {{-- h-index (Roadmap #64) --}}
+                                    @if($itemType === 'journal' && $item->h_index !== null)
+                                        <div class="mb-3 flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-xs dark:bg-blue-900/20">
+                                            <span class="font-bold text-brand dark:text-blue-400">h-index {{ $item->h_index }}</span>
+                                            @if($item->total_citations !== null)
+                                                <span class="text-gray-500 dark:text-gray-400">· {{ number_format($item->total_citations) }} {{ __('ranking.col_citations') }}</span>
+                                            @endif
+                                            @if($item->metrics_source)
+                                                <span class="ml-auto text-[10px] uppercase tracking-wider text-gray-400">{{ __('ranking.source_'.$item->metrics_source) }}</span>
+                                            @endif
+                                        </div>
                                     @endif
 
                                     {{-- Spacer --}}

@@ -128,31 +128,50 @@
                         </div>
                     </div>
 
-                    {{-- Score --}}
-                    @if($journal->current_score !== null)
-                        <div class="text-center">
-                            <div class="relative inline-flex flex-col items-center justify-center">
-                                <svg class="h-32 w-32" viewBox="0 0 100 55">
-                                    <!-- Background Track -->
-                                    <path class="stroke-gray-200 dark:stroke-gray-700"
-                                          d="M 10 50 A 40 40 0 0 1 90 50"
-                                          fill="none" stroke-width="10" stroke-linecap="round" />
-                                    <!-- Progress Arc -->
-                                    <path class="{{ $journal->current_score >= 80 ? 'stroke-emerald-500' : ($journal->current_score >= 50 ? 'stroke-amber-500' : 'stroke-red-500') }}"
-                                          d="M 10 50 A 40 40 0 0 1 90 50"
-                                          fill="none" stroke-width="10" stroke-linecap="round"
-                                          stroke-dasharray="{{ ($journal->current_score / 100) * 125.6 }}, 125.6" />
-                                </svg>
-                                
-                                <div class="absolute -bottom-1 flex flex-col items-center">
-                                    <span class="text-3xl font-bold {{ $journal->current_score >= 80 ? 'text-emerald-600 dark:text-emerald-400' : ($journal->current_score >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400') }}">
-                                        {{ number_format($journal->current_score, 0) }}<span class="text-lg align-top">%</span>
-                                    </span>
+                    {{-- Score + Impact --}}
+                    <div class="flex flex-wrap items-center justify-center gap-6">
+                        @if($journal->current_score !== null)
+                            <div class="text-center">
+                                <div class="relative inline-flex flex-col items-center justify-center">
+                                    <svg class="h-32 w-32" viewBox="0 0 100 55">
+                                        <!-- Background Track -->
+                                        <path class="stroke-gray-200 dark:stroke-gray-700"
+                                              d="M 10 50 A 40 40 0 0 1 90 50"
+                                              fill="none" stroke-width="10" stroke-linecap="round" />
+                                        <!-- Progress Arc -->
+                                        <path class="{{ $journal->current_score >= 80 ? 'stroke-emerald-500' : ($journal->current_score >= 50 ? 'stroke-amber-500' : 'stroke-red-500') }}"
+                                              d="M 10 50 A 40 40 0 0 1 90 50"
+                                              fill="none" stroke-width="10" stroke-linecap="round"
+                                              stroke-dasharray="{{ ($journal->current_score / 100) * 125.6 }}, 125.6" />
+                                    </svg>
+
+                                    <div class="absolute -bottom-1 flex flex-col items-center">
+                                        <span class="text-3xl font-bold {{ $journal->current_score >= 80 ? 'text-emerald-600 dark:text-emerald-400' : ($journal->current_score >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400') }}">
+                                            {{ number_format($journal->current_score, 0) }}<span class="text-lg align-top">%</span>
+                                        </span>
+                                    </div>
                                 </div>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 font-medium">{{ __('Score') }}</p>
                             </div>
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 font-medium">{{ __('Score') }}</p>
-                        </div>
-                    @endif
+                        @endif
+
+                        @if($journal->h_index !== null)
+                            <a href="{{ route('methodology') }}#ranking-methodology" class="group text-center" title="{{ __('ranking.methodology_note_body') }}">
+                                <div class="flex h-32 w-32 items-center justify-center rounded-full border-4 border-brand bg-white dark:bg-gray-900 dark:border-blue-400 transition group-hover:scale-105">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-3xl font-bold text-brand dark:text-blue-400">{{ $journal->h_index }}</span>
+                                        <span class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">h-index</span>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 font-medium">
+                                    {{ __('ranking.col_h_index') }}
+                                    @if($journal->metrics_source)
+                                        <span class="ml-1 text-[10px] text-gray-400">· {{ __('ranking.source_'.$journal->metrics_source) }}</span>
+                                    @endif
+                                </p>
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -590,6 +609,30 @@
                                 <dd class="font-bold {{ $journal->current_score >= 80 ? 'text-emerald-600' : ($journal->current_score >= 50 ? 'text-amber-600' : 'text-red-500') }}">{{ number_format($journal->current_score, 0) }}%</dd>
                             </div>
                         @endif
+                        @if($journal->h_index !== null)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('ranking.col_h_index') }}</dt>
+                                <dd class="font-bold text-brand dark:text-blue-400">{{ $journal->h_index }}</dd>
+                            </div>
+                        @endif
+                        @if($journal->total_citations !== null)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('ranking.col_citations') }}</dt>
+                                <dd class="font-medium text-gray-900 dark:text-white">{{ number_format($journal->total_citations) }}</dd>
+                            </div>
+                        @endif
+                        @if($journal->mean_citedness_2y !== null)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('admin.journal.metrics_mean_citedness') }}</dt>
+                                <dd class="font-medium text-gray-900 dark:text-white">{{ number_format((float) $journal->mean_citedness_2y, 2) }}</dd>
+                            </div>
+                        @endif
+                        @if($journal->metrics_source)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500 dark:text-gray-400">{{ __('ranking.col_source') }}</dt>
+                                <dd class="font-medium text-gray-900 dark:text-white">{{ __('ranking.source_'.$journal->metrics_source) }}@if($journal->metrics_updated_at) <span class="text-xs text-gray-400">· {{ $journal->metrics_updated_at->format('Y-m') }}</span>@endif</dd>
+                            </div>
+                        @endif
                         @if($journal->evaluated_at)
                         <div class="flex justify-between">
                             <dt class="text-gray-500 dark:text-gray-400">{{ __('Last Evaluation') }}</dt>
@@ -627,6 +670,35 @@
                                 </div>
                             @endif
                         </dl>
+                    </div>
+                @endif
+
+                {{-- Editorial Team (Roadmap #64) --}}
+                @if($journal->editorialMembers->isNotEmpty())
+                    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
+                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">👥 {{ __('admin.editorial_members.title') }}</h3>
+                        <ul class="space-y-3 text-sm">
+                            @foreach($journal->editorialMembers as $member)
+                                <li class="flex flex-col">
+                                    <div class="flex items-baseline justify-between gap-2">
+                                        <span class="font-medium text-gray-900 dark:text-white">{{ $member->name }}</span>
+                                        @if($member->orcid)
+                                            <a href="{{ $member->orcidUrl() }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline dark:text-emerald-400" title="{{ __('Verified ORCID') }}">
+                                                <span aria-hidden="true">iD</span>
+                                                <span class="font-mono">{{ $member->orcid }}</span>
+                                            </a>
+                                        @endif
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-x-2 text-xs text-gray-500 dark:text-gray-400">
+                                        <span>{{ __('admin.editorial_members.role_'.$member->role) }}</span>
+                                        @if($member->affiliation)
+                                            <span aria-hidden="true">·</span>
+                                            <span>{{ $member->affiliation }}</span>
+                                        @endif
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
 

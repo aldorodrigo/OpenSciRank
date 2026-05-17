@@ -14,7 +14,7 @@ class SearchJournals extends Component
     public string $search = '';
     public string $country = '';
     public string $type = 'all'; // all, journals, books
-    public string $sortBy = 'score'; // score, title, recent
+    public string $sortBy = 'score'; // score, h_index, title, recent
     public string $subjectArea = '';
     public string $frequency = '';
     public string $accessType = '';
@@ -173,6 +173,7 @@ class SearchJournals extends Component
 
             match ($this->sortBy) {
                 'score' => $journalQuery->orderByDesc('current_score'),
+                'h_index' => $journalQuery->orderByRaw('h_index IS NULL, h_index DESC')->orderByDesc('total_citations'),
                 'title' => $journalQuery->orderBy('title'),
                 'recent' => $journalQuery->orderByDesc('created_at'),
                 default => $journalQuery->orderByDesc('current_score'),
@@ -230,6 +231,7 @@ class SearchJournals extends Component
             // después subimos featured books con un sortByDesc estable.
             $merged = match ($this->sortBy) {
                 'score' => $merged->sortByDesc(fn($r) => $r['item']->current_score ?? 0),
+                'h_index' => $merged->sortByDesc(fn($r) => $r['type'] === 'journal' ? ($r['item']->h_index ?? -1) : -1),
                 'title' => $merged->sortBy(fn($r) => $r['item']->title),
                 'recent' => $merged->sortByDesc(fn($r) => $r['item']->created_at),
                 default => $merged->sortByDesc(fn($r) => $r['item']->current_score ?? 0),
