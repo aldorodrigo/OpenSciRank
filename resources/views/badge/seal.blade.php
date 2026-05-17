@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 {{-- Editorial Standards Seal — rectangular notarial moderno.
      Diseño Sprint 5 #51 (BRAND.md / BRAND_DIRECTION.md).
-     Tipografía Inter con fallback system-ui — el sello se embebe en sitios de
-     terceros donde no podemos garantizar Inter cargado. Mark integrada como
-     parte del wordmark en top-left. --}}
+     Logo lockup (mark + wordmark + PLATFORM) en top-left, score block a la derecha.
+     Tipografía Inter con fallback system-ui — el sello se embebe en sitios de terceros
+     donde no podemos garantizar Inter cargado. --}}
 <svg xmlns="http://www.w3.org/2000/svg" width="400" height="130" viewBox="0 0 400 130" role="img" aria-label="Editorial Standards Seal">
     <title>Editorial Standards Seal — {{ $journal->getTranslationWithFallback('title') }}</title>
 
@@ -16,8 +16,8 @@
         {{-- Accent strip izquierda — emerald (vigente) --}}
         <rect x="0" y="0" width="6" height="130" fill="#10B981"/>
 
-        {{-- Mark blanca en top-left (scaled from 100×100 viewBox to 32×32) --}}
-        <g fill="#FFFFFF" transform="translate(22 22) scale(0.32)">
+        {{-- Logo: mark (40×40) + wordmark + PLATFORM descriptor --}}
+        <g fill="#FFFFFF" transform="translate(22 22) scale(0.4)">
             <rect x="8" y="8" width="14" height="84"/>
             <rect x="22" y="8" width="56" height="14"/>
             <rect x="78" y="8" width="14" height="32"/>
@@ -25,16 +25,14 @@
             <rect x="22" y="78" width="56" height="14"/>
             <rect x="78" y="60" width="14" height="32"/>
         </g>
+        <text x="76" y="46" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#FFFFFF">Editorial Standards</text>
+        <text x="76" y="62" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="500" fill="#93C5FD" letter-spacing="2.4">PLATFORM</text>
 
-        {{-- Wordmark al lado de la mark --}}
-        <text x="64" y="36" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="#FFFFFF" letter-spacing="0.8">EDITORIAL STANDARDS</text>
-        <text x="64" y="51" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="500" fill="#93C5FD" letter-spacing="2.4">PLATFORM · SEAL CERTIFIED</text>
+        {{-- SEAL · CERTIFIED label (accent emerald, matchea el strip) --}}
+        <text x="22" y="92" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="600" fill="#10B981" letter-spacing="2.4">SEAL · CERTIFIED</text>
 
         {{-- Tagline --}}
-        <text x="22" y="88" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="400" fill="#CBD5E1">{{ __('Verified technical evaluation') }}</text>
-
-        {{-- Microcopy URL --}}
-        <text x="22" y="112" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="400" fill="#64748B" letter-spacing="0.3">editorialstandards.org/verify</text>
+        <text x="22" y="112" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="400" fill="#CBD5E1">{{ __('Verified technical evaluation') }}</text>
 
         {{-- Score block (rectangular, NO circular) --}}
         <rect x="295" y="22" width="82" height="64" rx="4" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
@@ -50,8 +48,8 @@
         {{-- Accent strip izquierda — rose (expirado) --}}
         <rect x="0" y="0" width="6" height="130" fill="#F43F5E"/>
 
-        {{-- Mark mutada en top-left --}}
-        <g fill="#CBD5E1" transform="translate(22 22) scale(0.32)">
+        {{-- Logo mutado: mark + wordmark + PLATFORM descriptor --}}
+        <g fill="#CBD5E1" transform="translate(22 22) scale(0.4)">
             <rect x="8" y="8" width="14" height="84"/>
             <rect x="22" y="8" width="56" height="14"/>
             <rect x="78" y="8" width="14" height="32"/>
@@ -59,16 +57,14 @@
             <rect x="22" y="78" width="56" height="14"/>
             <rect x="78" y="60" width="14" height="32"/>
         </g>
+        <text x="76" y="46" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#CBD5E1">Editorial Standards</text>
+        <text x="76" y="62" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="500" fill="#FECDD3" letter-spacing="2.4">PLATFORM</text>
 
-        {{-- Wordmark mutado --}}
-        <text x="64" y="36" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="#CBD5E1" letter-spacing="0.8">EDITORIAL STANDARDS</text>
-        <text x="64" y="51" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="500" fill="#FECDD3" letter-spacing="2.4">PLATFORM · SEAL EXPIRED</text>
+        {{-- SEAL · EXPIRED label (rose) --}}
+        <text x="22" y="92" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="600" fill="#F43F5E" letter-spacing="2.4">SEAL · EXPIRED</text>
 
         {{-- Mensaje --}}
-        <text x="22" y="88" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="400" fill="#94A3B8">{{ __('Expired Seal') }}</text>
-
-        {{-- Microcopy URL --}}
-        <text x="22" y="112" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="400" fill="#64748B" letter-spacing="0.3">editorialstandards.org/verify</text>
+        <text x="22" y="112" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="400" fill="#94A3B8">{{ __('Expired Seal') }}</text>
 
         {{-- Año de expiración (si hay) --}}
         @isset($year)
