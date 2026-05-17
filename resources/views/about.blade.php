@@ -96,8 +96,8 @@
     <section class="bg-gray-50 py-16 dark:bg-gray-950">
         <div class="container mx-auto px-4">
             <div class="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
-                <div class="rounded-2xl bg-emerald-50 p-8 dark:bg-emerald-900/20">
-                    <h3 class="mb-4 text-xl font-bold text-emerald-800 dark:text-emerald-300">✅ {{ __('What the platform is') }}</h3>
+                <div class="rounded-2xl bg-blue-50 p-8 dark:bg-blue-900/20">
+                    <h3 class="mb-4 text-xl font-bold text-blue-800 dark:text-blue-300">✅ {{ __('What the platform is') }}</h3>
                     <ul class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                         <li>• {{ __('An editorial evaluation system for scientific journals') }}</li>
                         <li>• {{ __('A structured directory of academic journals') }}</li>
