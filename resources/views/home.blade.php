@@ -40,7 +40,7 @@
 
         <div class="container relative z-10 mx-auto px-4 py-24 text-center">
             <div class="mx-auto mb-8 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold backdrop-blur-md border border-white/20">
-                <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
                 {{ __('Global Editorial Quality Standards') }}
             </div>
             <h1 class="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-tight">
@@ -70,15 +70,15 @@
             </div>
             <div class="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-blue-100/60 font-medium">
                 <div class="flex items-center gap-2">
-                    <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                     {{ __('Public Criteria') }}
                 </div>
                 <div class="flex items-center gap-2">
-                    <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                     {{ __('Technical Independence') }}
                 </div>
                 <div class="flex items-center gap-2">
-                    <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                     {{ __('Verifiable Seal') }}
                 </div>
             </div>
@@ -137,11 +137,11 @@
                     </div>
 
                     {{-- Certificadas --}}
-                    <div class="group rounded-2xl bg-gradient-to-br from-emerald-50 to-white p-6 text-center transition hover:shadow-lg dark:from-emerald-950/50 dark:to-gray-900 lg:p-8">
-                        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
+                    <div class="group rounded-2xl bg-gradient-to-br from-blue-50 to-white p-6 text-center transition hover:shadow-lg dark:from-blue-950/50 dark:to-gray-900 lg:p-8">
+                        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>
                         </div>
-                        <div class="text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 lg:text-5xl" data-target="{{ $certifiedCount }}">0</div>
+                        <div class="text-4xl font-extrabold text-brand dark:text-blue-400 lg:text-5xl" data-target="{{ $certifiedCount }}">0</div>
                         <div class="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('Journals with active seal') }}</div>
                     </div>
 
@@ -155,11 +155,11 @@
                     </div>
 
                     {{-- Libros --}}
-                    <div class="group rounded-2xl bg-gradient-to-br from-amber-50 to-white p-6 text-center transition hover:shadow-lg dark:from-amber-950/50 dark:to-gray-900 lg:p-8">
-                        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400">
+                    <div class="group rounded-2xl bg-gradient-to-br from-blue-50 to-white p-6 text-center transition hover:shadow-lg dark:from-blue-950/50 dark:to-gray-900 lg:p-8">
+                        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
                         </div>
-                        <div class="text-4xl font-extrabold text-amber-600 dark:text-amber-400 lg:text-5xl" data-target="{{ $bookCount }}">0</div>
+                        <div class="text-4xl font-extrabold text-brand dark:text-blue-400 lg:text-5xl" data-target="{{ $bookCount }}">0</div>
                         <div class="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('Academic books') }}</div>
                     </div>
 
@@ -173,11 +173,11 @@
                     </div>
 
                     {{-- Open Access --}}
-                    <div class="group rounded-2xl bg-gradient-to-br from-teal-50 to-white p-6 text-center transition hover:shadow-lg dark:from-teal-950/50 dark:to-gray-900 lg:p-8">
-                        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100 text-teal-600 dark:bg-teal-900/50 dark:text-teal-400">
+                    <div class="group rounded-2xl bg-gradient-to-br from-blue-50 to-white p-6 text-center transition hover:shadow-lg dark:from-blue-950/50 dark:to-gray-900 lg:p-8">
+                        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
                         </div>
-                        <div class="text-4xl font-extrabold text-teal-600 dark:text-teal-400 lg:text-5xl" data-target="{{ $openAccessCount }}">0</div>
+                        <div class="text-4xl font-extrabold text-brand dark:text-blue-400 lg:text-5xl" data-target="{{ $openAccessCount }}">0</div>
                         <div class="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('Open Access Journals') }}</div>
                     </div>
                 </div>
@@ -231,7 +231,7 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
                         @if($fj->current_score && $fj->current_score >= 75)
-                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400">
+                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-800 dark:bg-blue-900/50 dark:text-blue-400">
                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>
                                 Certified
                             </span>
@@ -245,7 +245,7 @@
                             </span>
                         @endif
                         @if($fj->is_open_access)
-                            <span class="inline-flex items-center gap-1 rounded-full bg-teal-100 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-900/50 dark:text-teal-400">
+                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900/50 dark:text-blue-400">
                                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75" /></svg>
                                 OA
                             </span>
@@ -253,7 +253,7 @@
                         @if($fj->current_score)
                             <div class="ml-auto flex items-center gap-2">
                                 <div class="h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                    <div class="h-full rounded-full {{ $fj->current_score >= 75 ? 'bg-emerald-500' : ($fj->current_score >= 50 ? 'bg-amber-500' : 'bg-gray-400') }}" style="width: {{ min($fj->current_score, 100) }}%"></div>
+                                    <div class="h-full rounded-full {{ $fj->current_score >= 75 ? 'bg-blue-500' : ($fj->current_score >= 50 ? 'bg-blue-500' : 'bg-gray-400') }}" style="width: {{ min($fj->current_score, 100) }}%"></div>
                                 </div>
                                 <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $fj->current_score }}%</span>
                             </div>
@@ -304,23 +304,23 @@
                 </a>
 
                 {{-- Books --}}
-                <a href="{{ locale_path('/search?type=books') }}" class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800 dark:hover:border-amber-600">
-                    <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-amber-100/50 blur-3xl transition group-hover:bg-amber-200/60 dark:bg-amber-900/20"></div>
+                <a href="{{ locale_path('/search?type=books') }}" class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800 dark:hover:border-brand">
+                    <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-blue-100/50 blur-3xl transition group-hover:bg-blue-200/60 dark:bg-blue-900/20"></div>
                     <div class="relative">
                         <div class="mb-5 flex items-center gap-4">
-                            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-amber-100 text-3xl dark:bg-amber-900/50">📚</div>
+                            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100 text-3xl dark:bg-blue-900/50">📚</div>
                             <div>
                                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Academic Books') }}</h3>
-                                <p class="text-sm text-amber-600 dark:text-amber-400">{{ __('Indexed and listed') }}</p>
+                                <p class="text-sm text-brand dark:text-blue-400">{{ __('Indexed and listed') }}</p>
                             </div>
                         </div>
                         <p class="text-gray-600 dark:text-gray-400">{{ __('Discover indexed academic books with verified bibliographic metadata, ISBN and publishing institution.') }}</p>
                         <div class="mt-6 flex items-end justify-between">
                             <div>
-                                <p class="text-4xl font-extrabold text-amber-600 dark:text-amber-400">{{ $bookCount }}</p>
+                                <p class="text-4xl font-extrabold text-brand dark:text-blue-400">{{ $bookCount }}</p>
                                 <p class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Books indexed') }}</p>
                             </div>
-                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 transition-all group-hover:gap-2 dark:text-amber-400">
+                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-brand transition-all group-hover:gap-2 dark:text-blue-400">
                                 {{ __('Browse directory') }} →
                             </span>
                         </div>
@@ -338,7 +338,7 @@
                 <p class="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-gray-400">{{ __('A transparent process of registration, evaluation and editorial recognition.') }}</p>
             </div>
             <div class="relative mx-auto max-w-5xl">
-                <div class="absolute left-1/2 top-12 hidden h-0.5 w-2/3 -translate-x-1/2 bg-gradient-to-r from-slate-200 to-emerald-200 dark:from-slate-700 dark:to-emerald-800 md:block"></div>
+                <div class="absolute left-1/2 top-12 hidden h-0.5 w-2/3 -translate-x-1/2 bg-gradient-to-r from-slate-200 to-blue-200 dark:from-slate-700 dark:to-blue-800 md:block"></div>
                 <div class="grid gap-8 md:grid-cols-3">
                     <div class="relative text-center">
                         <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-blue-100 text-4xl dark:bg-blue-900/50">📝</div>
@@ -353,8 +353,8 @@
                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Request a technical editorial evaluation. Our team reviews 5 areas with verifiable indicators and assigns an Editorial Standards Score.') }}</p>
                     </div>
                     <div class="relative text-center">
-                        <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-emerald-100 text-4xl dark:bg-emerald-900/50">✅</div>
-                        <div class="mb-2 text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">{{ __('Step 3') }}</div>
+                        <div class="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-blue-100 text-4xl dark:bg-blue-900/50">✅</div>
+                        <div class="mb-2 text-xs font-bold uppercase tracking-widest text-brand dark:text-blue-400">{{ __('Step 3') }}</div>
                         <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">{{ __('Report and Seal') }}</h3>
                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Receive a detailed technical report. If you reach ≥75 points and meet the critical indicators, get the Editorial Standards Seal.') }}</p>
                     </div>
@@ -404,12 +404,12 @@
                     <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Listed Journal</h3>
                     <p class="mb-4 text-sm font-medium text-brand dark:text-blue-400">{{ __('Listed Journal') }}</p>
                     <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Public journal profile') }}</li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Visibility in the directory') }}</li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Basic editorial information') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Public journal profile') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Visibility in the directory') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Basic editorial information') }}</li>
                         <li class="flex items-start gap-2"><span class="text-gray-400">—</span> <span class="text-gray-400">{{ __('Does not imply evaluation') }}</span></li>
                     </ul>
-                    <p class="mt-6 text-center text-sm font-semibold text-emerald-600 dark:text-emerald-400">{{ __('Free') }}</p>
+                    <p class="mt-6 text-center text-sm font-semibold text-brand dark:text-blue-400">{{ __('Free') }}</p>
                 </div>
 
                 <div class="rounded-xl border-2 border-blue-200 bg-white p-8 shadow-lg dark:border-brand dark:bg-gray-800">
@@ -417,25 +417,25 @@
                     <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Evaluated Journal</h3>
                     <p class="mb-4 text-sm font-medium text-brand dark:text-blue-400">{{ __('Evaluated Journal') }}</p>
                     <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Complete technical report') }}</li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Results by criteria') }}</li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> Editorial Standards Score</li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Improvement recommendations') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Complete technical report') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Results by criteria') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> Editorial Standards Score</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Improvement recommendations') }}</li>
                     </ul>
                     <p class="mt-6 text-center text-sm font-semibold text-brand dark:text-blue-400">{{ __('Evaluation process') }}</p>
                 </div>
 
-                <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-8 shadow-lg dark:border-emerald-700 dark:bg-emerald-900/20">
+                <div class="rounded-xl border-2 border-blue-300 bg-blue-50 p-8 shadow-lg dark:border-blue-700 dark:bg-blue-900/20">
                     <div class="mb-4 text-3xl">🏅</div>
                     <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Certified Journal</h3>
-                    <p class="mb-4 text-sm font-medium text-emerald-600 dark:text-emerald-400">Editorial Standards Seal</p>
+                    <p class="mb-4 text-sm font-medium text-brand dark:text-blue-400">Editorial Standards Seal</p>
                     <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Score ≥ 75 points') }}</li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Meets critical indicators') }}</li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Verifiable editorial seal') }}</li>
-                        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span> {{ __('Downloadable certificate') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Score ≥ 75 points') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Meets critical indicators') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Verifiable editorial seal') }}</li>
+                        <li class="flex items-start gap-2"><span class="text-blue-500">✓</span> {{ __('Downloadable certificate') }}</li>
                     </ul>
-                    <p class="mt-6 text-center text-sm font-semibold text-emerald-600 dark:text-emerald-400">{{ __('Based on compliance') }}</p>
+                    <p class="mt-6 text-center text-sm font-semibold text-brand dark:text-blue-400">{{ __('Based on compliance') }}</p>
                 </div>
             </div>
         </div>
@@ -468,15 +468,15 @@
 
                     <div class="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-white/70">
                         <span class="flex items-center gap-2">
-                             <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                             <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                              {{ __('Free registration') }}
                         </span>
                         <span class="flex items-center gap-2">
-                             <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                             <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                              {{ __('Public technical criteria') }}
                         </span>
                         <span class="flex items-center gap-2">
-                             <svg class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                             <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                              {{ __('Guaranteed independence') }}
                         </span>
                     </div>

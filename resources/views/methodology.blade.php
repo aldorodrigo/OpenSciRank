@@ -89,13 +89,13 @@
                         {{-- Area 4 --}}
                         <div class="rounded-xl border border-gray-200 p-6 dark:border-gray-700">
                             <div class="flex items-start gap-4">
-                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400">
+                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                     <span class="text-xl font-bold">4</span>
                                 </div>
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between">
                                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Access and Rights') }}</h3>
-                                        <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">{{ __('15 points') }}</span>
+                                        <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 dark:bg-blue-900/50 dark:text-blue-400">{{ __('15 points') }}</span>
                                     </div>
                                     <ul class="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
                                         <li>• {{ __('Access model clearly informed') }}</li>
@@ -109,13 +109,13 @@
                         {{-- Area 5 --}}
                         <div class="rounded-xl border border-gray-200 p-6 dark:border-gray-700">
                             <div class="flex items-start gap-4">
-                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
+                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                     <span class="text-xl font-bold">5</span>
                                 </div>
                                 <div class="flex-1">
                                     <div class="flex items-center justify-between">
                                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Technical Infrastructure') }}</h3>
-                                        <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400">{{ __('20 points') }}</span>
+                                        <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 dark:bg-blue-900/50 dark:text-blue-400">{{ __('20 points') }}</span>
                                     </div>
                                     <ul class="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
                                         <li>• {{ __('Functional website') }}</li>
@@ -134,13 +134,13 @@
                     <div class="rounded-xl bg-gray-50 p-8 dark:bg-gray-800">
                         <p class="mb-6 text-gray-600 dark:text-gray-400">{{ __('Each indicator is evaluated using a simple scale:') }}</p>
                         <div class="grid gap-4 md:grid-cols-3">
-                            <div class="rounded-lg bg-emerald-50 p-4 text-center dark:bg-emerald-900/20">
-                                <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ __('Meets') }}</div>
-                                <div class="mt-1 text-sm text-emerald-700 dark:text-emerald-300">{{ __('100% of score') }}</div>
+                            <div class="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
+                                <div class="text-2xl font-bold text-brand dark:text-blue-400">{{ __('Meets') }}</div>
+                                <div class="mt-1 text-sm text-blue-700 dark:text-blue-300">{{ __('100% of score') }}</div>
                             </div>
-                            <div class="rounded-lg bg-amber-50 p-4 text-center dark:bg-amber-900/20">
-                                <div class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ __('Partial') }}</div>
-                                <div class="mt-1 text-sm text-amber-700 dark:text-amber-300">{{ __('50% of score') }}</div>
+                            <div class="rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900/20">
+                                <div class="text-2xl font-bold text-brand dark:text-blue-400">{{ __('Partial') }}</div>
+                                <div class="mt-1 text-sm text-blue-700 dark:text-blue-300">{{ __('50% of score') }}</div>
                             </div>
                             <div class="rounded-lg bg-gray-100 p-4 text-center dark:bg-gray-700">
                                 <div class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ __('Does not meet') }}</div>
@@ -157,18 +157,18 @@
                 {{-- Editorial Standards Seal --}}
                 <div class="mt-16">
                     <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">{{ __('Obtaining the Editorial Standards Seal') }}</h2>
-                    <div class="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-8 dark:border-emerald-700 dark:bg-emerald-900/20">
+                    <div class="rounded-xl border-2 border-blue-300 bg-blue-50 p-8 dark:border-blue-700 dark:bg-blue-900/20">
                         <p class="mb-6 text-gray-700 dark:text-gray-300">{{ __('To obtain the editorial seal the journal must meet two conditions:') }}</p>
                         <div class="grid gap-6 md:grid-cols-2">
                             <div>
-                                <h4 class="mb-3 font-semibold text-emerald-800 dark:text-emerald-300">{{ __('1. Reach a minimum of 75 points out of 100') }}</h4>
+                                <h4 class="mb-3 font-semibold text-blue-800 dark:text-blue-300">{{ __('1. Reach a minimum of 75 points out of 100') }}</h4>
                                 <div class="h-4 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                    <div class="h-full rounded-full bg-emerald-500" style="width: 75%"></div>
+                                    <div class="h-full rounded-full bg-blue-500" style="width: 75%"></div>
                                 </div>
                                 <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Minimum editorial compliance threshold.') }}</p>
                             </div>
                             <div>
-                                <h4 class="mb-3 font-semibold text-emerald-800 dark:text-emerald-300">{{ __('2. Meet the critical indicators') }}</h4>
+                                <h4 class="mb-3 font-semibold text-blue-800 dark:text-blue-300">{{ __('2. Meet the critical indicators') }}</h4>
                                 <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                                     <li>✓ {{ __('Visible and valid ISSN') }}</li>
                                     <li>✓ {{ __('Peer review policy') }}</li>
@@ -192,8 +192,8 @@
                                 ['📝', __('Journal Registration'), __('The editor registers their journal on the platform and completes basic editorial information. The journal is listed in the directory for free.'), 'blue'],
                                 ['📋', __('Evaluation Request'), __('The journal requests a formal technical editorial evaluation process. This request has an associated cost covering the audit process.'), 'blue'],
                                 ['🔍', __('Criteria Review'), __('The evaluation team reviews the editorial indicators, analyzes available evidence and assigns scores according to the defined criteria.'), 'blue'],
-                                ['📊', __('Technical Report'), __('A detailed technical report is generated with the Editorial Standards Score, results by criterion and editorial recommendations.'), 'amber'],
-                                ['✅', __('Result'), __('If the journal reaches ≥75 points and meets the critical indicators, it obtains the Editorial Standards Seal. If not, it receives the report with improvement recommendations.'), 'emerald'],
+                                ['📊', __('Technical Report'), __('A detailed technical report is generated with the Editorial Standards Score, results by criterion and editorial recommendations.'), 'blue'],
+                                ['✅', __('Result'), __('If the journal reaches ≥75 points and meets the critical indicators, it obtains the Editorial Standards Seal. If not, it receives the report with improvement recommendations.'), 'blue'],
                             ];
                         @endphp
                         @foreach($steps as $i => [$icon, $title, $desc, $color])
@@ -212,7 +212,7 @@
                 </div>
 
                 {{-- Independence Notice --}}
-                <div class="mt-16 rounded-2xl bg-amber-50 p-8 dark:bg-amber-900/20">
+                <div class="mt-16 rounded-2xl bg-blue-50 p-8 dark:bg-blue-900/20">
                     <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-white">⚖️ {{ __('Independence Principle') }}</h2>
                     <p class="text-gray-700 dark:text-gray-300">{{ __('Payment for the evaluation process does not guarantee obtaining the editorial seal. The result depends exclusively on compliance with the technical criteria defined by the platform. Evaluators do not receive incentives based on results.') }}</p>
                 </div>
