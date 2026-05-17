@@ -4,7 +4,7 @@
     <div class="container mx-auto max-w-4xl px-4">
         {{-- Breadcrumbs --}}
         <nav class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-            <a href="{{ route('app.dashboard') }}" class="hover:text-purple-600">{{ __('My Dashboard') }}</a>
+            <a href="{{ route('app.dashboard') }}" class="hover:text-brand">{{ __('My Dashboard') }}</a>
             <span class="mx-2">/</span>
             <span class="text-gray-900 dark:text-white">{{ $book ? __('Edit Book') : __('New Book') }}</span>
         </nav>
@@ -15,7 +15,7 @@
                 @for($i = 1; $i <= $totalSteps; $i++)
                     <div class="flex items-center">
                         <div wire:click="goToStep({{ $i }})"
-                            class="flex h-10 w-10 items-center justify-center rounded-full {{ $currentStep >= $i ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }} font-semibold {{ $i <= $currentStep ? 'cursor-pointer' : '' }}">
+                            class="flex h-10 w-10 items-center justify-center rounded-full {{ $currentStep >= $i ? 'bg-brand text-white' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }} font-semibold {{ $i <= $currentStep ? 'cursor-pointer' : '' }}">
                             @if($currentStep > $i)
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -25,18 +25,18 @@
                             @endif
                         </div>
                         @if($i < $totalSteps)
-                            <div class="mx-2 h-1 w-8 sm:w-12 {{ $currentStep > $i ? 'bg-purple-600' : 'bg-gray-200 dark:bg-gray-700' }} rounded-full"></div>
+                            <div class="mx-2 h-1 w-8 sm:w-12 {{ $currentStep > $i ? 'bg-brand' : 'bg-gray-200 dark:bg-gray-700' }} rounded-full"></div>
                         @endif
                     </div>
                 @endfor
             </div>
             <div class="mt-4 flex justify-between text-xs min-w-max gap-2">
-                <span class="w-16 text-center {{ $currentStep >= 1 ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500' }}">{{ __('General') }}</span>
-                <span class="w-16 text-center {{ $currentStep >= 2 ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500' }}">{{ __('Content') }}</span>
-                <span class="w-16 text-center {{ $currentStep >= 3 ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500' }}">{{ __('Access') }}</span>
-                <span class="w-16 text-center {{ $currentStep >= 4 ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500' }}">{{ __('Evaluation') }}</span>
-                <span class="w-16 text-center {{ $currentStep >= 5 ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500' }}">{{ __('Files') }}</span>
-                <span class="w-16 text-center {{ $currentStep >= 6 ? 'text-purple-600 dark:text-purple-400' : 'text-gray-500' }}">{{ __('Confirm') }}</span>
+                <span class="w-16 text-center {{ $currentStep >= 1 ? 'text-brand dark:text-blue-400' : 'text-gray-500' }}">{{ __('General') }}</span>
+                <span class="w-16 text-center {{ $currentStep >= 2 ? 'text-brand dark:text-blue-400' : 'text-gray-500' }}">{{ __('Content') }}</span>
+                <span class="w-16 text-center {{ $currentStep >= 3 ? 'text-brand dark:text-blue-400' : 'text-gray-500' }}">{{ __('Access') }}</span>
+                <span class="w-16 text-center {{ $currentStep >= 4 ? 'text-brand dark:text-blue-400' : 'text-gray-500' }}">{{ __('Evaluation') }}</span>
+                <span class="w-16 text-center {{ $currentStep >= 5 ? 'text-brand dark:text-blue-400' : 'text-gray-500' }}">{{ __('Files') }}</span>
+                <span class="w-16 text-center {{ $currentStep >= 6 ? 'text-brand dark:text-blue-400' : 'text-gray-500' }}">{{ __('Confirm') }}</span>
             </div>
         </div>
 
@@ -55,7 +55,7 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Idioma principal del libro') }} <span class="text-red-500">*</span></label>
                         <div class="flex gap-3">
                             @foreach(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'] as $code => $name)
-                                <label class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer {{ $primary_locale === $code ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-gray-300' }}">
+                                <label class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer {{ $primary_locale === $code ? 'border-blue-500 bg-blue-50 text-brand' : 'border-gray-300' }}">
                                     <input type="radio" wire:model.live="primary_locale" value="{{ $code }}" class="hidden">
                                     <span>{{ $name }}</span>
                                 </label>
@@ -87,7 +87,7 @@
                             <div>
                                 <label for="book_type" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Work Type') }} *</label>
                                 <select id="book_type" wire:model="book_type"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                     <option value="">{{ __('Select...') }}</option>
                                     @foreach($bookTypes as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
@@ -99,7 +99,7 @@
                             <div>
                                 <label for="primary_language" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Primary Language') }} *</label>
                                 <select id="primary_language" wire:model="primary_language"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                     <option value="">{{ __('Select...') }}</option>
                                     @foreach($languageOptions as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
@@ -113,7 +113,7 @@
                             <div>
                                 <label for="secondary_language" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Secondary Language') }}</label>
                                 <select id="secondary_language" wire:model="secondary_language"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                     <option value="">{{ __('None') }}</option>
                                     @foreach($languageOptions as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
@@ -124,7 +124,7 @@
                             <div>
                                 <label for="publication_year" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Publication Year') }}</label>
                                 <input type="number" id="publication_year" wire:model="publication_year"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="2024" min="1900" max="2100">
                             </div>
                         </div>
@@ -133,21 +133,21 @@
                             <div>
                                 <label for="edition" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Edition') }}</label>
                                 <input type="text" id="edition" wire:model="edition"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="{{ __('1st, 2nd, revised...') }}">
                             </div>
 
                             <div>
                                 <label for="isbn" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">ISBN</label>
                                 <input type="text" id="isbn" wire:model="isbn"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="978-3-16-148410-0">
                             </div>
 
                             <div>
                                 <label for="doi" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">DOI</label>
                                 <input type="text" id="doi" wire:model="doi"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="10.1000/xyz123">
                             </div>
                         </div>
@@ -155,14 +155,14 @@
                         <div>
                             <label for="landing_url" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Book URL / Landing Page') }}</label>
                             <input type="url" id="landing_url" wire:model="landing_url"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                 placeholder="https://example.com/book">
                         </div>
 
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Book Cover') }}</label>
                             <input type="file" wire:model="cover_image" accept="image/*"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                             @if($cover_image)
                                 <img src="{{ $cover_image->temporaryUrl() }}" class="mt-2 h-32 rounded">
                             @endif
@@ -177,7 +177,7 @@
                             <div>
                                 <label for="publisher" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Publisher') }} *</label>
                                 <input type="text" id="publisher" wire:model="publisher"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="{{ __('Publisher name') }}">
                                 @error('publisher') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                             </div>
@@ -185,7 +185,7 @@
                             <div>
                                 <label for="publisher_country" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Publisher Country') }} *</label>
                                 <select id="publisher_country" wire:model="publisher_country"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                     <option value="">{{ __('Select...') }}</option>
                                     @foreach($countries as $code => $name)
                                         <option value="{{ $code }}">{{ $name }}</option>
@@ -199,7 +199,7 @@
                             <div>
                                 <label for="publisher_city" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('City') }}</label>
                                 <input type="text" id="publisher_city" wire:model="publisher_city"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="{{ __('Publisher city') }}">
                             </div>
 
@@ -226,14 +226,14 @@
                             <div>
                                 <label for="total_pages" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Total Number of Pages') }}</label>
                                 <input type="number" id="total_pages" wire:model="total_pages"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="350" min="1">
                             </div>
 
                             <div>
                                 <label for="format" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Format') }}</label>
                                 <select id="format" wire:model="format"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                     <option value="">{{ __('Select...') }}</option>
                                     @foreach($formatOptions as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
@@ -245,7 +245,7 @@
                         <div>
                             <label for="exact_publication_date" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Exact Publication Date') }}</label>
                             <input type="date" id="exact_publication_date" wire:model="exact_publication_date"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         </div>
                     </div>
                 </div>
@@ -280,7 +280,7 @@
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Role') }} *</label>
                                         <select wire:model="authors.{{ $index }}.role"
-                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                             @foreach($authorRoles as $value => $label)
                                                 <option value="{{ $value }}">{{ $label }}</option>
                                             @endforeach
@@ -290,28 +290,28 @@
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Full Name') }} *</label>
                                         <input type="text" wire:model="authors.{{ $index }}.full_name"
-                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                             placeholder="{{ __('First and last name') }}">
                                     </div>
 
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">ORCID</label>
                                         <input type="text" wire:model="authors.{{ $index }}.orcid"
-                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                             placeholder="0000-0000-0000-0000">
                                     </div>
 
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Institutional Affiliation') }}</label>
                                         <input type="text" wire:model="authors.{{ $index }}.affiliation"
-                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                             placeholder="{{ __('University or institution') }}">
                                     </div>
 
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Country') }}</label>
                                         <select wire:model="authors.{{ $index }}.country_code"
-                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                            class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                             <option value="">{{ __('Select...') }}</option>
                                             @foreach($countries as $code => $name)
                                                 <option value="{{ $code }}">{{ $name }}</option>
@@ -325,7 +325,7 @@
                         @error('authors') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                         @error('authors.*.full_name') <p class="mt-1 text-sm text-red-500">{{ __('All authors must have a full name') }}</p> @enderror
 
-                        <button type="button" wire:click="addAuthor" class="inline-flex items-center rounded-lg border border-purple-600 px-4 py-2 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20">
+                        <button type="button" wire:click="addAuthor" class="inline-flex items-center rounded-lg border border-brand px-4 py-2 text-brand hover:bg-blue-50 dark:hover:bg-blue-900/20">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
@@ -349,14 +349,14 @@
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Keywords') }} * {{ __('(minimum 3)') }}</label>
                             <div class="flex flex-wrap gap-2 mb-2">
                                 @foreach($keywords as $keyword)
-                                    <span class="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                                    <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm text-brand dark:bg-blue-900/30 dark:text-blue-300">
                                         {{ $keyword }}
-                                        <button type="button" wire:click="$set('keywords', {{ json_encode(array_values(array_diff($keywords, [$keyword]))) }})" class="ml-1 text-purple-500 hover:text-purple-700">&times;</button>
+                                        <button type="button" wire:click="$set('keywords', {{ json_encode(array_values(array_diff($keywords, [$keyword]))) }})" class="ml-1 text-blue-500 hover:text-brand">&times;</button>
                                     </span>
                                 @endforeach
                             </div>
                             <input type="text"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                 placeholder="{{ __("Type a keyword and press Enter (e.g., 'Artificial Intelligence', ENTER)") }}"
                                 @keydown.enter.prevent="$wire.set('keywords', [...$wire.keywords, $event.target.value]); $event.target.value = ''">
                             @error('keywords') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
@@ -368,7 +368,7 @@
                                 @foreach($knowledgeAreaOptions as $value => $label)
                                     <label class="flex items-center space-x-2">
                                         <input type="checkbox" wire:model="knowledge_areas" value="{{ $value }}"
-                                            class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="rounded border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-sm text-gray-700 dark:text-gray-300">{{ $label }}</span>
                                     </label>
                                 @endforeach
@@ -380,14 +380,14 @@
                             <div>
                                 <label for="main_discipline" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Main Discipline') }}</label>
                                 <input type="text" id="main_discipline" wire:model="main_discipline"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="{{ __('e.g.: Molecular Biology') }}">
                             </div>
 
                             <div>
                                 <label for="secondary_discipline" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Secondary Discipline') }}</label>
                                 <input type="text" id="secondary_discipline" wire:model="secondary_discipline"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="{{ __('e.g.: Genetics') }}">
                             </div>
                         </div>
@@ -395,7 +395,7 @@
                         <div>
                             <label for="academic_level" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Academic Level') }}</label>
                             <select id="academic_level" wire:model="academic_level"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                 <option value="">{{ __('Select...') }}</option>
                                 @foreach($academicLevelOptions as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
@@ -422,7 +422,7 @@
                                             <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
                                         </svg>
                                         <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400">
-                                            <label for="table_of_contents_file" class="relative cursor-pointer rounded-md bg-white font-semibold text-purple-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-purple-600 focus-within:ring-offset-2 hover:text-purple-500 dark:bg-gray-800">
+                                            <label for="table_of_contents_file" class="relative cursor-pointer rounded-md bg-white font-semibold text-brand focus-within:outline-none focus-within:ring-2 focus-within:ring-brand focus-within:ring-offset-2 hover:text-blue-500 dark:bg-gray-800">
                                                 <span>{{ __('Upload file') }}</span>
                                                 <input id="table_of_contents_file" wire:model="table_of_contents_file" type="file" class="sr-only">
                                             </label>
@@ -457,12 +457,12 @@
                             <div class="flex gap-4">
                                 <label class="flex items-center space-x-2">
                                     <input type="radio" wire:model.live="is_open_access" value="1"
-                                        class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                        class="border-gray-300 text-brand focus:ring-blue-500">
                                     <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                 </label>
                                 <label class="flex items-center space-x-2">
                                     <input type="radio" wire:model.live="is_open_access" value="0"
-                                        class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                        class="border-gray-300 text-brand focus:ring-blue-500">
                                     <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                 </label>
                             </div>
@@ -473,7 +473,7 @@
                             <div>
                                 <label for="access_type" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Access Type') }}</label>
                                 <select id="access_type" wire:model="access_type"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                     <option value="">{{ __('Select...') }}</option>
                                     @foreach($accessTypeOptions as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
@@ -485,7 +485,7 @@
                         <div>
                             <label for="license_type" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('License') }} *</label>
                             <select id="license_type" wire:model="license_type"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                 <option value="">{{ __('Select...') }}</option>
                                 @foreach($licenseTypes as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
@@ -509,12 +509,12 @@
                                 <div class="flex gap-4">
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="allows_reuse" value="1"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                     </label>
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="allows_reuse" value="0"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                     </label>
                                 </div>
@@ -525,12 +525,12 @@
                                 <div class="flex gap-4">
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="allows_commercial_use" value="1"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                     </label>
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="allows_commercial_use" value="0"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                     </label>
                                 </div>
@@ -544,7 +544,7 @@
                         <div>
                             <label for="publication_model" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Publication Model') }} *</label>
                             <select id="publication_model" wire:model.live="publication_model"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                 <option value="">{{ __('Select...') }}</option>
                                 @foreach($publicationModelOptions as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
@@ -557,7 +557,7 @@
                             <div>
                                 <label for="access_cost" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Access Cost (USD)') }}</label>
                                 <input type="number" id="access_cost" wire:model="access_cost" step="0.01"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                     placeholder="29.99">
                             </div>
                         @endif
@@ -565,7 +565,7 @@
                         <div>
                             <label for="author_apc" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Author Publication Cost (APC in USD)') }}</label>
                             <input type="number" id="author_apc" wire:model="author_apc" step="0.01"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                 placeholder="0.00">
                             <p class="mt-1 text-sm text-gray-500">{{ __('Leave blank or enter 0 if not applicable') }}</p>
                         </div>
@@ -576,7 +576,7 @@
                                 @foreach($fundingOptions as $value => $label)
                                     <label class="flex items-center space-x-2">
                                         <input type="checkbox" wire:model="funded_by" value="{{ $value }}"
-                                            class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="rounded border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-sm text-gray-700 dark:text-gray-300">{{ $label }}</span>
                                     </label>
                                 @endforeach
@@ -601,12 +601,12 @@
                             <div class="flex gap-4">
                                 <label class="flex items-center space-x-2">
                                     <input type="radio" wire:model.live="has_peer_review" value="1"
-                                        class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                        class="border-gray-300 text-brand focus:ring-blue-500">
                                     <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                 </label>
                                 <label class="flex items-center space-x-2">
                                     <input type="radio" wire:model.live="has_peer_review" value="0"
-                                        class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                        class="border-gray-300 text-brand focus:ring-blue-500">
                                     <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                 </label>
                             </div>
@@ -617,7 +617,7 @@
                             <div>
                                 <label for="review_type" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Review Type') }}</label>
                                 <select id="review_type" wire:model="review_type"
-                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                                    class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                     <option value="">{{ __('Select...') }}</option>
                                     @foreach($reviewTypeOptions as $value => $label)
                                         <option value="{{ $value }}">{{ $label }}</option>
@@ -632,12 +632,12 @@
                                 <div class="flex gap-4">
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="has_editorial_committee" value="1"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                     </label>
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="has_editorial_committee" value="0"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                     </label>
                                 </div>
@@ -648,12 +648,12 @@
                                 <div class="flex gap-4">
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="has_editorial_standards" value="1"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                     </label>
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="has_editorial_standards" value="0"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                     </label>
                                 </div>
@@ -664,12 +664,12 @@
                                 <div class="flex gap-4">
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="has_antiplagiarism" value="1"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                     </label>
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="has_antiplagiarism" value="0"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                     </label>
                                 </div>
@@ -680,12 +680,12 @@
                                 <div class="flex gap-4">
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="has_ethics_code" value="1"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                     </label>
                                     <label class="flex items-center space-x-2">
                                         <input type="radio" wire:model="has_ethics_code" value="0"
-                                            class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                            class="border-gray-300 text-brand focus:ring-blue-500">
                                         <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                     </label>
                                 </div>
@@ -701,12 +701,12 @@
                             <div class="flex gap-4">
                                 <label class="flex items-center space-x-2">
                                     <input type="radio" wire:model.live="is_indexed" value="1"
-                                        class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                        class="border-gray-300 text-brand focus:ring-blue-500">
                                     <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                                 </label>
                                 <label class="flex items-center space-x-2">
                                     <input type="radio" wire:model.live="is_indexed" value="0"
-                                        class="border-gray-300 text-purple-600 focus:ring-purple-500">
+                                        class="border-gray-300 text-brand focus:ring-blue-500">
                                     <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                                 </label>
                             </div>
@@ -719,7 +719,7 @@
                                     @foreach($indexOptions as $value => $label)
                                         <label class="flex items-center space-x-2">
                                             <input type="checkbox" wire:model="indexes" value="{{ $value }}"
-                                                class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                                                class="rounded border-gray-300 text-brand focus:ring-blue-500">
                                             <span class="text-sm text-gray-700 dark:text-gray-300">{{ $label }}</span>
                                         </label>
                                     @endforeach
@@ -730,7 +730,7 @@
                                 <div>
                                     <label for="citation_count" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Number of Citations (Approx.)') }}</label>
                                     <input type="number" id="citation_count" wire:model="citation_count"
-                                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                         placeholder="0">
                                 </div>
 
@@ -766,7 +766,7 @@
                                     <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
                                 </svg>
                                 <div class="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-400 justify-center">
-                                    <label for="main_file" class="relative cursor-pointer rounded-md bg-white font-semibold text-purple-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-purple-600 focus-within:ring-offset-2 hover:text-purple-500 dark:bg-gray-800">
+                                    <label for="main_file" class="relative cursor-pointer rounded-md bg-white font-semibold text-brand focus-within:outline-none focus-within:ring-2 focus-within:ring-brand focus-within:ring-offset-2 hover:text-blue-500 dark:bg-gray-800">
                                         <span>{{ __('Upload main file') }}</span>
                                         <input id="main_file" wire:model="main_file" type="file" class="sr-only" accept=".pdf,.epub">
                                     </label>
@@ -796,7 +796,7 @@
                     <div>
                         <div class="mb-4 flex items-center justify-between">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Individual Chapters (Optional)') }}</h3>
-                            <button type="button" wire:click="addChapterFile" class="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400">
+                            <button type="button" wire:click="addChapterFile" class="text-sm text-brand hover:text-brand dark:text-blue-400">
                                 + {{ __('Add Chapter') }}
                             </button>
                         </div>
@@ -805,11 +805,11 @@
                                 <div class="flex gap-4 items-start">
                                     <div class="flex-grow grid gap-4 sm:grid-cols-2">
                                         <input type="text" wire:model="chapter_files.{{ $index }}.chapter_name"
-                                            class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                            class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                             placeholder="{{ __('Chapter Title') }}">
 
                                         <input type="file" wire:model="chapter_files.{{ $index }}.file"
-                                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/20 dark:file:text-purple-300">
+                                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-brand hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-300">
                                     </div>
                                     <button type="button" wire:click="removeChapterFile({{ $index }})" class="text-red-500 hover:text-red-700 mt-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -825,7 +825,7 @@
                     <div>
                         <div class="mb-4 flex items-center justify-between">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Supplementary Material (Optional)') }}</h3>
-                            <button type="button" wire:click="addSupplementaryFile" class="text-sm text-purple-600 hover:text-purple-700 dark:text-purple-400">
+                            <button type="button" wire:click="addSupplementaryFile" class="text-sm text-brand hover:text-brand dark:text-blue-400">
                                 + {{ __('Add Material') }}
                             </button>
                         </div>
@@ -834,11 +834,11 @@
                                 <div class="flex gap-4 items-start">
                                     <div class="flex-grow grid gap-4 sm:grid-cols-2">
                                         <input type="text" wire:model="supplementary_files.{{ $index }}.name"
-                                            class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                            class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                             placeholder="{{ __('Material Name') }}">
 
                                         <input type="file" wire:model="supplementary_files.{{ $index }}.file"
-                                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/20 dark:file:text-purple-300">
+                                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-brand hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-300">
                                     </div>
                                     <button type="button" wire:click="removeSupplementaryFile({{ $index }})" class="text-red-500 hover:text-red-700 mt-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -854,13 +854,13 @@
                         <div>
                             <label for="download_url" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('External Download URL (Optional)') }}</label>
                             <input type="url" id="download_url" wire:model="download_url"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                 placeholder="https://...">
                         </div>
                         <div>
                             <label for="file_size" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('File Size (Text)') }}</label>
                             <input type="text" id="file_size" wire:model="file_size"
-                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:ring-purple-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                                class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                 placeholder="{{ __('e.g.: 5MB') }}">
                         </div>
                     </div>
@@ -1000,8 +1000,8 @@
                         </dl>
                     </div>
 
-                    <div class="rounded-lg bg-purple-50 p-4 dark:bg-purple-900/20">
-                        <p class="text-sm text-purple-700 dark:text-purple-300">
+                    <div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
+                        <p class="text-sm text-brand dark:text-blue-300">
                             <strong>{{ __('Note:') }}</strong> {{ __('By continuing you will be redirected to the payment page. Once the payment is completed, your book will be sent for review.') }}
                         </p>
                     </div>
@@ -1031,14 +1031,14 @@
                 </button>
 
                 @if($currentStep < $totalSteps)
-                    <button wire:click="nextStep" type="button" class="inline-flex items-center rounded-lg bg-purple-600 px-6 py-3 font-semibold text-white transition hover:bg-purple-500">
+                    <button wire:click="nextStep" type="button" class="inline-flex items-center rounded-lg bg-brand px-6 py-3 font-semibold text-white transition hover:bg-blue-500">
                         {{ __('Next') }}
                         <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
                 @else
-                    <button wire:click="submit" type="button" class="inline-flex items-center rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-500">
+                    <button wire:click="submit" type="button" class="inline-flex items-center rounded-lg bg-brand px-6 py-3 font-semibold text-white transition hover:bg-blue-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
