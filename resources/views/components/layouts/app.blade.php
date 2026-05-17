@@ -152,7 +152,7 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400">&copy; {{ date('Y') }} Editorial Standards Platform. {{ __('All rights reserved.') }}</p>
                         <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
                             <span>{{ __('Transparent editorial evaluation') }}</span>
-                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-brand dark:bg-blue-900/40 dark:text-blue-300">
                                 <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3"/></svg>
                                 Editorial Standards Seal
                             </span>
