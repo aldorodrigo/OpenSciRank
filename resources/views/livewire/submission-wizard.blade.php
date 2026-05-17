@@ -760,10 +760,10 @@
                     border-color: #f59e0b;
                 }
                 .wizard-btn-primary:hover {
-                    background-color: #4f46e5;
+                    background-color: #1D4ED8; /* Editorial Blue Active */
                 }
                 .wizard-btn-success:hover {
-                    background-color: #059669;
+                    background-color: #1D4ED8; /* Editorial Blue Active — unificado, BRAND.md */
                 }
             </style>
         </div>
