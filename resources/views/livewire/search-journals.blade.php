@@ -330,7 +330,7 @@
                                             <div class="h-full rounded-full transition-all {{ $score >= 75 ? 'bg-blue-500' : ($score >= 50 ? 'bg-blue-500' : 'bg-gray-400') }}"
                                                  style="width: {{ min($score, 100) }}%"></div>
                                         </div>
-                                        <span class="text-sm font-bold {{ $score >= 75 ? 'text-emerald-600 dark:text-blue-400' : ($score >= 50 ? 'text-amber-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400') }}">
+                                        <span class="text-sm font-bold {{ $score > 0 ? 'text-brand dark:text-blue-400' : 'text-gray-500 dark:text-gray-400' }}">
                                             {{ number_format($score, 0) }}%
                                         </span>
                                     </div>
