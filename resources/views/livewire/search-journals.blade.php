@@ -11,10 +11,10 @@
                 type="text"
                 wire:model.live.debounce.300ms="search"
                 placeholder="{{ __('Search scientific journals or academic books...') }}"
-                class="w-full rounded-xl border border-gray-300 bg-white py-4 pl-12 pr-4 text-lg shadow-sm transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-indigo-400"
+                class="w-full rounded-xl border border-gray-300 bg-white py-4 pl-12 pr-4 text-lg shadow-sm transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-blue-400"
             >
             <div wire:loading wire:target="search" class="absolute inset-y-0 right-0 flex items-center pr-4">
-                <svg class="h-5 w-5 animate-spin text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="h-5 w-5 animate-spin text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                 </svg>
@@ -27,17 +27,17 @@
     <div class="mb-6 flex flex-wrap items-center gap-2">
         <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Active filters:') }}</span>
         @if($search)
-        <button wire:click="$set('search', '')" class="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-700 transition hover:bg-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-400 dark:hover:bg-indigo-900/60">
+        <button wire:click="$set('search', '')" class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-brand transition hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60">
             "{{ $search }}" <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         @endif
         @if($type !== 'all')
-        <button wire:click="$set('type', 'all')" class="inline-flex items-center gap-1 rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700 transition hover:bg-purple-200 dark:bg-purple-900/40 dark:text-purple-400 dark:hover:bg-purple-900/60">
+        <button wire:click="$set('type', 'all')" class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-brand transition hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60">
             {{ $type === 'journals' ? __('Journals only') : __('Books only') }} <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         @endif
         @if($subjectArea)
-        <button wire:click="$set('subjectArea', '')" class="inline-flex items-center gap-1 rounded-full bg-teal-100 px-3 py-1 text-sm font-medium text-teal-700 transition hover:bg-teal-200 dark:bg-teal-900/40 dark:text-teal-400 dark:hover:bg-teal-900/60">
+        <button wire:click="$set('subjectArea', '')" class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60">
             {{ \App\Livewire\SearchJournals::SUBJECT_AREAS[$subjectArea] ?? $subjectArea }} <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         @endif
@@ -47,17 +47,17 @@
         </button>
         @endif
         @if($accessType)
-        <button wire:click="$set('accessType', '')" class="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-sm font-medium text-violet-700 transition hover:bg-violet-200 dark:bg-violet-900/40 dark:text-violet-400 dark:hover:bg-violet-900/60">
+        <button wire:click="$set('accessType', '')" class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60">
             {{ \App\Livewire\SearchJournals::ACCESS_TYPES[$accessType] ?? $accessType }} <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         @endif
         @if($apcRange)
-        <button wire:click="$set('apcRange', '')" class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700 transition hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-400 dark:hover:bg-amber-900/60">
+        <button wire:click="$set('apcRange', '')" class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60">
             {{ \App\Livewire\SearchJournals::APC_RANGES[$apcRange] ?? $apcRange }} <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         @endif
         @if($country)
-        <button wire:click="$set('country', '')" class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700 transition hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-400 dark:hover:bg-emerald-900/60">
+        <button wire:click="$set('country', '')" class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition hover:bg-emerald-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60">
             {{ \App\Livewire\SearchJournals::countryFlag($country) }} {{ \App\Livewire\SearchJournals::countryName($country) }}
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
@@ -79,7 +79,7 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Type') }}</label>
                     <select
                         wire:model.live="type"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="all">{{ __('All') }}</option>
                         <option value="journals">{{ __('Journals only') }}</option>
@@ -92,7 +92,7 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Subject Area') }}</label>
                     <select
                         wire:model.live="subjectArea"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="">{{ __('All areas') }}</option>
                         @foreach(\App\Livewire\SearchJournals::SUBJECT_AREAS as $key => $label)
@@ -107,7 +107,7 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Frequency') }}</label>
                     <select
                         wire:model.live="frequency"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="">{{ __('All') }}</option>
                         @foreach(\App\Livewire\SearchJournals::FREQUENCIES as $key => $label)
@@ -122,7 +122,7 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Access Type') }}</label>
                     <select
                         wire:model.live="accessType"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="">{{ __('All') }}</option>
                         @foreach(\App\Livewire\SearchJournals::ACCESS_TYPES as $key => $label)
@@ -137,7 +137,7 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Charges APC') }}</label>
                     <select
                         wire:model.live="apcRange"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="">{{ __('All') }}</option>
                         @foreach(\App\Livewire\SearchJournals::APC_RANGES as $key => $label)
@@ -153,7 +153,7 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Country') }}</label>
                     <select
                         wire:model.live="country"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="">{{ __('All countries') }}</option>
                         @foreach($countryCodes as $c)
@@ -168,7 +168,7 @@
                     <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Sort by') }}</label>
                     <select
                         wire:model.live="sortBy"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                     >
                         <option value="score">{{ __('Highest score') }}</option>
                         <option value="title">{{ __('Name A-Z') }}</option>
@@ -206,7 +206,7 @@
             <div class="relative">
                 <div wire:loading.delay wire:target="search, type, country, sortBy, subjectArea, frequency, accessType, apcRange" class="absolute inset-0 z-10 flex items-start justify-center rounded-xl bg-white/60 pt-24 backdrop-blur-sm dark:bg-gray-950/60">
                     <div class="flex items-center gap-3 rounded-lg bg-white px-6 py-3 shadow-lg dark:bg-gray-900">
-                        <svg class="h-5 w-5 animate-spin text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg class="h-5 w-5 animate-spin text-brand" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                         </svg>
@@ -222,7 +222,7 @@
                         <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{{ __('No publications found') }}</h3>
                         <p class="mt-2 text-gray-500 dark:text-gray-400">{{ __('Try adjusting your filters or search with other terms.') }}</p>
                         @if($search || $country || $type !== 'all' || $subjectArea || $frequency || $accessType || $apcRange)
-                        <button wire:click="resetFilters" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                        <button wire:click="resetFilters" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-500">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             {{ __('Clear filters') }}
                         </button>
@@ -257,7 +257,7 @@
                                         @if($itemType === 'journal' && $item->logo)
                                             <img src="{{ Storage::url($item->logo) }}" alt="" class="h-12 w-12 shrink-0 rounded-lg object-contain shadow-sm">
                                         @else
-                                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg {{ $itemType === 'journal' ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400' : 'bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400' }}">
+                                            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg {{ $itemType === 'journal' ? 'bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400' : 'bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400' }}">
                                                 @if($itemType === 'journal')
                                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
@@ -273,17 +273,17 @@
                                         {{-- Badges --}}
                                         <div class="flex flex-wrap gap-1.5">
                                             <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-                                                {{ $itemType === 'journal' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' }}
+                                                {{ $itemType === 'journal' ? 'bg-blue-50 text-brand dark:bg-blue-900/30 dark:text-blue-400' : 'bg-blue-50 text-brand dark:bg-blue-900/30 dark:text-blue-400' }}
                                             ">
                                                 {{ $itemType === 'journal' ? __('Journal') : __('Book') }}
                                             </span>
                                             @if($hasSeal)
-                                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                                 ✅ {{ __('Seal') }}
                                             </span>
                                             @endif
                                             @if($isFeaturedBook)
-                                            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
                                                 ★ {{ __('Featured') }}
                                             </span>
                                             @endif
@@ -291,7 +291,7 @@
                                     </div>
 
                                     {{-- Title --}}
-                                    <h3 class="mb-1.5 text-base font-semibold leading-snug text-gray-900 transition group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
+                                    <h3 class="mb-1.5 text-base font-semibold leading-snug text-gray-900 transition group-hover:text-brand dark:text-white dark:group-hover:text-blue-400">
                                         {{ $item->getTranslationWithFallback('title') }}
                                     </h3>
 
@@ -327,10 +327,10 @@
                                     @if($score > 0)
                                     <div class="mt-3 flex items-center gap-2">
                                         <div class="h-2 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
-                                            <div class="h-full rounded-full transition-all {{ $score >= 75 ? 'bg-emerald-500' : ($score >= 50 ? 'bg-amber-500' : 'bg-gray-400') }}"
+                                            <div class="h-full rounded-full transition-all {{ $score >= 75 ? 'bg-blue-500' : ($score >= 50 ? 'bg-blue-500' : 'bg-gray-400') }}"
                                                  style="width: {{ min($score, 100) }}%"></div>
                                         </div>
-                                        <span class="text-sm font-bold {{ $score >= 75 ? 'text-emerald-600 dark:text-emerald-400' : ($score >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-gray-500 dark:text-gray-400') }}">
+                                        <span class="text-sm font-bold {{ $score >= 75 ? 'text-emerald-600 dark:text-blue-400' : ($score >= 50 ? 'text-amber-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400') }}">
                                             {{ number_format($score, 0) }}%
                                         </span>
                                     </div>
@@ -355,7 +355,7 @@
                         $pages = $pages->merge(range(max(1, $lp - 2), $lp));
                         $pages = $pages->unique()->sort()->values();
                         $btnBase = 'inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition';
-                        $btnActive = 'border-indigo-500 bg-indigo-500 text-white';
+                        $btnActive = 'border-blue-500 bg-blue-500 text-white';
                         $btnNormal = 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700';
                         $btnDisabled = 'border-gray-200 bg-white text-gray-300 cursor-not-allowed dark:border-gray-700 dark:bg-gray-800 dark:text-gray-600';
                     @endphp
