@@ -4,7 +4,7 @@
     <div class="container mx-auto max-w-4xl px-4">
         {{-- Breadcrumbs --}}
         <nav class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-            <a href="{{ route('app.dashboard') }}" class="hover:text-indigo-600">{{ __('My Dashboard') }}</a>
+            <a href="{{ route('app.dashboard') }}" class="hover:text-brand">{{ __('My Dashboard') }}</a>
             <span class="mx-2">/</span>
             <span class="text-gray-900 dark:text-white">{{ $journal ? __('Edit Journal') : __('New Journal') }}</span>
         </nav>
@@ -26,7 +26,7 @@
                 @for($i = 1; $i <= $totalSteps; $i++)
                     <div class="flex items-center">
                         <button wire:click="goToStep({{ $i }})"
-                            class="flex h-10 w-10 items-center justify-center rounded-full {{ $currentStep >= $i ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }} font-semibold transition {{ $i <= $currentStep ? 'cursor-pointer hover:ring-2 hover:ring-indigo-300' : 'cursor-not-allowed' }}">
+                            class="flex h-10 w-10 items-center justify-center rounded-full {{ $currentStep >= $i ? 'bg-brand text-white' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }} font-semibold transition {{ $i <= $currentStep ? 'cursor-pointer hover:ring-2 hover:ring-blue-300' : 'cursor-not-allowed' }}">
                             @if($currentStep > $i)
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                             @else
@@ -34,14 +34,14 @@
                             @endif
                         </button>
                         @if($i < $totalSteps)
-                            <div class="mx-2 h-1 w-8 {{ $currentStep > $i ? 'bg-indigo-600' : 'bg-gray-200 dark:bg-gray-700' }} rounded-full"></div>
+                            <div class="mx-2 h-1 w-8 {{ $currentStep > $i ? 'bg-brand' : 'bg-gray-200 dark:bg-gray-700' }} rounded-full"></div>
                         @endif
                     </div>
                 @endfor
             </div>
             <div class="mt-3 flex justify-between min-w-max">
                 @foreach($stepNames as $index => $name)
-                    <span class="w-10 text-center text-xs {{ $currentStep >= $index + 1 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500' }}">{{ $name }}</span>
+                    <span class="w-10 text-center text-xs {{ $currentStep >= $index + 1 ? 'text-brand dark:text-blue-400' : 'text-gray-500' }}">{{ $name }}</span>
                     @if($index < count($stepNames) - 1)
                         <span class="w-8"></span>
                     @endif
@@ -61,7 +61,7 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Idioma principal de la revista') }} <span class="text-red-500">*</span></label>
                         <div class="flex gap-3">
                             @foreach(['es' => 'Español', 'en' => 'English', 'pt' => 'Português'] as $code => $name)
-                                <label class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer {{ $primary_locale === $code ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-300' }}">
+                                <label class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer {{ $primary_locale === $code ? 'border-blue-500 bg-blue-50 text-brand' : 'border-gray-300' }}">
                                     <input type="radio" wire:model.live="primary_locale" value="{{ $code }}" class="hidden">
                                     <span>{{ $name }}</span>
                                 </label>
@@ -99,7 +99,7 @@
                         <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
                             @foreach($subjectAreaOptions as $key => $label)
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" wire:model="subject_areas" value="{{ $key }}" class="h-4 w-4 rounded text-indigo-600">
+                                    <input type="checkbox" wire:model="subject_areas" value="{{ $key }}" class="h-4 w-4 rounded text-brand">
                                     <span class="text-sm text-gray-700 dark:text-gray-300">{{ $label }}</span>
                                 </label>
                             @endforeach
@@ -112,7 +112,7 @@
                         <div class="flex flex-wrap gap-3">
                             @foreach($audienceOptions as $key => $label)
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" wire:model="target_audience" value="{{ $key }}" class="h-4 w-4 rounded text-indigo-600">
+                                    <input type="checkbox" wire:model="target_audience" value="{{ $key }}" class="h-4 w-4 rounded text-brand">
                                     <span class="text-sm text-gray-700 dark:text-gray-300">{{ $label }}</span>
                                 </label>
                             @endforeach
@@ -124,7 +124,7 @@
                         <div class="flex flex-wrap gap-3">
                             @foreach($languageOptions as $key => $label)
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" wire:model="publication_languages" value="{{ $key }}" class="h-4 w-4 rounded text-indigo-600">
+                                    <input type="checkbox" wire:model="publication_languages" value="{{ $key }}" class="h-4 w-4 rounded text-brand">
                                     <span class="text-sm text-gray-700 dark:text-gray-300">{{ $label }}</span>
                                 </label>
                             @endforeach
@@ -135,11 +135,11 @@
                     <div class="grid gap-6 sm:grid-cols-2">
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Start Year') }} <x-field-tooltip :text="__('Year in which the journal began publishing.')" /></label>
-                            <input type="number" wire:model="start_year" min="1900" max="{{ date('Y') }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <input type="number" wire:model="start_year" min="1900" max="{{ date('Y') }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         </div>
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Official Website') }} * <x-field-tooltip :text="__('Main website address of the journal.')" /></label>
-                            <input type="url" wire:model="url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <input type="url" wire:model="url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                             @error('url') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -156,10 +156,10 @@
                         @if($logo)
                             <div class="mb-3 flex items-center gap-4">
                                 <img src="{{ $logo->temporaryUrl() }}" alt="Preview" class="max-h-32 w-auto rounded-lg object-contain shadow">
-                                <span class="text-sm text-emerald-600">{{ __('New logo selected') }}</span>
+                                <span class="text-sm text-brand">{{ __('New logo selected') }}</span>
                             </div>
                         @endif
-                        <label class="flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 transition hover:border-indigo-400 dark:border-gray-600 dark:hover:border-indigo-500">
+                        <label class="flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 transition hover:border-blue-400 dark:border-gray-600 dark:hover:border-blue-500">
                             <div class="text-center">
                                 <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Click to select image') }}</p>
@@ -180,11 +180,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Is the journal open access?') }} * <x-field-tooltip :text="__('Indicates whether all articles are freely available to the public.')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="is_open_access" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                                <input type="radio" wire:model="is_open_access" value="1" class="h-4 w-4 text-brand focus:ring-blue-500">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="is_open_access" value="0" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500">
+                                <input type="radio" wire:model="is_open_access" value="0" class="h-4 w-4 text-brand focus:ring-blue-500">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -193,7 +193,7 @@
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Access type') }} * <x-field-tooltip :text="__('Full: all articles are free. Hybrid: only some. Restricted: requires subscription.')" /></label>
-                        <select wire:model="access_type" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <select wire:model="access_type" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                             <option value="">{{ __('Select...') }}</option>
                             @foreach($accessTypes as $key => $label)
                                 <option value="{{ $key }}">{{ $label }}</option>
@@ -206,11 +206,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Are articles accessible without registration?') }} * <x-field-tooltip :text="__('Can articles be read without needing to create an account on the site?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="articles_accessible_without_registration" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="articles_accessible_without_registration" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="articles_accessible_without_registration" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="articles_accessible_without_registration" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -221,11 +221,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Is self-archiving allowed?') }} <x-field-tooltip :text="__('Can authors deposit their articles in institutional or personal repositories?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="allows_self_archiving" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="allows_self_archiving" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="allows_self_archiving" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="allows_self_archiving" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -233,18 +233,18 @@
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Open access policy (URL)') }} <x-field-tooltip :text="__("Link to the page describing the journal's open access policy.")" /></label>
-                        <input type="url" wire:model="open_access_policy_url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <input type="url" wire:model="open_access_policy_url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Is there an embargo?') }} <x-field-tooltip :text="__('Do articles have a restriction period before being available in open access?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model.live="has_embargo" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model.live="has_embargo" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model.live="has_embargo" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model.live="has_embargo" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -253,7 +253,7 @@
                     @if($has_embargo)
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Embargo duration (months)') }} <x-field-tooltip :text="__('Number of months the restriction period lasts.')" /></label>
-                        <input type="number" wire:model="embargo_months" min="1" max="60" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <input type="number" wire:model="embargo_months" min="1" max="60" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
                     @endif
                 </div>
@@ -266,7 +266,7 @@
                 <div class="space-y-6">
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Main license type') }} * <x-field-tooltip :text="__('License under which articles are published (e.g. Creative Commons).')" /></label>
-                        <select wire:model="license_type" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <select wire:model="license_type" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                             <option value="">{{ __('Select...') }}</option>
                             @foreach($licenseTypes as $key => $label)
                                 <option value="{{ $key }}">{{ $label }}</option>
@@ -277,18 +277,18 @@
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('License URL') }} <x-field-tooltip :text="__('Direct link to the full text of the license used.')" /></label>
-                        <input type="url" wire:model="license_url" placeholder="https://creativecommons.org/..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <input type="url" wire:model="license_url" placeholder="https://creativecommons.org/..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Do authors retain rights?') }} * <x-field-tooltip :text="__('Do authors retain the copyright of their articles after publication?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="authors_retain_copyright" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="authors_retain_copyright" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="authors_retain_copyright" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="authors_retain_copyright" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -299,11 +299,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Is commercial reuse allowed?') }} <x-field-tooltip :text="__('Is it permitted to use the content for commercial purposes?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="allows_commercial_reuse" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="allows_commercial_reuse" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="allows_commercial_reuse" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="allows_commercial_reuse" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -322,11 +322,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Licenses visible in articles?') }} <x-field-tooltip :text="__('Does each article clearly display the license under which it is published?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="licenses_visible_in_articles" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="licenses_visible_in_articles" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="licenses_visible_in_articles" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="licenses_visible_in_articles" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -368,7 +368,7 @@
                         </div>
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Institutional email') }} * <span class="text-xs text-gray-400">({{ __('not Gmail/Yahoo') }})</span> <x-field-tooltip :text="__('Official journal email with institutional domain.')" /></label>
-                            <input type="email" wire:model="institutional_email" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <input type="email" wire:model="institutional_email" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                             @error('institutional_email') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -377,11 +377,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Editorial board visible?') }} * <x-field-tooltip :text="__('Does the website show the names and affiliations of the editorial board members?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="editorial_board_visible" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="editorial_board_visible" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="editorial_board_visible" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="editorial_board_visible" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -390,13 +390,13 @@
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Editorial board URL') }} <x-field-tooltip :text="__('Link to the page listing the editorial board.')" /></label>
-                        <input type="url" wire:model="editorial_board_url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <input type="url" wire:model="editorial_board_url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
 
                     <div class="grid gap-6 sm:grid-cols-2">
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Peer review type') }} * <x-field-tooltip :text="__('Method of evaluating articles by experts before publication.')" /></label>
-                            <select wire:model="peer_review_type" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <select wire:model="peer_review_type" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                 <option value="">{{ __('Select...') }}</option>
                                 @foreach($peerReviewTypes as $key => $label)
                                     <option value="{{ $key }}">{{ $label }}</option>
@@ -406,7 +406,7 @@
                         </div>
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Frequency') }} * <x-field-tooltip :text="__('How often new issues or articles are published.')" /></label>
-                            <select wire:model="publication_frequency" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <select wire:model="publication_frequency" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                 <option value="">{{ __('Select...') }}</option>
                                 @foreach($frequencies as $key => $label)
                                     <option value="{{ $key }}">{{ $label }}</option>
@@ -427,11 +427,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Does the journal charge APC (Article Processing Charges)?') }} * <x-field-tooltip :text="__('Do authors have to pay for their article to be published?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model.live="charges_apc" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model.live="charges_apc" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model.live="charges_apc" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model.live="charges_apc" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -442,11 +442,11 @@
                     <div class="grid gap-6 sm:grid-cols-2">
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('APC amount') }} <x-field-tooltip :text="__('Cost that authors must pay per published article.')" /></label>
-                            <input type="number" wire:model="apc_amount" min="0" step="0.01" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <input type="number" wire:model="apc_amount" min="0" step="0.01" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         </div>
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Currency') }}</label>
-                            <select wire:model="apc_currency" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <select wire:model="apc_currency" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                 <option value="USD">USD</option>
                                 <option value="EUR">EUR</option>
                                 <option value="GBP">GBP</option>
@@ -458,11 +458,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Are there waivers?') }} <x-field-tooltip :text="__('Are APC discounts or waivers offered for authors from developing countries or other conditions?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_apc_waivers" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_apc_waivers" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_apc_waivers" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_apc_waivers" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -474,7 +474,7 @@
                         <div class="flex flex-wrap gap-3">
                             @foreach($fundingOptions as $key => $label)
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" wire:model="funding_sources" value="{{ $key }}" class="h-4 w-4 rounded text-indigo-600">
+                                    <input type="checkbox" wire:model="funding_sources" value="{{ $key }}" class="h-4 w-4 rounded text-brand">
                                     <span class="text-sm text-gray-700 dark:text-gray-300">{{ $label }}</span>
                                 </label>
                             @endforeach
@@ -485,11 +485,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Advertising on the site?') }} <x-field-tooltip :text="__("Does the journal's website display advertising?")" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_advertising" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_advertising" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_advertising" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_advertising" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -499,11 +499,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Business model transparency?') }} <x-field-tooltip :text="__('Does the journal publish clear information about how it is funded and what its costs are?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="business_model_transparent" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="business_model_transparent" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="business_model_transparent" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="business_model_transparent" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -520,11 +520,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Editorial ethics policy?') }} * <x-field-tooltip :text="__('Does the journal have a published ethics policy for authors, editors and reviewers?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_ethics_policy" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_ethics_policy" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_ethics_policy" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_ethics_policy" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -535,11 +535,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Adheres to COPE?') }} <x-field-tooltip :text="__('Does the journal follow the guidelines of the Committee on Publication Ethics (COPE)?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="adheres_to_cope" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="adheres_to_cope" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="adheres_to_cope" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="adheres_to_cope" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -549,11 +549,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Anti-plagiarism policy?') }} * <x-field-tooltip :text="__('Does the journal verify the originality of articles with anti-plagiarism tools?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_antiplagiarism_policy" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_antiplagiarism_policy" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_antiplagiarism_policy" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_antiplagiarism_policy" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -562,18 +562,18 @@
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Anti-plagiarism tool') }} <x-field-tooltip :text="__('Specific software used to verify originality.')" /></label>
-                        <input type="text" wire:model="antiplagiarism_tool" placeholder="{{ __('e.g.: Turnitin, iThenticate') }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <input type="text" wire:model="antiplagiarism_tool" placeholder="{{ __('e.g.: Turnitin, iThenticate') }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Conflict of interest declaration?') }} <x-field-tooltip :text="__('Are authors and reviewers required to declare potential conflicts of interest?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_conflict_of_interest_policy" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_conflict_of_interest_policy" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="has_conflict_of_interest_policy" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="has_conflict_of_interest_policy" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -583,11 +583,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Declared AI use in editorial process?') }} <x-field-tooltip :text="__('Does the journal have a policy on the use of artificial intelligence in article production?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="declares_ai_use" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="declares_ai_use" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="declares_ai_use" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="declares_ai_use" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -597,11 +597,11 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('DOI assigned to articles?') }} <x-field-tooltip :text="__('Does each article have a unique DOI (Digital Object Identifier)?')" /></label>
                         <div class="flex gap-4">
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="assigns_doi" value="1" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="assigns_doi" value="1" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('Yes') }}</span>
                             </label>
                             <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" wire:model="assigns_doi" value="0" class="h-4 w-4 text-indigo-600">
+                                <input type="radio" wire:model="assigns_doi" value="0" class="h-4 w-4 text-brand">
                                 <span class="text-gray-700 dark:text-gray-300">{{ __('No') }}</span>
                             </label>
                         </div>
@@ -610,17 +610,17 @@
                     <div class="grid gap-6 sm:grid-cols-2">
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Print ISSN') }} <x-field-tooltip :text="__('International serial number for the print version (format: 1234-5678).')" /></label>
-                            <input type="text" wire:model="issn_print" placeholder="1234-5678" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <input type="text" wire:model="issn_print" placeholder="1234-5678" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         </div>
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Online ISSN') }} <x-field-tooltip :text="__('International serial number for the electronic version.')" /></label>
-                            <input type="text" wire:model="issn_online" placeholder="1234-5679" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <input type="text" wire:model="issn_online" placeholder="1234-5679" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         </div>
                     </div>
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Publisher') }} <x-field-tooltip :text="__('Name of the publisher, if it differs from the publishing institution.')" /></label>
-                        <input type="text" wire:model="publisher" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <input type="text" wire:model="publisher" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
 
                     <hr class="border-gray-200 dark:border-gray-700">
@@ -630,18 +630,18 @@
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('OAI-PMH Base URL') }} <x-field-tooltip :text="__('Base URL of the OAI-PMH server (e.g. https://journal.edu/oai/request).')" /></label>
-                        <input type="url" wire:model="oai_base_url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <input type="url" wire:model="oai_base_url" placeholder="https://..." class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         @error('oai_base_url') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid gap-6 sm:grid-cols-2">
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Set Spec') }} <x-field-tooltip :text="__('SET identifier to harvest only a specific collection (optional).')" /></label>
-                            <input type="text" wire:model="oai_set_spec" placeholder="{{ __('e.g.: col_123456789_1') }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <input type="text" wire:model="oai_set_spec" placeholder="{{ __('e.g.: col_123456789_1') }}" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         </div>
                         <div>
                             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Metadata Prefix') }} <x-field-tooltip :text="__('Preferred metadata format for harvesting.')" /></label>
-                            <select wire:model="oai_metadata_prefix" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            <select wire:model="oai_metadata_prefix" class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                                 <option value="oai_dc">Dublin Core (oai_dc)</option>
                                 <option value="marcxml">MARCXML</option>
                                 <option value="oai_datacite">DataCite</option>
@@ -679,18 +679,18 @@
                         <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">{{ __('Choose how to continue') }}</h3>
                         <div class="grid gap-6 md:grid-cols-2">
                             {{-- Option 1: Evaluate (Recommended) --}}
-                            <div class="relative flex flex-col rounded-2xl border-2 border-indigo-500 bg-indigo-50/50 p-6 dark:border-indigo-400 dark:bg-indigo-900/20">
-                                <div class="absolute -top-3 left-6 inline-flex rounded-full bg-indigo-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
+                            <div class="relative flex flex-col rounded-2xl border-2 border-blue-500 bg-blue-50/50 p-6 dark:border-blue-400 dark:bg-blue-900/20">
+                                <div class="absolute -top-3 left-6 inline-flex rounded-full bg-blue-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
                                     {{ __('Recommended') }}
                                 </div>
-                                <h4 class="mb-2 flex items-center gap-2 text-lg font-bold text-indigo-900 dark:text-indigo-300">
-                                    <svg class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>
+                                <h4 class="mb-2 flex items-center gap-2 text-lg font-bold text-blue-900 dark:text-blue-300">
+                                    <svg class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" /></svg>
                                     {{ __('Evaluate Journal') }}
                                 </h4>
-                                <p class="mb-6 flex-1 text-sm leading-relaxed text-indigo-800/80 dark:text-indigo-200/80">
+                                <p class="mb-6 flex-1 text-sm leading-relaxed text-blue-800/80 dark:text-blue-200/80">
                                     {{ __('Get the Editorial Standards Platform Quality Seal. Your journal will be evaluated in detail according to our methodological criteria. A high score will significantly increase the visibility, prestige and trust in your publications, distinguishing you in the scientific community.') }}
                                 </p>
-                                <button wire:click="submit" type="button" class="wizard-btn wizard-btn-success flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-500">
+                                <button wire:click="submit" type="button" class="wizard-btn wizard-btn-success flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-6 py-3.5 font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:bg-blue-500">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>
                                     {{ __('Pay and Evaluate') }}
                                 </button>
@@ -705,7 +705,7 @@
                                 <p class="mb-6 flex-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                                     {{ __('Register your journal in our public access database for free. Your journal will appear in search results after being approved by the team, but will not have the Quality Seal nor a detailed rating from our platform.') }}
                                 </p>
-                                <button wire:click="listJournal" type="button" class="wizard-btn flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-6 py-3.5 font-bold text-slate-700 transition-all hover:bg-slate-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                                <button wire:click="listJournal" type="button" class="wizard-btn flex w-full items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-6 py-3.5 font-bold text-slate-700 transition-all hover:bg-slate-50 hover:text-brand dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
                                     {{ __('Request Listing') }}
                                 </button>
@@ -732,7 +732,7 @@
                 </button>
 
                 @if($currentStep < $totalSteps)
-                    <button wire:click="nextStep" type="button" class="wizard-btn wizard-btn-primary inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white">
+                    <button wire:click="nextStep" type="button" class="wizard-btn wizard-btn-primary inline-flex items-center rounded-lg bg-brand px-6 py-3 font-semibold text-white">
                         {{ __('Next') }}
                         <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                     </button>
