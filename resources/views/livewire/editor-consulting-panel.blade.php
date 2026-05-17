@@ -37,7 +37,7 @@
             x-init="setTimeout(() => show = false, 6000)"
             x-transition
             class="mb-6 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm shadow
-                {{ $toast['type'] === 'success' ? 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-emerald-950/30 dark:text-blue-200' : 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950/30 dark:text-red-200' }}">
+                {{ $toast['type'] === 'success' ? 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-200' : 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950/30 dark:text-red-200' }}">
             @if($toast['type'] === 'success')
                 <svg class="h-5 w-5 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             @else

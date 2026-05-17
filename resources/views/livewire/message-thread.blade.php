@@ -75,7 +75,7 @@
         </div>
     @endif
     @if(session('thread_info'))
-        <div class="mx-4 mt-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-800 dark:bg-emerald-950/30 dark:text-blue-300">
+        <div class="mx-4 mt-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300">
             {{ session('thread_info') }}
         </div>
     @endif
