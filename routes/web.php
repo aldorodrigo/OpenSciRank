@@ -15,6 +15,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\MessageAttachmentController;
 use App\Http\Controllers\AdminTaskConversationController;
+use App\Http\Controllers\JournalPdfController;
 
 // Sitemap & SEO (no locale prefix)
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -203,6 +204,10 @@ $authenticatedRoutes = function () {
     Route::get('/checkout/{journal}/success', [CheckoutSuccessController::class, 'journal'])->name('checkout.success');
     Route::get('/renew/{journal}', PaymentCheckout::class)->name('renew');
     Route::get('/badge/{journal}', [BadgeController::class, 'page'])->name('badge');
+
+    // PDF certificate + evaluation report (Sprint Launch #55)
+    Route::get('/journals/{journal}/certificate.pdf', [JournalPdfController::class, 'certificate'])->name('journal.certificate.pdf');
+    Route::get('/journals/{journal}/report.pdf', [JournalPdfController::class, 'report'])->name('journal.report.pdf');
 
     // Book routes
     Route::get('/book/submit', BookSubmissionWizard::class)->name('book.submit');
