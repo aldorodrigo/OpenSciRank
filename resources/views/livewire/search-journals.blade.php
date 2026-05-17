@@ -57,7 +57,7 @@
         </button>
         @endif
         @if($country)
-        <button wire:click="$set('country', '')" class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition hover:bg-emerald-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60">
+        <button wire:click="$set('country', '')" class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 transition hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60">
             {{ \App\Livewire\SearchJournals::countryFlag($country) }} {{ \App\Livewire\SearchJournals::countryName($country) }}
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
