@@ -88,11 +88,19 @@
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:2.5rem;">
                         {{-- Brand --}}
                         <div style="grid-column:span 2">
-                            <a href="/" class="flex items-center gap-2 text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                            <a href="/" class="flex items-center gap-3" aria-label="Editorial Standards Platform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 text-brand dark:text-blue-300" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+                                    <rect x="8" y="8" width="14" height="84"/>
+                                    <rect x="22" y="8" width="56" height="14"/>
+                                    <rect x="78" y="8" width="14" height="32"/>
+                                    <rect x="22" y="43" width="30" height="14"/>
+                                    <rect x="22" y="78" width="56" height="14"/>
+                                    <rect x="78" y="60" width="14" height="32"/>
                                 </svg>
-                                Editorial Standards
+                                <span class="flex flex-col leading-none">
+                                    <span class="text-base font-semibold text-slate-900 dark:text-white">Editorial Standards</span>
+                                    <span class="mt-0.5 text-[10px] font-medium tracking-[0.2em] text-brand dark:text-blue-300">PLATFORM</span>
+                                </span>
                             </a>
                             <p class="mt-4 max-w-xs text-sm text-gray-600 dark:text-gray-400">{{ __('Global platform for editorial evaluation and visibility for scientific journals and academic books.') }}</p>
                             <div class="mt-5 flex items-center gap-3">

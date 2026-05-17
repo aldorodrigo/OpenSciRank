@@ -11,13 +11,21 @@
 @endphp
 <header class="{{ request()->is('admin*') ? 'relative' : 'sticky top-0' }} w-full border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80" style="{{ request()->is('admin*') ? 'z-index: 50;' : 'z-index: 9999;' }}" x-data="{ mobileOpen: false }">
     <div class="container mx-auto flex h-16 items-center justify-between px-4">
-        {{-- Logo --}}
-        <a href="{{ locale_path('/') }}" class="flex items-center gap-2 text-xl font-bold text-indigo-600 dark:text-indigo-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+        {{-- Logo: mark + wordmark (Editorial Standards Platform). Ver BRAND.md --}}
+        <a href="{{ locale_path('/') }}" class="flex items-center gap-3" aria-label="Editorial Standards Platform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+                <rect x="8" y="8" width="14" height="84"/>
+                <rect x="22" y="8" width="56" height="14"/>
+                <rect x="78" y="8" width="14" height="32"/>
+                <rect x="22" y="43" width="30" height="14"/>
+                <rect x="22" y="78" width="56" height="14"/>
+                <rect x="78" y="60" width="14" height="32"/>
             </svg>
-            <span class="hidden sm:inline">Editorial Standards</span>
-            <span class="sm:hidden">ESP</span>
+            <span class="hidden flex-col leading-none sm:flex">
+                <span class="text-base font-semibold text-slate-900 dark:text-white">Editorial Standards</span>
+                <span class="mt-0.5 text-[10px] font-medium tracking-[0.2em] text-brand dark:text-blue-300">PLATFORM</span>
+            </span>
+            <span class="text-base font-semibold text-slate-900 sm:hidden dark:text-white">ESP</span>
         </a>
 
         {{-- Desktop Nav --}}

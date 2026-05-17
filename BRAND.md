@@ -215,7 +215,46 @@ Estos colores **no representan a la marca**. Sirven sólo para señalética sem�
 
 ---
 
-## 11. Mantenimiento del manual
+## 11. Assets de marca disponibles
+
+### Vectoriales (SVG) — disponibles ahora en el repo
+
+| Archivo | Uso |
+|---|---|
+| [`public/brand/mark.svg`](public/brand/mark.svg) | Mark blue sobre transparente — uso general |
+| [`public/brand/mark-white.svg`](public/brand/mark-white.svg) | Mark blanca sobre transparente — fondos oscuros |
+| [`public/brand/logo-horizontal.svg`](public/brand/logo-horizontal.svg) | Lockup horizontal light |
+| [`public/brand/logo-horizontal-dark.svg`](public/brand/logo-horizontal-dark.svg) | Lockup horizontal sobre Editorial Blue Deep |
+| [`public/brand/logo-stacked.svg`](public/brand/logo-stacked.svg) | Lockup vertical light |
+| [`public/brand/logo-stacked-dark.svg`](public/brand/logo-stacked-dark.svg) | Lockup vertical sobre Editorial Blue Deep |
+| [`public/favicon.svg`](public/favicon.svg) | Favicon (mark blue) |
+| [`public/images/og-default.svg`](public/images/og-default.svg) | Open Graph card 1200×630 default |
+
+**Estado actual de los SVGs:** geometría reconstruida internamente por inspección visual del brand guide entregado por el diseñador, mientras esperamos los archivos source originales. Aproximación cercana pero no pixel-perfect — cuando llegue el zip con `.fig`/`.ai` + SVGs exportados con SVGO, se swappean directamente en `public/brand/` y `public/favicon.svg` sin cambios en la integración.
+
+### Pendientes de generación externa — TODO post-EPIC
+
+Los siguientes formatos rasterizados **no se generaron** en este sprint porque no hay `convert`/`rsvg-convert`/`inkscape` disponibles en el setup local (WSL Ubuntu + Git Bash Windows). Se necesita:
+
+- (a) recibir el zip del diseñador con todos los PNG/ICO ya exportados (ver `LOGO_BRIEF.md` sección 8), o
+- (b) generar localmente con ImageMagick/Inkscape, o
+- (c) usar una herramienta online tipo CloudConvert / RealFaviconGenerator a partir de los SVG existentes.
+
+| Archivo | Tamaño | Estado |
+|---|---|---|
+| `public/favicon.ico` | 16/32/48 multi-res | **legacy Laravel rojo** — reemplazar |
+| `public/apple-touch-icon.png` | 180×180 con fondo blanco | **legacy Laravel** — reemplazar |
+| `public/favicon-16.png` | 16×16 | falta |
+| `public/favicon-32.png` | 32×32 | falta |
+| `public/favicon-192.png` | 192×192 (Android) | falta |
+| `public/favicon-512.png` | 512×512 (Android) | falta |
+| `public/safari-pinned-tab.svg` | monocromo | falta |
+| `public/images/og-default.png` | 1200×630 PNG | **legacy** — reemplazar con render del SVG nuevo |
+| `public/brand/*.png` | PNG @1x/@2x/@3x de cada lockup | falta |
+
+Mientras tanto, los browsers modernos (Chrome 80+, Firefox 41+, Edge 79+, Safari 9+) usan `favicon.svg` directamente — la web ya muestra la nueva mark en la pestaña sin necesidad del `.ico`. Apple iOS y algunos crawlers viejos siguen usando los archivos legacy hasta que se reemplacen.
+
+## 12. Mantenimiento del manual
 
 Este manual se actualiza:
 
