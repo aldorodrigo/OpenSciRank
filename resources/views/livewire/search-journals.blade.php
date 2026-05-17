@@ -277,11 +277,7 @@
                                             ">
                                                 {{ $itemType === 'journal' ? __('Journal') : __('Book') }}
                                             </span>
-                                            @if($hasSeal)
-                                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                                                ✅ {{ __('Seal') }}
-                                            </span>
-                                            @endif
+                                            {{-- Badge "Sello" removido: el ribbon diagonal (.seal-ribbon) ya indica el sello en certified journals --}}
                                             @if($isFeaturedBook)
                                             <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
                                                 ★ {{ __('Featured') }}
