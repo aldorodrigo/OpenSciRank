@@ -35,7 +35,7 @@
                 {{ $conversation->participants()->count() }} participante(s) &mdash;
                 <span @class([
                     'font-medium',
-                    'text-emerald-600 dark:text-emerald-400' => $conversation->status === 'open',
+                    'text-brand dark:text-blue-400' => $conversation->status === 'open',
                     'text-gray-400 dark:text-gray-500' => $conversation->status === 'closed',
                     'text-amber-600 dark:text-amber-400' => $conversation->status === 'archived',
                 ])>
@@ -60,7 +60,7 @@
                 @elseif($conversation->status === 'closed')
                     <button wire:click="reopenConversation"
                             wire:confirm="¿Reabrir esta conversación?"
-                            class="rounded-md bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400">
+                            class="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-medium text-brand hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400">
                         Reabrir
                     </button>
                 @endif
@@ -75,7 +75,7 @@
         </div>
     @endif
     @if(session('thread_info'))
-        <div class="mx-4 mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300">
+        <div class="mx-4 mt-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-700 dark:border-blue-800 dark:bg-emerald-950/30 dark:text-blue-300">
             {{ session('thread_info') }}
         </div>
     @endif
@@ -102,7 +102,7 @@
             ])>
                 {{-- Avatar (izquierda, no mío) --}}
                 @unless($isMine)
-                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-brand dark:bg-blue-900/50 dark:text-blue-300">
                         {{ $initials }}
                     </div>
                 @endunless
@@ -123,7 +123,7 @@
                     {{-- Burbuja del mensaje --}}
                     <div @class([
                         'rounded-2xl px-4 py-2.5 text-sm leading-relaxed break-words',
-                        'rounded-br-sm bg-indigo-100 text-indigo-900 dark:bg-indigo-700 dark:text-white' => $isMine,
+                        'rounded-br-sm bg-blue-100 text-blue-900 dark:bg-brand dark:text-white' => $isMine,
                         'rounded-bl-sm bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100'   => !$isMine,
                     ])>
                         {!! nl2br(e($message->body)) !!}
@@ -143,7 +143,7 @@
                             <div class="mt-3">
                                 @if($isPaid)
                                     {{-- Pago completado: badge verde --}}
-                                    <div class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                    <div class="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                                         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                         {{ __('Pago completado') }}
                                         @if($linkProduct)
@@ -153,7 +153,7 @@
                                 @elseif($paymentUrl && $linkProduct)
                                     {{-- Link vigente: botón clickeable --}}
                                     <a href="{{ $paymentUrl }}" target="_blank" rel="noopener"
-                                       class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-indigo-700 shadow-sm ring-1 ring-indigo-200 transition hover:bg-indigo-50 hover:shadow dark:bg-gray-800 dark:text-indigo-300 dark:ring-indigo-700 dark:hover:bg-indigo-900/30">
+                                       class="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-brand shadow-sm ring-1 ring-blue-200 transition hover:bg-blue-50 hover:shadow dark:bg-gray-800 dark:text-blue-300 dark:ring-brand dark:hover:bg-blue-900/30">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                                         <span>
                                             {{ __('Pagar :name', ['name' => $linkProduct->getTranslationWithFallback('name')]) }}
@@ -184,7 +184,7 @@
                                    class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800 transition hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:hover:bg-amber-900/60">
                                     📋 {{ __('Tarea #:id', ['id' => $derivedTask->id]) }}
                                     @if($derivedTask->status === 'completed')
-                                        <span class="text-emerald-600 dark:text-emerald-400">✓</span>
+                                        <span class="text-brand dark:text-blue-400">✓</span>
                                     @endif
                                 </a>
                             @endforeach
@@ -247,7 +247,7 @@
                                         <span class="text-base" aria-hidden="true">{{ $mimeIcon }}</span>
                                         <span class="min-w-0 flex-1 truncate font-medium">{{ $att->original_name }}</span>
                                         <span class="shrink-0 text-gray-400">{{ $att->humanSize() }}</span>
-                                        <svg class="h-4 w-4 shrink-0 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                        <svg class="h-4 w-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                     </a>
                                 @endif
                             @endforeach
@@ -257,7 +257,7 @@
 
                 {{-- Avatar (derecha, mío) --}}
                 @if($isMine)
-                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white dark:bg-indigo-500">
+                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white dark:bg-blue-500">
                         {{ $initials }}
                     </div>
                 @endif
@@ -281,10 +281,10 @@
             @if(!empty($pendingFiles))
                 <div class="mb-3 flex flex-wrap gap-2">
                     @foreach($pendingFiles as $i => $file)
-                        <div class="flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs text-indigo-700 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+                        <div class="flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs text-brand dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                             <span class="max-w-[120px] truncate">{{ $file->getClientOriginalName() }}</span>
                             <button type="button" wire:click="removePendingFile({{ $i }})"
-                                    class="ml-1 text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-200">
+                                    class="ml-1 text-blue-400 hover:text-brand dark:hover:text-blue-200">
                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
@@ -301,7 +301,7 @@
 
             <div class="flex items-end gap-2 rounded-xl border bg-gray-50 p-2 transition dark:bg-gray-800"
                 :class="dragOver
-                    ? 'border-indigo-400 ring-2 ring-indigo-200 dark:ring-indigo-800'
+                    ? 'border-blue-400 ring-2 ring-blue-200 dark:ring-blue-800'
                     : 'border-gray-200 dark:border-gray-700'"
                 @dragover.prevent="dragOver = true"
                 @dragleave.prevent="dragOver = false"
@@ -317,7 +317,7 @@
 
                 <div class="flex shrink-0 items-center gap-2">
                     {{-- Botón adjuntar --}}
-                    <label class="cursor-pointer text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400" title="Adjuntar archivo">
+                    <label class="cursor-pointer text-gray-400 hover:text-blue-500 dark:hover:text-blue-400" title="Adjuntar archivo">
                         <input type="file" multiple wire:model="pendingFiles" x-ref="fileInput" class="hidden"
                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.jpg,.jpeg,.png,.webp,.gif,.svg">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -329,7 +329,7 @@
                     <button wire:click="send"
                             wire:loading.attr="disabled"
                             wire:loading.class="opacity-50 cursor-not-allowed"
-                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white shadow transition hover:bg-indigo-500 disabled:opacity-50"
+                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-white shadow transition hover:bg-blue-500 disabled:opacity-50"
                             title="Enviar (Ctrl+Enter)">
                         <svg wire:loading.remove class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
@@ -368,7 +368,7 @@
                     {{-- Toggle: enviar historial --}}
                     <label class="flex items-start gap-3 cursor-pointer">
                         <input type="checkbox" wire:model.live="closeForm.send_history"
-                               class="mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900">
+                               class="mt-0.5 rounded border-gray-300 text-brand focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900">
                         <div>
                             <span class="text-sm font-medium text-gray-900 dark:text-white">
                                 📧 {{ __('Enviar historial por email a los participantes') }}
@@ -389,7 +389,7 @@
                                       rows="3"
                                       maxlength="500"
                                       placeholder="{{ __('Comentario final del equipo que verá el editor al inicio del email…') }}"
-                                      class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white"></textarea>
+                                      class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white"></textarea>
                         </div>
                     @endif
                 </div>
@@ -401,7 +401,7 @@
                     </button>
                     <button wire:click="closeConversation"
                             wire:loading.attr="disabled"
-                            class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">
+                            class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50">
                         <span wire:loading.remove wire:target="closeConversation">{{ __('Cerrar conversación') }}</span>
                         <span wire:loading wire:target="closeConversation">{{ __('Cerrando…') }}</span>
                     </button>
@@ -453,7 +453,7 @@
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Tipo de tarea') }}</label>
                         <select wire:model.live="taskForm.type"
-                                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
+                                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
                             <option value="support">{{ __('Soporte (genérico)') }}</option>
                             <option value="evaluate_journal">{{ __('Evaluación de revista (cortesía)') }}</option>
                             <option value="reevaluate_journal">{{ __('Re-evaluación de revista (cortesía)') }}</option>
@@ -483,7 +483,7 @@
                     <div>
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Título') }}</label>
                         <input type="text" wire:model="taskForm.title"
-                               class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
+                               class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
                         @error('taskForm.title')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
 
@@ -495,7 +495,7 @@
                             @if(in_array($taskForm['type'], ['evaluate_journal','reevaluate_journal','renewal_evaluation','review_listing_journal']))
                                 <select wire:model="taskForm.related_id"
                                         wire:change="$set('taskForm.related_type', '{{ \App\Models\Journal::class }}')"
-                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
+                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
                                     <option value="">— {{ __('Seleccionar revista del editor') }} —</option>
                                     @foreach($this->availableJournals as $journal)
                                         <option value="{{ $journal->id }}">{{ $journal->getTranslationWithFallback('title') }} (#{{ $journal->id }} · {{ $journal->status }})</option>
@@ -504,7 +504,7 @@
                             @elseif($taskForm['type'] === 'review_listing_book')
                                 <select wire:model="taskForm.related_id"
                                         wire:change="$set('taskForm.related_type', '{{ \App\Models\Book::class }}')"
-                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
+                                        class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
                                     <option value="">— {{ __('Seleccionar libro del editor') }} —</option>
                                     @foreach($this->availableBooks as $book)
                                         <option value="{{ $book->id }}">{{ $book->getTranslationWithFallback('title') }} (#{{ $book->id }})</option>
@@ -513,14 +513,14 @@
                             @elseif($taskForm['type'] === 'consulting')
                                 <div class="space-y-2">
                                     <select wire:model.live="taskForm.related_type"
-                                            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
+                                            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
                                         <option value="">— {{ __('Tipo de consultoría') }} —</option>
                                         <option value="{{ \App\Models\Journal::class }}">{{ __('Sobre revista existente') }}</option>
                                         <option value="{{ \App\Models\User::class }}">{{ __('Pack Lanzamiento (nueva revista)') }}</option>
                                     </select>
                                     @if($taskForm['related_type'] === \App\Models\Journal::class)
                                         <select wire:model="taskForm.related_id"
-                                                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
+                                                class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900 dark:text-white">
                                             <option value="">— {{ __('Seleccionar revista') }} —</option>
                                             @foreach($this->availableJournals as $journal)
                                                 <option value="{{ $journal->id }}">{{ $journal->getTranslationWithFallback('title') }}</option>
@@ -528,7 +528,7 @@
                                         </select>
                                     @elseif($taskForm['related_type'] === \App\Models\User::class)
                                         @php $editor = $this->resolveEditorForCurrentContext ?? null; @endphp
-                                        <p class="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs text-indigo-700 dark:border-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300">
+                                        <p class="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-brand dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                                             {{ __('Se asociará al editor del hilo.') }}
                                         </p>
                                     @endif
@@ -580,7 +580,7 @@
                     <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
                         <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                             <input type="checkbox" wire:model.live="taskForm.attach_payment_link"
-                                   class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900">
+                                   class="rounded border-gray-300 text-brand focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900">
                             💳 {{ __('Adjuntar link de pago') }}
                         </label>
 
@@ -618,7 +618,7 @@
                                         @elseif($availablePayables->count() === 1)
                                             {{-- Solo 1 → auto-asignado, mostrar como confirmación --}}
                                             @php $only = $availablePayables->first(); @endphp
-                                            <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200">
+                                            <div class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
                                                 ✓ {{ __('Se aplicará a:') }}
                                                 <strong>
                                                     @if(method_exists($only, 'getTranslationWithFallback'))
@@ -651,7 +651,7 @@
 
                                 <label class="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
                                     <input type="checkbox" wire:model="taskForm.send_auto_message"
-                                           class="mt-0.5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-900">
+                                           class="mt-0.5 rounded border-gray-300 text-brand focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900">
                                     <span>{{ __('Enviar mensaje automático al editor con el link de pago') }}</span>
                                 </label>
                             </div>
@@ -674,7 +674,7 @@
                     <button type="button" wire:click="createTaskFromMessage"
                             wire:loading.attr="disabled"
                             @if($disableSubmit) disabled @endif
-                            class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50">
+                            class="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50">
                         <span wire:loading.remove wire:target="createTaskFromMessage">{{ __('Crear tarea') }}</span>
                         <span wire:loading wire:target="createTaskFromMessage">{{ __('Creando…') }}</span>
                     </button>

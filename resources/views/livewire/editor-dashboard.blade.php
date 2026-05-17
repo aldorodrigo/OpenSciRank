@@ -56,13 +56,13 @@
                         </span>
                     @endif
                 </a>
-                <a href="{{ route('app.submit') }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500">
+                <a href="{{ route('app.submit') }}" class="inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
                     {{ __('New Journal') }}
                 </a>
-                <a href="{{ route('app.book.submit') }}" class="inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-500">
+                <a href="{{ route('app.book.submit') }}" class="inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
@@ -83,19 +83,19 @@
         @if($bannerType !== 'none')
         <div x-data="{ dismissed: localStorage.getItem('dashboard-banner-{{ $bannerType }}') === 'true' }" x-show="!dismissed" x-transition class="mb-8">
             @if($bannerType === 'welcome')
-                <div class="relative rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-6 shadow-lg dark:border-indigo-800 dark:from-indigo-950/50 dark:to-gray-900">
+                <div class="relative rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-white p-6 shadow-lg dark:border-blue-800 dark:from-blue-950/50 dark:to-gray-900">
                     <button @click="dismissed = true; localStorage.setItem('dashboard-banner-welcome', 'true')" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                     <div class="flex items-start gap-4">
-                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/50">
-                            <svg class="h-6 w-6 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
+                            <svg class="h-6 w-6 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Welcome to Editorial Standards Platform') }}</h3>
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Register your journal and choose your path: list it for free in our directory or request an expert editorial evaluation to obtain the Quality Seal.') }}</p>
                             <div class="mt-4 flex flex-wrap gap-3">
-                                <a href="{{ route('app.submit') }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500">{{ __('Register Journal') }}</a>
+                                <a href="{{ route('app.submit') }}" class="inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">{{ __('Register Journal') }}</a>
                             </div>
                         </div>
                     </div>
@@ -116,24 +116,24 @@
                     </div>
                 </div>
             @elseif($bannerType === 'listed_no_evaluation' && $listedJournal)
-                <div class="relative rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-6 shadow-lg dark:border-emerald-800 dark:from-emerald-950/50 dark:to-gray-900">
+                <div class="relative rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-white p-6 shadow-lg dark:border-blue-800 dark:from-emerald-950/50 dark:to-gray-900">
                     <button @click="dismissed = true; localStorage.setItem('dashboard-banner-listed_no_evaluation', 'true')" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                     <div class="flex items-start gap-4">
-                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
-                            <svg class="h-6 w-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
+                            <svg class="h-6 w-6 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Take the next step: get the Editorial Quality Seal') }}</h3>
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Your journal is already visible in the directory. An expert can evaluate it against international quality criteria. If it passes, you get a verifiable seal for 1 year.') }}</p>
                             <div class="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                                <span class="flex items-center gap-1"><svg class="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> {{ __('International credibility') }}</span>
-                                <span class="flex items-center gap-1"><svg class="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> {{ __('Greater visibility') }}</span>
-                                <span class="flex items-center gap-1"><svg class="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> {{ __('Badge for your website') }}</span>
+                                <span class="flex items-center gap-1"><svg class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> {{ __('International credibility') }}</span>
+                                <span class="flex items-center gap-1"><svg class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> {{ __('Greater visibility') }}</span>
+                                <span class="flex items-center gap-1"><svg class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> {{ __('Badge for your website') }}</span>
                             </div>
                             <div class="mt-4">
-                                <a href="{{ route('app.checkout', $listedJournal) }}" class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500">
+                                <a href="{{ route('app.checkout', $listedJournal) }}" class="inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                                     <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                     {{ __('Request Evaluation — $99 USD') }}
                                 </a>
@@ -157,7 +157,7 @@
                             </p>
                             <div class="mt-3 flex items-center gap-3">
                                 <div class="h-2.5 w-32 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                    <div class="relative h-full rounded-full {{ $evaluatedJournal->current_score >= 75 ? 'bg-emerald-500' : 'bg-blue-500' }}" style="width: {{ min($evaluatedJournal->current_score, 100) }}%"></div>
+                                    <div class="relative h-full rounded-full {{ $evaluatedJournal->current_score >= 75 ? 'bg-blue-500' : 'bg-blue-500' }}" style="width: {{ min($evaluatedJournal->current_score, 100) }}%"></div>
                                 </div>
                                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $evaluatedJournal->current_score }}% / 75%</span>
                             </div>
@@ -236,9 +236,9 @@
         @endphp
         <div class="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <button type="button" wire:click="applyQuickFilter('all')"
-                class="group rounded-xl bg-white p-6 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-900 {{ $isAllActive ? 'ring-2 ring-indigo-500' : '' }}">
+                class="group rounded-xl bg-white p-6 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 {{ $isAllActive ? 'ring-2 ring-blue-500' : '' }}">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
@@ -246,14 +246,14 @@
                     <div class="min-w-0 flex-1">
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $allJournals->count() }}</p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Journals') }}</p>
-                        <p class="mt-0.5 text-xs text-indigo-600 opacity-0 transition group-hover:opacity-100 dark:text-indigo-400">{{ __('Show all') }} →</p>
+                        <p class="mt-0.5 text-xs text-brand opacity-0 transition group-hover:opacity-100 dark:text-blue-400">{{ __('Show all') }} →</p>
                     </div>
                 </div>
             </button>
             <button type="button" wire:click="applyQuickFilter('certified')" @disabled($certifiedCount === 0)
-                class="group rounded-xl bg-white p-6 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-lg dark:bg-gray-900 {{ $isCertActive ? 'ring-2 ring-emerald-500' : '' }}">
+                class="group rounded-xl bg-white p-6 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-lg dark:bg-gray-900 {{ $isCertActive ? 'ring-2 ring-blue-500' : '' }}">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
@@ -262,9 +262,9 @@
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $certifiedCount }}</p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Certified') }}</p>
                         @if($certifiedCount === 0 && $allJournals->isNotEmpty())
-                            <p class="mt-0.5 text-xs text-emerald-600 dark:text-emerald-400">{{ __('Get your first seal') }}</p>
+                            <p class="mt-0.5 text-xs text-brand dark:text-blue-400">{{ __('Get your first seal') }}</p>
                         @elseif($certifiedCount > 0)
-                            <p class="mt-0.5 text-xs text-emerald-600 opacity-0 transition group-hover:opacity-100 dark:text-emerald-400">{{ __('Filter') }} →</p>
+                            <p class="mt-0.5 text-xs text-brand opacity-0 transition group-hover:opacity-100 dark:text-blue-400">{{ __('Filter') }} →</p>
                         @endif
                     </div>
                 </div>
@@ -287,9 +287,9 @@
                 </div>
             </button>
             <button type="button" wire:click="applyQuickFilter('submitted')" @disabled($underEvaluationCount === 0)
-                class="group rounded-xl bg-white p-6 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-lg dark:bg-gray-900 {{ $isUnderEvalActive ? 'ring-2 ring-purple-500' : '' }}">
+                class="group rounded-xl bg-white p-6 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-lg dark:bg-gray-900 {{ $isUnderEvalActive ? 'ring-2 ring-blue-500' : '' }}">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -298,7 +298,7 @@
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $underEvaluationCount }}</p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Under Evaluation') }}</p>
                         @if($underEvaluationCount > 0)
-                            <p class="mt-0.5 text-xs text-purple-600 opacity-0 transition group-hover:opacity-100 dark:text-purple-400">{{ __('Filter') }} →</p>
+                            <p class="mt-0.5 text-xs text-brand opacity-0 transition group-hover:opacity-100 dark:text-blue-400">{{ __('Filter') }} →</p>
                         @endif
                     </div>
                 </div>
@@ -315,8 +315,8 @@
                 <h3 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Why get the Editorial Quality Seal?') }}</h3>
                 <div class="grid gap-4 sm:grid-cols-3">
                     <div class="flex items-start gap-3">
-                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/50">
-                            <svg class="h-4 w-4 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/50">
+                            <svg class="h-4 w-4 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Credibility') }}</p>
@@ -324,8 +324,8 @@
                         </div>
                     </div>
                     <div class="flex items-start gap-3">
-                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/50">
-                            <svg class="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/50">
+                            <svg class="h-4 w-4 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Visibility') }}</p>
@@ -333,8 +333,8 @@
                         </div>
                     </div>
                     <div class="flex items-start gap-3">
-                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/50">
-                            <svg class="h-4 w-4 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/50">
+                            <svg class="h-4 w-4 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Verifiable badge') }}</p>
@@ -356,7 +356,7 @@
             @if($allJournals->isEmpty())
                 <div class="p-8">
                     <div class="mx-auto max-w-2xl text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
                         <h3 class="mt-4 text-lg font-semibold text-gray-900 dark:text-white">{{ __('Register your first journal') }}</h3>
@@ -373,13 +373,13 @@
                                 {{ __('Register Free') }}
                             </a>
                         </div>
-                        <div class="rounded-xl border-2 border-emerald-200 bg-emerald-50/50 p-5 text-center dark:border-emerald-800 dark:bg-emerald-950/20">
-                            <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
-                                <svg class="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <div class="rounded-xl border-2 border-blue-200 bg-blue-50/50 p-5 text-center dark:border-blue-800 dark:bg-emerald-950/20">
+                            <div class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/50">
+                                <svg class="h-5 w-5 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                             </div>
                             <h4 class="mt-3 font-semibold text-gray-900 dark:text-white">{{ __('Evaluation with Seal') }}</h4>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Expert evaluation + Editorial Quality Seal for 1 year.') }}</p>
-                            <a href="{{ route('app.submit') }}" class="mt-4 inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500">
+                            <a href="{{ route('app.submit') }}" class="mt-4 inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                                 {{ __('Register and Evaluate — $99') }}
                             </a>
                         </div>
@@ -392,14 +392,14 @@
                         {{-- Buscador siempre visible --}}
                         <div class="relative flex-1">
                             <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg>
-                            <input type="text" wire:model.live.debounce.300ms="journalSearch" placeholder="{{ __('Search by title...') }}" class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:placeholder-gray-500">
+                            <input type="text" wire:model.live.debounce.300ms="journalSearch" placeholder="{{ __('Search by title...') }}" class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:placeholder-gray-500">
                         </div>
                         {{-- Botón filtros --}}
                         <button @click="open = !open" class="relative inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
                             {{ __('Filters') }}
                             @if($journalStatusFilter || $journalScoreFilter || $journalSealFilter)
-                                <span class="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white">
+                                <span class="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
                                     {{ (int)($journalStatusFilter !== '') + (int)($journalScoreFilter !== '') + (int)($journalSealFilter !== '') }}
                                 </span>
                             @endif
@@ -489,7 +489,7 @@
                                 ">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
-                                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                                 </svg>
@@ -505,7 +505,7 @@
                                     <td class="px-6 py-4">
                                         <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold
                                             @if($journal->status === 'certified' && $journal->seal_expires_at?->isPast()) bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500 line-through
-                                            @elseif(in_array($journal->status, ['indexed', 'listed', 'certified'])) bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400
+                                            @elseif(in_array($journal->status, ['indexed', 'listed', 'certified'])) bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400
                                             @elseif(in_array($journal->status, ['submitted', 'pending_listing'])) bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-400
                                             @elseif(str_starts_with($journal->status, 'requires_changes')) bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400
                                             @elseif($journal->status === 'evaluated') bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400
@@ -531,11 +531,11 @@
                                             <div>
                                                 <div class="flex items-center gap-2">
                                                     <div class="relative h-2 w-20 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                                        <div class="h-full rounded-full {{ $journal->current_score >= 75 ? 'bg-emerald-500' : 'bg-amber-500' }}" style="width: {{ min($journal->current_score, 100) }}%"></div>
+                                                        <div class="h-full rounded-full {{ $journal->current_score >= 75 ? 'bg-blue-500' : 'bg-amber-500' }}" style="width: {{ min($journal->current_score, 100) }}%"></div>
                                                         {{-- Marcador 75% --}}
                                                         <div class="absolute top-0 h-full w-px bg-gray-400 dark:bg-gray-500" style="left: 75%"></div>
                                                     </div>
-                                                    <span class="text-sm font-medium {{ $journal->current_score >= 75 ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-700 dark:text-gray-300' }}">{{ $journal->current_score }}%</span>
+                                                    <span class="text-sm font-medium {{ $journal->current_score >= 75 ? 'text-blue-700 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300' }}">{{ $journal->current_score }}%</span>
                                                 </div>
                                                 @if($journal->status === 'evaluated' && $journal->current_score < 75)
                                                     <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">{{ __(':points pts needed to certify', ['points' => 75 - $journal->current_score]) }}</p>
@@ -574,11 +574,11 @@
                                                 </span>
                                                 <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">{{ $journal->seal_expires_at->format('d/m/Y') }}</p>
                                             @else
-                                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-400">
                                                     ✅ {{ __('Active') }}
                                                 </span>
-                                                <p class="mt-1 text-xs text-emerald-600 dark:text-emerald-400">{{ $journal->seal_expires_at->format('d/m/Y') }}</p>
-                                                <a href="{{ route('app.badge', $journal) }}" class="mt-1 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                <p class="mt-1 text-xs text-brand dark:text-blue-400">{{ $journal->seal_expires_at->format('d/m/Y') }}</p>
+                                                <a href="{{ route('app.badge', $journal) }}" class="mt-1 inline-flex items-center gap-1 text-xs font-medium text-brand hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                                     {{ __('View Seal') }}
                                                 </a>
@@ -623,7 +623,7 @@
                                             @endif
                                         @elseif($journal->status === 'listed')
                                             <button @click="openConfirm('{{ __('Request Editorial Evaluation') }}', '{{ __('Your journal is already listed in the directory. By requesting the evaluation, an expert will analyze your journal against editorial quality criteria. If it passes with 75% or more, you will get the Quality Seal for 1 year.') }}', '{{ route('app.checkout', $journal) }}', '{{ __('Continue to Payment — $99') }}')"
-                                                class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-500 cursor-pointer">
+                                                class="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-500 cursor-pointer">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                                 {{ __('Get Seal') }}
                                             </button>
@@ -683,7 +683,7 @@
                                                             '{{ route('app.checkout', $journal) }}',
                                                             '{{ __('Continue to Payment — $99') }}'
                                                         )"
-                                                            class="flex w-full items-center gap-2 px-4 py-2 text-sm text-emerald-600 hover:bg-gray-50 dark:text-emerald-400 dark:hover:bg-gray-700">
+                                                            class="flex w-full items-center gap-2 px-4 py-2 text-sm text-brand hover:bg-gray-50 dark:text-blue-400 dark:hover:bg-gray-700">
                                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                                                             {{ __('Pay for Evaluation') }}
                                                         </button>
@@ -701,7 +701,7 @@
                                                     {{-- Corregir y Reenviar (evaluación) — resubmisión gratuita --}}
                                                     @if($journal->status === 'requires_changes_evaluation')
                                                         <a href="{{ route('app.submit.edit', $journal) }}"
-                                                            class="flex items-center gap-2 px-4 py-2 text-sm text-emerald-600 hover:bg-gray-50 dark:text-emerald-400 dark:hover:bg-gray-700">
+                                                            class="flex items-center gap-2 px-4 py-2 text-sm text-brand hover:bg-gray-50 dark:text-blue-400 dark:hover:bg-gray-700">
                                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                             {{ __('Fix and Resubmit') }}
                                                         </a>
@@ -830,7 +830,7 @@
                     </svg>
                     <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">{{ __('You have no books registered') }}</h3>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">{{ __('Start by registering your first book.') }}</p>
-                    <a href="{{ route('app.book.submit') }}" class="mt-6 inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-500">
+                    <a href="{{ route('app.book.submit') }}" class="mt-6 inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                         {{ __('Register Book') }}
                     </a>
                 </div>
@@ -841,14 +841,14 @@
                         {{-- Buscador siempre visible --}}
                         <div class="relative flex-1">
                             <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg>
-                            <input type="text" wire:model.live.debounce.300ms="bookSearch" placeholder="{{ __('Search by title...') }}" class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:placeholder-gray-500">
+                            <input type="text" wire:model.live.debounce.300ms="bookSearch" placeholder="{{ __('Search by title...') }}" class="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:placeholder-gray-500">
                         </div>
                         {{-- Botón filtros --}}
                         <button @click="open = !open" class="relative inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/></svg>
                             {{ __('Filters') }}
                             @if($bookStatusFilter || $bookScoreFilter)
-                                <span class="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 text-[10px] font-bold text-white">
+                                <span class="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold text-white">
                                     {{ (int)($bookStatusFilter !== '') + (int)($bookScoreFilter !== '') }}
                                 </span>
                             @endif
@@ -914,7 +914,7 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
-                                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
+                                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                                 </svg>
@@ -929,7 +929,7 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold
-                                            @if(in_array($book->status, ['indexed', 'listed'])) bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400
+                                            @if(in_array($book->status, ['indexed', 'listed'])) bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400
                                             @elseif(in_array($book->status, ['submitted', 'pending_listing'])) bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-400
                                             @elseif(str_starts_with($book->status, 'requires_changes')) bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400
                                             @else bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400
@@ -950,7 +950,7 @@
                                         @if($book->current_score)
                                             <div class="flex items-center gap-2">
                                                 <div class="h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                                    <div class="h-full rounded-full bg-purple-600" style="width: {{ min($book->current_score, 100) }}%"></div>
+                                                    <div class="h-full rounded-full bg-brand" style="width: {{ min($book->current_score, 100) }}%"></div>
                                                 </div>
                                                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $book->current_score }}%</span>
                                             </div>
@@ -991,7 +991,7 @@
                                                     {{-- Pagar Listado (borrador) --}}
                                                     @if($book->status === 'draft')
                                                         <a href="{{ route('app.book.checkout', $book) }}"
-                                                            class="flex items-center gap-2 px-4 py-2 text-sm text-emerald-600 hover:bg-gray-50 dark:text-emerald-400 dark:hover:bg-gray-700">
+                                                            class="flex items-center gap-2 px-4 py-2 text-sm text-brand hover:bg-gray-50 dark:text-blue-400 dark:hover:bg-gray-700">
                                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                                                             {{ __('Pay for Listing') }}
                                                         </a>
@@ -1162,8 +1162,8 @@
             class="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800">
 
             {{-- Icono --}}
-            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
-                <svg class="h-7 w-7 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40">
+                <svg class="h-7 w-7 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
             </div>
@@ -1177,19 +1177,19 @@
             {{-- Beneficios --}}
             <div class="mb-6 space-y-2 rounded-lg bg-gray-50 p-4 dark:bg-gray-700/50">
                 <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    <svg class="h-4 w-4 shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                     {{ __('Evaluation by an expert in editorial standards') }}
                 </div>
                 <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    <svg class="h-4 w-4 shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                     {{ __('Detailed report with recommendations') }}
                 </div>
                 <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    <svg class="h-4 w-4 shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                     {{ __('Verifiable Quality Seal for 1 year (if approved)') }}
                 </div>
                 <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                    <svg class="h-4 w-4 shrink-0 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    <svg class="h-4 w-4 shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                     {{ __('Secure payment with Stripe') }}
                 </div>
             </div>
@@ -1201,7 +1201,7 @@
                     {{ __('Cancel') }}
                 </button>
                 <a :href="confirmUrl"
-                    class="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500">
+                    class="flex-1 rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                     <span x-text="confirmAction"></span>
                 </a>
             </div>

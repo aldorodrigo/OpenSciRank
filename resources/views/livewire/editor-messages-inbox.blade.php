@@ -21,14 +21,14 @@
                     <h1 class="text-lg font-bold text-gray-900 dark:text-white">
                         Mensajes
                         @if($this->totalUnread > 0)
-                            <span class="ml-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-indigo-600 px-1.5 text-xs font-semibold text-white">
+                            <span class="ml-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand px-1.5 text-xs font-semibold text-white">
                                 {{ $this->totalUnread }}
                             </span>
                         @endif
                     </h1>
                 </div>
                 <button wire:click="openNewModal"
-                        class="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500">
+                        class="flex items-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                     Nueva consulta
                 </button>
@@ -39,7 +39,7 @@
                 <input wire:model.live.debounce.300ms="search"
                        type="search"
                        placeholder="Buscar conversación…"
-                       class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500">
+                       class="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500">
             </div>
 
             {{-- Filtros --}}
@@ -48,7 +48,7 @@
                     <button wire:click="$set('filter', '{{ $key }}')"
                             @class([
                                 'rounded-full px-3 py-1 text-xs font-medium transition',
-                                'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' => $filter === $key,
+                                'bg-blue-100 text-brand dark:bg-blue-900/40 dark:text-blue-300' => $filter === $key,
                                 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800' => $filter !== $key,
                             ])>
                         {{ $label }}
@@ -71,7 +71,7 @@
                 <button wire:click="selectConversation({{ $conv->id }})"
                         @class([
                             'w-full text-left px-4 py-3 transition hover:bg-gray-50 dark:hover:bg-gray-800',
-                            'bg-indigo-50 dark:bg-indigo-900/20' => $activeConversationId === $conv->id,
+                            'bg-blue-50 dark:bg-blue-900/20' => $activeConversationId === $conv->id,
                         ])>
                     <div class="flex items-start justify-between gap-2">
                         <p @class([
@@ -84,7 +84,7 @@
                         <div class="flex shrink-0 flex-col items-end gap-1">
                             <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{{ $relTime }}</span>
                             @if($unread > 0)
-                                <span class="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-indigo-600 px-1 text-xs font-bold text-white">
+                                <span class="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand px-1 text-xs font-bold text-white">
                                     {{ $unread }}
                                 </span>
                             @endif
@@ -105,7 +105,7 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400">No tenés conversaciones todavía.</p>
                     <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">¿Tenés alguna duda?</p>
                     <button wire:click="openNewModal"
-                            class="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500">
+                            class="mt-4 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-500">
                         + Nueva consulta
                     </button>
                 </div>
@@ -123,7 +123,7 @@
             {{-- Botón "Volver" en mobile --}}
             <div class="flex items-center border-b border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-900 md:hidden">
                 <button wire:click="$set('activeConversationId', null)"
-                        class="flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400">
+                        class="flex items-center gap-1.5 text-sm font-medium text-brand dark:text-blue-400">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     Volver
                 </button>
@@ -175,7 +175,7 @@
                         </label>
                         <input wire:model="newSubject" type="text" maxlength="200"
                                placeholder="Breve descripción de tu consulta"
-                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+                               class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
                         @error('newSubject')
                             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
@@ -187,7 +187,7 @@
                             Sobre qué
                         </label>
                         <select wire:model.live="newAboutType"
-                                class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+                                class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
                             <option value="general">Pregunta general</option>
                             <option value="journal">Una de mis revistas</option>
                             <option value="book">Uno de mis libros</option>
@@ -200,7 +200,7 @@
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Revista</label>
                             <select wire:model="newAboutId"
-                                    class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+                                    class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
                                 <option value="">Seleccioná una revista</option>
                                 @foreach($this->myJournals as $j)
                                     <option value="{{ $j->id }}">{{ $j->title }}</option>
@@ -211,7 +211,7 @@
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Libro</label>
                             <select wire:model="newAboutId"
-                                    class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+                                    class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
                                 <option value="">Seleccioná un libro</option>
                                 @foreach($this->myBooks as $b)
                                     <option value="{{ $b->id }}">{{ $b->title }}</option>
@@ -222,7 +222,7 @@
                         <div>
                             <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">Consultoría</label>
                             <select wire:model="newAboutId"
-                                    class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
+                                    class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
                                 <option value="">Seleccioná una consultoría</option>
                                 @foreach($this->myTasks as $t)
                                     <option value="{{ $t->id }}">{{ $t->renderedTitle() }}</option>
@@ -238,7 +238,7 @@
                         </label>
                         <textarea wire:model="newBody" rows="4" maxlength="10000"
                                   placeholder="Describí tu consulta con el mayor detalle posible…"
-                                  class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"></textarea>
+                                  class="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"></textarea>
                         @error('newBody')
                             <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
@@ -249,7 +249,7 @@
                         <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Adjuntos (opcional)
                         </label>
-                        <label class="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-4 text-center transition hover:border-indigo-400 hover:bg-indigo-50/30 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-indigo-600">
+                        <label class="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-4 text-center transition hover:border-blue-400 hover:bg-blue-50/30 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-brand">
                             <input type="file" multiple wire:model="newFiles" class="hidden"
                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.jpg,.jpeg,.png,.webp,.gif,.svg">
                             <svg class="mb-1.5 h-8 w-8 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -280,7 +280,7 @@
                     <button wire:click="createConversation"
                             wire:loading.attr="disabled"
                             wire:loading.class="opacity-60 cursor-not-allowed"
-                            class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500">
+                            class="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                         <span wire:loading.remove wire:target="createConversation">Enviar consulta</span>
                         <span wire:loading wire:target="createConversation">Enviando…</span>
                     </button>

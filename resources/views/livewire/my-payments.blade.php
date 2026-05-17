@@ -87,12 +87,12 @@
                                     @if($payment->payable)
                                         @if($payment->payable_type === 'App\\Models\\Journal')
                                             <a href="{{ '/journal/'.$payment->payable->slug }}"
-                                               class="text-indigo-600 hover:underline dark:text-indigo-400">
+                                               class="text-brand hover:underline dark:text-blue-400">
                                                 {{ $payment->payable->getTranslationWithFallback('title') }}
                                             </a>
                                         @elseif($payment->payable_type === 'App\\Models\\Book')
                                             <a href="{{ '/book/'.$payment->payable->slug }}"
-                                               class="text-indigo-600 hover:underline dark:text-indigo-400">
+                                               class="text-brand hover:underline dark:text-blue-400">
                                                 {{ $payment->payable->getTranslationWithFallback('title') }}
                                             </a>
                                         @else
@@ -111,10 +111,10 @@
                                 <td class="px-4 py-3 text-center">
                                     @php($svc = $payment->serviceStatus())
                                     <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium
-                                        @if($svc === 'completed') bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300
+                                        @if($svc === 'completed') bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300
                                         @elseif($svc === 'in_progress') bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300
                                         @elseif($svc === 'pending_work' || $svc === 'pending_payment') bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
-                                        @elseif($svc === 'partial') bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300
+                                        @elseif($svc === 'partial') bg-blue-100 text-brand dark:bg-blue-900/40 dark:text-blue-300
                                         @elseif($svc === 'failed') bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300
                                         @elseif($svc === 'refunded') bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300
                                         @else bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300
@@ -135,7 +135,7 @@
                                 <td class="px-4 py-3 text-center">
                                     <button wire:click="showDetail({{ $payment->id }})"
                                             type="button"
-                                            class="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 transition hover:bg-indigo-100 dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60">
+                                            class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-brand transition hover:bg-blue-100 dark:bg-blue-900/40 dark:text-blue-300 dark:hover:bg-blue-900/60">
                                         {{ __('Ver') }}
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
                                     </button>
@@ -202,8 +202,8 @@
                             @endforeach
                             @if($b['discount'] > 0)
                                 <tr>
-                                    <td class="px-4 py-2.5 italic text-emerald-700 dark:text-emerald-400">{{ __('Descuento aplicado') }}</td>
-                                    <td class="px-4 py-2.5 text-right font-semibold text-emerald-700 dark:text-emerald-400">−${{ number_format($b['discount'], 0) }}</td>
+                                    <td class="px-4 py-2.5 italic text-blue-700 dark:text-blue-400">{{ __('Descuento aplicado') }}</td>
+                                    <td class="px-4 py-2.5 text-right font-semibold text-blue-700 dark:text-blue-400">−${{ number_format($b['discount'], 0) }}</td>
                                 </tr>
                             @endif
                         </tbody>
@@ -222,12 +222,12 @@
                         {{-- Sprint 3.7 #46: payable User (support-credit) no tiene ficha pública. --}}
                         @if($selectedPayment->payable_type === 'App\\Models\\Journal')
                             <a href="{{ '/journal/'.$selectedPayment->payable->slug }}"
-                               class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+                               class="font-medium text-brand hover:underline dark:text-blue-400">
                                 {{ $selectedPayment->payable->getTranslationWithFallback('title') }}
                             </a>
                         @elseif($selectedPayment->payable_type === 'App\\Models\\Book')
                             <a href="{{ '/book/'.$selectedPayment->payable->slug }}"
-                               class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+                               class="font-medium text-brand hover:underline dark:text-blue-400">
                                 {{ $selectedPayment->payable->getTranslationWithFallback('title') }}
                             </a>
                         @else
