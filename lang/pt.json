@@ -1674,5 +1674,15 @@
     "notifications.new_conversation_opened.editor.subject_book": "Nova mensagem sobre seu livro \":name\"",
     "notifications.new_conversation_opened.editor.subject_general": "Nova mensagem da equipe da Editorial Standards Platform",
     "notifications.new_conversation_opened.editor.subject_journal": "Nova mensagem sobre sua revista \":name\"",
-    "notifications.new_conversation_opened.editor.subject_task": "Nova mensagem sobre a task \":title\""
+    "notifications.new_conversation_opened.editor.subject_task": "Nova mensagem sobre a task \":title\"",
+    "Editorial Standards Ranking": "Ranking Editorial Standards",
+    "Live · ranked by editorial compliance, not by payments": "Ao vivo · ranking por cumprimento editorial, não por pagamentos",
+    "Scientific journals with an active Editorial Standards Seal, sorted by their compliance score against 18 transparent criteria across 5 evaluation areas.": "Revistas científicas com Selo Editorial Standards vigente, ordenadas pelo seu pontuação de cumprimento contra 18 critérios transparentes em 5 áreas de avaliação.",
+    "Ranking of journals with an active Editorial Standards Seal, sorted by their compliance score against transparent editorial criteria.": "Ranking de revistas com Selo Editorial Standards vigente, ordenadas pela sua pontuação de cumprimento contra critérios editoriais transparentes.",
+    "Browse full directory": "Ver diretório completo",
+    "How we evaluate": "Como avaliamos",
+    "Seal": "Selo",
+    "Seal valid until :date": "Selo vigente até :date",
+    "No certified journals yet": "Ainda não há revistas certificadas",
+    "Be the first to earn the Editorial Standards Seal and lead the ranking.": "Seja a primeira a obter o Selo Editorial Standards e liderar o ranking."
 }

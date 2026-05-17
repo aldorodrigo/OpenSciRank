@@ -111,7 +111,7 @@ $publicRoutes = function () {
     })->name('about');
 
     Route::get('/ranking', function () {
-        return redirect('/search');
+        return view('ranking');
     })->name('ranking');
 
     Route::get('/terms', function () {

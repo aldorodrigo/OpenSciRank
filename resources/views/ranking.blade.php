@@ -1,34 +1,22 @@
-<x-layouts.app :title="__('Global Ranking') . ' - Editorial Standards Platform'" :description="__('Ranking of the best scientific journals and academic books indexed in Editorial Standards Platform, sorted by evaluation score.')">
+<x-layouts.app :title="__('Editorial Standards Ranking') . ' - Editorial Standards Platform'" :description="__('Ranking of journals with an active Editorial Standards Seal, sorted by their compliance score against transparent editorial criteria.')">
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 py-16 text-white">
+    <section class="bg-brand-deep py-14 text-white">
         <div class="container mx-auto px-4 text-center">
             <div class="mb-4 inline-flex items-center rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-                🏆 {{ __('Updated in real time') }}
+                {{ __('Live · ranked by editorial compliance, not by payments') }}
             </div>
-            <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Global Ranking') }}</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-orange-100">{{ __('Scientific publications with the highest editorial quality according to the evaluation of Editorial Standards Platform.') }}</p>
-        </div>
-    </section>
+            <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Editorial Standards Ranking') }}</h1>
+            <p class="mx-auto mt-4 max-w-2xl text-blue-200">{{ __('Scientific journals with an active Editorial Standards Seal, sorted by their compliance score against 18 transparent criteria across 5 evaluation areas.') }}</p>
 
-    {{-- Filters --}}
-    <section class="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex flex-wrap items-center gap-4">
-                <div class="flex flex-wrap gap-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 self-center">{{ __('Type:') }}</span>
-                    <button class="rounded-full bg-brand px-4 py-1.5 text-sm font-medium text-white">{{ __('Journals') }}</button>
-                    <button class="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:bg-gray-800 dark:text-gray-300">{{ __('Books') }}</button>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 self-center">{{ __('Level:') }}</span>
-                    @foreach([__('All'), 'A', 'B', 'C'] as $i => $level)
-                    <button class="rounded-full {{ $i === 0 ? 'bg-gray-800 text-white dark:bg-white dark:text-gray-900' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300' }} px-4 py-1.5 text-sm font-medium transition">
-                        {{ $level }}
-                    </button>
-                    @endforeach
-                </div>
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
+                <a href="{{ route('search') }}" class="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:bg-white/10">
+                    {{ __('Browse full directory') }}
+                </a>
+                <a href="{{ route('methodology') }}" class="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:bg-white/10">
+                    {{ __('How we evaluate') }}
+                </a>
             </div>
         </div>
     </section>
@@ -37,7 +25,9 @@
     <section class="bg-gray-50 py-12 dark:bg-gray-950">
         <div class="container mx-auto px-4">
             @php
-                $journals = \App\Models\Journal::where('status', 'indexed')
+                $journals = \App\Models\Journal::where('status', 'certified')
+                    ->whereNotNull('seal_expires_at')
+                    ->where('seal_expires_at', '>', now())
                     ->whereNotNull('current_score')
                     ->orderByDesc('current_score')
                     ->paginate(20);
@@ -71,8 +61,8 @@
                         <thead>
                             <tr class="border-b border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-800/50">
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">#</th>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Publication') }}</th>
-                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Level') }}</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Journal') }}</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Seal') }}</th>
                                 <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Score') }}</th>
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Country') }}</th>
                             </tr>
@@ -108,13 +98,9 @@
                                     </a>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    @if($j->current_level)
-                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold
-                                        @if($j->current_level === 'A') bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400
-                                        @elseif($j->current_level === 'B') bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-400
-                                        @else bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400
-                                        @endif">{{ $j->current_level }}</span>
-                                    @endif
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-brand dark:bg-blue-900/50 dark:text-blue-400" title="{{ __('Seal valid until :date', ['date' => $j->seal_expires_at?->format('Y-m-d')]) }}">
+                                        ✓ {{ __('Seal') }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-3">
@@ -143,11 +129,11 @@
             @else
             {{-- Empty state --}}
             <div class="py-24 text-center">
-                <div class="mx-auto mb-6 text-6xl">🏆</div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('The ranking is under construction') }}</h2>
-                <p class="mx-auto mt-3 max-w-md text-gray-600 dark:text-gray-400">{{ __('There are no indexed publications yet. Be the first to register your journal.') }}</p>
+                <div class="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-3xl dark:bg-blue-900/30">✓</div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('No certified journals yet') }}</h2>
+                <p class="mx-auto mt-3 max-w-md text-gray-600 dark:text-gray-400">{{ __('Be the first to earn the Editorial Standards Seal and lead the ranking.') }}</p>
                 <a href="/register" class="mt-8 inline-flex rounded-lg bg-brand px-8 py-3 font-semibold text-white transition hover:bg-blue-500">
-                    {{ __('Register my Journal') }}
+                    {{ __('Register my Journal — Free') }}
                 </a>
             </div>
             @endif

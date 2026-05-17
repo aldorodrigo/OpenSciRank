@@ -446,5 +446,15 @@
     "notifications.new_conversation_opened.editor.subject_book": "New message about your book \":name\"",
     "notifications.new_conversation_opened.editor.subject_general": "New message from the Editorial Standards Platform team",
     "notifications.new_conversation_opened.editor.subject_journal": "New message about your journal \":name\"",
-    "notifications.new_conversation_opened.editor.subject_task": "New message about the task \":title\""
+    "notifications.new_conversation_opened.editor.subject_task": "New message about the task \":title\"",
+    "Editorial Standards Ranking": "Editorial Standards Ranking",
+    "Live · ranked by editorial compliance, not by payments": "Live · ranked by editorial compliance, not by payments",
+    "Scientific journals with an active Editorial Standards Seal, sorted by their compliance score against 18 transparent criteria across 5 evaluation areas.": "Scientific journals with an active Editorial Standards Seal, sorted by their compliance score against 18 transparent criteria across 5 evaluation areas.",
+    "Ranking of journals with an active Editorial Standards Seal, sorted by their compliance score against transparent editorial criteria.": "Ranking of journals with an active Editorial Standards Seal, sorted by their compliance score against transparent editorial criteria.",
+    "Browse full directory": "Browse full directory",
+    "How we evaluate": "How we evaluate",
+    "Seal": "Seal",
+    "Seal valid until :date": "Seal valid until :date",
+    "No certified journals yet": "No certified journals yet",
+    "Be the first to earn the Editorial Standards Seal and lead the ranking.": "Be the first to earn the Editorial Standards Seal and lead the ranking."
 }
