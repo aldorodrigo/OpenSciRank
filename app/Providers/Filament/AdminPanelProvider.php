@@ -37,7 +37,10 @@ class AdminPanelProvider extends PanelProvider
             // Branding profesional — reemplaza el "Filament" default.
             ->brandName('Editorial Standards')
             ->brandLogoHeight('2rem')
-            ->favicon(asset('favicon.ico'))
+            // Favicon: SVG con mark Editorial Blue (Sprint 5 #51 — ver BRAND.md).
+            // SVG funciona en browsers modernos (Chrome 80+, Firefox 41+, Safari 9+).
+            // .ico legacy pendiente de regenerar externamente (rasterización fuera del setup local).
+            ->favicon(asset('favicon.svg'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
