@@ -41,8 +41,8 @@ class AdminTasksTable
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         AdminTask::TYPE_EVALUATE_JOURNAL,
-                        AdminTask::TYPE_REEVALUATE_JOURNAL => 'indigo',
-                        AdminTask::TYPE_RENEWAL_EVALUATION => 'purple',
+                        AdminTask::TYPE_REEVALUATE_JOURNAL => 'primary',
+                        AdminTask::TYPE_RENEWAL_EVALUATION => 'info',
                         AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
                         AdminTask::TYPE_REVIEW_LISTING_BOOK => 'info',
                         AdminTask::TYPE_CONSULTING => 'success',
@@ -244,8 +244,8 @@ class AdminTasksTable
                         AdminTask::STATUS_AWAITING_PAYMENT => 'warning',
                         AdminTask::STATUS_PENDING => 'gray',
                         AdminTask::STATUS_IN_PROGRESS => 'info',
-                        AdminTask::STATUS_PROPOSAL_SENT => 'indigo',
-                        AdminTask::STATUS_SCHEDULED => 'indigo',
+                        AdminTask::STATUS_PROPOSAL_SENT => 'primary',
+                        AdminTask::STATUS_SCHEDULED => 'primary',
                         AdminTask::STATUS_IN_SESSION => 'warning',
                         AdminTask::STATUS_COMPLETED => 'success',
                         AdminTask::STATUS_CANCELLED => 'gray',
@@ -448,7 +448,7 @@ class AdminTasksTable
                     Action::make('propose_dates')
                         ->label(__('Proponer fechas'))
                         ->icon('heroicon-o-calendar-days')
-                        ->color('indigo')
+                        ->color('primary')
                         ->visible(fn (AdminTask $record): bool => $record->type === AdminTask::TYPE_CONSULTING
                             && in_array($record->status, [
                                 AdminTask::STATUS_PENDING,

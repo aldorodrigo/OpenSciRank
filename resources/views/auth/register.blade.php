@@ -1,11 +1,11 @@
 <x-layouts.app :title="__('Sign Up - Editorial Standards Platform')">
     <x-slot:header>true</x-slot:header>
 
-    <div class="flex min-h-[80vh] items-center justify-center bg-gradient-to-br from-purple-50 via-white to-indigo-50 px-4 py-12 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
+    <div class="flex min-h-[80vh] items-center justify-center bg-slate-50 px-4 py-12 dark:from-gray-950 dark:to-gray-900">
         <div class="w-full max-w-sm">
             {{-- Logo --}}
             <div class="mb-8 text-center">
-                <a href="/" class="inline-flex items-center gap-2 text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                <a href="/" class="inline-flex items-center gap-2 text-2xl font-bold text-brand dark:text-blue-400">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
@@ -27,7 +27,7 @@
                         <label for="name" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Full name') }}</label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus
                             placeholder="{{ __('Your name') }}"
-                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         @error('name')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
@@ -37,7 +37,7 @@
                         <label for="email" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Email address') }}</label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" required
                             placeholder="your@email.com"
-                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         @error('email')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
@@ -47,7 +47,7 @@
                         <label for="password" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Password') }}</label>
                         <input type="password" id="password" name="password" required
                             placeholder="{{ __('Minimum 8 characters') }}"
-                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                         @error('password')
                             <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
                         @enderror
@@ -57,7 +57,7 @@
                         <label for="password_confirmation" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Confirm password') }}</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" required
                             placeholder="{{ __('Repeat your password') }}"
-                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                     </div>
 
                     {{-- Sprint 3.7 #41 — timezone explícita (auto-detect JS + dropdown agrupado) --}}
@@ -67,7 +67,7 @@
                             <span class="text-xs font-normal text-gray-500">{{ __('(used for sessions and reminders)') }}</span>
                         </label>
                         <select id="timezone" name="timezone" required
-                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                            class="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                             @foreach (\App\Support\TimezoneHelper::commonZones() as $group => $zones)
                                 <optgroup label="{{ $group }}">
                                     @foreach ($zones as $value => $label)
@@ -94,14 +94,14 @@
                         </script>
                     </div>
 
-                    <button type="submit" class="w-full rounded-xl bg-indigo-600 py-3 font-semibold text-white shadow-lg transition hover:bg-indigo-500">
+                    <button type="submit" class="w-full rounded-xl bg-brand py-3 font-semibold text-white shadow-lg transition hover:bg-blue-500">
                         {{ __('Create account') }}
                     </button>
                 </form>
 
                 <p class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
                     {{ __('Already have an account?') }}
-                    <a href="{{ route('login') }}" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">{{ __('Sign In') }}</a>
+                    <a href="{{ route('login') }}" class="font-medium text-brand hover:underline dark:text-blue-400">{{ __('Sign In') }}</a>
                 </p>
             </div>
         </div>

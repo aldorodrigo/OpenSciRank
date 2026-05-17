@@ -2,10 +2,10 @@
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-indigo-600 to-purple-600 py-16 text-white">
+    <section class="bg-brand-deep py-16 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Plans and Pricing') }}</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-indigo-100">{{ __('Choose the plan that best suits your needs. Registration in the directory is free.') }}</p>
+            <p class="mx-auto mt-4 max-w-2xl text-blue-200">{{ __('Choose the plan that best suits your needs. Registration in the directory is free.') }}</p>
         </div>
     </section>
 
@@ -14,7 +14,7 @@
         <div class="container mx-auto px-4">
             <div class="mx-auto max-w-4xl">
                 <h2 class="mb-8 text-center text-2xl font-bold text-gray-900 dark:text-white">{{ __('How does the model work?') }}</h2>
-                <div class="rounded-xl bg-indigo-50 p-8 dark:bg-indigo-900/20">
+                <div class="rounded-xl bg-blue-50 p-8 dark:bg-blue-900/20">
                     <p class="text-gray-700 dark:text-gray-300">{{ __('The platform uses a hybrid model that combines open access to the directory with editorial technical evaluation processes. Payment is made for the technical evaluation process, not for obtaining the editorial seal.') }}</p>
                 </div>
             </div>
@@ -58,47 +58,47 @@
                 </div>
 
                 {{-- Evaluation --}}
-                <div class="relative flex flex-col rounded-2xl bg-indigo-600 p-8 text-white shadow-2xl ring-2 ring-indigo-500">
+                <div class="relative flex flex-col rounded-2xl bg-brand p-8 text-white shadow-2xl ring-2 ring-blue-500">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-amber-400 px-4 py-1 text-xs font-bold text-amber-900 shadow-md">
                         {{ __('MOST POPULAR') }}
                     </div>
-                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500">
                         <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
                     <h3 class="text-xl font-bold">{{ __('Editorial Evaluation') }}</h3>
-                    <p class="mt-2 text-sm text-indigo-200">{{ __('Complete technical evaluation + possibility of Editorial Seal.') }}</p>
+                    <p class="mt-2 text-sm text-blue-200">{{ __('Complete technical evaluation + possibility of Editorial Seal.') }}</p>
                     <div class="mt-6">
                         <span class="text-4xl font-extrabold">${{ $products['journal-evaluation']?->price ? number_format($products['journal-evaluation']->price, 0) : '99' }}</span>
-                        <span class="text-sm text-indigo-200"> USD</span>
+                        <span class="text-sm text-blue-200"> USD</span>
                     </div>
-                    <p class="mt-1 text-xs text-indigo-300">{{ __('Standard timeframe: :days business days', ['days' => \App\Models\Setting::get('sla_evaluation_business_days', 15)]) }}</p>
+                    <p class="mt-1 text-xs text-blue-300">{{ __('Standard timeframe: :days business days', ['days' => \App\Models\Setting::get('sla_evaluation_business_days', 15)]) }}</p>
                     <ul class="mt-8 flex-1 space-y-3">
                         <li class="flex items-start gap-3 text-sm">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-blue-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             {{ __('Everything in the free listing') }}
                         </li>
                         <li class="flex items-start gap-3 text-sm">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-blue-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             {{ __('Review of 18 editorial indicators') }}
                         </li>
                         <li class="flex items-start gap-3 text-sm">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-blue-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             {{ __('Editorial Standards Score') }}
                         </li>
                         <li class="flex items-start gap-3 text-sm">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-blue-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             {{ __('Detailed technical report') }}
                         </li>
                         <li class="flex items-start gap-3 text-sm">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-blue-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             {{ __('Editorial Seal (if meets 75%+)') }}
                         </li>
                         <li class="flex items-start gap-3 text-sm">
-                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-indigo-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg class="mt-0.5 h-5 w-5 shrink-0 text-blue-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             {{ __('Improvement recommendations') }}
                         </li>
                     </ul>
-                    <a href="/register" class="mt-8 block w-full rounded-xl bg-white py-3 text-center text-sm font-bold text-indigo-600 shadow-lg transition hover:bg-indigo-50">
+                    <a href="/register" class="mt-8 block w-full rounded-xl bg-white py-3 text-center text-sm font-bold text-brand shadow-lg transition hover:bg-blue-50">
                         {{ __('Request Evaluation') }}
                     </a>
                 </div>
@@ -124,8 +124,8 @@
                             </p>
                         </div>
                         {{-- 2 años (highlight) --}}
-                        <div class="rounded-xl bg-indigo-50 p-6 text-center ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:ring-indigo-700">
-                            <p class="text-xs uppercase tracking-wide text-indigo-700 dark:text-indigo-300">{{ __('2 Years') }} · {{ __('most picked') }}</p>
+                        <div class="rounded-xl bg-blue-50 p-6 text-center ring-1 ring-blue-200 dark:bg-blue-900/30 dark:ring-brand">
+                            <p class="text-xs uppercase tracking-wide text-brand dark:text-blue-300">{{ __('2 Years') }} · {{ __('most picked') }}</p>
                             <p class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
                                 ${{ $products['seal-renewal-2y']?->price ? number_format($products['seal-renewal-2y']->price, 0) : '149' }}
                                 <span class="text-xs font-normal text-gray-500">USD</span>
@@ -161,7 +161,7 @@
                     </ul>
 
                     <div class="mt-8 text-center">
-                        <a href="{{ locale_path('/seal-renewal') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                        <a href="{{ locale_path('/seal-renewal') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                             {{ __('Seal renewal information') }}
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
@@ -217,11 +217,11 @@
         $launchPack = $products['new-journal-consulting'] ?? null;
     @endphp
     @if($launchPack && $launchPack->is_active)
-    <section class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-20 dark:from-indigo-950/30 dark:via-gray-900 dark:to-purple-950/30">
+    <section class="bg-slate-50 py-20 ">
         <div class="container mx-auto px-4">
             <div class="mx-auto max-w-5xl">
                 <div class="mb-12 text-center">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-brand px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
                         🚀 {{ __('Launch your journal') }}
                     </span>
                     <h2 class="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
@@ -232,7 +232,7 @@
                     </p>
                 </div>
 
-                <div class="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-indigo-200 dark:bg-gray-800 dark:ring-indigo-800">
+                <div class="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-blue-200 dark:bg-gray-800 dark:ring-blue-800">
                     <div class="grid gap-0 lg:grid-cols-5">
                         {{-- Lado izquierdo: features --}}
                         <div class="lg:col-span-3 p-8 lg:p-10">
@@ -240,7 +240,7 @@
                                 {{-- Editorial consulting --}}
                                 <div>
                                     <div class="mb-3 flex items-center gap-2">
-                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                         </div>
                                         <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Editorial consulting') }}</h3>
@@ -257,7 +257,7 @@
                                 {{-- Technical consulting --}}
                                 <div>
                                     <div class="mb-3 flex items-center gap-2">
-                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
                                         </div>
                                         <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Technical consulting') }}</h3>
@@ -304,14 +304,14 @@
                         </div>
 
                         {{-- Lado derecho: precio + CTA --}}
-                        <div class="lg:col-span-2 bg-gradient-to-br from-indigo-600 to-purple-700 p-8 text-white lg:p-10">
+                        <div class="lg:col-span-2 bg-brand-deep p-8 text-white lg:p-10">
                             <div class="flex h-full flex-col">
-                                <p class="text-sm uppercase tracking-wide text-indigo-200">{{ __('All-inclusive package') }}</p>
+                                <p class="text-sm uppercase tracking-wide text-blue-200">{{ __('All-inclusive package') }}</p>
                                 <div class="mt-2 flex items-baseline gap-2">
                                     <span class="text-5xl font-extrabold">${{ number_format($launchPack->price, 0) }}</span>
-                                    <span class="text-xl font-medium text-indigo-200">USD</span>
+                                    <span class="text-xl font-medium text-blue-200">USD</span>
                                 </div>
-                                <p class="mt-2 text-sm text-indigo-100">{{ __('One-time payment · No recurring fees') }}</p>
+                                <p class="mt-2 text-sm text-blue-100">{{ __('One-time payment · No recurring fees') }}</p>
 
                                 <ul class="mt-6 space-y-2 text-sm">
                                     <li class="flex items-start gap-2">
@@ -333,10 +333,10 @@
                                 </ul>
 
                                 <a href="{{ locale_path('/checkout/new-journal-consulting') }}"
-                                   class="mt-auto block w-full rounded-xl bg-white py-3.5 text-center text-base font-bold text-indigo-700 shadow-lg transition hover:bg-indigo-50">
+                                   class="mt-auto block w-full rounded-xl bg-white py-3.5 text-center text-base font-bold text-brand shadow-lg transition hover:bg-blue-50">
                                     {{ __('Start launching your journal →') }}
                                 </a>
-                                <p class="mt-3 text-center text-xs text-indigo-200">
+                                <p class="mt-3 text-center text-xs text-blue-200">
                                     {{ __('Secure checkout via Stripe') }}
                                 </p>
                             </div>
@@ -357,7 +357,7 @@
 
                 <div class="grid gap-6 sm:grid-cols-2">
                     {{-- Action Plan + Consulting (antes Premium Report — roadmap #17) --}}
-                    <div class="flex items-start gap-4 rounded-xl border border-gray-200 p-6 transition hover:border-indigo-200 hover:shadow-md dark:border-gray-700 dark:hover:border-indigo-800">
+                    <div class="flex items-start gap-4 rounded-xl border border-gray-200 p-6 transition hover:border-blue-200 hover:shadow-md dark:border-gray-700 dark:hover:border-blue-800">
                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/50">
                             <svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         </div>
@@ -373,7 +373,7 @@
                     </div>
 
                     {{-- Re-evaluation --}}
-                    <div class="flex items-start gap-4 rounded-xl border border-gray-200 p-6 transition hover:border-indigo-200 hover:shadow-md dark:border-gray-700 dark:hover:border-indigo-800">
+                    <div class="flex items-start gap-4 rounded-xl border border-gray-200 p-6 transition hover:border-blue-200 hover:shadow-md dark:border-gray-700 dark:hover:border-blue-800">
                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/50">
                             <svg class="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                         </div>
@@ -391,8 +391,8 @@
                     {{-- Seal Renewal — escalera (roadmap #14) --}}
                     <div class="sm:col-span-2 rounded-xl border border-gray-200 p-6 dark:border-gray-700">
                         <div class="flex items-start gap-4">
-                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/50">
-                                <svg class="h-5 w-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/50">
+                                <svg class="h-5 w-5 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Seal Renewal') }}</h3>
@@ -402,8 +402,8 @@
                                         <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('1 Year') }}</p>
                                         <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-1y']?->price ? number_format($products['seal-renewal-1y']->price, 0) : '89' }} <span class="text-xs font-normal text-gray-500">USD</span></p>
                                     </div>
-                                    <div class="rounded-lg bg-indigo-50 p-3 text-center ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:ring-indigo-700">
-                                        <p class="text-xs uppercase tracking-wide text-indigo-700 dark:text-indigo-300">{{ __('2 Years') }} · {{ __('most picked') }}</p>
+                                    <div class="rounded-lg bg-blue-50 p-3 text-center ring-1 ring-blue-200 dark:bg-blue-900/30 dark:ring-brand">
+                                        <p class="text-xs uppercase tracking-wide text-brand dark:text-blue-300">{{ __('2 Years') }} · {{ __('most picked') }}</p>
                                         <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-2y']?->price ? number_format($products['seal-renewal-2y']->price, 0) : '149' }} <span class="text-xs font-normal text-gray-500">USD</span></p>
                                     </div>
                                     <div class="rounded-lg bg-emerald-50 p-3 text-center ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:ring-emerald-700">
@@ -470,15 +470,15 @@
     {{-- CTA --}}
     <section class="relative overflow-hidden bg-white py-20 dark:bg-gray-900">
         <div class="container mx-auto px-4">
-            <div class="relative overflow-hidden rounded-3xl bg-indigo-600 p-8 text-center text-white shadow-2xl md:p-16">
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600"></div>
+            <div class="relative overflow-hidden rounded-3xl bg-brand p-8 text-center text-white shadow-2xl md:p-16">
+                <div class="absolute inset-0 bg-brand-deep"></div>
                 <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%221%22 fill-rule=%22evenodd%22%3E%3Ccircle cx=%223%22 cy=%223%22 r=%223%22/%3E%3Ccircle cx=%2213%22 cy=%2213%22 r=%223%22/%3E%3C/g%3E%3C/svg%3E')]"></div>
 
                 <div class="relative z-10">
                     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">{{ __('Want to evaluate your journal?') }}</h2>
-                    <p class="mx-auto mt-4 max-w-xl text-lg text-indigo-100">{{ __('Register your journal for free and start the path to editorial excellence.') }}</p>
+                    <p class="mx-auto mt-4 max-w-xl text-lg text-blue-100">{{ __('Register your journal for free and start the path to editorial excellence.') }}</p>
                     <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <a href="/register" class="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-white px-8 py-4 font-bold text-indigo-600 shadow-lg transition-all hover:scale-105 hover:shadow-xl active:scale-95">
+                        <a href="/register" class="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-white px-8 py-4 font-bold text-brand shadow-lg transition-all hover:scale-105 hover:shadow-xl active:scale-95">
                             {{ __('Request Evaluation') }}
                         </a>
                         <a href="/register" class="inline-flex items-center justify-center rounded-xl border-2 border-white/30 bg-white/10 px-8 py-4 font-bold text-white backdrop-blur-sm transition-all hover:border-white hover:bg-white/20 active:scale-95">

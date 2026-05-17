@@ -35,9 +35,9 @@
         <div class="container mx-auto px-4">
             {{-- Breadcrumbs --}}
             <nav class="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                <a href="/" class="hover:text-indigo-600">{{ __('Home') }}</a>
+                <a href="/" class="hover:text-brand">{{ __('Home') }}</a>
                 <span class="mx-2">/</span>
-                <a href="/search" class="hover:text-indigo-600">{{ __('Search') }}</a>
+                <a href="/search" class="hover:text-brand">{{ __('Search') }}</a>
                 <span class="mx-2">/</span>
                 <span class="text-gray-900 dark:text-white">{{ $journal->getTranslationWithFallback('title') }}</span>
             </nav>
@@ -49,7 +49,7 @@
                     @if($journal->logo)
                         <img src="{{ Storage::url($journal->logo) }}" alt="{{ $journal->getTranslationWithFallback('title') }}" class="max-h-24 w-auto rounded-xl object-contain shadow-md" style="max-width: 112px;">
                     @else
-                        <div class="flex h-24 w-24 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                        <div class="flex h-24 w-24 items-center justify-center rounded-xl bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                             </svg>
@@ -94,7 +94,7 @@
                                 </span>
                             @endif
                             @if($journal->license_type)
-                                <span class="rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700 dark:bg-purple-900/50 dark:text-purple-400">
+                                <span class="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                     📄 {{ $journal->license_type }}
                                 </span>
                             @endif
@@ -173,13 +173,13 @@
                         </div>
                     </div>
                     <div class="p-6">
-                        <h4 class="mb-3 text-xs font-black uppercase tracking-widest text-amber-800/60 dark:text-amber-400/50">{{ __("Reviewer's Observations") }}</h4>
+                        <h4 class="mb-3 text-xs font-semibold uppercase tracking-widest text-amber-800/60 dark:text-amber-400/50">{{ __("Reviewer's Observations") }}</h4>
                         <div class="rounded-lg bg-white p-4 text-gray-700 shadow-inner dark:bg-gray-900 dark:text-gray-300 border-l-4 border-amber-400 dark:border-amber-600 italic leading-relaxed">
                             {!! nl2br(e($journal->evaluation_notes ?: __('No specific observations provided, please review the evaluation criteria below.'))) !!}
                         </div>
                         
                         <div class="mt-6 flex flex-wrap gap-4">
-                            <a href="{{ route('app.submit.edit', $journal) }}" class="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-md transition hover:bg-indigo-700 hover:scale-[1.02] active:scale-95">
+                            <a href="{{ route('app.submit.edit', $journal) }}" class="inline-flex items-center rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white shadow-md transition hover:bg-brand hover:scale-[1.02] active:scale-95">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
@@ -220,7 +220,7 @@
                                     <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">{{ __('Subject Areas') }}</h4>
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($journal->subject_areas as $area)
-                                            <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">{{ $area }}</span>
+                                            <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-brand dark:bg-blue-900/30 dark:text-blue-400">{{ $area }}</span>
                                         @endforeach
                                     </div>
                                 </div>
@@ -253,7 +253,7 @@
                 @if($journal->evaluationScores->isNotEmpty() && in_array($journal->status, ['certified', 'indexed']))
                     @php
                         $scoresByCategory = $journal->evaluationScores->groupBy(fn($s) => $s->criteriaItem?->category?->name ?? __('Uncategorized'));
-                        $colors = ['bg-indigo-600', 'bg-emerald-600', 'bg-amber-600', 'bg-purple-600', 'bg-rose-600', 'bg-cyan-600', 'bg-orange-600', 'bg-pink-600'];
+                        $colors = ['bg-brand', 'bg-emerald-600', 'bg-amber-600', 'bg-brand', 'bg-rose-600', 'bg-cyan-600', 'bg-orange-600', 'bg-pink-600'];
                         $colorIndex = 0;
                     @endphp
                     <section id="evaluation-criteria" class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
@@ -294,7 +294,7 @@
                     <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                         <div class="mb-4 flex items-center justify-between">
                             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">📄 {{ __('Recent Articles') }}</h2>
-                            <span class="rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
+                            <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-brand dark:bg-blue-900/30 dark:text-blue-400">
                                 {{ $journal->harvestedArticles->count() }} {{ __('articles') }}
                             </span>
                         </div>
@@ -303,7 +303,7 @@
                                 <div class="py-4 first:pt-0 last:pb-0">
                                     <h3 class="text-sm font-medium text-gray-900 dark:text-white leading-snug">
                                         @if($article->url)
-                                            <a href="{{ $article->url }}" target="_blank" rel="noopener" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                                            <a href="{{ $article->url }}" target="_blank" rel="noopener" class="hover:text-brand dark:hover:text-blue-400 transition-colors">
                                                 {{ $article->title }}
                                             </a>
                                         @else
@@ -341,7 +341,7 @@
                                     <div class="mt-2 flex gap-3">
                                         @if($article->url)
                                             <a href="{{ $article->url }}" target="_blank" rel="noopener"
-                                                class="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                class="inline-flex items-center gap-1 text-xs font-medium text-brand hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                 </svg>
@@ -364,7 +364,7 @@
                         @if($journal->harvestedArticles->count() > 10)
                             <div class="mt-6 text-center">
                                 <a href="{{ route('journal.articles', $journal->slug) }}"
-                                    class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:bg-indigo-500 dark:hover:bg-indigo-600 dark:focus:ring-offset-gray-900">
+                                    class="inline-flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-brand hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-500 dark:hover:bg-brand dark:focus:ring-offset-gray-900">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
@@ -405,7 +405,7 @@
                         </div>
                         {{-- Copyright --}}
                         <div class="space-y-3">
-                            <h3 class="text-sm font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400">📄 {{ __('Copyright and Licenses') }}</h3>
+                            <h3 class="text-sm font-semibold uppercase tracking-wider text-brand dark:text-blue-400">📄 {{ __('Copyright and Licenses') }}</h3>
                             <dl class="space-y-2 text-sm">
                                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800">
                                     <dt class="text-gray-500 dark:text-gray-400">{{ __('License') }}</dt>
@@ -532,11 +532,11 @@
                             {{ __('This journal passed the technical evaluation of Editorial Standards Platform with a score of') }} {{ number_format($journal->current_score, 1) }}%.
                         </p>
                         <div class="mt-4 space-y-2">
-                            <a href="#evaluation-criteria" class="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                            <a href="#evaluation-criteria" class="flex items-center gap-2 text-sm font-medium text-brand hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 {{ __('Verify seal') }}
                             </a>
-                            <a href="/methodology" class="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                            <a href="/methodology" class="flex items-center gap-2 text-sm font-medium text-brand hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 {{ __('Learn about the methodology') }}
                             </a>
@@ -614,7 +614,7 @@
                                 <div class="flex justify-between">
                                     <dt class="text-gray-500 dark:text-gray-400">{{ __('Email') }}</dt>
                                     <dd class="font-medium text-gray-900 dark:text-white">
-                                        <a href="mailto:{{ $journal->institutional_email }}" class="text-indigo-600 hover:underline dark:text-indigo-400">
+                                        <a href="mailto:{{ $journal->institutional_email }}" class="text-brand hover:underline dark:text-blue-400">
                                             {{ $journal->institutional_email }}
                                         </a>
                                     </dd>
@@ -635,7 +635,7 @@
                     <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">{{ __('Links') }}</h3>
                     <div class="space-y-3">
                         @if($journal->url)
-                            <a href="{{ $journal->url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+                            <a href="{{ $journal->url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-brand hover:underline dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
@@ -643,7 +643,7 @@
                             </a>
                         @endif
                         @if($journal->editorial_board_url)
-                            <a href="{{ $journal->editorial_board_url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+                            <a href="{{ $journal->editorial_board_url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-brand hover:underline dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
@@ -651,7 +651,7 @@
                             </a>
                         @endif
                         @if($journal->open_access_policy_url)
-                            <a href="{{ $journal->open_access_policy_url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+                            <a href="{{ $journal->open_access_policy_url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-brand hover:underline dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
                                 </svg>
@@ -659,7 +659,7 @@
                             </a>
                         @endif
                         @if($journal->license_url)
-                            <a href="{{ $journal->license_url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+                            <a href="{{ $journal->license_url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-brand hover:underline dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -677,7 +677,7 @@
                     <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                         <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">{{ __('Registered By') }}</h3>
                         <div class="flex items-center gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400 font-bold text-sm">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400 font-bold text-sm">
                                 {{ strtoupper(substr($journal->user->name, 0, 2)) }}
                             </div>
                             <div>

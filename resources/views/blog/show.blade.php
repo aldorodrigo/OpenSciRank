@@ -5,9 +5,9 @@
     <section class="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
         <div class="container mx-auto px-4 py-3">
             <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <a href="{{ route('blog.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400">Blog</a>
+                <a href="{{ route('blog.index') }}" class="hover:text-brand dark:hover:text-blue-400">Blog</a>
                 <span>/</span>
-                <a href="{{ route('blog.index', ['category' => $post->category]) }}" class="hover:text-indigo-600 dark:hover:text-indigo-400">{{ $post->cat_label }}</a>
+                <a href="{{ route('blog.index', ['category' => $post->category]) }}" class="hover:text-brand dark:hover:text-blue-400">{{ $post->cat_label }}</a>
                 <span>/</span>
                 <span class="text-gray-900 dark:text-white">{{ Str::limit($post->getTranslationWithFallback('title'), 50) }}</span>
             </nav>
@@ -48,7 +48,7 @@
                     @if($post->image_path)
                         <img src="{{ Storage::url($post->image_path) }}" alt="{{ $post->getTranslationWithFallback('title') }}" class="w-full h-auto object-cover">
                     @else
-                        <div class="flex h-64 items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/50 dark:to-purple-900/50">
+                        <div class="flex h-64 items-center justify-center bg-blue-100 dark:from-blue-900/50 dark:to-blue-900/50">
                             <span class="text-9xl">{{ $post->emoji ?? '📝' }}</span>
                         </div>
                     @endif
@@ -56,14 +56,14 @@
 
                 {{-- Content --}}
                 <div class="prose prose-lg prose-indigo dark:prose-invert max-w-none
-                    prose-headings:font-bold prose-a:text-indigo-600 dark:prose-a:text-indigo-400
+                    prose-headings:font-bold prose-a:text-brand dark:prose-a:text-blue-400
                     prose-img:rounded-xl prose-pre:bg-gray-900 dark:prose-pre:bg-gray-800">
                     {!! $post->getTranslationWithFallback('content') !!}
                 </div>
 
                 {{-- Back link --}}
                 <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-                    <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300">
+                    <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 font-semibold text-brand hover:text-brand dark:text-blue-400 dark:hover:text-blue-300">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                         {{ __('Back to blog') }}
                     </a>
@@ -89,7 +89,7 @@
                     </div>
                     <div class="flex flex-1 flex-col p-6">
                         <span class="inline-flex w-fit rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 py-1 text-xs font-semibold">{{ $relatedPost->cat_label }}</span>
-                        <h3 class="mt-3 flex-1 font-bold text-gray-900 transition group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">{{ $relatedPost->getTranslationWithFallback('title') }}</h3>
+                        <h3 class="mt-3 flex-1 font-bold text-gray-900 transition group-hover:text-brand dark:text-white dark:group-hover:text-blue-400">{{ $relatedPost->getTranslationWithFallback('title') }}</h3>
                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{{ $relatedPost->getTranslationWithFallback('excerpt') }}</p>
                         <div class="mt-4 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                             <span>{{ $relatedPost->published_at->translatedFormat('M d, Y') }}</span>

@@ -43,14 +43,13 @@ class CmsCategoryResource extends Resource
         return __('navigation.content');
     }
 
+    // Paleta CMS — solo colores compatibles con BRAND.md.
+    // Removed: Indigo, Purple, Pink (off-brand desde Sprint 5 #52).
     protected static array $palettes = [
-        'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400' => 'Indigo',
+        'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' => 'Blue',
         'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' => 'Emerald',
         'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-400' => 'Teal',
         'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400' => 'Amber',
-        'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400' => 'Purple',
-        'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-400' => 'Pink',
-        'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400' => 'Blue',
         'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400' => 'Rose',
         'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-400' => 'Cyan',
         'bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-400' => 'Lime',

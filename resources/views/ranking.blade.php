@@ -18,8 +18,8 @@
             <div class="flex flex-wrap items-center gap-4">
                 <div class="flex flex-wrap gap-2">
                     <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 self-center">{{ __('Type:') }}</span>
-                    <button class="rounded-full bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white">{{ __('Journals') }}</button>
-                    <button class="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-300">{{ __('Books') }}</button>
+                    <button class="rounded-full bg-brand px-4 py-1.5 text-sm font-medium text-white">{{ __('Journals') }}</button>
+                    <button class="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:bg-gray-800 dark:text-gray-300">{{ __('Books') }}</button>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 self-center">{{ __('Level:') }}</span>
@@ -54,12 +54,12 @@
                         @if($j->logo)
                             <img src="{{ Storage::url($j->logo) }}" alt="{{ $j->getTranslationWithFallback('title') }}" class="h-10 w-10 rounded-lg object-cover">
                         @else
-                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                             </div>
                         @endif
                         <p class="mt-2 px-4 text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">{{ $j->getTranslationWithFallback('title') }}</p>
-                        <span class="mt-2 text-xl font-bold text-indigo-600 dark:text-indigo-400">{{ $j->current_score }}%</span>
+                        <span class="mt-2 text-xl font-bold text-brand dark:text-blue-400">{{ $j->current_score }}%</span>
                     </div>
                     @endforeach
                 </div>
@@ -80,7 +80,7 @@
                         <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
                             @foreach($journals as $position => $j)
                             @php $rank = ($journals->currentPage() - 1) * $journals->perPage() + $position + 1; @endphp
-                            <tr class="group hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition">
+                            <tr class="group hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition">
                                 <td class="px-6 py-4">
                                     <span class="font-bold text-gray-400 dark:text-gray-500 {{ $rank <= 3 ? 'text-lg' : 'text-sm' }}">
                                         @if($rank === 1) 🥇
@@ -95,12 +95,12 @@
                                         @if($j->logo)
                                             <img src="{{ Storage::url($j->logo) }}" alt="{{ $j->getTranslationWithFallback('title') }}" class="h-9 w-9 rounded-lg object-cover">
                                         @else
-                                            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                                            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                             </div>
                                         @endif
                                         <div>
-                                            <p class="font-semibold text-gray-900 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">{{ $j->getTranslationWithFallback('title') }}</p>
+                                            <p class="font-semibold text-gray-900 group-hover:text-brand dark:text-white dark:group-hover:text-blue-400">{{ $j->getTranslationWithFallback('title') }}</p>
                                             @if($j->publishing_institution)
                                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $j->getTranslationWithFallback('publishing_institution') }}</p>
                                             @endif
@@ -119,7 +119,7 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-3">
                                         <div class="h-2 w-24 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                            <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" style="width: {{ min($j->current_score, 100) }}%"></div>
+                                            <div class="h-full rounded-full bg-brand" style="width: {{ min($j->current_score, 100) }}%"></div>
                                         </div>
                                         <span class="min-w-[3.5rem] text-right text-sm font-bold text-gray-900 dark:text-white">{{ $j->current_score }}%</span>
                                     </div>
@@ -146,7 +146,7 @@
                 <div class="mx-auto mb-6 text-6xl">🏆</div>
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('The ranking is under construction') }}</h2>
                 <p class="mx-auto mt-3 max-w-md text-gray-600 dark:text-gray-400">{{ __('There are no indexed publications yet. Be the first to register your journal.') }}</p>
-                <a href="/register" class="mt-8 inline-flex rounded-lg bg-indigo-600 px-8 py-3 font-semibold text-white transition hover:bg-indigo-500">
+                <a href="/register" class="mt-8 inline-flex rounded-lg bg-brand px-8 py-3 font-semibold text-white transition hover:bg-blue-500">
                     {{ __('Register my Journal') }}
                 </a>
             </div>
@@ -159,7 +159,7 @@
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Do you want to appear in the ranking?') }}</h2>
             <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">{{ __('Register your journal or book and get a professional evaluation based on +50 international criteria.') }}</p>
-            <a href="/register" class="mt-8 inline-flex items-center rounded-lg bg-indigo-600 px-8 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-500">
+            <a href="/register" class="mt-8 inline-flex items-center rounded-lg bg-brand px-8 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-500">
                 {{ __('Index my Publication — Free') }}
             </a>
         </div>

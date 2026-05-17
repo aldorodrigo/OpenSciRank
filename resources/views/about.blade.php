@@ -2,16 +2,15 @@
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
-    <section class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 py-24 text-white">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.05%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
+    <section class="relative overflow-hidden bg-brand-deep py-24 text-white">
         <div class="container relative mx-auto px-4 text-center">
-            <div class="mb-4 inline-flex items-center rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-                🌍 {{ __('Global reach · Transparent editorial evaluation') }}
+            <div class="mb-4 inline-flex items-center rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium">
+                {{ __('Global reach · Transparent editorial evaluation') }}
             </div>
-            <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
                 Editorial Standards Platform
             </h1>
-            <p class="mx-auto mt-6 max-w-2xl text-lg text-indigo-100 sm:text-xl">
+            <p class="mx-auto mt-6 max-w-2xl text-lg text-blue-200 sm:text-xl">
                 {{ __('Global platform for technical evaluation and visibility for scientific journals based on transparent criteria.') }}
             </p>
         </div>
@@ -21,15 +20,15 @@
     <section class="bg-white py-20 dark:bg-gray-900">
         <div class="container mx-auto px-4">
             <div class="mx-auto grid max-w-5xl gap-12 md:grid-cols-2">
-                <div class="rounded-2xl bg-indigo-50 p-8 dark:bg-indigo-900/20">
-                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white">
+                <div class="rounded-2xl bg-blue-50 p-8 dark:bg-blue-900/20">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-white">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
                     <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{{ __('Purpose') }}</h2>
                     <p class="text-gray-600 dark:text-gray-400">{{ __('To contribute to transparency and trust in scientific communication through structured editorial evaluation for scientific journals, public visibility of results and academic book indexing.') }}</p>
                 </div>
-                <div class="rounded-2xl bg-purple-50 p-8 dark:bg-purple-900/20">
-                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-600 text-white">
+                <div class="rounded-2xl bg-blue-50 p-8 dark:bg-blue-900/20">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-white">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
                     </div>
                     <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">{{ __('Scope') }}</h2>
@@ -150,11 +149,11 @@
     {{-- Institutional Formula --}}
     <section class="bg-gray-50 py-12 dark:bg-gray-950">
         <div class="container mx-auto px-4">
-            <div class="mx-auto max-w-3xl rounded-2xl bg-indigo-50 p-8 text-center dark:bg-indigo-900/20">
+            <div class="mx-auto max-w-3xl rounded-2xl bg-blue-50 p-8 text-center dark:bg-blue-900/20">
                 <p class="text-lg font-medium text-gray-800 dark:text-gray-200">
                     "{{ __('Journals can be listed on the platform, evaluated through transparent technical criteria and, if they reach the required level of compliance, obtain the editorial seal of the platform.') }}"
                 </p>
-                <p class="mt-4 text-sm text-indigo-600 dark:text-indigo-400">— {{ __('Institutional formula of the project') }}</p>
+                <p class="mt-4 text-sm text-brand dark:text-blue-400">— {{ __('Institutional formula of the project') }}</p>
             </div>
         </div>
     </section>
@@ -162,17 +161,17 @@
     {{-- CTA --}}
     <section class="relative py-20 overflow-hidden bg-white dark:bg-gray-900">
         <div class="container mx-auto px-4 text-center">
-            <div class="relative overflow-hidden rounded-3xl bg-indigo-600 p-8 text-center text-white shadow-2xl md:p-16">
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600"></div>
+            <div class="relative overflow-hidden rounded-3xl bg-brand p-8 text-center text-white shadow-2xl md:p-16">
+                <div class="absolute inset-0 bg-brand-deep"></div>
                 <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%221%22 fill-rule=%22evenodd%22%3E%3Ccircle cx=%223%22 cy=%223%22 r=%223%22/%3E%3Ccircle cx=%2213%22 cy=%2213%22 r=%223%22/%3E%3C/g%3E%3C/svg%3E')]"></div>
 
                 <div class="relative z-10">
                     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">{{ __('Join the scientific community') }}</h2>
-                    <p class="mx-auto mt-4 max-w-xl text-lg text-indigo-100 italic">"{{ __('Independent technical evaluation to strengthen global scientific communication.') }}"</p>
-                    <p class="mx-auto mt-4 max-w-xl text-indigo-100">{{ __('We help publications gain visibility and credibility through international standards.') }}</p>
+                    <p class="mx-auto mt-4 max-w-xl text-lg text-blue-100 italic">"{{ __('Independent technical evaluation to strengthen global scientific communication.') }}"</p>
+                    <p class="mx-auto mt-4 max-w-xl text-blue-100">{{ __('We help publications gain visibility and credibility through international standards.') }}</p>
 
                     <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <a href="/register" class="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-white px-8 py-4 font-bold text-indigo-600 shadow-lg transition-all hover:scale-105 hover:shadow-xl active:scale-95">
+                        <a href="/register" class="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-white px-8 py-4 font-bold text-brand shadow-lg transition-all hover:scale-105 hover:shadow-xl active:scale-95">
                             {{ __('Register my Journal — Free') }}
                         </a>
                         <a href="/contact" class="inline-flex items-center justify-center rounded-xl border-2 border-white/30 bg-white/10 px-8 py-4 font-bold text-white backdrop-blur-sm transition-all hover:border-white hover:bg-white/20 active:scale-95">

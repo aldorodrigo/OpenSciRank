@@ -27,8 +27,8 @@ class AdminTaskInfolist
                             ->size(\Filament\Support\Enums\TextSize::Medium)
                             ->color(fn (string $state): string => match ($state) {
                                 AdminTask::TYPE_EVALUATE_JOURNAL,
-                                AdminTask::TYPE_REEVALUATE_JOURNAL => 'indigo',
-                                AdminTask::TYPE_RENEWAL_EVALUATION => 'purple',
+                                AdminTask::TYPE_REEVALUATE_JOURNAL => 'primary',
+                                AdminTask::TYPE_RENEWAL_EVALUATION => 'info',
                                 AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
                                 AdminTask::TYPE_REVIEW_LISTING_BOOK => 'info',
                                 AdminTask::TYPE_CONSULTING => 'success',
@@ -90,7 +90,7 @@ class AdminTaskInfolist
 
                                 if ($adminUrl) {
                                     $editIcon = '<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
-                                    $html .= '<a href="'.e($adminUrl).'" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200 transition hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-300 dark:ring-indigo-800 dark:hover:bg-indigo-900/60">'.$editIcon.$editLabel.'</a>';
+                                    $html .= '<a href="'.e($adminUrl).'" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-200 transition hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-800 dark:hover:bg-blue-900/60">'.$editIcon.$editLabel.'</a>';
                                 }
 
                                 if ($publicUrl) {
@@ -134,8 +134,8 @@ class AdminTaskInfolist
                                 AdminTask::STATUS_AWAITING_PAYMENT => 'warning',
                                 AdminTask::STATUS_PENDING => 'gray',
                                 AdminTask::STATUS_IN_PROGRESS => 'info',
-                                AdminTask::STATUS_PROPOSAL_SENT => 'indigo',
-                                AdminTask::STATUS_SCHEDULED => 'indigo',
+                                AdminTask::STATUS_PROPOSAL_SENT => 'primary',
+                                AdminTask::STATUS_SCHEDULED => 'primary',
                                 AdminTask::STATUS_IN_SESSION => 'warning',
                                 AdminTask::STATUS_COMPLETED => 'success',
                                 AdminTask::STATUS_CANCELLED => 'gray',
@@ -265,8 +265,8 @@ class AdminTaskInfolist
                             ->badge()
                             ->color(fn (AdminTask $record): string => match ($record->status) {
                                 AdminTask::STATUS_PENDING => 'gray',
-                                AdminTask::STATUS_PROPOSAL_SENT => 'indigo',
-                                AdminTask::STATUS_SCHEDULED => 'indigo',
+                                AdminTask::STATUS_PROPOSAL_SENT => 'primary',
+                                AdminTask::STATUS_SCHEDULED => 'primary',
                                 AdminTask::STATUS_IN_SESSION => 'warning',
                                 AdminTask::STATUS_COMPLETED => 'success',
                                 AdminTask::STATUS_CANCELLED => 'danger',

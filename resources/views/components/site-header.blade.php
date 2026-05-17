@@ -34,23 +34,23 @@
             <a href="{{ locale_path('/search') }}"
                @class([
                    'flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold transition',
-                   'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' => $isSearchActive,
-                   'text-gray-700 hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-indigo-400' => !$isSearchActive,
+                   'bg-blue-50 text-brand dark:bg-blue-900/30 dark:text-blue-400' => $isSearchActive,
+                   'text-gray-700 hover:bg-gray-100 hover:text-brand dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-blue-400' => !$isSearchActive,
                ])
                @if($isSearchActive) aria-current="page" @endif>
                 <span aria-hidden="true">📰</span>{{ __('Journals') }}
             </a>
             <a href="{{ locale_path('/search?type=books') }}"
-               class="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-indigo-400">
+               class="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-brand dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-blue-400">
                 <span aria-hidden="true">📚</span>{{ __('Books') }}
             </a>
             <span class="mx-2 h-5 w-px bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
 
-            <a href="{{ locale_path('/methodology') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-400">{{ __('Methodology') }}</a>
-            <a href="{{ locale_path('/pricing') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-400">{{ __('Pricing') }}</a>
-            <a href="{{ locale_path('/blog') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-400">Blog</a>
-            <a href="{{ locale_path('/about') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-400">{{ __('About Us') }}</a>
-            <a href="{{ locale_path('/contact') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-indigo-400">{{ __('Contact') }}</a>
+            <a href="{{ locale_path('/methodology') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Methodology') }}</a>
+            <a href="{{ locale_path('/pricing') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Pricing') }}</a>
+            <a href="{{ locale_path('/blog') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">Blog</a>
+            <a href="{{ locale_path('/about') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('About Us') }}</a>
+            <a href="{{ locale_path('/contact') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Contact') }}</a>
         </nav>
 
         {{-- Auth Actions (Desktop) --}}
@@ -58,11 +58,11 @@
             <x-language-switcher />
             @auth
                 @if(Auth::user()->hasRole('super_admin'))
-                    <a href="/admin" class="rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50">
+                    <a href="/admin" class="rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-brand hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
                         {{ __('Administration') }}
                     </a>
                 @endif
-                <a href="{{ locale_path('/app') }}" class="rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50">
+                <a href="{{ locale_path('/app') }}" class="rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-brand hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
                     {{ __('My Dashboard') }}
                 </a>
                 {{-- Mensajes badge --}}
@@ -73,13 +73,13 @@
                     </svg>
                     Mensajes
                     @if($unreadMessages > 0)
-                        <span class="absolute -right-1.5 -top-1.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-indigo-600 px-1 text-xs font-bold text-white">
+                        <span class="absolute -right-1.5 -top-1.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand px-1 text-xs font-bold text-white">
                             {{ $unreadMessages > 99 ? '99+' : $unreadMessages }}
                         </span>
                     @endif
                 </a>
                 <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+                    <button @click="open = !open" class="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
                         <span>{{ Auth::user()->name }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -108,7 +108,7 @@
                             <a href="{{ route('app.messages') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
                                 Mensajes
                                 @if($unreadMessages > 0)
-                                    <span class="rounded-full bg-indigo-600 px-1.5 text-xs font-bold text-white">{{ $unreadMessages }}</span>
+                                    <span class="rounded-full bg-brand px-1.5 text-xs font-bold text-white">{{ $unreadMessages }}</span>
                                 @endif
                             </a>
                             <a href="{{ route('app.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('My Profile') }}</a>
@@ -125,8 +125,8 @@
                     </div>
                 </div>
             @else
-                <a href="{{ locale_path('/login') }}" class="text-sm font-medium text-gray-600 hover:text-indigo-600 dark:text-gray-300">{{ __('Sign In') }}</a>
-                <a href="{{ locale_path('/register') }}" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">{{ __('Sign Up') }}</a>
+                <a href="{{ locale_path('/login') }}" class="text-sm font-medium text-gray-600 hover:text-brand dark:text-gray-300">{{ __('Sign In') }}</a>
+                <a href="{{ locale_path('/register') }}" class="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">{{ __('Sign Up') }}</a>
             @endauth
         </div>
 
@@ -148,21 +148,21 @@
         class="border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-950 md:hidden"
         style="display:none;">
         <nav class="container mx-auto space-y-1 px-4 py-4">
-            <a href="{{ locale_path('/search') }}" class="flex items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2.5 text-sm font-bold text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300">📰 {{ __('Journals directory') }}</a>
+            <a href="{{ locale_path('/search') }}" class="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2.5 text-sm font-bold text-brand dark:bg-blue-900/30 dark:text-blue-300">📰 {{ __('Journals directory') }}</a>
             <a href="{{ locale_path('/search?type=books') }}" class="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">📚 {{ __('Books directory') }}</a>
             <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
-            <a href="{{ locale_path('/methodology') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">{{ __('Methodology') }}</a>
-            <a href="{{ locale_path('/pricing') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">{{ __('Pricing') }}</a>
-            <a href="{{ locale_path('/blog') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">Blog</a>
-            <a href="{{ locale_path('/about') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">{{ __('About Us') }}</a>
-            <a href="{{ locale_path('/contact') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-indigo-900/30">{{ __('Contact') }}</a>
+            <a href="{{ locale_path('/methodology') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Methodology') }}</a>
+            <a href="{{ locale_path('/pricing') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Pricing') }}</a>
+            <a href="{{ locale_path('/blog') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">Blog</a>
+            <a href="{{ locale_path('/about') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('About Us') }}</a>
+            <a href="{{ locale_path('/contact') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Contact') }}</a>
             <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
             @auth
-                <a href="{{ locale_path('/app') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/30">{{ __('My Dashboard') }}</a>
+                <a href="{{ locale_path('/app') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-brand hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30">{{ __('My Dashboard') }}</a>
                 <a href="{{ route('app.messages') }}" class="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
                     Mensajes
                     @if($unreadMessages > 0)
-                        <span class="rounded-full bg-indigo-600 px-2 py-0.5 text-xs font-bold text-white">{{ $unreadMessages }}</span>
+                        <span class="rounded-full bg-brand px-2 py-0.5 text-xs font-bold text-white">{{ $unreadMessages }}</span>
                     @endif
                 </a>
                 <a href="{{ route('app.profile') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">{{ __('My Profile') }}</a>
@@ -172,7 +172,7 @@
                 </form>
             @else
                 <a href="{{ locale_path('/login') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300">{{ __('Sign In') }}</a>
-                <a href="{{ locale_path('/register') }}" class="block rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white hover:bg-indigo-500">{{ __('Sign Up') }}</a>
+                <a href="{{ locale_path('/register') }}" class="block rounded-lg bg-brand px-3 py-2 text-center text-sm font-semibold text-white hover:bg-blue-500">{{ __('Sign Up') }}</a>
             @endauth
             <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
             <div class="px-3 py-1">

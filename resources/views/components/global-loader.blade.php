@@ -19,7 +19,7 @@
         role="progressbar"
         aria-label="{{ __('Cargando') }}"
     >
-        <div class="h-full w-full origin-left animate-progress-indeterminate bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500"></div>
+        <div class="h-full w-full origin-left animate-progress-indeterminate bg-brand"></div>
     </div>
 </div>
 

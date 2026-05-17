@@ -140,7 +140,7 @@ class ViewAdminTask extends ViewRecord
             Action::make('propose_dates')
                 ->label(__('Proponer fechas'))
                 ->icon('heroicon-o-calendar-days')
-                ->color('indigo')
+                ->color('primary')
                 ->visible(fn (): bool => $this->record->type === AdminTask::TYPE_CONSULTING
                     && in_array($this->record->status, [
                         AdminTask::STATUS_PENDING,

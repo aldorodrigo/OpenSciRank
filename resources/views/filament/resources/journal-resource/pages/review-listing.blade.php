@@ -4,21 +4,21 @@
         {{-- BANNER DE TAREA EN CURSO (Sprint 3.6 #32 Fase 2 UX) --}}
         @php($currentTask = $this->currentTask)
         @if($currentTask)
-            <div class="flex items-center justify-between gap-4 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm dark:border-indigo-800 dark:bg-indigo-950/40">
+            <div class="flex items-center justify-between gap-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm dark:border-blue-800 dark:bg-blue-950/40">
                 <div class="flex items-center gap-3">
-                    <svg class="h-5 w-5 shrink-0 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <svg class="h-5 w-5 shrink-0 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     <div>
-                        <span class="font-semibold text-indigo-900 dark:text-indigo-200">{{ __('Trabajando en tarea') }} #{{ $currentTask->id }}</span>
+                        <span class="font-semibold text-blue-900 dark:text-blue-200">{{ __('Trabajando en tarea') }} #{{ $currentTask->id }}</span>
                         @if($currentTask->started_at)
-                            <span class="text-indigo-700 dark:text-indigo-300"> · {{ __('iniciada') }} {{ $currentTask->started_at->diffForHumans() }}</span>
+                            <span class="text-brand dark:text-blue-300"> · {{ __('iniciada') }} {{ $currentTask->started_at->diffForHumans() }}</span>
                         @endif
                         @if($currentTask->assignee)
-                            <span class="text-indigo-700 dark:text-indigo-300"> · {{ __('asignada a') }} {{ $currentTask->assignee->name }}</span>
+                            <span class="text-brand dark:text-blue-300"> · {{ __('asignada a') }} {{ $currentTask->assignee->name }}</span>
                         @endif
                     </div>
                 </div>
                 <a href="{{ url('/admin/admin-tasks/' . $currentTask->id) }}"
-                   class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
+                   class="inline-flex items-center gap-1 rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-500 dark:bg-blue-500 dark:hover:bg-blue-400">
                     {{ __('Ver tarea') }}
                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -28,8 +28,6 @@
         {{-- PREMIUM HERO HEADER --}}
         <div class="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-xl lg:shadow-2xl">
             {{-- Background decorative elements --}}
-            <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl"></div>
-            <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl"></div>
             
             <div class="relative z-10 p-6 lg:p-10">
                 <div class="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
@@ -55,7 +53,7 @@
                         </div>
 
                         <div>
-                            <h1 class="text-2xl font-black tracking-tight text-white lg:text-4xl">
+                            <h1 class="text-2xl font-semibold tracking-tight text-white lg:text-4xl">
                                 {{ $record->getTranslationWithFallback('title') }}
                             </h1>
                             @if($record->getTranslationWithFallback('abbreviated_name'))
@@ -100,7 +98,7 @@
             @php($journalDescription = $record->getTranslationWithFallback('description'))
             @if($journalDescription)
                 <div class="border-b border-slate-100 p-6 dark:border-slate-800">
-                    <h4 class="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Descripción Editorial</h4>
+                    <h4 class="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">Descripción Editorial</h4>
                     <p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ $journalDescription }}</p>
                 </div>
             @endif
@@ -108,7 +106,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {{-- SECTION: Identification --}}
                 <div class="border-b border-slate-100 p-5 dark:border-slate-800 sm:border-r">
-                    <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-indigo-500">
+                    <h5 class="mb-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-blue-500">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" /></svg>
                         Identificación
                     </h5>
@@ -140,7 +138,7 @@
 
                 {{-- SECTION: Open Access --}}
                 <div class="border-b border-slate-100 p-5 dark:border-slate-800 lg:border-r">
-                    <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-emerald-500">
+                    <h5 class="mb-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-emerald-500">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
                         Acceso Abierto
                     </h5>
@@ -170,7 +168,7 @@
 
                 {{-- SECTION: Editorial --}}
                 <div class="border-b border-slate-100 p-5 dark:border-slate-800">
-                    <h5 class="mb-4 flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-blue-500">
+                    <h5 class="mb-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-blue-500">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" /></svg>
                         Editorial y Pares
                     </h5>
@@ -205,7 +203,7 @@
         {{-- EVALUATION NOTES --}}
         <div class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/50">
-                <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-500">
+                <h3 class="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-slate-500">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                     Observaciones (Requeridas si se piden correcciones)
                 </h3>
@@ -214,7 +212,7 @@
                 <textarea
                     wire:model="evaluation_notes"
                     rows="4"
-                    class="block w-full rounded-xl border-slate-200 bg-slate-50/50 p-4 text-sm transition focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-300 dark:focus:border-indigo-500 dark:focus:bg-slate-900"
+                    class="block w-full rounded-xl border-slate-200 bg-slate-50/50 p-4 text-sm transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-300 dark:focus:border-blue-500 dark:focus:bg-slate-900"
                     placeholder="Escribe aquí observaciones si la revista necesita correcciones o si decides rechazar el listado..."
                 ></textarea>
             </div>
@@ -233,7 +231,7 @@
                     <div class="flex items-center gap-4">
                         <div class="flex gap-2">
                             <button wire:click="confirmSave" wire:loading.attr="disabled"
-                                    class="relative overflow-hidden rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-black text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 hover:shadow-indigo-300 active:scale-95 dark:shadow-none">
+                                    class="relative overflow-hidden rounded-xl bg-brand px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-all hover:bg-brand hover:shadow-blue-300 active:scale-95 dark:shadow-none">
                                 Finalizar Revisión
                             </button>
                         </div>
@@ -248,12 +246,11 @@
                 <div x-data x-init="$el.focus()" class="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 animate-in zoom-in duration-200 dark:bg-slate-900 dark:ring-slate-800">
                     {{-- Modal Header --}}
                     <div class="relative bg-slate-900 px-8 py-10 text-white overflow-hidden">
-                        <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl"></div>
                         <div class="relative z-10 flex flex-col items-center text-center">
-                            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500 shadow-lg shadow-indigo-500/40">
+                            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500 shadow-lg shadow-blue-500/40">
                                 <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                             </div>
-                            <h3 class="text-2xl font-black tracking-tight">¿Confirmar Revisión?</h3>
+                            <h3 class="text-2xl font-semibold tracking-tight">¿Confirmar Revisión?</h3>
                             <p class="mt-2 text-sm font-medium text-slate-400">{{ $record->getTranslationWithFallback('title') }}</p>
                         </div>
                     </div>
@@ -261,8 +258,8 @@
                     {{-- Modal Body --}}
                     <div class="px-8 py-8">
                         <div class="space-y-2">
-                            <label class="text-[11px] font-black uppercase tracking-widest text-slate-400">Decisión sobre el Listado</label>
-                            <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
+                            <label class="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Decisión sobre el Listado</label>
+                            <select wire:model="assigned_status" class="w-full rounded-xl border-slate-200 text-sm font-bold focus:ring-blue-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">
                                 <option value="listed">Aprobar y Listar ✅</option>
                                 <option value="requires_changes_listing">Pedir Correcciones 🔄</option>
                                 <option value="rejected">Rechazar Listado ❌</option>
@@ -275,7 +272,7 @@
                         <button wire:click="cancelSave" class="rounded-xl px-5 py-2.5 text-sm font-bold text-slate-500 transition hover:bg-slate-200/50 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-white">
                             Cancelar
                         </button>
-                        <button wire:click="save" wire:loading.attr="disabled" class="flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-2.5 text-sm font-black text-white transition hover:bg-indigo-700 active:scale-95">
+                        <button wire:click="save" wire:loading.attr="disabled" class="flex items-center gap-2 rounded-xl bg-brand px-8 py-2.5 text-sm font-semibold text-white transition hover:bg-brand active:scale-95">
                             <span wire:loading.remove wire:target="save">Confirmar Registro</span>
                             <span wire:loading wire:target="save">Procesando...</span>
                         </button>

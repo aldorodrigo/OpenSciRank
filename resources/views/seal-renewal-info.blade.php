@@ -2,17 +2,17 @@
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-indigo-600 to-purple-600 py-16 text-white">
+    <section class="bg-brand-deep py-16 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Keep your seal active') }}</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-indigo-100">{{ __('Renewal of the Editorial Seal') }} — {{ __('Keep your certification active') }}</p>
+            <p class="mx-auto mt-4 max-w-2xl text-blue-200">{{ __('Renewal of the Editorial Seal') }} — {{ __('Keep your certification active') }}</p>
             <div class="mt-8">
                 @auth
-                    <a href="{{ route('app.dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-white px-8 py-3 font-bold text-indigo-600 shadow-lg transition hover:bg-indigo-50">
+                    <a href="{{ route('app.dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-white px-8 py-3 font-bold text-brand shadow-sm transition hover:bg-blue-50">
                         {{ __('Renew my seal') }}
                     </a>
                 @else
-                    <a href="/register" class="inline-flex items-center justify-center rounded-xl bg-white px-8 py-3 font-bold text-indigo-600 shadow-lg transition hover:bg-indigo-50">
+                    <a href="/register" class="inline-flex items-center justify-center rounded-xl bg-white px-8 py-3 font-bold text-brand shadow-sm transition hover:bg-blue-50">
                         {{ __('Renew my seal') }}
                     </a>
                 @endauth
@@ -28,8 +28,8 @@
 
                 <div class="grid gap-6 md:grid-cols-3">
                     <div class="rounded-xl border border-gray-200 p-6 dark:border-gray-700">
-                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/40">
-                            <svg class="h-6 w-6 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/40">
+                            <svg class="h-6 w-6 text-brand dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
                         <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Visibility in the directory and search') }}</h3>
                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">{{ __('A live editorial seal puts your journal at the top of search results and unlocks the certified filter for readers and authors.') }}</p>
@@ -74,7 +74,7 @@
             <h2 class="mb-12 text-center text-3xl font-bold text-gray-900 dark:text-white">{{ __('What editors are saying') }}</h2>
             <div class="mx-auto grid max-w-5xl gap-6 md:grid-cols-3">
                 <figure class="flex flex-col rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
-                    <svg class="h-6 w-6 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2H6v2h1a4 4 0 004-4V9a2 2 0 00-2-2zm10 0h-3a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2h-1v2h1a4 4 0 004-4V9a2 2 0 00-2-2z"/></svg>
+                    <svg class="h-6 w-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2H6v2h1a4 4 0 004-4V9a2 2 0 00-2-2zm10 0h-3a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2h-1v2h1a4 4 0 004-4V9a2 2 0 00-2-2z"/></svg>
                     <blockquote class="mt-4 flex-1 text-sm text-gray-700 dark:text-gray-300">
                         {{ __('Renewing the seal was straightforward — the new evaluation pointed out exactly what we had to improve and we are now in the 80% range.') }}
                     </blockquote>
@@ -85,7 +85,7 @@
                 </figure>
 
                 <figure class="flex flex-col rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
-                    <svg class="h-6 w-6 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2H6v2h1a4 4 0 004-4V9a2 2 0 00-2-2zm10 0h-3a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2h-1v2h1a4 4 0 004-4V9a2 2 0 00-2-2z"/></svg>
+                    <svg class="h-6 w-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2H6v2h1a4 4 0 004-4V9a2 2 0 00-2-2zm10 0h-3a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2h-1v2h1a4 4 0 004-4V9a2 2 0 00-2-2z"/></svg>
                     <blockquote class="mt-4 flex-1 text-sm text-gray-700 dark:text-gray-300">
                         {{ __('The early renewal discount was a welcome surprise; we always plan our editorial budget months in advance.') }}
                     </blockquote>
@@ -96,7 +96,7 @@
                 </figure>
 
                 <figure class="flex flex-col rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
-                    <svg class="h-6 w-6 text-indigo-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2H6v2h1a4 4 0 004-4V9a2 2 0 00-2-2zm10 0h-3a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2h-1v2h1a4 4 0 004-4V9a2 2 0 00-2-2z"/></svg>
+                    <svg class="h-6 w-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M9 7H6a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2H6v2h1a4 4 0 004-4V9a2 2 0 00-2-2zm10 0h-3a2 2 0 00-2 2v3a2 2 0 002 2h3v3a2 2 0 01-2 2h-1v2h1a4 4 0 004-4V9a2 2 0 00-2-2z"/></svg>
                     <blockquote class="mt-4 flex-1 text-sm text-gray-700 dark:text-gray-300">
                         {{ __('Keeping the seal active gives our authors and readers a clear signal of editorial commitment.') }}
                     </blockquote>
@@ -141,18 +141,18 @@
     {{-- CTA --}}
     <section class="bg-white py-20 dark:bg-gray-900">
         <div class="container mx-auto px-4">
-            <div class="relative overflow-hidden rounded-3xl bg-indigo-600 p-8 text-center text-white shadow-2xl md:p-16">
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600"></div>
+            <div class="relative overflow-hidden rounded-3xl bg-brand p-8 text-center text-white shadow-2xl md:p-16">
+                <div class="absolute inset-0 bg-brand-deep"></div>
                 <div class="relative z-10">
                     <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl">{{ __('Keep your seal active') }}</h2>
-                    <p class="mx-auto mt-4 max-w-xl text-lg text-indigo-100">{{ __('Renew between 60 and 30 days before your seal expires and we apply an automatic :pct% discount on any renewal plan (1, 2 or 3 years).', ['pct' => 10]) }}</p>
+                    <p class="mx-auto mt-4 max-w-xl text-lg text-blue-100">{{ __('Renew between 60 and 30 days before your seal expires and we apply an automatic :pct% discount on any renewal plan (1, 2 or 3 years).', ['pct' => 10]) }}</p>
                     <div class="mt-10 flex items-center justify-center">
                         @auth
-                            <a href="{{ route('app.dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-white px-8 py-4 font-bold text-indigo-600 shadow-lg transition hover:scale-105 hover:bg-indigo-50">
+                            <a href="{{ route('app.dashboard') }}" class="inline-flex items-center justify-center rounded-xl bg-white px-8 py-4 font-bold text-brand shadow-lg transition hover:scale-105 hover:bg-blue-50">
                                 {{ __('Renew my seal') }}
                             </a>
                         @else
-                            <a href="/register" class="inline-flex items-center justify-center rounded-xl bg-white px-8 py-4 font-bold text-indigo-600 shadow-lg transition hover:scale-105 hover:bg-indigo-50">
+                            <a href="/register" class="inline-flex items-center justify-center rounded-xl bg-white px-8 py-4 font-bold text-brand shadow-lg transition hover:scale-105 hover:bg-blue-50">
                                 {{ __('Renew my seal') }}
                             </a>
                         @endauth

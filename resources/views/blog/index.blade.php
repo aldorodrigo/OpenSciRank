@@ -2,10 +2,10 @@
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-indigo-600 to-purple-600 py-16 text-white">
+    <section class="bg-brand-deep py-16 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Blog & Resources') }}</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-indigo-100">{{ __('Guides, news and best practices on Open Science and scientific indexing.') }}</p>
+            <p class="mx-auto mt-4 max-w-2xl text-blue-100">{{ __('Guides, news and best practices on Open Science and scientific indexing.') }}</p>
         </div>
     </section>
 
@@ -16,12 +16,12 @@
                 <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __('Categories:') }}</span>
                 @php $activeCategory = request('category'); @endphp
                 <a href="{{ route('blog.index') }}" class="rounded-full px-4 py-1.5 text-sm font-medium transition
-                    {{ !$activeCategory ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400' }}">
+                    {{ !$activeCategory ? 'bg-brand text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-brand dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400' }}">
                     {{ __('All') }}
                 </a>
                 @foreach(\App\Models\CmsCategory::ordered()->get() as $cat)
                 <a href="{{ route('blog.index', ['category' => $cat->slug]) }}" class="rounded-full px-4 py-1.5 text-sm font-medium transition
-                    {{ $activeCategory === $cat->slug ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400' }}">
+                    {{ $activeCategory === $cat->slug ? 'bg-brand text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-brand dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-blue-900/30 dark:hover:text-blue-400' }}">
                     {{ $cat->getTranslationWithFallback('name') }}
                 </a>
                 @endforeach
@@ -37,7 +37,7 @@
             @if($featured && !$activeCategory)
             <div class="mb-12">
                 <a href="{{ route('blog.show', $featured->slug) }}" class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-lg transition hover:shadow-xl dark:bg-gray-900 md:flex-row">
-                    <div class="flex h-64 items-center justify-center bg-gradient-to-br from-indigo-100 to-purple-100 p-12 dark:from-indigo-900/50 dark:to-purple-900/50 md:h-auto md:w-72 md:shrink-0">
+                    <div class="flex h-64 items-center justify-center bg-blue-100 p-12 dark:from-blue-900/50 dark:to-blue-900/50 md:h-auto md:w-72 md:shrink-0">
                         @if($featured->image_path)
                             <img src="{{ Storage::url($featured->image_path) }}" alt="{{ $featured->getTranslationWithFallback('title') }}" class="h-full w-full object-cover">
                         @else
@@ -49,7 +49,7 @@
                             <span class="rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 py-1 text-xs font-semibold">{{ $featured->cat_label }}</span>
                             <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">⭐ {{ __('Featured') }}</span>
                         </div>
-                        <h2 class="mt-4 text-2xl font-bold text-gray-900 transition group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400 sm:text-3xl">{{ $featured->getTranslationWithFallback('title') }}</h2>
+                        <h2 class="mt-4 text-2xl font-bold text-gray-900 transition group-hover:text-brand dark:text-white dark:group-hover:text-blue-400 sm:text-3xl">{{ $featured->getTranslationWithFallback('title') }}</h2>
                         <p class="mt-3 text-gray-600 dark:text-gray-400">{{ $featured->getTranslationWithFallback('excerpt') }}</p>
                         <div class="mt-6 flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                             <span>📅 {{ $featured->published_at->translatedFormat('M d, Y') }}</span>
@@ -57,7 +57,7 @@
                             <span>⏱ {{ $featured->read_time }} {{ __('read') }}</span>
                             @endif
                         </div>
-                        <span class="mt-6 inline-flex items-center font-semibold text-indigo-600 transition group-hover:gap-2 dark:text-indigo-400">
+                        <span class="mt-6 inline-flex items-center font-semibold text-brand transition group-hover:gap-2 dark:text-blue-400">
                             {{ __('Read article') }} <svg class="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </span>
                     </div>
@@ -80,7 +80,7 @@
                         </div>
                         <div class="flex flex-1 flex-col p-6">
                             <span class="inline-flex w-fit rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 px-3 py-1 text-xs font-semibold">{{ $post->cat_label }}</span>
-                            <h3 class="mt-3 flex-1 font-bold text-gray-900 transition group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">{{ $post->getTranslationWithFallback('title') }}</h3>
+                            <h3 class="mt-3 flex-1 font-bold text-gray-900 transition group-hover:text-brand dark:text-white dark:group-hover:text-blue-400">{{ $post->getTranslationWithFallback('title') }}</h3>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{{ $post->getTranslationWithFallback('excerpt') }}</p>
                             <div class="mt-4 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                                 <span>{{ $post->published_at->translatedFormat('M d, Y') }}</span>
@@ -102,7 +102,7 @@
             @else
             <div class="text-center py-12">
                 <p class="text-gray-500 dark:text-gray-400 text-lg">{{ __('No articles available in this category.') }}</p>
-                <a href="{{ route('blog.index') }}" class="mt-4 inline-flex items-center font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+                <a href="{{ route('blog.index') }}" class="mt-4 inline-flex items-center font-semibold text-brand hover:text-brand dark:text-blue-400">
                     ← {{ __('View all articles') }}
                 </a>
             </div>
@@ -113,17 +113,17 @@
     {{-- Newsletter CTA --}}
     <section class="relative py-16 overflow-hidden bg-white dark:bg-gray-900">
         <div class="container mx-auto px-4">
-            <div class="relative overflow-hidden rounded-3xl bg-indigo-600 p-8 text-center text-white shadow-2xl md:p-12">
-                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600"></div>
+            <div class="relative overflow-hidden rounded-3xl bg-brand p-8 text-center text-white shadow-2xl md:p-12">
+                <div class="absolute inset-0 bg-brand-deep"></div>
                 <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%221%22 fill-rule=%22evenodd%22%3E%3Ccircle cx=%223%22 cy=%223%22 r=%223%22/%3E%3Ccircle cx=%2213%22 cy=%2213%22 r=%223%22/%3E%3C/g%3E%3C/svg%3E')]"></div>
                 <div class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
 
                 <div class="relative z-10 mx-auto max-w-2xl">
                     <h2 class="text-3xl font-extrabold tracking-tight">{{ __('Subscribe to the newsletter') }}</h2>
-                    <p class="mt-4 text-lg text-indigo-100">{{ __('Receive the latest news, guides and updates on Open Science and indexing directly in your email.') }}</p>
+                    <p class="mt-4 text-lg text-blue-100">{{ __('Receive the latest news, guides and updates on Open Science and indexing directly in your email.') }}</p>
                     <form class="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <input type="email" placeholder="{{ __('your@email.com') }}" class="flex-1 rounded-xl bg-white/10 px-4 py-4 text-white placeholder-indigo-200 backdrop-blur-sm border border-white/20 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white">
-                        <button type="submit" class="rounded-xl bg-white px-8 py-4 font-bold text-indigo-600 shadow-lg transition-all hover:scale-105 hover:bg-indigo-50 active:scale-95">
+                        <input type="email" placeholder="{{ __('your@email.com') }}" class="flex-1 rounded-xl bg-white/10 px-4 py-4 text-white placeholder-blue-200 backdrop-blur-sm border border-white/20 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white">
+                        <button type="submit" class="rounded-xl bg-white px-8 py-4 font-bold text-brand shadow-lg transition-all hover:scale-105 hover:bg-blue-50 active:scale-95">
                             {{ __('Subscribe') }}
                         </button>
                     </form>

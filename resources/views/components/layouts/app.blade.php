@@ -104,10 +104,10 @@
                             </a>
                             <p class="mt-4 max-w-xs text-sm text-gray-600 dark:text-gray-400">{{ __('Global platform for editorial evaluation and visibility for scientific journals and academic books.') }}</p>
                             <div class="mt-5 flex items-center gap-3">
-                                <a href="https://twitter.com/editstandards" target="_blank" rel="noopener" class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-200 text-gray-600 transition hover:bg-indigo-100 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-indigo-900/40 dark:hover:text-indigo-400" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:#e5e7eb;" aria-label="Twitter/X">
+                                <a href="https://twitter.com/editstandards" target="_blank" rel="noopener" class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-200 text-gray-600 transition hover:bg-blue-100 hover:text-brand dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-blue-900/40 dark:hover:text-blue-400" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:#e5e7eb;" aria-label="Twitter/X">
                                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                                 </a>
-                                <a href="https://linkedin.com/company/editorialstandards" target="_blank" rel="noopener" class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-200 text-gray-600 transition hover:bg-indigo-100 hover:text-indigo-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-indigo-900/40 dark:hover:text-indigo-400" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:#e5e7eb;" aria-label="LinkedIn">
+                                <a href="https://linkedin.com/company/editorialstandards" target="_blank" rel="noopener" class="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-200 text-gray-600 transition hover:bg-blue-100 hover:text-brand dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-blue-900/40 dark:hover:text-blue-400" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;background:#e5e7eb;" aria-label="LinkedIn">
                                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                                 </a>
                             </div>
@@ -117,9 +117,9 @@
                         <div>
                             <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Platform') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="{{ locale_path('/search') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Scientific Journals') }}</a></li>
-                                <li><a href="{{ locale_path('/search?type=books') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Academic Books') }}</a></li>
-                                <li><a href="{{ locale_path('/blog') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">Blog</a></li>
+                                <li><a href="{{ locale_path('/search') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Scientific Journals') }}</a></li>
+                                <li><a href="{{ locale_path('/search?type=books') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Academic Books') }}</a></li>
+                                <li><a href="{{ locale_path('/blog') }}" class="transition hover:text-brand dark:hover:text-blue-400">Blog</a></li>
                             </ul>
                         </div>
 
@@ -127,11 +127,11 @@
                         <div>
                             <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Services') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="{{ locale_path('/methodology') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Methodology') }}</a></li>
-                                <li><a href="{{ locale_path('/pricing') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Editorial Evaluation') }}</a></li>
-                                <li><a href="{{ locale_path('/seal-renewal') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Seal renewal information') }}</a></li>
-                                <li><a href="{{ locale_path('/register') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Register Journal') }}</a></li>
-                                <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('For Institutions') }}</a></li>
+                                <li><a href="{{ locale_path('/methodology') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Methodology') }}</a></li>
+                                <li><a href="{{ locale_path('/pricing') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Editorial Evaluation') }}</a></li>
+                                <li><a href="{{ locale_path('/seal-renewal') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Seal renewal information') }}</a></li>
+                                <li><a href="{{ locale_path('/register') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Register Journal') }}</a></li>
+                                <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('For Institutions') }}</a></li>
                             </ul>
                         </div>
 
@@ -139,10 +139,10 @@
                         <div>
                             <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Company') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="{{ locale_path('/about') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('About Us') }}</a></li>
-                                <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Contact') }}</a></li>
-                                <li><a href="{{ locale_path('/terms') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Terms of Use') }}</a></li>
-                                <li><a href="{{ locale_path('/privacy') }}" class="transition hover:text-indigo-600 dark:hover:text-indigo-400">{{ __('Privacy') }}</a></li>
+                                <li><a href="{{ locale_path('/about') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('About Us') }}</a></li>
+                                <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Contact') }}</a></li>
+                                <li><a href="{{ locale_path('/terms') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Terms of Use') }}</a></li>
+                                <li><a href="{{ locale_path('/privacy') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Privacy') }}</a></li>
                             </ul>
                         </div>
                     </div>

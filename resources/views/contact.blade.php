@@ -2,10 +2,10 @@
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-indigo-600 to-purple-600 py-16 text-white">
+    <section class="bg-brand-deep py-16 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Contact') }}</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-indigo-100">{{ __('Do you have questions about indexing? We are here to help you.') }}</p>
+            <p class="mx-auto mt-4 max-w-2xl text-blue-100">{{ __('Do you have questions about indexing? We are here to help you.') }}</p>
         </div>
     </section>
 
@@ -21,7 +21,7 @@
 
                     <div class="space-y-6">
                         <div class="flex items-start gap-4">
-                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
@@ -45,7 +45,7 @@
                         </div>
 
                         <div class="flex items-start gap-4">
-                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
+                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                                 </svg>

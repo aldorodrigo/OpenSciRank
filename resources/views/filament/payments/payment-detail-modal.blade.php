@@ -71,7 +71,7 @@
             <div class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Email del comprador') }}</div>
             <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
                 @if($payment->user?->email)
-                    <a href="mailto:{{ $payment->user->email }}" class="text-indigo-600 hover:underline dark:text-indigo-400">
+                    <a href="mailto:{{ $payment->user->email }}" class="text-blue-700 hover:underline dark:text-blue-400">
                         {{ $payment->user->email }}
                     </a>
                 @else
@@ -112,7 +112,7 @@
             <div class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Recurso asociado') }}</div>
             <div class="mt-1 text-sm">
                 @if($payableUrl)
-                    <a href="{{ $payableUrl }}" target="_blank" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+                    <a href="{{ $payableUrl }}" target="_blank" class="font-medium text-blue-700 hover:underline dark:text-blue-400">
                         {{ $payableLabel }}
                     </a>
                 @elseif($payment->payable === null)
@@ -222,8 +222,8 @@
 
                                 $typeColor = match ($t->type) {
                                     \App\Models\AdminTask::TYPE_EVALUATE_JOURNAL,
-                                    \App\Models\AdminTask::TYPE_REEVALUATE_JOURNAL => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
-                                    \App\Models\AdminTask::TYPE_RENEWAL_EVALUATION => 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+                                    \App\Models\AdminTask::TYPE_REEVALUATE_JOURNAL => 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+                                    \App\Models\AdminTask::TYPE_RENEWAL_EVALUATION => 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
                                     \App\Models\AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
                                     \App\Models\AdminTask::TYPE_REVIEW_LISTING_BOOK => 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300',
                                     \App\Models\AdminTask::TYPE_CONSULTING => 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
@@ -244,7 +244,7 @@
                                 $statusColor = match ($t->status) {
                                     \App\Models\AdminTask::STATUS_PENDING => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
                                     \App\Models\AdminTask::STATUS_IN_PROGRESS => 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300',
-                                    \App\Models\AdminTask::STATUS_SCHEDULED => 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+                                    \App\Models\AdminTask::STATUS_SCHEDULED => 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
                                     \App\Models\AdminTask::STATUS_IN_SESSION => 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
                                     \App\Models\AdminTask::STATUS_COMPLETED => 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
                                     \App\Models\AdminTask::STATUS_CANCELLED => 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
@@ -291,7 +291,7 @@
                                 <td class="px-4 py-2.5 text-right">
                                     <a href="{{ \App\Filament\Resources\AdminTasks\AdminTaskResource::getUrl('view', ['record' => $t->id]) }}"
                                        target="_blank"
-                                       class="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50">
+                                       class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50">
                                         {{ __('Abrir') }}
                                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                                     </a>
