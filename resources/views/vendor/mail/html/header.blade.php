@@ -5,7 +5,7 @@
     {{-- Mail header — Editorial Standards Platform. Mark inline (SVG) + wordmark + PLATFORM.
          Diseño Sprint 5 #52 (BRAND.md). Mark blanca sobre fondo Editorial Blue Deep,
          consistente con el sello y el logo del header del sitio. --}}
-    <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+    <table cellpadding="0" cellspacing="0" border="0" align="center" style="border-collapse: collapse; margin: 0 auto;">
         <tr>
             <td style="vertical-align: middle; padding-right: 14px;">
                 {{-- Mark SVG en cuadrado Editorial Blue Deep --}}
