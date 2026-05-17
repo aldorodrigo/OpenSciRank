@@ -2,10 +2,10 @@
     <x-slot:header>true</x-slot:header>
 
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-emerald-600 to-teal-600 py-16 text-white">
+    <section class="bg-brand-deep py-16 text-white">
         <div class="container mx-auto px-4 text-center">
             <h1 class="text-4xl font-bold sm:text-5xl">{{ __('Editorial Evaluation Methodology') }}</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-emerald-100">{{ __('Transparent evaluation based on five fundamental areas of editorial standards.') }}</p>
+            <p class="mx-auto mt-4 max-w-2xl text-blue-200">{{ __('Transparent evaluation based on five fundamental areas of editorial standards.') }}</p>
         </div>
     </section>
 
