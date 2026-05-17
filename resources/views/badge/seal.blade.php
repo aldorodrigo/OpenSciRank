@@ -1,60 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="280" height="70" viewBox="0 0 280 70" role="img" aria-label="Editorial Standards Seal">
-    <title>Editorial Standards Seal - {{ $journal->getTranslationWithFallback('title') }}</title>
+{{-- Editorial Standards Seal — rectangular notarial moderno.
+     Diseño Sprint 5 #51 (BRAND.md / BRAND_DIRECTION.md).
+     Tipografía Inter con fallback system-ui — el sello se embebe en sitios de
+     terceros donde no podemos garantizar Inter cargado. --}}
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="130" viewBox="0 0 400 130" role="img" aria-label="Editorial Standards Seal">
+    <title>Editorial Standards Seal — {{ $journal->getTranslationWithFallback('title') }}</title>
 
     @if($isActive)
-        @php
-            $score = (int) ($journal->current_score ?? 0);
-            $scoreColor = $score >= 90 ? '#059669' : ($score >= 75 ? '#0D9488' : '#D97706');
-        @endphp
+        @php($score = (int) ($journal->current_score ?? 0))
 
-        <defs>
-            <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#1E1B4B"/>
-                <stop offset="100%" stop-color="#312E81"/>
-            </linearGradient>
-        </defs>
+        {{-- Fondo: Editorial Blue Deep sólido (sin gradientes) --}}
+        <rect width="400" height="130" rx="8" fill="#172554"/>
 
-        {{-- Main background with gradient --}}
-        <rect width="280" height="70" rx="6" fill="url(#bg)"/>
+        {{-- Accent strip izquierda — emerald (vigente) --}}
+        <rect x="0" y="0" width="6" height="130" fill="#10B981"/>
 
-        {{-- Score section --}}
-        <rect x="220" y="0" width="60" height="70" fill="{{ $scoreColor }}"/>
-        <rect x="274" y="0" width="6" height="70" rx="6" fill="{{ $scoreColor }}"/>
+        {{-- Wordmark "EDITORIAL STANDARDS SEAL" --}}
+        <text x="28" y="36" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" letter-spacing="1.2">EDITORIAL STANDARDS</text>
+        <text x="28" y="56" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#93C5FD" letter-spacing="2.5">SEAL · CERTIFIED</text>
 
-        {{-- Shield icon --}}
-        <g transform="translate(14, 11)" fill="none" stroke="#A5B4FC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2l7 4v5c0 5.25-3.5 10.74-7 12-3.5-1.26-7-6.75-7-12V6l7-4z"/>
-            <path d="M8.5 12.5l2 2 4.5-4.5" stroke="#22C55E" stroke-width="2"/>
-        </g>
+        {{-- Tagline --}}
+        <text x="28" y="86" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="400" fill="#CBD5E1">{{ __('Verified technical evaluation') }}</text>
 
-        {{-- Text --}}
-        <text x="42" y="26" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF">Editorial Standards Seal</text>
-        <text x="42" y="44" font-family="Arial, Helvetica, sans-serif" font-size="9" fill="#C7D2FE">{{ __('Verified technical evaluation') }}</text>
+        {{-- Microcopy URL --}}
+        <text x="28" y="112" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="400" fill="#64748B" letter-spacing="0.3">editorialstandards.org/verify</text>
 
-        {{-- Platform URL --}}
-        <text x="110" y="62" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#A5B4FC" text-anchor="middle">editorialstandards.org</text>
-
-        {{-- Score percentage --}}
-        <text x="250" y="34" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="bold" fill="#FFFFFF" text-anchor="middle">{{ $score }}%</text>
+        {{-- Score block (rectangular, NO circular) --}}
+        <rect x="295" y="22" width="82" height="64" rx="4" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+        <text x="336" y="60" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#FFFFFF" text-anchor="middle">{{ $score }}<tspan font-size="14" font-weight="500" dy="-2">%</tspan></text>
+        <text x="336" y="76" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8" font-weight="500" fill="#94A3B8" text-anchor="middle" letter-spacing="0.8">SCORE</text>
 
         {{-- Year --}}
-        <text x="250" y="52" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="rgba(255,255,255,0.8)" text-anchor="middle">{{ $year }}</text>
+        <text x="336" y="106" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="#E2E8F0" text-anchor="middle" letter-spacing="0.5">{{ $year }}</text>
     @else
-        {{-- Expired seal --}}
-        <rect width="280" height="70" rx="6" fill="#6B7280"/>
+        {{-- Sello expirado --}}
+        <rect width="400" height="130" rx="8" fill="#334155"/>
 
-        {{-- Shield icon (grayed) --}}
-        <g transform="translate(14, 11)" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2l7 4v5c0 5.25-3.5 10.74-7 12-3.5-1.26-7-6.75-7-12V6l7-4z"/>
-            <path d="M9 12h6" stroke="#D1D5DB" stroke-width="2"/>
-        </g>
+        {{-- Accent strip izquierda — rose (expirado) --}}
+        <rect x="0" y="0" width="6" height="130" fill="#F43F5E"/>
 
-        {{-- Text --}}
-        <text x="42" y="26" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#E5E7EB">Editorial Standards Seal</text>
-        <text x="42" y="44" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#D1D5DB">{{ __('Expired Seal') }}</text>
+        {{-- Wordmark mutado --}}
+        <text x="28" y="36" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="600" fill="#CBD5E1" letter-spacing="1.2">EDITORIAL STANDARDS</text>
+        <text x="28" y="56" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="500" fill="#FECDD3" letter-spacing="2.5">SEAL · EXPIRED</text>
 
-        {{-- Platform URL --}}
-        <text x="140" y="62" font-family="Arial, Helvetica, sans-serif" font-size="8" fill="#9CA3AF" text-anchor="middle">editorialstandards.org</text>
+        {{-- Mensaje --}}
+        <text x="28" y="86" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="400" fill="#94A3B8">{{ __('Expired Seal') }}</text>
+
+        {{-- Microcopy URL --}}
+        <text x="28" y="112" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="400" fill="#64748B" letter-spacing="0.3">editorialstandards.org/verify</text>
+
+        {{-- Año de expiración (si hay) --}}
+        @isset($year)
+            <rect x="295" y="22" width="82" height="64" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <text x="336" y="56" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="500" fill="#94A3B8" text-anchor="middle" letter-spacing="0.8">EXPIRED</text>
+            <text x="336" y="76" font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="#CBD5E1" text-anchor="middle" letter-spacing="0.5">{{ $year }}</text>
+        @endisset
     @endif
 </svg>

@@ -29,8 +29,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            // Editorial Blue (oxford-inspired) — primary unificado de la marca.
+            // Reemplaza el Color::Amber legacy (Sprint 5 #51 — ver BRAND.md, sección "Excepción").
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#1E3A8A'),
             ])
             // Branding profesional — reemplaza el "Filament" default.
             ->brandName('Editorial Standards')
