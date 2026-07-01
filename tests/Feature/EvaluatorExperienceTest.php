@@ -85,13 +85,13 @@ class EvaluatorExperienceTest extends TestCase
         $response = $this->actingAs($evaluator)->get('/admin/evaluator-desk');
 
         $response->assertOk();
-        // Título del desk (page shell) + badge de rol inyectado por el
-        // site-header del panel — cubre que el desk carga (Fase 3) y la
-        // diferenciación visual del evaluador (Fase 5). Los widgets (stats/cola)
-        // se hidratan lazy vía Livewire, así que su contenido interno no está en
-        // el primer render y no se asserta acá.
+        // Título del desk (page shell) + botón de acceso del evaluador inyectado
+        // por el site-header del panel — cubre que el desk carga (Fase 3) y la
+        // diferenciación/acceso del evaluador. Los widgets (stats/cola) se
+        // hidratan lazy vía Livewire, así que su contenido no está en el primer
+        // render y no se asserta acá.
         $response->assertSee(__('evaluator_desk.title'));
-        $response->assertSee(__('role_badge.evaluator'));
+        $response->assertSee(__('evaluator_access.button'));
     }
 
     public function test_super_admin_cannot_access_the_evaluator_desk(): void
@@ -169,5 +169,23 @@ class EvaluatorExperienceTest extends TestCase
         $this->assertSame($task->id, $returned?->id);
         $this->assertSame($evaluator->id, $journal->fresh()->assigned_evaluator_id);
         $this->assertSame($evaluator->id, $task->fresh()->assigned_to);
+    }
+
+    public function test_app_dashboard_shows_evaluator_access_for_evaluators(): void
+    {
+        $response = $this->actingAs($this->evaluator())->get(route('app.dashboard'));
+
+        $response->assertOk();
+        // Banner de acceso en el dashboard de /app + botón en el topbar.
+        $response->assertSee(__('evaluator_access.banner_cta'));
+        $response->assertSee(__('evaluator_access.button'));
+    }
+
+    public function test_app_dashboard_hides_evaluator_access_from_regular_users(): void
+    {
+        $response = $this->actingAs(User::factory()->create())->get(route('app.dashboard'));
+
+        $response->assertOk();
+        $response->assertDontSee(__('evaluator_access.banner_title'));
     }
 }

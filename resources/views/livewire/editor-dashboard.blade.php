@@ -17,6 +17,31 @@
         }
      }">
     <div class="container mx-auto px-4">
+        {{-- Roadmap #35 — banner de acceso al escritorio de evaluación. El
+             evaluador aterriza acá tras registrarse; este banner le da un camino
+             claro y visible hacia sus tareas (en el panel de evaluación). --}}
+        @if(auth()->user()?->primaryPanelRole() === 'evaluator')
+            <a href="{{ route('filament.admin.pages.evaluator-desk') }}"
+               class="mb-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-white p-5 shadow-sm transition hover:border-amber-300 hover:shadow sm:flex-row sm:items-center dark:border-amber-800/60 dark:from-amber-900/20 dark:to-gray-900">
+                <div class="flex items-center gap-4">
+                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <p class="text-base font-semibold text-gray-900 dark:text-white">{{ __('evaluator_access.banner_title') }}</p>
+                        <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-400">{{ __('evaluator_access.banner_body') }}</p>
+                    </div>
+                </div>
+                <span class="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700">
+                    {{ __('evaluator_access.banner_cta') }}
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/>
+                    </svg>
+                </span>
+            </a>
+        @endif
         <div class="mb-8 flex items-center justify-between">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ __('My Dashboard') }}</h1>

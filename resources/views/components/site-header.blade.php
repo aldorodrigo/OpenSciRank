@@ -71,31 +71,18 @@
                         {{ __('Administration') }}
                     </a>
                 @endif
+                {{-- Roadmap #35 — acceso directo del evaluador a su escritorio (panel de evaluación). --}}
+                @if($isEvaluator)
+                    <a href="{{ route('filament.admin.pages.evaluator-desk') }}" class="flex items-center gap-1.5 rounded-lg bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-800 transition hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:hover:bg-amber-900/60">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+                        </svg>
+                        {{ __('evaluator_access.button') }}
+                    </a>
+                @endif
                 <a href="{{ locale_path('/app') }}" class="rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-brand hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
                     {{ __('My Dashboard') }}
                 </a>
-                {{-- Mensajes badge --}}
-                <a href="{{ route('app.messages') }}"
-                   class="relative flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/>
-                    </svg>
-                    Mensajes
-                    @if($unreadMessages > 0)
-                        <span class="absolute -right-1.5 -top-1.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand px-1 text-xs font-bold text-white">
-                            {{ $unreadMessages > 99 ? '99+' : $unreadMessages }}
-                        </span>
-                    @endif
-                </a>
-                {{-- Roadmap #35 — badge de rol junto al nombre para el evaluador. --}}
-                @if($isEvaluator)
-                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
-                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        {{ __('role_badge.evaluator') }}
-                    </span>
-                @endif
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
                         <span>{{ Auth::user()->name }}</span>
@@ -121,6 +108,9 @@
                                         <span class="rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">{{ $unreadMessages }}</span>
                                     @endif
                                 </a>
+                            @endif
+                            @if($isEvaluator)
+                                <a href="{{ route('filament.admin.pages.evaluator-desk') }}" class="block px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-900/20">{{ __('evaluator_access.button') }}</a>
                             @endif
                             <a href="{{ route('app.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{{ __('My Dashboard') }}</a>
                             <a href="{{ route('app.messages') }}" class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
@@ -176,6 +166,9 @@
             <a href="{{ locale_path('/contact') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Contact') }}</a>
             <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
             @auth
+                @if($isEvaluator)
+                    <a href="{{ route('filament.admin.pages.evaluator-desk') }}" class="block rounded-lg bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">🛡️ {{ __('evaluator_access.button') }}</a>
+                @endif
                 <a href="{{ locale_path('/app') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-brand hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30">{{ __('My Dashboard') }}</a>
                 <a href="{{ route('app.messages') }}" class="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
                     Mensajes
