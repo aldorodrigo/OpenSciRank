@@ -7,6 +7,7 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -63,5 +64,17 @@ class User extends Authenticatable implements FilamentUser, HasLocalePreference,
     public function preferredLocale(): string
     {
         return $this->locale ?? config('app.locale', 'es');
+    }
+
+    /**
+     * Roadmap #35 — override del default de HasPanelShield (que solo admite
+     * super_admin o panel_user). Sin esto, asignar el rol `evaluator` desde
+     * el selector de roles de UserResource (que hace sync, no append) puede
+     * quitarle a un usuario el rol `panel_user` auto-asignado al crearse y
+     * dejarlo con 403 al entrar a /admin, aunque tenga permisos de Shield.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->hasAnyRole(['super_admin', 'panel_user', 'evaluator']);
     }
 }
