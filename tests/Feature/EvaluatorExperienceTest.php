@@ -203,6 +203,25 @@ class EvaluatorExperienceTest extends TestCase
         $this->assertSame($evaluator->id, $journal->fresh()->assigned_evaluator_id);
     }
 
+    public function test_evaluator_cannot_evaluate_their_own_journal_coi(): void
+    {
+        $evaluator = $this->evaluator();
+        // Caso COI: la revista es del propio evaluador y, por error, quedó
+        // asignada a él. Aun así no debe poder evaluarla.
+        $journal = Journal::create([
+            'user_id' => $evaluator->id,
+            'title' => 'Own Journal',
+            'slug' => 'own-'.uniqid(),
+            'primary_locale' => 'es',
+            'status' => 'submitted',
+            'assigned_evaluator_id' => $evaluator->id,
+        ]);
+
+        $this->actingAs($evaluator)
+            ->get('/admin/journals/'.$journal->id.'/evaluate')
+            ->assertForbidden();
+    }
+
     public function test_assign_evaluator_syncs_journal_field_and_open_task(): void
     {
         $evaluator = $this->evaluator();

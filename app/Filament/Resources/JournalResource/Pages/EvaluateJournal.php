@@ -84,6 +84,11 @@ class EvaluateJournal extends Page
         // campo si alguno quedara desincronizado.
         $user = auth()->user();
         if ($user->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            // Roadmap #35 — conflicto de interés: un evaluador NUNCA puede
+            // evaluar una revista de la que es dueño/editor, aunque por error
+            // haya quedado asignado. Red de seguridad final.
+            abort_if($this->record->user_id === $user->id, 403);
+
             $assignedByJournal = $this->record->assigned_evaluator_id === $user->id;
             $assignedByTask = $this->currentTask?->assigned_to === $user->id;
 

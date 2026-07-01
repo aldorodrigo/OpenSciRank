@@ -24,6 +24,7 @@
     "eval_completed.downloads_title": "**Downloads:**",
     "eval_completed.report_link": "Baixar relatório de avaliação (PDF)",
     "eval_completed.certificate_link": "Baixar certificado do selo (PDF)",
+    "evaluator_coi.self_assign": "O dono da revista não pode ser atribuído como seu avaliador (conflito de interesse).",
     "evaluator_task.instructions_body": "1. **Revisar os dados da revista** (título, ISSN, editora, site) em sua ficha pública.\n2. **Abrir a avaliação** com o botão *Trabalhar / Continuar* e percorrer o checklist de critérios.\n3. **Avaliar cada critério** que a revista cumpre; a pontuação é calculada automaticamente.\n4. Para obter o **Selo de Padrões Editoriais**, a revista deve atingir **≥ 75%** e cumprir os **5 indicadores críticos**.\n5. Havendo dados faltantes, **consultar o editor** na seção *Consultar o editor*.\n6. Ao concluir, **salvar a avaliação**; a tarefa é fechada automaticamente.",
     "evaluator_access.button": "Mesa de avaliação",
     "evaluator_access.banner_title": "Sua mesa de avaliação",

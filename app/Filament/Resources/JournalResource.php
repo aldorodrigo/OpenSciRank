@@ -712,7 +712,11 @@ class JournalResource extends Resource
                         ->form([
                             Forms\Components\Select::make('assigned_evaluator_id')
                                 ->label(__('admin.journal.evaluator_short'))
-                                ->options(fn () => \App\Models\User::role('evaluator')->pluck('name', 'id'))
+                                // Roadmap #35 — COI: excluir al dueño/editor de la
+                                // revista de la lista de evaluadores asignables.
+                                ->options(fn (Journal $record) => \App\Models\User::role('evaluator')
+                                    ->where('id', '!=', $record->user_id)
+                                    ->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                         ])
@@ -720,6 +724,17 @@ class JournalResource extends Resource
                             $evaluator = User::find($data['assigned_evaluator_id']);
 
                             if (! $evaluator) {
+                                return;
+                            }
+
+                            // Roadmap #35 — COI: no permitir asignar al dueño de la
+                            // revista como evaluador (defensa por si burla el filtro).
+                            if ((int) $evaluator->id === (int) $record->user_id) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title(__('evaluator_coi.self_assign'))
+                                    ->danger()
+                                    ->send();
+
                                 return;
                             }
 
