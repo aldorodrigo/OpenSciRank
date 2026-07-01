@@ -15,9 +15,6 @@
 @endphp
 {{-- Roadmap #35 — acento ámbar de contexto: señal de que el evaluador está en
      un panel de trabajo, distinto del sitio del editor. --}}
-@if($isEvaluator)
-    <div class="h-1 w-full bg-amber-500" aria-hidden="true"></div>
-@endif
 <header class="{{ request()->is('admin*') ? 'relative' : 'sticky top-0' }} w-full border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80" style="{{ request()->is('admin*') ? 'z-index: 50;' : 'z-index: 9999;' }}" x-data="{ mobileOpen: false }">
     <div class="container mx-auto flex h-16 items-center justify-between px-4">
         {{-- Logo: mark + wordmark (Editorial Standards Platform). Ver BRAND.md --}}
@@ -72,23 +69,19 @@
                     </a>
                 @endif
                 {{-- Roadmap #35 — acceso directo del evaluador a su escritorio (panel de evaluación). --}}
-                @if($isEvaluator)
-                    <a href="{{ route('filament.admin.pages.evaluator-desk') }}" class="flex items-center gap-1.5 rounded-lg bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-800 transition hover:bg-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:hover:bg-amber-900/60">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
-                        </svg>
-                        {{ __('evaluator_access.button') }}
-                    </a>
-                @endif
                 <a href="{{ locale_path('/app') }}" class="rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-brand hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
                     {{ __('My Dashboard') }}
                 </a>
                 <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
+                    <button @click="open = !open" class="relative flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
                         <span>{{ Auth::user()->name }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
+                        {{-- Roadmap #35 — indicador de mensajes sin leer visible sin abrir el menú. --}}
+                        @if($unreadMessages > 0)
+                            <span class="absolute -right-1.5 -top-1.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white shadow-sm ring-2 ring-white dark:ring-gray-950">{{ $unreadMessages > 99 ? '99+' : $unreadMessages }}</span>
+                        @endif
                     </button>
                     <div x-show="open" @click.away="open = false"
                         x-transition:enter="transition ease-out duration-100"
@@ -139,9 +132,15 @@
         </div>
 
         {{-- Mobile Hamburger --}}
-        <button @click="mobileOpen = !mobileOpen" class="rounded-md p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 md:hidden">
+        <button @click="mobileOpen = !mobileOpen" class="relative rounded-md p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 md:hidden">
             <svg x-show="!mobileOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             <svg x-show="mobileOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display:none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            {{-- Roadmap #35 — punto de mensajes sin leer en mobile. --}}
+            @auth
+                @if($unreadMessages > 0)
+                    <span class="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-950"></span>
+                @endif
+            @endauth
         </button>
     </div>
 
