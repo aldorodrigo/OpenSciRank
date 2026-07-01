@@ -146,6 +146,59 @@ class EvaluatorExperienceTest extends TestCase
         $this->assertContains($status, [403, 404]);
     }
 
+    public function test_evaluator_can_open_evaluation_when_assigned_via_task_only(): void
+    {
+        $evaluator = $this->evaluator();
+        $owner = User::factory()->create();
+        // assigned_evaluator_id NULL a propósito: la asignación existe solo en la task.
+        $journal = Journal::create([
+            'user_id' => $owner->id,
+            'title' => 'Task-only Journal',
+            'slug' => 'task-only-'.uniqid(),
+            'primary_locale' => 'es',
+            'status' => 'submitted',
+        ]);
+        AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_IN_PROGRESS,
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        // Antes del fix esto daba 404 (getEloquentQuery scopeaba solo por
+        // assigned_evaluator_id, que acá es NULL).
+        $this->actingAs($evaluator)
+            ->get('/admin/journals/'.$journal->id.'/evaluate')
+            ->assertOk();
+    }
+
+    public function test_task_assignment_syncs_journal_evaluator(): void
+    {
+        $evaluator = $this->evaluator();
+        $owner = User::factory()->create();
+        $journal = Journal::create([
+            'user_id' => $owner->id,
+            'title' => 'Sync Journal',
+            'slug' => 'sync-'.uniqid(),
+            'primary_locale' => 'es',
+            'status' => 'submitted',
+        ]);
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+        ]);
+
+        $task->assignToUser($evaluator);
+
+        $this->assertSame($evaluator->id, $journal->fresh()->assigned_evaluator_id);
+    }
+
     public function test_assign_evaluator_syncs_journal_field_and_open_task(): void
     {
         $evaluator = $this->evaluator();

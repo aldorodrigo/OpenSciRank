@@ -11,28 +11,27 @@ use App\Notifications\EvaluatorAssigned;
 use App\Notifications\SealExpired;
 use App\Notifications\SealExpiringSoon;
 use App\Services\OaiPmhService;
-use Illuminate\Database\Eloquent\Builder;
+use BackedEnum;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
-use Filament\Notifications\Notification;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use UnitEnum;
-use BackedEnum;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class JournalResource extends Resource
 {
     protected static ?string $model = Journal::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-newspaper';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-newspaper';
+
     protected static ?int $navigationSort = 1;
 
     public static function getNavigationGroup(): ?string
@@ -50,7 +49,25 @@ class JournalResource extends Resource
         $user = auth()->user();
 
         if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
-            $query->where('assigned_evaluator_id', $user->id);
+            // Roadmap #35 — el evaluador ve un journal si lo tiene asignado por
+            // assigned_evaluator_id O si tiene una task de evaluación abierta
+            // asignada (assigned_to). Sin esta segunda vía, una asignación hecha
+            // solo desde la task (sin sincronizar assigned_evaluator_id) daba 404
+            // en /admin/journals/{id}/evaluate (resolveRecord usa este scope).
+            $query->where(function (Builder $q) use ($user) {
+                $q->where('assigned_evaluator_id', $user->id)
+                    ->orWhereIn('id', \App\Models\AdminTask::query()
+                        ->where('related_type', Journal::class)
+                        ->whereIn('type', [
+                            \App\Models\AdminTask::TYPE_EVALUATE_JOURNAL,
+                            \App\Models\AdminTask::TYPE_REEVALUATE_JOURNAL,
+                            \App\Models\AdminTask::TYPE_RENEWAL_EVALUATION,
+                        ])
+                        ->whereIn('status', \App\Models\AdminTask::STATUSES_OPEN)
+                        ->where('assigned_to', $user->id)
+                        ->select('related_id')
+                    );
+            });
         }
 
         return $query;
@@ -95,7 +112,7 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\TextInput::make('title.es')
-                                                ->label(__('admin.journal.title') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->label(__('admin.journal.title').' ('.__('admin.common.lang_suffix.es').')')
                                                 ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.title_tooltip'))
                                                 ->maxLength(255)
                                                 ->live(onBlur: true)
@@ -103,12 +120,12 @@ class JournalResource extends Resource
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\TextInput::make('title.en')
-                                                ->label(__('admin.journal.title') . ' (' . __('admin.common.lang_suffix.en') . ')')
+                                                ->label(__('admin.journal.title').' ('.__('admin.common.lang_suffix.en').')')
                                                 ->maxLength(255),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\TextInput::make('title.pt')
-                                                ->label(__('admin.journal.title') . ' (' . __('admin.common.lang_suffix.pt') . ')')
+                                                ->label(__('admin.journal.title').' ('.__('admin.common.lang_suffix.pt').')')
                                                 ->maxLength(255),
                                         ]),
                                     ]),
@@ -131,18 +148,18 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\TextInput::make('abbreviated_name.es')
-                                                ->label(__('admin.journal.short_name') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->label(__('admin.journal.short_name').' ('.__('admin.common.lang_suffix.es').')')
                                                 ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.short_name_tooltip'))
                                                 ->maxLength(255),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\TextInput::make('abbreviated_name.en')
-                                                ->label(__('admin.journal.short_name') . ' (' . __('admin.common.lang_suffix.en') . ')')
+                                                ->label(__('admin.journal.short_name').' ('.__('admin.common.lang_suffix.en').')')
                                                 ->maxLength(255),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\TextInput::make('abbreviated_name.pt')
-                                                ->label(__('admin.journal.short_name') . ' (' . __('admin.common.lang_suffix.pt') . ')')
+                                                ->label(__('admin.journal.short_name').' ('.__('admin.common.lang_suffix.pt').')')
                                                 ->maxLength(255),
                                         ]),
                                     ]),
@@ -207,16 +224,16 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\Textarea::make('description.es')
-                                                ->label(__('admin.journal.description') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->label(__('admin.journal.description').' ('.__('admin.common.lang_suffix.es').')')
                                                 ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.description_tooltip')),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\Textarea::make('description.en')
-                                                ->label(__('admin.journal.description') . ' (' . __('admin.common.lang_suffix.en') . ')'),
+                                                ->label(__('admin.journal.description').' ('.__('admin.common.lang_suffix.en').')'),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\Textarea::make('description.pt')
-                                                ->label(__('admin.journal.description') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
+                                                ->label(__('admin.journal.description').' ('.__('admin.common.lang_suffix.pt').')'),
                                         ]),
                                     ]),
                                 Forms\Components\TagsInput::make('subject_areas')
@@ -295,16 +312,16 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\Textarea::make('copyright_policy.es')
-                                                ->label(__('admin.journal.copyright_policy') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->label(__('admin.journal.copyright_policy').' ('.__('admin.common.lang_suffix.es').')')
                                                 ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_copyright_policy')),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\Textarea::make('copyright_policy.en')
-                                                ->label(__('admin.journal.copyright_policy') . ' (' . __('admin.common.lang_suffix.en') . ')'),
+                                                ->label(__('admin.journal.copyright_policy').' ('.__('admin.common.lang_suffix.en').')'),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\Textarea::make('copyright_policy.pt')
-                                                ->label(__('admin.journal.copyright_policy') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
+                                                ->label(__('admin.journal.copyright_policy').' ('.__('admin.common.lang_suffix.pt').')'),
                                         ]),
                                     ]),
                                 Forms\Components\Toggle::make('licenses_visible_in_articles')
@@ -319,16 +336,16 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\TextInput::make('publishing_institution.es')
-                                                ->label(__('admin.journal.editorial_institution') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->label(__('admin.journal.editorial_institution').' ('.__('admin.common.lang_suffix.es').')')
                                                 ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_inst')),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\TextInput::make('publishing_institution.en')
-                                                ->label(__('admin.journal.editorial_institution') . ' (' . __('admin.common.lang_suffix.en') . ')'),
+                                                ->label(__('admin.journal.editorial_institution').' ('.__('admin.common.lang_suffix.en').')'),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\TextInput::make('publishing_institution.pt')
-                                                ->label(__('admin.journal.editorial_institution') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
+                                                ->label(__('admin.journal.editorial_institution').' ('.__('admin.common.lang_suffix.pt').')'),
                                         ]),
                                     ]),
                                 Tabs::make('editor_name_tabs')
@@ -336,16 +353,16 @@ class JournalResource extends Resource
                                     ->tabs([
                                         Tab::make('ES')->schema([
                                             Forms\Components\TextInput::make('editor_name.es')
-                                                ->label(__('admin.journal.editor_name') . ' (' . __('admin.common.lang_suffix.es') . ')')
+                                                ->label(__('admin.journal.editor_name').' ('.__('admin.common.lang_suffix.es').')')
                                                 ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.tooltip_editor')),
                                         ]),
                                         Tab::make('EN')->schema([
                                             Forms\Components\TextInput::make('editor_name.en')
-                                                ->label(__('admin.journal.editor_name') . ' (' . __('admin.common.lang_suffix.en') . ')'),
+                                                ->label(__('admin.journal.editor_name').' ('.__('admin.common.lang_suffix.en').')'),
                                         ]),
                                         Tab::make('PT')->schema([
                                             Forms\Components\TextInput::make('editor_name.pt')
-                                                ->label(__('admin.journal.editor_name') . ' (' . __('admin.common.lang_suffix.pt') . ')'),
+                                                ->label(__('admin.journal.editor_name').' ('.__('admin.common.lang_suffix.pt').')'),
                                         ]),
                                     ]),
                                 Forms\Components\TextInput::make('institutional_email')
@@ -518,7 +535,7 @@ class JournalResource extends Resource
                                     ->hiddenOn('create'),
                             ])->columns(2),
                     ])
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -537,12 +554,10 @@ class JournalResource extends Resource
                     ->label('ISSN')
                     ->placeholder('—')
                     ->formatStateUsing(fn (Journal $record): string => $record->issn_print ?: ($record->issn_online ?: '—'))
-                    ->description(fn (Journal $record): ?string =>
-                        $record->issn_print && $record->issn_online ? 'Online: '.$record->issn_online : null
+                    ->description(fn (Journal $record): ?string => $record->issn_print && $record->issn_online ? 'Online: '.$record->issn_online : null
                     )
-                    ->searchable(query: fn ($query, string $search) =>
-                        $query->where('issn_print', 'like', "%{$search}%")
-                            ->orWhere('issn_online', 'like', "%{$search}%")
+                    ->searchable(query: fn ($query, string $search) => $query->where('issn_print', 'like', "%{$search}%")
+                        ->orWhere('issn_online', 'like', "%{$search}%")
                     )
                     ->copyable()
                     ->toggleable(),
@@ -554,8 +569,7 @@ class JournalResource extends Resource
                     ->label(__('admin.journal.status'))
                     ->sortable()
                     ->badge()
-                    ->color(fn (string $state, Journal $record): string =>
-                        $state === 'certified' && $record->seal_expires_at?->isPast() ? 'gray' :
+                    ->color(fn (string $state, Journal $record): string => $state === 'certified' && $record->seal_expires_at?->isPast() ? 'gray' :
                         match ($state) {
                             'draft' => 'gray',
                             'submitted' => 'warning',
@@ -569,9 +583,8 @@ class JournalResource extends Resource
                             default => 'gray',
                         }
                     )
-                    ->formatStateUsing(fn (string $state, Journal $record): string =>
-                        $state === 'certified' && $record->seal_expires_at?->isPast()
-                            ? '<s>' . __('admin.journal_status.certified_short') . '</s>'
+                    ->formatStateUsing(fn (string $state, Journal $record): string => $state === 'certified' && $record->seal_expires_at?->isPast()
+                            ? '<s>'.__('admin.journal_status.certified_short').'</s>'
                             : match ($state) {
                                 'draft' => __('admin.journal_status.draft'),
                                 'submitted' => __('admin.journal_status.submitted'),
@@ -609,8 +622,7 @@ class JournalResource extends Resource
                     ->label(__('admin.journal.evaluated_short'))
                     ->date('d/m/Y')
                     ->placeholder('—')
-                    ->description(fn (Journal $record): string =>
-                        $record->evaluated_at ? $record->evaluated_at->locale(app()->getLocale())->diffForHumans() : ''
+                    ->description(fn (Journal $record): string => $record->evaluated_at ? $record->evaluated_at->locale(app()->getLocale())->diffForHumans() : ''
                     )
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('seal_expires_at')
@@ -618,18 +630,17 @@ class JournalResource extends Resource
                     ->date('d/m/Y')
                     ->placeholder('—')
                     ->sortable()
-                    ->color(fn (Journal $record): string =>
-                        $record->seal_expires_at?->isPast() ? 'danger' :
+                    ->color(fn (Journal $record): string => $record->seal_expires_at?->isPast() ? 'danger' :
                         ($record->seal_expires_at?->diffInDays(now()) <= 60 ? 'warning' : 'success')
                     )
                     ->description(fn (Journal $record): string => collect([
                         $record->seal_expires_at
                             ? ($record->seal_expires_at->isPast()
-                                ? (int) now()->diffInDays($record->seal_expires_at) . ' días atrasado'
-                                : (int) now()->diffInDays($record->seal_expires_at) . ' días para vencimiento')
+                                ? (int) now()->diffInDays($record->seal_expires_at).' días atrasado'
+                                : (int) now()->diffInDays($record->seal_expires_at).' días para vencimiento')
                             : null,
                         $record->seal_notified_at
-                            ? 'Notificado: ' . $record->seal_notified_at->format('d/m/Y')
+                            ? 'Notificado: '.$record->seal_notified_at->format('d/m/Y')
                             : 'Sin notificar',
                     ])->filter()->implode(' · '))
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -691,252 +702,252 @@ class JournalResource extends Resource
             ])
             ->actions([
                 \Filament\Actions\ActionGroup::make([
-                \Filament\Actions\Action::make('assign_evaluator')
-                    ->label(__('admin.journal.action_assign'))
-                    ->icon('heroicon-o-user-plus')
-                    ->color('info')
-                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation', 'evaluated'])
-                        && (auth()->user()?->hasRole('super_admin') ?? false)
-                    )
-                    ->form([
-                        Forms\Components\Select::make('assigned_evaluator_id')
-                            ->label(__('admin.journal.evaluator_short'))
-                            ->options(fn () => \App\Models\User::role('evaluator')->pluck('name', 'id'))
-                            ->searchable()
-                            ->required(),
-                    ])
-                    ->action(function (Journal $record, array $data): void {
-                        $evaluator = User::find($data['assigned_evaluator_id']);
+                    \Filament\Actions\Action::make('assign_evaluator')
+                        ->label(__('admin.journal.action_assign'))
+                        ->icon('heroicon-o-user-plus')
+                        ->color('info')
+                        ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation', 'evaluated'])
+                            && (auth()->user()?->hasRole('super_admin') ?? false)
+                        )
+                        ->form([
+                            Forms\Components\Select::make('assigned_evaluator_id')
+                                ->label(__('admin.journal.evaluator_short'))
+                                ->options(fn () => \App\Models\User::role('evaluator')->pluck('name', 'id'))
+                                ->searchable()
+                                ->required(),
+                        ])
+                        ->action(function (Journal $record, array $data): void {
+                            $evaluator = User::find($data['assigned_evaluator_id']);
 
-                        if (! $evaluator) {
-                            return;
-                        }
+                            if (! $evaluator) {
+                                return;
+                            }
 
-                        // Roadmap #35 — asignación unificada: sincroniza
-                        // assigned_evaluator_id + assigned_to de la(s) task(s)
-                        // abierta(s) y devuelve la task para notificar sobre ella.
-                        $task = $record->assignEvaluator($evaluator);
+                            // Roadmap #35 — asignación unificada: sincroniza
+                            // assigned_evaluator_id + assigned_to de la(s) task(s)
+                            // abierta(s) y devuelve la task para notificar sobre ella.
+                            $task = $record->assignEvaluator($evaluator);
 
-                        // Una sola notificación con deep-link correcto: si hay
-                        // task abierta usamos TaskAssigned (link a la Tarea); si
-                        // no (ej. journal ya 'evaluated', pre-asignación antes de
-                        // pagar re-evaluación) caemos a EvaluatorAssigned, cuyo CTA
-                        // apunta a la página de evaluación del journal.
-                        $evaluator->notify($task
-                            ? new \App\Notifications\TaskAssigned($task)
-                            : new EvaluatorAssigned($record)
-                        );
-
-                        activity()
-                            ->performedOn($record)
-                            ->causedBy(auth()->user())
-                            ->withProperties([
-                                'evaluator_id' => $evaluator->id,
-                                'evaluator_name' => $evaluator->name,
-                                'synced_task_id' => $task?->id,
-                            ])
-                            ->log("Evaluador asignado: {$evaluator->name}");
-
-                        \Filament\Notifications\Notification::make()
-                            ->title(__('admin.journal.notif_evaluator_assigned'))
-                            ->success()
-                            ->send();
-                    }),
-
-                \Filament\Actions\Action::make('evaluate')
-                    ->label(__('admin.journal.action_evaluate'))
-                    ->icon('heroicon-o-clipboard-document-check')
-                    ->color('warning')
-                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation']))
-                    ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
-
-                // Sprint 3.6 #36: Forzar evaluación sin pago. Casos de uso:
-                // evaluación de cortesía, casos institucionales, evaluación
-                // interna de prueba. Sube status a submitted, crea AdminTask
-                // sin payment_id con metadata.manual_override = motivo.
-                \Filament\Actions\Action::make('force_evaluation')
-                    ->label(__('admin.journal.action_evaluate_no_payment'))
-                    ->icon('heroicon-o-gift')
-                    ->color('emerald')
-                    ->visible(fn (Journal $record): bool => in_array(
-                        $record->status,
-                        ['draft', 'listed', 'evaluated', 'certified', 'rejected'],
-                        true
-                    ))
-                    ->requiresConfirmation()
-                    ->modalHeading(__('admin.journal.modal_force_eval_heading'))
-                    ->modalDescription(__('admin.journal.modal_force_eval_desc'))
-                    ->schema([
-                        \Filament\Forms\Components\Textarea::make('reason')
-                            ->label(__('admin.journal.force_eval_reason'))
-                            ->helperText(__('admin.journal.force_eval_reason_help'))
-                            ->required()
-                            ->minLength(10)
-                            ->maxLength(500)
-                            ->rows(3),
-                    ])
-                    ->action(function (Journal $record, array $data): void {
-                        $reason = trim($data['reason']);
-                        $previousStatus = $record->status;
-
-                        // Determinar tipo de task según el status previo
-                        $taskType = in_array($previousStatus, ['draft', 'listed'], true)
-                            ? \App\Models\AdminTask::TYPE_EVALUATE_JOURNAL
-                            : \App\Models\AdminTask::TYPE_REEVALUATE_JOURNAL;
-
-                        $record->update([
-                            'status' => 'submitted',
-                            'submitted_at' => now(),
-                        ]);
-
-                        \App\Models\AdminTask::create([
-                            'type' => $taskType,
-                            'title_key' => $taskType === \App\Models\AdminTask::TYPE_EVALUATE_JOURNAL
-                                ? 'tasks.evaluate_journal'
-                                : 'tasks.reevaluate_journal',
-                            'title_params' => [
-                                'name' => $record->getTranslationWithFallback('title'),
-                            ],
-                            'payment_id' => null,
-                            'related_type' => Journal::class,
-                            'related_id' => $record->id,
-                            'status' => \App\Models\AdminTask::STATUS_PENDING,
-                            'priority' => \App\Models\AdminTask::PRIORITY_NORMAL,
-                            'due_at' => \App\Models\AdminTask::calculateDueAt($taskType),
-                            'notes' => "Cortesía — sin pago.\n\nMotivo: {$reason}\n\nAutorizado por: ".(auth()->user()?->name ?? 'admin').".\nStatus previo: {$previousStatus}",
-                        ]);
-
-                        activity()
-                            ->performedOn($record)
-                            ->causedBy(auth()->user())
-                            ->withProperties([
-                                'previous_status' => $previousStatus,
-                                'new_status' => 'submitted',
-                                'manual_override' => true,
-                                'reason' => $reason,
-                                'task_type' => $taskType,
-                            ])
-                            ->log("Evaluación forzada sin pago (cortesía): {$reason}");
-
-                        \Filament\Notifications\Notification::make()
-                            ->title(__('admin.journal.notif_eval_created'))
-                            ->body(__('admin.journal.notif_eval_created_body'))
-                            ->success()
-                            ->send();
-                    }),
-
-                \Filament\Actions\Action::make('review_listing')
-                    ->label(__('admin.journal.action_review_listing'))
-                    ->icon('heroicon-o-clipboard-document-check')
-                    ->color('info')
-                    ->visible(fn (Journal $record): bool => in_array($record->status, ['pending_listing', 'requires_changes_listing']))
-                    ->url(fn (Journal $record): string => static::getUrl('review_listing', ['record' => $record])),
-
-                \Filament\Actions\Action::make('view_evaluation')
-                    ->label(__('admin.journal.action_view_evaluation'))
-                    ->icon('heroicon-o-eye')
-                    ->color('gray')
-                    ->visible(fn (Journal $record): bool => in_array(
-                        $record->status,
-                        ['evaluated', 'certified', 'rejected'],
-                        true
-                    ))
-                    ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
-
-                \Filament\Actions\Action::make('harvest_oai')
-                    ->label(__('admin.journal.action_harvest'))
-                    ->icon('heroicon-o-arrow-path')
-                    ->color('success')
-                    ->visible(fn (Journal $record): bool => !empty($record->oai_base_url))
-                    ->requiresConfirmation()
-                    ->modalHeading(__('admin.journal.modal_harvest_heading'))
-                    ->modalDescription(__('admin.journal.modal_harvest_desc'))
-                    ->action(function (Journal $record): void {
-                        try {
-                            $service = app(OaiPmhService::class);
-                            $count = $service->listRecords($record);
+                            // Una sola notificación con deep-link correcto: si hay
+                            // task abierta usamos TaskAssigned (link a la Tarea); si
+                            // no (ej. journal ya 'evaluated', pre-asignación antes de
+                            // pagar re-evaluación) caemos a EvaluatorAssigned, cuyo CTA
+                            // apunta a la página de evaluación del journal.
+                            $evaluator->notify($task
+                                ? new \App\Notifications\TaskAssigned($task)
+                                : new EvaluatorAssigned($record)
+                            );
 
                             activity()
                                 ->performedOn($record)
                                 ->causedBy(auth()->user())
                                 ->withProperties([
-                                    'articles_count' => $count,
-                                    'oai_base_url' => $record->oai_base_url,
+                                    'evaluator_id' => $evaluator->id,
+                                    'evaluator_name' => $evaluator->name,
+                                    'synced_task_id' => $task?->id,
                                 ])
-                                ->log("Cosecha OAI-PMH ejecutada: {$count} artículo(s)");
+                                ->log("Evaluador asignado: {$evaluator->name}");
 
-                            Notification::make()
-                                ->title(__('admin.journal.notif_harvest_ok'))
-                                ->body(__('admin.journal.notif_harvest_ok_body', ['count' => $count]))
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('admin.journal.notif_evaluator_assigned'))
                                 ->success()
-                                ->duration(8000)
                                 ->send();
-                        } catch (\Exception $e) {
+                        }),
+
+                    \Filament\Actions\Action::make('evaluate')
+                        ->label(__('admin.journal.action_evaluate'))
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->color('warning')
+                        ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation']))
+                        ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
+
+                    // Sprint 3.6 #36: Forzar evaluación sin pago. Casos de uso:
+                    // evaluación de cortesía, casos institucionales, evaluación
+                    // interna de prueba. Sube status a submitted, crea AdminTask
+                    // sin payment_id con metadata.manual_override = motivo.
+                    \Filament\Actions\Action::make('force_evaluation')
+                        ->label(__('admin.journal.action_evaluate_no_payment'))
+                        ->icon('heroicon-o-gift')
+                        ->color('emerald')
+                        ->visible(fn (Journal $record): bool => in_array(
+                            $record->status,
+                            ['draft', 'listed', 'evaluated', 'certified', 'rejected'],
+                            true
+                        ))
+                        ->requiresConfirmation()
+                        ->modalHeading(__('admin.journal.modal_force_eval_heading'))
+                        ->modalDescription(__('admin.journal.modal_force_eval_desc'))
+                        ->schema([
+                            \Filament\Forms\Components\Textarea::make('reason')
+                                ->label(__('admin.journal.force_eval_reason'))
+                                ->helperText(__('admin.journal.force_eval_reason_help'))
+                                ->required()
+                                ->minLength(10)
+                                ->maxLength(500)
+                                ->rows(3),
+                        ])
+                        ->action(function (Journal $record, array $data): void {
+                            $reason = trim($data['reason']);
+                            $previousStatus = $record->status;
+
+                            // Determinar tipo de task según el status previo
+                            $taskType = in_array($previousStatus, ['draft', 'listed'], true)
+                                ? \App\Models\AdminTask::TYPE_EVALUATE_JOURNAL
+                                : \App\Models\AdminTask::TYPE_REEVALUATE_JOURNAL;
+
+                            $record->update([
+                                'status' => 'submitted',
+                                'submitted_at' => now(),
+                            ]);
+
+                            \App\Models\AdminTask::create([
+                                'type' => $taskType,
+                                'title_key' => $taskType === \App\Models\AdminTask::TYPE_EVALUATE_JOURNAL
+                                    ? 'tasks.evaluate_journal'
+                                    : 'tasks.reevaluate_journal',
+                                'title_params' => [
+                                    'name' => $record->getTranslationWithFallback('title'),
+                                ],
+                                'payment_id' => null,
+                                'related_type' => Journal::class,
+                                'related_id' => $record->id,
+                                'status' => \App\Models\AdminTask::STATUS_PENDING,
+                                'priority' => \App\Models\AdminTask::PRIORITY_NORMAL,
+                                'due_at' => \App\Models\AdminTask::calculateDueAt($taskType),
+                                'notes' => "Cortesía — sin pago.\n\nMotivo: {$reason}\n\nAutorizado por: ".(auth()->user()?->name ?? 'admin').".\nStatus previo: {$previousStatus}",
+                            ]);
+
                             activity()
                                 ->performedOn($record)
                                 ->causedBy(auth()->user())
-                                ->withProperties(['error' => $e->getMessage()])
-                                ->log('Cosecha OAI-PMH fallida');
+                                ->withProperties([
+                                    'previous_status' => $previousStatus,
+                                    'new_status' => 'submitted',
+                                    'manual_override' => true,
+                                    'reason' => $reason,
+                                    'task_type' => $taskType,
+                                ])
+                                ->log("Evaluación forzada sin pago (cortesía): {$reason}");
+
+                            \Filament\Notifications\Notification::make()
+                                ->title(__('admin.journal.notif_eval_created'))
+                                ->body(__('admin.journal.notif_eval_created_body'))
+                                ->success()
+                                ->send();
+                        }),
+
+                    \Filament\Actions\Action::make('review_listing')
+                        ->label(__('admin.journal.action_review_listing'))
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->color('info')
+                        ->visible(fn (Journal $record): bool => in_array($record->status, ['pending_listing', 'requires_changes_listing']))
+                        ->url(fn (Journal $record): string => static::getUrl('review_listing', ['record' => $record])),
+
+                    \Filament\Actions\Action::make('view_evaluation')
+                        ->label(__('admin.journal.action_view_evaluation'))
+                        ->icon('heroicon-o-eye')
+                        ->color('gray')
+                        ->visible(fn (Journal $record): bool => in_array(
+                            $record->status,
+                            ['evaluated', 'certified', 'rejected'],
+                            true
+                        ))
+                        ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
+
+                    \Filament\Actions\Action::make('harvest_oai')
+                        ->label(__('admin.journal.action_harvest'))
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('success')
+                        ->visible(fn (Journal $record): bool => ! empty($record->oai_base_url))
+                        ->requiresConfirmation()
+                        ->modalHeading(__('admin.journal.modal_harvest_heading'))
+                        ->modalDescription(__('admin.journal.modal_harvest_desc'))
+                        ->action(function (Journal $record): void {
+                            try {
+                                $service = app(OaiPmhService::class);
+                                $count = $service->listRecords($record);
+
+                                activity()
+                                    ->performedOn($record)
+                                    ->causedBy(auth()->user())
+                                    ->withProperties([
+                                        'articles_count' => $count,
+                                        'oai_base_url' => $record->oai_base_url,
+                                    ])
+                                    ->log("Cosecha OAI-PMH ejecutada: {$count} artículo(s)");
+
+                                Notification::make()
+                                    ->title(__('admin.journal.notif_harvest_ok'))
+                                    ->body(__('admin.journal.notif_harvest_ok_body', ['count' => $count]))
+                                    ->success()
+                                    ->duration(8000)
+                                    ->send();
+                            } catch (\Exception $e) {
+                                activity()
+                                    ->performedOn($record)
+                                    ->causedBy(auth()->user())
+                                    ->withProperties(['error' => $e->getMessage()])
+                                    ->log('Cosecha OAI-PMH fallida');
+
+                                Notification::make()
+                                    ->title(__('admin.journal.notif_harvest_err'))
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->duration(8000)
+                                    ->send();
+                            }
+                        }),
+
+                    \Filament\Actions\Action::make('notify_seal')
+                        ->label(__('admin.journal.action_notify'))
+                        ->icon('heroicon-o-bell')
+                        ->color('warning')
+                        ->visible(fn (Journal $record): bool => $record->seal_expires_at !== null
+                            && $record->seal_expires_at->lte(now()->addDays(30))
+                        )
+                        ->requiresConfirmation()
+                        ->modalHeading(__('admin.journal.modal_reminder_heading'))
+                        ->modalDescription(fn (Journal $record): string => $record->seal_notified_at
+                                ? "Ya se envió un recordatorio el {$record->seal_notified_at->format('d/m/Y H:i')}. ¿Deseas enviar otro?"
+                                : "Se enviará un email al editor de \"{$record->getTranslationWithFallback('title')}\" recordándole que su sello ".
+                                  ($record->seal_expires_at->isPast() ? 'ha vencido.' : "vence el {$record->seal_expires_at->format('d/m/Y')}.")
+                        )
+                        ->action(function (Journal $record): void {
+                            $owner = $record->user;
+                            if (! $owner) {
+                                return;
+                            }
+
+                            $isPast = $record->seal_expires_at->isPast();
+
+                            if ($isPast) {
+                                $owner->notify(new SealExpired($record));
+                            } else {
+                                $owner->notify(new SealExpiringSoon($record));
+                            }
+
+                            $record->update(['seal_notified_at' => now()]);
+
+                            activity()
+                                ->performedOn($record)
+                                ->causedBy(auth()->user())
+                                ->withProperties([
+                                    'recipient' => $owner->email,
+                                    'seal_expires_at' => $record->seal_expires_at?->toDateString(),
+                                ])
+                                ->log($isPast ? 'Recordatorio enviado: sello vencido' : 'Recordatorio enviado: sello por vencer');
 
                             Notification::make()
-                                ->title(__('admin.journal.notif_harvest_err'))
-                                ->body($e->getMessage())
-                                ->danger()
-                                ->duration(8000)
+                                ->title(__('admin.journal.notif_reminder_sent'))
+                                ->body(__('admin.journal.notif_reminder_sent_body', ['name' => $owner->name, 'email' => $owner->email]))
+                                ->success()
                                 ->send();
-                        }
-                    }),
+                        }),
 
-                \Filament\Actions\Action::make('notify_seal')
-                    ->label(__('admin.journal.action_notify'))
-                    ->icon('heroicon-o-bell')
-                    ->color('warning')
-                    ->visible(fn (Journal $record): bool =>
-                        $record->seal_expires_at !== null
-                        && $record->seal_expires_at->lte(now()->addDays(30))
-                    )
-                    ->requiresConfirmation()
-                    ->modalHeading(__('admin.journal.modal_reminder_heading'))
-                    ->modalDescription(fn (Journal $record): string =>
-                        $record->seal_notified_at
-                            ? "Ya se envió un recordatorio el {$record->seal_notified_at->format('d/m/Y H:i')}. ¿Deseas enviar otro?"
-                            : "Se enviará un email al editor de \"{$record->getTranslationWithFallback('title')}\" recordándole que su sello " .
-                              ($record->seal_expires_at->isPast() ? 'ha vencido.' : "vence el {$record->seal_expires_at->format('d/m/Y')}.")
-                    )
-                    ->action(function (Journal $record): void {
-                        $owner = $record->user;
-                        if (!$owner) return;
-
-                        $isPast = $record->seal_expires_at->isPast();
-
-                        if ($isPast) {
-                            $owner->notify(new SealExpired($record));
-                        } else {
-                            $owner->notify(new SealExpiringSoon($record));
-                        }
-
-                        $record->update(['seal_notified_at' => now()]);
-
-                        activity()
-                            ->performedOn($record)
-                            ->causedBy(auth()->user())
-                            ->withProperties([
-                                'recipient' => $owner->email,
-                                'seal_expires_at' => $record->seal_expires_at?->toDateString(),
-                            ])
-                            ->log($isPast ? 'Recordatorio enviado: sello vencido' : 'Recordatorio enviado: sello por vencer');
-
-                        Notification::make()
-                            ->title(__('admin.journal.notif_reminder_sent'))
-                            ->body(__('admin.journal.notif_reminder_sent_body', ['name' => $owner->name, 'email' => $owner->email]))
-                            ->success()
-                            ->send();
-                    }),
-
-                \Filament\Actions\EditAction::make(),
-                \Filament\Actions\DeleteAction::make(),
-                \Filament\Actions\ForceDeleteAction::make(),
-                \Filament\Actions\RestoreAction::make(),
+                    \Filament\Actions\EditAction::make(),
+                    \Filament\Actions\DeleteAction::make(),
+                    \Filament\Actions\ForceDeleteAction::make(),
+                    \Filament\Actions\RestoreAction::make(),
                 ])->tooltip(__('admin.common.actions'))->icon('heroicon-m-ellipsis-vertical'),
             ])
             ->bulkActions([
@@ -953,13 +964,15 @@ class JournalResource extends Resource
                             $skipped = 0;
 
                             foreach ($records as $record) {
-                                if (!$record->seal_expires_at || !$record->user) {
+                                if (! $record->seal_expires_at || ! $record->user) {
                                     $skipped++;
+
                                     continue;
                                 }
 
-                                if (!$record->seal_expires_at->lte(now()->addDays(30))) {
+                                if (! $record->seal_expires_at->lte(now()->addDays(30))) {
                                     $skipped++;
+
                                     continue;
                                 }
 
@@ -1001,6 +1014,7 @@ class JournalResource extends Resource
 
                                 if (! $eligible) {
                                     $skipped++;
+
                                     continue;
                                 }
 

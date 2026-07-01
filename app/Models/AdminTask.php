@@ -477,10 +477,26 @@ class AdminTask extends Model
 
     /**
      * Asignar la task a un usuario. Si ya estaba asignada, reasigna.
+     *
+     * Roadmap #35 — asignación unificada desde el lado de la task: si es una
+     * task de evaluación de un journal, sincronizamos también
+     * `assigned_evaluator_id` del journal. Sin esto, asignar solo desde la task
+     * dejaba el journal fuera del scope del evaluador (404 en /evaluate).
      */
     public function assignToUser(User $user): self
     {
         $this->update(['assigned_to' => $user->id]);
+
+        if ($this->related_type === Journal::class
+            && $this->related
+            && in_array($this->type, [
+                self::TYPE_EVALUATE_JOURNAL,
+                self::TYPE_REEVALUATE_JOURNAL,
+                self::TYPE_RENEWAL_EVALUATION,
+            ], true)
+        ) {
+            $this->related->update(['assigned_evaluator_id' => $user->id]);
+        }
 
         return $this;
     }
