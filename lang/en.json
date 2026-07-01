@@ -19,6 +19,7 @@
     "evaluator_msg.subject": "Evaluation: :title",
     "evaluator_msg.started": "Conversation opened. The editor has been notified.",
     "evaluator_msg.no_editor": "This journal has no associated editor.",
+    "role_badge.evaluator": "Evaluator",
     "evaluator_desk.queue.heading": "My evaluation queue",
     "evaluator_desk.queue.description": "Tasks assigned to you. Active ones first; your history below.",
     "evaluator_desk.queue.col_type": "Type",

@@ -77,4 +77,27 @@ class User extends Authenticatable implements FilamentUser, HasLocalePreference,
     {
         return $this->hasAnyRole(['super_admin', 'panel_user', 'evaluator']);
     }
+
+    /**
+     * Roadmap #35 — rol principal del usuario para decisiones de panel/branding
+     * (badge de rol, acento del header, home del panel). Precedencia:
+     * super_admin > evaluator > panel_user. Un editor común (sin rol Spatie)
+     * devuelve null. Centraliza la lógica para no repetir hasRole() en las vistas.
+     */
+    public function primaryPanelRole(): ?string
+    {
+        if ($this->hasRole('super_admin')) {
+            return 'super_admin';
+        }
+
+        if ($this->hasRole('evaluator')) {
+            return 'evaluator';
+        }
+
+        if ($this->hasRole('panel_user')) {
+            return 'panel_user';
+        }
+
+        return null;
+    }
 }

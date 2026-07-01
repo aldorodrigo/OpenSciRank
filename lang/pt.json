@@ -19,6 +19,7 @@
     "evaluator_msg.subject": "Avaliação: :title",
     "evaluator_msg.started": "Conversa aberta. O editor foi notificado.",
     "evaluator_msg.no_editor": "Esta revista não tem um editor associado.",
+    "role_badge.evaluator": "Avaliador",
     "evaluator_desk.queue.heading": "Minha fila de avaliação",
     "evaluator_desk.queue.description": "Tarefas atribuídas a você. As ativas aparecem primeiro; abaixo, seu histórico.",
     "evaluator_desk.queue.col_type": "Tipo",

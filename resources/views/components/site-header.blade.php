@@ -2,13 +2,22 @@
     $isSearchActive = request()->routeIs('search');
     // Badge de mensajes para usuarios autenticados
     $unreadMessages = 0;
+    // Roadmap #35 — rol principal para diferenciación visual condicional.
+    $panelRole = null;
     if (auth()->check()) {
         $unreadMessages = \App\Models\Conversation::forUser(auth()->user())
             ->where('status', 'open')
             ->get()
             ->sum(fn ($c) => $c->unreadCountFor(auth()->user()));
+        $panelRole = auth()->user()->primaryPanelRole();
     }
+    $isEvaluator = $panelRole === 'evaluator';
 @endphp
+{{-- Roadmap #35 — acento ámbar de contexto: señal de que el evaluador está en
+     un panel de trabajo, distinto del sitio del editor. --}}
+@if($isEvaluator)
+    <div class="h-1 w-full bg-amber-500" aria-hidden="true"></div>
+@endif
 <header class="{{ request()->is('admin*') ? 'relative' : 'sticky top-0' }} w-full border-b border-gray-200 bg-white/80 backdrop-blur-lg dark:border-gray-800 dark:bg-gray-950/80" style="{{ request()->is('admin*') ? 'z-index: 50;' : 'z-index: 9999;' }}" x-data="{ mobileOpen: false }">
     <div class="container mx-auto flex h-16 items-center justify-between px-4">
         {{-- Logo: mark + wordmark (Editorial Standards Platform). Ver BRAND.md --}}
@@ -78,6 +87,15 @@
                         </span>
                     @endif
                 </a>
+                {{-- Roadmap #35 — badge de rol junto al nombre para el evaluador. --}}
+                @if($isEvaluator)
+                    <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        {{ __('role_badge.evaluator') }}
+                    </span>
+                @endif
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" class="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">
                         <span>{{ Auth::user()->name }}</span>
