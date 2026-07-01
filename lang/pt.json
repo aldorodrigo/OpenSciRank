@@ -23,6 +23,7 @@
     "evaluator_access.banner_title": "Sua mesa de avaliação",
     "evaluator_access.banner_body": "Suas tarefas de avaliação atribuídas estão no painel de avaliação.",
     "evaluator_access.banner_cta": "Ir para minha mesa",
+    "evaluator_access.banner_pending": "Você tem :count tarefa de avaliação pendente.|Você tem :count tarefas de avaliação pendentes.",
     "evaluator_desk.queue.heading": "Minha fila de avaliação",
     "evaluator_desk.queue.description": "Tarefas atribuídas a você. As ativas aparecem primeiro; abaixo, seu histórico.",
     "evaluator_desk.queue.col_type": "Tipo",

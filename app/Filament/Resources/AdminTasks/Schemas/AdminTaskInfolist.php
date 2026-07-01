@@ -113,7 +113,10 @@ class AdminTaskInfolist
                         // tiene acceso a /admin/admin-tasks.
                         TextEntry::make('is_complimentary')
                             ->label('')
-                            ->visible(fn (AdminTask $record): bool => $record->isComplimentary())
+                            // Roadmap #35 — cortesía/pago es info comercial del super_admin.
+                            ->visible(fn (AdminTask $record): bool => $record->isComplimentary()
+                                && (auth()->user()?->hasRole('super_admin') ?? false)
+                            )
                             ->getStateUsing(fn (): string => __('Cortesía — sin pago'))
                             ->badge()
                             ->color('emerald')

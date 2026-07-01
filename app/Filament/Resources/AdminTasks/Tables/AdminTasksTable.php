@@ -107,6 +107,9 @@ class AdminTasksTable
                         ? __('Tarea de cortesía: sin pago asociado.')
                         : null
                     )
+                    // Roadmap #35 — el evaluador no necesita saber si la tarea se
+                    // pagó o es cortesía; es información comercial del super_admin.
+                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
                     ->toggleable(),
 
                 // 3. Relacionado a (Journal/Book/User link polimórfico)
@@ -196,6 +199,8 @@ class AdminTasksTable
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('—')
                     ->sortable()
+                    // Roadmap #35 — dato de pago, solo super_admin.
+                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 // 7. Vence
@@ -341,6 +346,7 @@ class AdminTasksTable
                 // de cortesía y trazabilidad de evaluaciones forzadas.
                 Filter::make('complimentary')
                     ->label(__('Solo cortesías'))
+                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
                     ->query(fn (Builder $query) => $query
                         ->whereNull('payment_id')
                         ->where('status', '!=', AdminTask::STATUS_AWAITING_PAYMENT)

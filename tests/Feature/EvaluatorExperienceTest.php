@@ -210,6 +210,47 @@ class EvaluatorExperienceTest extends TestCase
         $this->assertStringContainsString('Nature Test', $task->renderedTitle());
     }
 
+    public function test_app_banner_shows_pending_task_count(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        $response = $this->actingAs($evaluator)->get(route('app.dashboard'));
+
+        $response->assertOk();
+        $response->assertSee(trans_choice('evaluator_access.banner_pending', 1, ['count' => 1]));
+    }
+
+    public function test_evaluator_does_not_see_payment_or_courtesy_in_tasks_table(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        // Task de cortesía (sin payment_id): el badge "Cortesía" NO debe verse.
+        AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        $response = $this->actingAs($evaluator)->get('/admin/admin-tasks');
+
+        $response->assertOk();
+        $response->assertDontSee('Cortesía');
+    }
+
     public function test_evaluator_sees_their_pending_task_in_admin_tasks_table(): void
     {
         $evaluator = $this->evaluator();
