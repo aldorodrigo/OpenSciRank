@@ -362,6 +362,7 @@ class MessageThread extends Component
     {
         if (! $productId) {
             $this->taskForm['payment_payable_id'] = null;
+
             return;
         }
 
@@ -381,13 +382,19 @@ class MessageThread extends Component
      */
     public function getPaymentPayablesProperty(): \Illuminate\Support\Collection
     {
-        if (empty($this->taskForm['product_id'])) return collect();
+        if (empty($this->taskForm['product_id'])) {
+            return collect();
+        }
 
         $product = Product::find($this->taskForm['product_id']);
-        if (! $product) return collect();
+        if (! $product) {
+            return collect();
+        }
 
         $editor = $this->resolveEditorForCurrentContext();
-        if (! $editor) return collect();
+        if (! $editor) {
+            return collect();
+        }
 
         return PaymentPayableResolver::availablePayablesFor($product, $editor);
     }
@@ -397,8 +404,11 @@ class MessageThread extends Component
      */
     public function getPaymentPayableLabelProperty(): ?string
     {
-        if (empty($this->taskForm['product_id'])) return null;
+        if (empty($this->taskForm['product_id'])) {
+            return null;
+        }
         $product = Product::find($this->taskForm['product_id']);
+
         return $product ? PaymentPayableResolver::expectedPayableLabel($product) : null;
     }
 
@@ -425,7 +435,7 @@ class MessageThread extends Component
 
         // related_type/id requeridos según tipo
         $type = $this->taskForm['type'] ?? 'support';
-        if (in_array($type, ['evaluate_journal','reevaluate_journal','renewal_evaluation','review_listing_journal'], true)) {
+        if (in_array($type, ['evaluate_journal', 'reevaluate_journal', 'renewal_evaluation', 'review_listing_journal'], true)) {
             $rules['taskForm.related_type'] = 'required|in:'.Journal::class;
             $rules['taskForm.related_id'] = 'required|exists:journals,id';
         } elseif ($type === 'review_listing_book') {
@@ -481,6 +491,7 @@ class MessageThread extends Component
 
             if (! $editor) {
                 $this->addError('taskForm.product_id', __('No se pudo identificar al editor de este hilo. No es posible asociar un pago.'));
+
                 return;
             }
 
@@ -507,6 +518,7 @@ class MessageThread extends Component
                         'resource' => $expectedLabel,
                     ])
                 );
+
                 return;
             }
 
@@ -624,7 +636,9 @@ class MessageThread extends Component
     public function getAvailableJournalsProperty(): \Illuminate\Support\Collection
     {
         $editor = $this->resolveEditorForCurrentContext();
-        if (! $editor) return collect();
+        if (! $editor) {
+            return collect();
+        }
 
         return Journal::where('user_id', $editor->id)->orderBy('id')->get();
     }
@@ -632,7 +646,9 @@ class MessageThread extends Component
     public function getAvailableBooksProperty(): \Illuminate\Support\Collection
     {
         $editor = $this->resolveEditorForCurrentContext();
-        if (! $editor) return collect();
+        if (! $editor) {
+            return collect();
+        }
 
         return Book::where('user_id', $editor->id)->orderBy('id')->get();
     }
@@ -647,7 +663,9 @@ class MessageThread extends Component
     {
         $subject = $this->conversation->subjectModel;
 
-        if ($subject instanceof User) return $subject;
+        if ($subject instanceof User) {
+            return $subject;
+        }
         if ($subject instanceof Journal || $subject instanceof Book) {
             return $subject->user;
         }
@@ -662,6 +680,39 @@ class MessageThread extends Component
             ->first();
 
         return $participant?->user;
+    }
+
+    /**
+     * Roadmap #35 — URL a la tarea del staff relacionada con el hilo, para el
+     * evaluador/admin (el editor NO ve tareas internas). Se resuelve desde el
+     * subject: AdminTask directo, o la task de evaluación más reciente del
+     * Journal anclado.
+     */
+    public function relatedTaskUrl(): ?string
+    {
+        if ($this->role === 'editor') {
+            return null;
+        }
+
+        $subject = $this->conversation->subjectModel;
+        $task = null;
+
+        if ($subject instanceof AdminTask) {
+            $task = $subject;
+        } elseif ($subject instanceof Journal) {
+            $task = AdminTask::query()
+                ->where('related_type', Journal::class)
+                ->where('related_id', $subject->id)
+                ->whereIn('type', [
+                    AdminTask::TYPE_EVALUATE_JOURNAL,
+                    AdminTask::TYPE_REEVALUATE_JOURNAL,
+                    AdminTask::TYPE_RENEWAL_EVALUATION,
+                ])
+                ->orderByDesc('created_at')
+                ->first();
+        }
+
+        return $task ? url('/admin/admin-tasks/'.$task->id) : null;
     }
 
     // ── Render ───────────────────────────────────────────────────────────

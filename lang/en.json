@@ -44,6 +44,7 @@
     "evaluator_desk.queue.empty_heading": "You have no assigned tasks",
     "evaluator_desk.queue.empty_description": "When an administrator assigns you an evaluation, it will show up here.",
     "Go to evaluation": "Go to evaluation",
+    "Ver tarea": "View task",
     "navigation.content": "Content",
     "navigation.evaluation": "Evaluation",
     "navigation.commercial": "Commercial",

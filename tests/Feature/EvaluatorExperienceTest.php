@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Filament\Widgets\EvaluatorQueue;
 use App\Filament\Widgets\EvaluatorTasksOverview;
+use App\Livewire\MessageThread;
 use App\Models\AdminTask;
 use App\Models\Conversation;
 use App\Models\Journal;
@@ -323,6 +324,43 @@ class EvaluatorExperienceTest extends TestCase
         Livewire::actingAs($evaluator)
             ->test(EvaluatorTasksOverview::class)
             ->assertSee('/journals/'.$journal->id.'/evaluate');
+    }
+
+    public function test_thread_shows_task_link_for_evaluator_but_not_editor(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_IN_PROGRESS,
+            'assigned_to' => $evaluator->id,
+        ]);
+        $conv = Conversation::create([
+            'subject' => 'Evaluación',
+            'subject_type' => Journal::class,
+            'subject_id' => $journal->id,
+            'started_by_user_id' => $evaluator->id,
+            'status' => Conversation::STATUS_OPEN,
+            'last_message_at' => now(),
+        ]);
+        $conv->addParticipant($evaluator, Conversation::ROLE_EVALUATOR);
+        $conv->addParticipant($journal->user, Conversation::ROLE_EDITOR);
+
+        $taskUrl = url('/admin/admin-tasks/'.$task->id);
+
+        // Evaluador: ve "Ver tarea".
+        Livewire::actingAs($evaluator)
+            ->test(MessageThread::class, ['conversation' => $conv, 'role' => 'evaluator'])
+            ->assertSee($taskUrl);
+
+        // Editor: NO ve el link a la tarea.
+        Livewire::actingAs($journal->user)
+            ->test(MessageThread::class, ['conversation' => $conv, 'role' => 'editor'])
+            ->assertDontSee($taskUrl);
     }
 
     public function test_desk_queue_shows_active_tasks_only(): void
