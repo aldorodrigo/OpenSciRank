@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Filament\Widgets\EvaluatorQueue;
+use App\Filament\Widgets\EvaluatorTasksOverview;
 use App\Models\AdminTask;
 use App\Models\Journal;
 use App\Models\User;
@@ -283,6 +284,15 @@ class EvaluatorExperienceTest extends TestCase
 
         $response->assertOk();
         $response->assertSee(trans_choice('evaluator_access.banner_pending', 1, ['count' => 1]));
+    }
+
+    public function test_desk_stats_link_to_filtered_task_lists(): void
+    {
+        Livewire::actingAs($this->evaluator())
+            ->test(EvaluatorTasksOverview::class)
+            ->assertSee('tableFilters[status][values][0]=pending')
+            ->assertSee('tableFilters[overdue][isActive]=true')
+            ->assertSee('activeTab=completed');
     }
 
     public function test_desk_queue_shows_active_tasks_only(): void

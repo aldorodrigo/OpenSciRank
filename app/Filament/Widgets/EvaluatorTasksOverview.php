@@ -56,26 +56,34 @@ class EvaluatorTasksOverview extends BaseWidget
             ->get()
             ->sum(fn (Conversation $c) => $c->unreadCountFor(auth()->user()));
 
+        // Roadmap #35 — cada stat enlaza a su lista filtrada en /admin/admin-tasks
+        // (ya scopeada al evaluador por getEloquentQuery).
+        $tasksUrl = route('filament.admin.resources.admin-tasks.index');
+
         return [
             Stat::make(__('evaluator_desk.stats.pending'), $pending)
                 ->description(__('evaluator_desk.stats.pending_desc'))
                 ->descriptionIcon('heroicon-o-inbox')
-                ->color($pending > 0 ? 'warning' : 'gray'),
+                ->color($pending > 0 ? 'warning' : 'gray')
+                ->url($tasksUrl.'?tableFilters[status][values][0]='.AdminTask::STATUS_PENDING),
 
             Stat::make(__('evaluator_desk.stats.in_progress'), $inProgress)
                 ->description(__('evaluator_desk.stats.in_progress_desc'))
                 ->descriptionIcon('heroicon-o-play')
-                ->color($inProgress > 0 ? 'info' : 'gray'),
+                ->color($inProgress > 0 ? 'info' : 'gray')
+                ->url($tasksUrl.'?tableFilters[status][values][0]='.AdminTask::STATUS_IN_PROGRESS),
 
             Stat::make(__('evaluator_desk.stats.overdue'), $overdue)
                 ->description(__('evaluator_desk.stats.overdue_desc'))
                 ->descriptionIcon('heroicon-o-exclamation-triangle')
-                ->color($overdue > 0 ? 'danger' : 'success'),
+                ->color($overdue > 0 ? 'danger' : 'success')
+                ->url($tasksUrl.'?tableFilters[overdue][isActive]=true'),
 
             Stat::make(__('evaluator_desk.stats.completed_week'), $completedLastWeek)
                 ->description(__('evaluator_desk.stats.completed_week_desc'))
                 ->descriptionIcon('heroicon-o-check-circle')
-                ->color('success'),
+                ->color('success')
+                ->url($tasksUrl.'?activeTab=completed'),
 
             Stat::make(__('evaluator_desk.stats.unread'), $unreadMessages)
                 ->description(__('evaluator_desk.stats.unread_desc'))
