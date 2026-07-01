@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Filament\Widgets\EvaluatorQueue;
 use App\Models\AdminTask;
 use App\Models\Journal;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -228,6 +230,40 @@ class EvaluatorExperienceTest extends TestCase
 
         $response->assertOk();
         $response->assertSee(trans_choice('evaluator_access.banner_pending', 1, ['count' => 1]));
+    }
+
+    public function test_desk_queue_shows_active_tasks_only(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+
+        $active = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        $done = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_COMPLETED,
+            'completed_at' => now(),
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        // La cola del escritorio muestra solo activas; las completadas viven en
+        // el tab "Completadas" de /admin/admin-tasks.
+        Livewire::actingAs($evaluator)
+            ->test(EvaluatorQueue::class)
+            ->assertCanSeeTableRecords([$active])
+            ->assertCanNotSeeTableRecords([$done]);
     }
 
     public function test_evaluator_does_not_see_payment_or_courtesy_in_tasks_table(): void

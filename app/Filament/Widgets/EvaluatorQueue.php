@@ -39,16 +39,14 @@ class EvaluatorQueue extends BaseWidget
             ->query(
                 AdminTask::query()
                     ->where('assigned_to', auth()->id())
-                    // Cola activa + historial de completadas (excluye canceladas).
-                    ->whereIn('status', array_merge(
-                        AdminTask::STATUSES_WORK_QUEUE,
-                        [AdminTask::STATUS_COMPLETED]
-                    ))
+                    // Roadmap #35 — solo tareas ACTIVAS (pendiente / en progreso…).
+                    // El historial de completadas vive en el tab "Completadas" de
+                    // Tareas (/admin/admin-tasks), scopeado al evaluador.
+                    ->whereIn('status', AdminTask::STATUSES_WORK_QUEUE)
             )
-            // Activas primero (en progreso → pendiente → resto), luego por
-            // prioridad y vencimiento; completadas al fondo.
+            // En progreso → pendiente → resto, luego por prioridad y vencimiento.
             ->defaultSort(fn (Builder $query) => $query
-                ->orderByRaw("FIELD(status, 'in_progress', 'pending', 'proposal_sent', 'scheduled', 'in_session', 'completed')")
+                ->orderByRaw("FIELD(status, 'in_progress', 'pending', 'proposal_sent', 'scheduled', 'in_session')")
                 ->orderByRaw("FIELD(priority, 'high', 'normal', 'low')")
                 ->orderByRaw('due_at IS NULL, due_at ASC')
             )
@@ -155,7 +153,6 @@ class EvaluatorQueue extends BaseWidget
                     ->options([
                         AdminTask::STATUS_PENDING => __('Pendiente'),
                         AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
-                        AdminTask::STATUS_COMPLETED => __('Completada'),
                     ]),
             ])
             ->recordActions([
