@@ -179,6 +179,9 @@ class AdminTasksTable
                     ->placeholder(__('Sin asignar'))
                     ->color(fn (AdminTask $record): ?string => $record->assignee ? null : 'gray')
                     ->searchable()
+                    // Roadmap #35 — el evaluador solo ve tareas propias; la columna
+                    // "Asignado" es redundante para él.
+                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
                     ->toggleable(),
 
                 // Monto de la tarea (sólo super_admin). Cada task muestra el
@@ -323,6 +326,8 @@ class AdminTasksTable
                 // Asignado a mí
                 TernaryFilter::make('assigned_to_me')
                     ->label(__('Asignado a mí'))
+                    // Roadmap #35 — redundante para el evaluador (solo ve tareas propias).
+                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
                     ->queries(
                         true: fn (Builder $query) => $query->where('assigned_to', auth()->id()),
                         false: fn (Builder $query) => $query->where('assigned_to', '!=', auth()->id()),
