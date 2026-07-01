@@ -190,12 +190,22 @@ class MessageThread extends Component
     ];
 
     /**
-     * Abre el modal de cierre. El admin elige si manda historial por email
-     * y opcionalmente agrega una nota de cierre.
+     * Roadmap #35 — quién puede cerrar/reabrir el hilo: admin y evaluador (el
+     * evaluador cierra su propia consulta al editor). "Crear tarea" sigue siendo
+     * exclusivo del admin.
+     */
+    protected function canModerate(): bool
+    {
+        return in_array($this->role, ['admin', 'evaluator'], true);
+    }
+
+    /**
+     * Abre el modal de cierre. Admin/evaluador eligen si mandan historial por
+     * email y opcionalmente agregan una nota de cierre.
      */
     public function openCloseModal(): void
     {
-        abort_unless($this->role === 'admin', 403);
+        abort_unless($this->canModerate(), 403);
         $this->showingCloseModal = true;
         $this->closeForm = [
             'send_history' => false,
@@ -215,7 +225,7 @@ class MessageThread extends Component
      */
     public function closeConversation(): void
     {
-        abort_unless($this->role === 'admin', 403);
+        abort_unless($this->canModerate(), 403);
 
         $this->conversation->update([
             'status' => Conversation::STATUS_CLOSED,
@@ -267,10 +277,10 @@ class MessageThread extends Component
         session()->flash('thread_info', __('Conversación cerrada.'));
     }
 
-    /** Admin puede reabrir la conversación. */
+    /** Admin o evaluador pueden reabrir la conversación. */
     public function reopenConversation(): void
     {
-        abort_unless($this->role === 'admin', 403);
+        abort_unless($this->canModerate(), 403);
 
         $this->conversation->update([
             'status' => Conversation::STATUS_OPEN,

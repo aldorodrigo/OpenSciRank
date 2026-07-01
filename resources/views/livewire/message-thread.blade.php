@@ -62,7 +62,7 @@
                     {{ __('Ver tarea') }}
                 </a>
             @endif
-            @if($role === 'admin')
+            @if(in_array($role, ['admin', 'evaluator'], true))
                 @if($conversation->status === 'open')
                     <button wire:click="openCloseModal"
                             class="rounded-md bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
@@ -361,7 +361,7 @@
 
     {{-- ── Sprint 3.7 #44: Modal "Crear tarea desde mensaje" ─────────────── --}}
     {{-- ── Sprint 3.7 #45: Modal "Cerrar conversación" ─────────────── --}}
-    @if($role === 'admin' && $showingCloseModal)
+    @if(in_array($role, ['admin', 'evaluator'], true) && $showingCloseModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4"
              wire:click.self="cancelCloseConversation">
             <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-800"

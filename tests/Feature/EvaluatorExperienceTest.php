@@ -384,6 +384,31 @@ class EvaluatorExperienceTest extends TestCase
             ->assertDontSee($taskUrl);
     }
 
+    public function test_evaluator_can_close_and_reopen_their_conversation(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        $conv = Conversation::create([
+            'subject' => 'Consulta',
+            'subject_type' => Journal::class,
+            'subject_id' => $journal->id,
+            'started_by_user_id' => $evaluator->id,
+            'status' => Conversation::STATUS_OPEN,
+            'last_message_at' => now(),
+        ]);
+        $conv->addParticipant($evaluator, Conversation::ROLE_EVALUATOR);
+
+        Livewire::actingAs($evaluator)
+            ->test(MessageThread::class, ['conversation' => $conv, 'role' => 'evaluator'])
+            ->call('closeConversation');
+        $this->assertSame(Conversation::STATUS_CLOSED, $conv->fresh()->status);
+
+        Livewire::actingAs($evaluator)
+            ->test(MessageThread::class, ['conversation' => $conv->fresh(), 'role' => 'evaluator'])
+            ->call('reopenConversation');
+        $this->assertSame(Conversation::STATUS_OPEN, $conv->fresh()->status);
+    }
+
     public function test_desk_queue_shows_active_tasks_only(): void
     {
         $evaluator = $this->evaluator();
