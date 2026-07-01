@@ -131,6 +131,8 @@ class EvaluatorExperienceTest extends TestCase
         // Fase 4 — la sección "Consultar al editor" (mensajería anclada al
         // Journal) está presente en la página de evaluación.
         $response->assertSee(__('evaluator_msg.section_title'));
+        // Link a la ficha pública de la revista en el hero.
+        $response->assertSee(route('journal.show', ['slug' => $journal->slug]));
     }
 
     public function test_evaluator_cannot_open_evaluation_for_an_unassigned_journal(): void
