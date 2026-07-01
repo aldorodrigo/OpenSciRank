@@ -188,4 +188,46 @@ class EvaluatorExperienceTest extends TestCase
         $response->assertOk();
         $response->assertDontSee(__('evaluator_access.banner_title'));
     }
+
+    public function test_task_title_falls_back_to_related_when_params_missing(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        $journal->update(['title' => 'Nature Test']);
+
+        // title_params null (task vieja creada sin params) NO debe mostrar ":name".
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => null,
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        $this->assertStringNotContainsString(':name', $task->renderedTitle());
+        $this->assertStringContainsString('Nature Test', $task->renderedTitle());
+    }
+
+    public function test_evaluator_sees_their_pending_task_in_admin_tasks_table(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        $journal->update(['title' => 'Revista Visible']);
+        AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => 'Revista Visible'],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        $response = $this->actingAs($evaluator)->get('/admin/admin-tasks');
+
+        $response->assertOk();
+        $response->assertSee('Revista Visible');
+    }
 }

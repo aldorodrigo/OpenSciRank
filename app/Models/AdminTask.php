@@ -29,12 +29,19 @@ class AdminTask extends Model
 
     // ── Tipos ─────────────────────────────────────────────────────────
     public const TYPE_EVALUATE_JOURNAL = 'evaluate_journal';
+
     public const TYPE_REEVALUATE_JOURNAL = 'reevaluate_journal';
+
     public const TYPE_RENEWAL_EVALUATION = 'renewal_evaluation';
+
     public const TYPE_REVIEW_LISTING_JOURNAL = 'review_listing_journal';
+
     public const TYPE_REVIEW_LISTING_BOOK = 'review_listing_book';
+
     public const TYPE_CONSULTING = 'consulting';
+
     public const TYPE_ORPHAN_PAYMENT = 'orphan_payment';
+
     // Sprint 3.7 #44 — task genérica creada manualmente por admin desde un mensaje.
     public const TYPE_SUPPORT = 'support';
 
@@ -63,12 +70,19 @@ class AdminTask extends Model
 
     // ── Estados ───────────────────────────────────────────────────────
     public const STATUS_AWAITING_PAYMENT = 'awaiting_payment'; // Sprint 3.7 #44 — task creada con link de pago, esperando que el editor pague
+
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_IN_PROGRESS = 'in_progress';
+
     public const STATUS_PROPOSAL_SENT = 'proposal_sent';  // Sprint 3.7 #39 — solo consulting
+
     public const STATUS_SCHEDULED = 'scheduled';      // solo consulting
+
     public const STATUS_IN_SESSION = 'in_session';    // solo consulting
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     public const STATUSES_OPEN = [
@@ -100,7 +114,9 @@ class AdminTask extends Model
 
     // ── Prioridades ───────────────────────────────────────────────────
     public const PRIORITY_LOW = 'low';
+
     public const PRIORITY_NORMAL = 'normal';
+
     public const PRIORITY_HIGH = 'high';
 
     protected $fillable = [
@@ -250,10 +266,14 @@ class AdminTask extends Model
     public function paymentLinkUrl(): ?string
     {
         $productId = $this->title_params['product_id'] ?? null;
-        if (! $productId) return null;
+        if (! $productId) {
+            return null;
+        }
 
         // Si ya hay un payment completado, el link queda muerto.
-        if ($this->solicitedPayment?->status === 'completed') return null;
+        if ($this->solicitedPayment?->status === 'completed') {
+            return null;
+        }
 
         return \Illuminate\Support\Facades\URL::temporarySignedRoute(
             'checkout.from-task',
@@ -272,7 +292,10 @@ class AdminTask extends Model
     public function editor(): ?User
     {
         $related = $this->related;
-        if ($related instanceof User) return $related;
+        if ($related instanceof User) {
+            return $related;
+        }
+
         return $related?->user ?? null;
     }
 
@@ -345,10 +368,21 @@ class AdminTask extends Model
 
     /**
      * Render del título usando el key i18n y los parámetros.
+     *
+     * Roadmap #35 — fallback robusto: algunas tasks viejas se crearon sin
+     * `title_params` (o sin la clave `name`), lo que mostraba el placeholder
+     * crudo ":name". Si falta, lo resolvemos desde el recurso relacionado
+     * (Journal/Book/User) para que el título siempre sea legible.
      */
     public function renderedTitle(): string
     {
-        return __($this->title_key, $this->title_params ?? []);
+        $params = $this->title_params ?? [];
+
+        if (! array_key_exists('name', $params) && $this->related) {
+            $params['name'] = \App\Support\PaymentPayableResolver::payableDisplayName($this->related);
+        }
+
+        return __($this->title_key, $params);
     }
 
     /**
@@ -510,7 +544,7 @@ class AdminTask extends Model
      * STATUS_PROPOSAL_SENT e incrementa el contador de rondas. Si excede
      * MAX_PROPOSAL_ROUNDS dispara `ConsultingProposalsEscalated` al super_admin.
      *
-     * @param  array<int, array{slot: CarbonInterface, notes?: ?string}> $slots
+     * @param  array<int, array{slot: CarbonInterface, notes?: ?string}>  $slots
      */
     public function sendProposals(array $slots, User $proposedBy, ?int $expiresInDays = null): array
     {
