@@ -131,8 +131,7 @@ class AdminTasksTable
                         // a la evaluación llega por la acción "Trabajar").
                         $record->related_type === 'App\\Models\\Journal'
                             && (auth()->user()?->hasRole('evaluator') ?? false)
-                            && ! (auth()->user()?->hasRole('super_admin') ?? false)
-                            => filled($record->related->slug ?? null)
+                            && ! (auth()->user()?->hasRole('super_admin') ?? false) => filled($record->related->slug ?? null)
                                 ? route('journal.show', ['slug' => $record->related->slug])
                                 : null,
                         $record->related_type === 'App\\Models\\Journal' => JournalResource::getUrl('edit', ['record' => $record->related_id]),
@@ -300,16 +299,26 @@ class AdminTasksTable
                 SelectFilter::make('status')
                     ->label(__('Estado'))
                     ->multiple()
-                    ->options([
-                        AdminTask::STATUS_AWAITING_PAYMENT => __('Pago pendiente'),
-                        AdminTask::STATUS_PENDING => __('Pendiente'),
-                        AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
-                        AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada'),
-                        AdminTask::STATUS_SCHEDULED => __('Agendada'),
-                        AdminTask::STATUS_IN_SESSION => __('En sesión'),
-                        AdminTask::STATUS_COMPLETED => __('Completada'),
-                        AdminTask::STATUS_CANCELLED => __('Cancelada'),
-                    ]),
+                    ->options(function (): array {
+                        $options = [
+                            AdminTask::STATUS_AWAITING_PAYMENT => __('Pago pendiente'),
+                            AdminTask::STATUS_PENDING => __('Pendiente'),
+                            AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                            AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada'),
+                            AdminTask::STATUS_SCHEDULED => __('Agendada'),
+                            AdminTask::STATUS_IN_SESSION => __('En sesión'),
+                            AdminTask::STATUS_COMPLETED => __('Completada'),
+                            AdminTask::STATUS_CANCELLED => __('Cancelada'),
+                        ];
+
+                        // Roadmap #35 — el evaluador no filtra por "Pago pendiente".
+                        $user = auth()->user();
+                        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+                            unset($options[AdminTask::STATUS_AWAITING_PAYMENT]);
+                        }
+
+                        return $options;
+                    }),
 
                 // Asignado a mí
                 TernaryFilter::make('assigned_to_me')

@@ -42,7 +42,7 @@ class ListAdminTasks extends ListRecords
      */
     public function getTabs(): array
     {
-        return [
+        $tabs = [
             // Sprint 3.7 #44: "Por hacer" excluye awaiting_payment (queue separada).
             // Cortesías (sin link de pago) y tareas pagadas activadas → quedan acá.
             'open' => Tab::make(__('Por hacer'))
@@ -70,5 +70,14 @@ class ListAdminTasks extends ListRecords
             'all' => Tab::make(__('Todas'))
                 ->query(fn (Builder $query) => $query),
         ];
+
+        // Roadmap #35 — el evaluador no ve el tab de pagos ("Pago pendiente"):
+        // sus tareas nunca están en awaiting_payment y es info comercial.
+        $user = auth()->user();
+        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            unset($tabs['awaiting_payment']);
+        }
+
+        return $tabs;
     }
 }
