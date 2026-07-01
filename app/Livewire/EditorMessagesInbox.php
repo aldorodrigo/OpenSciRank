@@ -140,6 +140,44 @@ class EditorMessagesInbox extends Component
             ->find($this->activeConversationId);
     }
 
+    /**
+     * Roadmap #35 — link al recurso del hilo activo (revista / libro /
+     * consultoría) para que el editor salte al recurso desde la conversación.
+     * Devuelve null en consultas generales (sin recurso).
+     *
+     * @return array{url: string, label: string}|null
+     */
+    #[Computed]
+    public function activeResourceLink(): ?array
+    {
+        $conv = $this->activeConversation;
+        if (! $conv) {
+            return null;
+        }
+
+        $subject = $conv->subjectModel;
+
+        // AdminTask: consultoría → panel de consultoría; otras (evaluación,
+        // listado) → su recurso relacionado (journal/book).
+        if ($subject instanceof AdminTask) {
+            if ($subject->type === AdminTask::TYPE_CONSULTING) {
+                return ['url' => route('app.consulting'), 'label' => __('Ver consultoría')];
+            }
+
+            $subject = $subject->related;
+        }
+
+        if ($subject instanceof Journal && filled($subject->slug)) {
+            return ['url' => route('journal.show', ['slug' => $subject->slug]), 'label' => __('Ver revista')];
+        }
+
+        if ($subject instanceof Book && filled($subject->slug)) {
+            return ['url' => route('book.show', ['slug' => $subject->slug]), 'label' => __('Ver libro')];
+        }
+
+        return null;
+    }
+
     #[Computed]
     public function myJournals(): \Illuminate\Support\Collection
     {

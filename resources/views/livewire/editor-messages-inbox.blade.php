@@ -129,6 +129,17 @@
                 </button>
             </div>
 
+            {{-- Roadmap #35 — acceso al recurso del hilo (revista / libro / consultoría). --}}
+            @if($this->activeResourceLink)
+                <a href="{{ $this->activeResourceLink['url'] }}" target="_blank" rel="noopener"
+                   class="flex items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-brand transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800/50 dark:text-blue-400 dark:hover:bg-gray-800">
+                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                    </svg>
+                    {{ $this->activeResourceLink['label'] }}
+                </a>
+            @endif
+
             <div class="flex flex-1 flex-col overflow-hidden">
                 @livewire('message-thread', [
                     'conversation' => $this->activeConversation,
