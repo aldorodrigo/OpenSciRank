@@ -29,7 +29,7 @@ class MessageThread extends Component
     /** Hilo activo (mount param). */
     public Conversation $conversation;
 
-    /** 'editor' | 'admin' — define UI y permisos. */
+    /** 'editor' | 'admin' | 'evaluator' — define UI y permisos. */
     public string $role = 'editor';
 
     /** Texto del nuevo mensaje. */
@@ -68,6 +68,14 @@ class MessageThread extends Component
     {
         $this->conversation = $conversation;
         $this->role = $role;
+
+        // Roadmap #35 — el evaluador debe ser participante ANTES de renderizar:
+        // markReadBy no falla si no lo es (update de 0 filas), pero sin
+        // participación no vería el hilo en unreadCountFor ni en el digest.
+        if ($role === 'evaluator') {
+            $this->conversation->addParticipant(auth()->user(), Conversation::ROLE_EVALUATOR);
+        }
+
         $this->conversation->markReadBy(auth()->user());
     }
 
@@ -111,9 +119,12 @@ class MessageThread extends Component
 
         $user = auth()->user();
 
-        // Auto-join admin que abre el hilo por primera vez
+        // Auto-join del actor que escribe por primera vez.
         if ($this->role === 'admin') {
             $this->conversation->addParticipant($user, Conversation::ROLE_ADMIN);
+        } elseif ($this->role === 'evaluator') {
+            // Roadmap #35 — el evaluador se auto-agrega con su propio rol.
+            $this->conversation->addParticipant($user, Conversation::ROLE_EVALUATOR);
         }
 
         $message = Message::create([

@@ -37,6 +37,11 @@ class NewConversationOpened extends Notification
         App::setLocale($notifiable->preferred_locale ?? 'es');
 
         $isSuperAdmin = $notifiable->hasRole('super_admin');
+        // Roadmap #35 — tercera rama: un evaluador (no super_admin) recibe el
+        // CTA hacia /admin, no hacia /app/messages (panel editor, inaccesible
+        // para él). Reusa el copy "editor" (genérico "se abrió un hilo").
+        $isEvaluator  = ! $isSuperAdmin && $notifiable->hasRole('evaluator');
+
         $prefix       = $isSuperAdmin
             ? 'notifications.new_conversation_opened.admin'
             : 'notifications.new_conversation_opened.editor';
@@ -44,9 +49,11 @@ class NewConversationOpened extends Notification
         $subjectLine  = $this->resolveSubjectLine($isSuperAdmin);
         $starter      = $this->conversation->startedBy;
 
-        $url = $isSuperAdmin
-            ? url('/admin/conversations/'.$this->conversation->id)
-            : url('/app/messages/'.$this->conversation->id);
+        $url = match (true) {
+            $isSuperAdmin => url('/admin/conversations/'.$this->conversation->id),
+            $isEvaluator  => $this->evaluatorDeepLink(),
+            default       => url('/app/messages/'.$this->conversation->id),
+        };
 
         return (new MailMessage)
             ->subject($subjectLine)
@@ -55,6 +62,22 @@ class NewConversationOpened extends Notification
             ->line(__("{$prefix}.context", ['subject' => $subjectLine]))
             ->action(__("{$prefix}.cta"), $url)
             ->line(__("{$prefix}.outro"));
+    }
+
+    /**
+     * Roadmap #35 — deep-link del evaluador. Si el hilo está anclado a un
+     * Journal, va directo a su página de evaluación (donde vive la mensajería
+     * del evaluador); si no, al panel admin genérico.
+     */
+    private function evaluatorDeepLink(): string
+    {
+        $related = $this->conversation->subjectModel;
+
+        if ($related instanceof Journal) {
+            return url('/admin/journals/'.$related->id.'/evaluate');
+        }
+
+        return url('/admin');
     }
 
     /**

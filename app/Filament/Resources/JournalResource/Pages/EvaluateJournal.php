@@ -4,11 +4,13 @@ namespace App\Filament\Resources\JournalResource\Pages;
 
 use App\Filament\Resources\JournalResource;
 use App\Models\AdminTask;
+use App\Models\Conversation;
 use App\Models\CriteriaItem;
 use App\Models\Journal;
 use App\Models\JournalEvaluationScore;
 use App\Notifications\ChangesRequested;
 use App\Notifications\EvaluationCompleted;
+use App\Notifications\NewConversationOpened;
 use App\Notifications\SealRenewalApproved;
 use App\Notifications\SealRenewalRejected;
 use Filament\Notifications\Notification;
@@ -454,6 +456,96 @@ class EvaluateJournal extends Page
         Notification::make()
             ->title(__('admin.eval_page.draft_saved'))
             ->body(__('admin.eval_page.draft_progress', ['marked' => $marked]))
+            ->success()
+            ->send();
+    }
+
+    // ── Roadmap #35: mensajería evaluator↔editor anclada al Journal ──────
+
+    /**
+     * Rol de mensajería del usuario que mira esta página: 'evaluator' para el
+     * evaluador asignado, 'admin' para el super_admin. Define UI y permisos del
+     * hilo embebido.
+     */
+    public function getMessagingRoleProperty(): string
+    {
+        $user = auth()->user();
+
+        return ($user->hasRole('evaluator') && ! $user->hasRole('super_admin'))
+            ? 'evaluator'
+            : 'admin';
+    }
+
+    /**
+     * Hilo OPEN anclado a este Journal, si existe. Es el canal del evaluador
+     * para consultar al editor sin exponer la bandeja global de conversaciones.
+     */
+    public function getEditorConversationProperty(): ?Conversation
+    {
+        return Conversation::query()
+            ->where('subject_type', Journal::class)
+            ->where('subject_id', $this->record->id)
+            ->where('status', Conversation::STATUS_OPEN)
+            ->latest('last_message_at')
+            ->first();
+    }
+
+    /**
+     * Abre (o reusa) el hilo con el editor de esta revista. Solo el evaluador
+     * asignado o un super_admin. Idempotente: si ya hay un hilo OPEN, no crea
+     * otro. Ancla el hilo al Journal para que el editor lo vea en su bandeja.
+     */
+    public function startEditorConversation(): void
+    {
+        $user = auth()->user();
+
+        abort_unless(
+            $user->hasRole('super_admin')
+            || ($user->hasRole('evaluator') && $this->record->assigned_evaluator_id === $user->id),
+            403
+        );
+
+        // Idempotente: si ya hay hilo abierto, no hacemos nada (la vista ya lo embebe).
+        if ($this->editorConversation) {
+            return;
+        }
+
+        $editor = $this->record->user;
+        if (! $editor) {
+            Notification::make()
+                ->title(__('evaluator_msg.no_editor'))
+                ->danger()
+                ->send();
+
+            return;
+        }
+
+        $conversation = Conversation::create([
+            'subject' => __('evaluator_msg.subject', ['title' => $this->record->getTranslationWithFallback('title')]),
+            'subject_type' => Journal::class,
+            'subject_id' => $this->record->id,
+            'started_by_user_id' => $user->id,
+            'status' => Conversation::STATUS_OPEN,
+            'last_message_at' => now(),
+        ]);
+
+        $conversation->addParticipant(
+            $user,
+            $this->messagingRole === 'evaluator' ? Conversation::ROLE_EVALUATOR : Conversation::ROLE_ADMIN
+        );
+        $conversation->addParticipant($editor, Conversation::ROLE_EDITOR);
+
+        try {
+            $editor->notify(new NewConversationOpened($conversation));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('NewConversationOpened not sent (evaluator): '.$e->getMessage(), [
+                'journal_id' => $this->record->id,
+                'conversation_id' => $conversation->id,
+            ]);
+        }
+
+        Notification::make()
+            ->title(__('evaluator_msg.started'))
             ->success()
             ->send();
     }

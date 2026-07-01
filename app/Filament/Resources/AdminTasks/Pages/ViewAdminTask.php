@@ -636,9 +636,18 @@ class ViewAdminTask extends ViewRecord
 
     /**
      * Sprint 3.7 #40 — sección de conversación al pie de la vista de tarea.
+     *
+     * Roadmap #35 — solo super_admin: el partial embebe message-thread con
+     * role='admin' y su botón "abrir conversación" pega contra
+     * AdminTaskConversationController (super_admin-only). El evaluador tiene su
+     * propia mensajería anclada al Journal dentro de EvaluateJournal.
      */
     public function getFooter(): ?\Illuminate\Contracts\View\View
     {
+        if (! (auth()->user()?->hasRole('super_admin') ?? false)) {
+            return null;
+        }
+
         return view('filament.admin-tasks.conversation-section', [
             'task' => $this->record,
         ]);

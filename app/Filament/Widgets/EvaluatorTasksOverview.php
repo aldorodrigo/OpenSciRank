@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\AdminTask;
+use App\Models\Conversation;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -49,6 +50,12 @@ class EvaluatorTasksOverview extends BaseWidget
             ->where('completed_at', '>=', now()->subDays(7))
             ->count();
 
+        // Roadmap #35 (Fase 4) — mensajes sin leer en los hilos del evaluador.
+        $unreadMessages = Conversation::forUser(auth()->user())
+            ->where('status', Conversation::STATUS_OPEN)
+            ->get()
+            ->sum(fn (Conversation $c) => $c->unreadCountFor(auth()->user()));
+
         return [
             Stat::make(__('evaluator_desk.stats.pending'), $pending)
                 ->description(__('evaluator_desk.stats.pending_desc'))
@@ -69,6 +76,11 @@ class EvaluatorTasksOverview extends BaseWidget
                 ->description(__('evaluator_desk.stats.completed_week_desc'))
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('success'),
+
+            Stat::make(__('evaluator_desk.stats.unread'), $unreadMessages)
+                ->description(__('evaluator_desk.stats.unread_desc'))
+                ->descriptionIcon('heroicon-o-chat-bubble-left-right')
+                ->color($unreadMessages > 0 ? 'warning' : 'gray'),
         ];
     }
 }
