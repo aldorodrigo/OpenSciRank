@@ -7,7 +7,9 @@ namespace Tests\Feature;
 use App\Filament\Widgets\EvaluatorQueue;
 use App\Filament\Widgets\EvaluatorTasksOverview;
 use App\Models\AdminTask;
+use App\Models\Conversation;
 use App\Models\Journal;
+use App\Models\Message;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -293,6 +295,34 @@ class EvaluatorExperienceTest extends TestCase
             ->assertSee('tableFilters[status][values][0]=pending')
             ->assertSee('tableFilters[overdue][isActive]=true')
             ->assertSee('activeTab=completed');
+    }
+
+    public function test_unread_messages_stat_links_to_the_evaluation(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        $editor = User::factory()->create();
+
+        // Hilo anclado al journal, con un mensaje del editor sin leer por el evaluador.
+        $conv = Conversation::create([
+            'subject' => 'Evaluación',
+            'subject_type' => Journal::class,
+            'subject_id' => $journal->id,
+            'started_by_user_id' => $evaluator->id,
+            'status' => Conversation::STATUS_OPEN,
+            'last_message_at' => now(),
+        ]);
+        $conv->addParticipant($evaluator, Conversation::ROLE_EVALUATOR);
+        $conv->addParticipant($editor, Conversation::ROLE_EDITOR);
+        Message::create([
+            'conversation_id' => $conv->id,
+            'user_id' => $editor->id,
+            'body' => 'Falta un dato.',
+        ]);
+
+        Livewire::actingAs($evaluator)
+            ->test(EvaluatorTasksOverview::class)
+            ->assertSee('/journals/'.$journal->id.'/evaluate');
     }
 
     public function test_desk_queue_shows_active_tasks_only(): void

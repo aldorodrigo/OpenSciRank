@@ -2,8 +2,10 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\JournalResource;
 use App\Models\AdminTask;
 use App\Models\Conversation;
+use App\Models\Journal;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -51,10 +53,22 @@ class EvaluatorTasksOverview extends BaseWidget
             ->count();
 
         // Roadmap #35 (Fase 4) — mensajes sin leer en los hilos del evaluador.
-        $unreadMessages = Conversation::forUser(auth()->user())
+        $user = auth()->user();
+        $unreadConversations = Conversation::forUser($user)
             ->where('status', Conversation::STATUS_OPEN)
             ->get()
-            ->sum(fn (Conversation $c) => $c->unreadCountFor(auth()->user()));
+            ->filter(fn (Conversation $c) => $c->unreadCountFor($user) > 0)
+            ->sortByDesc('last_message_at');
+
+        $unreadMessages = $unreadConversations->sum(fn (Conversation $c) => $c->unreadCountFor($user));
+
+        // El stat lleva a la evaluación del hilo con el mensaje nuevo más
+        // reciente (los hilos del evaluador están anclados al Journal).
+        $unreadUrl = null;
+        $subject = $unreadConversations->first()?->subjectModel;
+        if ($subject instanceof Journal) {
+            $unreadUrl = JournalResource::getUrl('evaluate', ['record' => $subject->getKey()]);
+        }
 
         // Roadmap #35 — cada stat enlaza a su lista filtrada en /admin/admin-tasks
         // (ya scopeada al evaluador por getEloquentQuery).
@@ -88,7 +102,8 @@ class EvaluatorTasksOverview extends BaseWidget
             Stat::make(__('evaluator_desk.stats.unread'), $unreadMessages)
                 ->description(__('evaluator_desk.stats.unread_desc'))
                 ->descriptionIcon('heroicon-o-chat-bubble-left-right')
-                ->color($unreadMessages > 0 ? 'warning' : 'gray'),
+                ->color($unreadMessages > 0 ? 'warning' : 'gray')
+                ->url($unreadUrl),
         ];
     }
 }
