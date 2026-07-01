@@ -287,6 +287,50 @@ class EvaluatorExperienceTest extends TestCase
         $response->assertDontSee('Cortesía');
     }
 
+    public function test_related_link_points_to_public_journal_page_for_evaluator(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        $response = $this->actingAs($evaluator)->get('/admin/admin-tasks');
+
+        $response->assertOk();
+        // El link "Relacionado" apunta a la ficha pública, no a la evaluación ni al edit.
+        $response->assertSee(route('journal.show', ['slug' => $journal->slug]));
+        $response->assertDontSee('/journals/'.$journal->id.'/evaluate');
+        $response->assertDontSee('/journals/'.$journal->id.'/edit');
+    }
+
+    public function test_task_detail_hides_admin_edit_link_for_evaluator(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+            'assigned_to' => $evaluator->id,
+        ]);
+
+        $response = $this->actingAs($evaluator)->get('/admin/admin-tasks/'.$task->id);
+
+        $response->assertOk();
+        $response->assertDontSee('Editar (admin)');
+        $response->assertSee('Ver ficha pública');
+    }
+
     public function test_evaluator_sees_their_pending_task_in_admin_tasks_table(): void
     {
         $evaluator = $this->evaluator();

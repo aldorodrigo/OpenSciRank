@@ -88,7 +88,13 @@ class AdminTaskInfolist
                                 $html .= '<div class="flex items-baseline gap-2"><span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">'.$typeLabel.'</span><span class="text-sm font-semibold text-gray-900 dark:text-gray-100">'.$name.'</span></div>';
                                 $html .= '<div class="flex flex-wrap items-center gap-2">';
 
-                                if ($adminUrl) {
+                                // Roadmap #35 — "Editar (admin)" abre el form de
+                                // edición del journal (desde donde se puede tocar la
+                                // evaluación). Solo super_admin; el evaluador se queda
+                                // con "Ver ficha pública".
+                                $canEditAdmin = auth()->user()?->hasRole('super_admin') ?? false;
+
+                                if ($adminUrl && $canEditAdmin) {
                                     $editIcon = '<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
                                     $html .= '<a href="'.e($adminUrl).'" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-200 transition hover:bg-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-800 dark:hover:bg-blue-900/60">'.$editIcon.$editLabel.'</a>';
                                 }

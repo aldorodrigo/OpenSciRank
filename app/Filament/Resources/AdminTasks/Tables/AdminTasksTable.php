@@ -126,12 +126,15 @@ class AdminTasksTable
                     })
                     ->url(fn (AdminTask $record): ?string => match (true) {
                         $record->related === null => null,
-                        // Roadmap #35 — el evaluator va a su página de evaluación,
-                        // no al form de edición admin del journal.
+                        // Roadmap #35 — el evaluator va a la FICHA pública de la
+                        // revista (no al form de edición admin ni a la evaluación;
+                        // a la evaluación llega por la acción "Trabajar").
                         $record->related_type === 'App\\Models\\Journal'
                             && (auth()->user()?->hasRole('evaluator') ?? false)
                             && ! (auth()->user()?->hasRole('super_admin') ?? false)
-                            => JournalResource::getUrl('evaluate', ['record' => $record->related_id]),
+                            => filled($record->related->slug ?? null)
+                                ? route('journal.show', ['slug' => $record->related->slug])
+                                : null,
                         $record->related_type === 'App\\Models\\Journal' => JournalResource::getUrl('edit', ['record' => $record->related_id]),
                         $record->related_type === 'App\\Models\\Book' => BookResource::getUrl('edit', ['record' => $record->related_id]),
                         $record->related_type === 'App\\Models\\User' => \App\Filament\Resources\Users\UserResource::getUrl('edit', ['record' => $record->related_id]),
