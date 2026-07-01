@@ -8,7 +8,6 @@ use Illuminate\Notifications\Notification;
 
 class EvaluationCompleted extends Notification
 {
-
     public function __construct(public Journal $journal) {}
 
     public function via(object $notifiable): array
@@ -23,7 +22,7 @@ class EvaluationCompleted extends Notification
         $status = $isCertified ? __('Certified') : __('Evaluated');
 
         $mail = (new MailMessage)
-            ->subject(__('Evaluation completed: :status', ['status' => $status]) . ' - ' . config('app.name'))
+            ->subject(__('Evaluation completed: :status', ['status' => $status]).' - '.config('app.name'))
             ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
             ->line(__('The evaluation of your journal **":title"** has been completed.', ['title' => $this->journal->getTranslationWithFallback('title')]))
             ->line(__('**Result:** :status', ['status' => $status]))
@@ -32,6 +31,21 @@ class EvaluationCompleted extends Notification
         if ($this->journal->evaluation_notes) {
             $mail->line(__('**Observations:**'))
                 ->line($this->journal->evaluation_notes);
+        }
+
+        // Roadmap #35 — enlaces de descarga: informe siempre (journal evaluado);
+        // certificado solo si está certificada con sello vigente (evita 404).
+        $mail->line('---')
+            ->line(__('eval_completed.downloads_title'))
+            ->line('['.__('eval_completed.report_link').']('.route('app.journal.report.pdf', $this->journal).')');
+
+        $certificateAvailable = $isCertified
+            && $this->journal->seal_status === 'active'
+            && $this->journal->seal_expires_at
+            && $this->journal->seal_expires_at->isFuture();
+
+        if ($certificateAvailable) {
+            $mail->line('['.__('eval_completed.certificate_link').']('.route('app.journal.certificate.pdf', $this->journal).')');
         }
 
         if ($isCertified && $this->journal->seal_expires_at) {
