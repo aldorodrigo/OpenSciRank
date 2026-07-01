@@ -105,6 +105,7 @@ class AdminTaskInfolist
                                 }
 
                                 $html .= '</div></div>';
+
                                 return $html;
                             }),
 
@@ -127,6 +128,24 @@ class AdminTaskInfolist
                             ->badge()
                             ->color('emerald')
                             ->icon('heroicon-o-gift')
+                            ->columnSpanFull(),
+                    ]),
+
+                // ── 1b. Instrucciones para el evaluador (tipos de evaluación) ──
+                // Roadmap #35 — que el evaluador sepa qué tiene que hacer.
+                Section::make(__('evaluator_task.instructions_title'))
+                    ->icon('heroicon-o-information-circle')
+                    ->collapsible()
+                    ->visible(fn (AdminTask $record): bool => in_array($record->type, [
+                        AdminTask::TYPE_EVALUATE_JOURNAL,
+                        AdminTask::TYPE_REEVALUATE_JOURNAL,
+                        AdminTask::TYPE_RENEWAL_EVALUATION,
+                    ], true))
+                    ->schema([
+                        TextEntry::make('evaluation_instructions')
+                            ->hiddenLabel()
+                            ->getStateUsing(fn (): string => __('evaluator_task.instructions_body'))
+                            ->markdown()
                             ->columnSpanFull(),
                     ]),
 
@@ -239,7 +258,10 @@ class AdminTaskInfolist
                 // ── 3. Notas internas ─────────────────────────────────────────
                 Section::make(__('Notas internas'))
                     ->icon('heroicon-o-pencil-square')
-                    ->visible(fn (AdminTask $record): bool => filled($record->notes))
+                    // Roadmap #35 — notas internas del staff: solo super_admin.
+                    ->visible(fn (AdminTask $record): bool => filled($record->notes)
+                        && (auth()->user()?->hasRole('super_admin') ?? false)
+                    )
                     ->schema([
                         TextEntry::make('notes')
                             ->hiddenLabel()

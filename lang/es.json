@@ -19,6 +19,8 @@
     "evaluator_msg.subject": "Evaluación: :title",
     "evaluator_msg.started": "Consulta abierta. El editor fue notificado.",
     "evaluator_msg.no_editor": "Esta revista no tiene un editor asociado.",
+    "evaluator_task.instructions_title": "Qué tenés que hacer",
+    "evaluator_task.instructions_body": "1. **Revisá los datos de la revista** (título, ISSN, editorial, sitio web) con *Ver ficha pública*.\n2. **Abrí la evaluación** con el botón *Trabajar / Continuar* y recorré el checklist de criterios.\n3. **Marcá los criterios** que la revista cumple; el puntaje se calcula solo.\n4. Para el **Sello de Estándares Editoriales** la revista necesita **≥75%** y cumplir los **5 indicadores críticos**.\n5. Si te falta información, **consultá al editor** desde la sección *Consultar al editor* dentro de la evaluación.\n6. Al terminar, **guardá la evaluación** — eso cierra la tarea automáticamente.",
     "evaluator_access.button": "Escritorio de evaluación",
     "evaluator_access.banner_title": "Tu escritorio de evaluación",
     "evaluator_access.banner_body": "Tus tareas de evaluación asignadas están en el panel de evaluación.",

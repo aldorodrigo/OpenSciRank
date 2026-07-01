@@ -19,6 +19,8 @@
     "evaluator_msg.subject": "Evaluation: :title",
     "evaluator_msg.started": "Conversation opened. The editor has been notified.",
     "evaluator_msg.no_editor": "This journal has no associated editor.",
+    "evaluator_task.instructions_title": "What to do",
+    "evaluator_task.instructions_body": "1. **Review the journal's data** (title, ISSN, publisher, website) via *View public page*.\n2. **Open the evaluation** with the *Work / Continue* button and go through the criteria checklist.\n3. **Check each criterion** the journal meets; the score is computed automatically.\n4. For the **Editorial Standards Seal**, the journal needs **≥75%** and all **5 critical indicators** met.\n5. If information is missing, **ask the editor** from the *Ask the editor* section inside the evaluation.\n6. When done, **save the evaluation** — that closes the task automatically.",
     "evaluator_access.button": "Evaluation desk",
     "evaluator_access.banner_title": "Your evaluation desk",
     "evaluator_access.banner_body": "Your assigned evaluation tasks live in the evaluation panel.",

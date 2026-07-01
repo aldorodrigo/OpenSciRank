@@ -79,36 +79,36 @@
         @endif
 
         {{-- HERO HEADER --}}
-        <div class="relative overflow-hidden rounded-2xl bg-slate-900 text-white shadow-sm">
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white">
             <div class="relative z-10 p-6 lg:p-10">
                 <div class="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
                     {{-- Left: Journal Info --}}
                     <div class="flex-1 space-y-4">
                         <div class="flex items-center gap-3">
                             @if($record->isEvaluated())
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold tracking-wide text-emerald-400 ring-1 ring-emerald-500/30">
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold tracking-wide text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:ring-emerald-500/30">
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
                                     EVALUADO
                                 </span>
                             @else
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1 text-xs font-bold tracking-wide text-amber-400 ring-1 ring-amber-500/30">
+                                <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-bold tracking-wide text-amber-700 ring-1 ring-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:ring-amber-500/30">
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                                     PENDIENTE
                                 </span>
                             @endif
-                            <span class="text-xs font-medium text-slate-400">{{ $record->issn_online ?: ($record->issn_print ?: 'Sin ISSN') }}</span>
+                            <span class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ $record->issn_online ?: ($record->issn_print ?: 'Sin ISSN') }}</span>
                         </div>
 
                         <div>
-                            <h1 class="text-2xl font-bold text-white lg:text-3xl">
+                            <h1 class="text-2xl font-bold text-slate-900 lg:text-3xl dark:text-white">
                                 {{ $record->getTranslationWithFallback('title') }}
                             </h1>
                             @if($record->getTranslationWithFallback('abbreviated_name'))
-                                <p class="mt-1 text-sm font-medium text-slate-400">{{ $record->getTranslationWithFallback('abbreviated_name') }}</p>
+                                <p class="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">{{ $record->getTranslationWithFallback('abbreviated_name') }}</p>
                             @endif
                         </div>
 
-                        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-400">
+                        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-600 dark:text-slate-400">
                             @if($record->publisher)
                                 <span class="flex items-center gap-2"><svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A4.833 4.833 0 0 1 12 12.25c-1.317 0-2.527-.525-3.414-1.382V21" /></svg>{{ $record->publisher }}</span>
                             @endif
@@ -122,13 +122,13 @@
 
                         <div class="flex flex-wrap gap-2 pt-2">
                             @if($record->url)
-                                <a href="{{ $record->url }}" target="_blank" class="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white">
+                                <a href="{{ $record->url }}" target="_blank" class="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-white/5 dark:text-slate-300 dark:ring-transparent dark:hover:bg-white/10 dark:hover:text-white">
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>
                                     Sitio Web
                                 </a>
                             @endif
                             @if($record->editorial_board_url)
-                                <a href="{{ $record->editorial_board_url }}" target="_blank" class="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white">
+                                <a href="{{ $record->editorial_board_url }}" target="_blank" class="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-white/5 dark:text-slate-300 dark:ring-transparent dark:hover:bg-white/10 dark:hover:text-white">
                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.998 5.998 0 0 0-12 0m12 0c0-.856-.33-1.635-.873-2.219m-.306-5.674a3 3 0 1 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" /></svg>
                                     Comité Editorial
                                 </a>
@@ -140,36 +140,36 @@
                     <div class="flex items-center gap-8">
                         @php($score = $this->calculateScore())
                         <div class="relative flex flex-col items-center">
-                            <div class="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-800/50 shadow-inner ring-4 {{ $score >= 80 ? 'ring-emerald-500' : ($score >= 50 ? 'ring-amber-500' : 'ring-rose-500') }} transition-all duration-500">
-                                <span class="text-3xl font-semibold text-white">{{ number_format($score, 0) }}<span class="text-lg opacity-60">%</span></span>
+                            <div class="relative flex h-28 w-28 items-center justify-center rounded-full bg-slate-50 shadow-inner ring-4 {{ $score >= 80 ? 'ring-emerald-500' : ($score >= 50 ? 'ring-amber-500' : 'ring-rose-500') }} transition-all duration-500 dark:bg-slate-800/50">
+                                <span class="text-3xl font-semibold text-slate-900 dark:text-white">{{ number_format($score, 0) }}<span class="text-lg opacity-60">%</span></span>
                             </div>
                             <span class="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Puntaje Final</span>
                         </div>
 
                         <div class="hidden flex-col gap-3 sm:flex">
-                            <div class="flex items-center gap-4 rounded-xl bg-white/5 p-3 ring-1 ring-white/10">
+                            <div class="flex items-center gap-4 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200 dark:bg-white/5 dark:ring-white/10">
                                 <div class="flex-1 space-y-1">
-                                    <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                         <span>Progreso de Evaluación</span>
                                         <span>{{ $this->getCompletionPercentage() }}%</span>
                                     </div>
-                                    <div class="h-1.5 w-40 overflow-hidden rounded-full bg-slate-700">
+                                    <div class="h-1.5 w-40 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                                         <div class="h-full bg-amber-500 transition-all duration-700" style="width: {{ $this->getCompletionPercentage() }}%"></div>
                                     </div>
                                 </div>
                                 <div class="text-center">
-                                    <span class="block text-lg font-semibold leading-none text-white">{{ $this->getCompletedCount() }}</span>
+                                    <span class="block text-lg font-semibold leading-none text-slate-900 dark:text-white">{{ $this->getCompletedCount() }}</span>
                                     <span class="text-xs font-bold text-slate-500">/{{ $this->getTotalCount() }}</span>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-3 rounded-xl bg-white/5 p-3 ring-1 ring-white/10">
+                            <div class="flex items-center gap-3 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200 dark:bg-white/5 dark:ring-white/10">
                                 @if($this->getCoresFailedCount() > 0)
                                     <svg class="h-5 w-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
-                                    <span class="text-xs font-bold text-rose-400">{{ $this->getCoresFailedCount() }} Criterios Excluyentes sin cumplir</span>
+                                    <span class="text-xs font-bold text-rose-600 dark:text-rose-400">{{ $this->getCoresFailedCount() }} Criterios Excluyentes sin cumplir</span>
                                 @else
                                     <svg class="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                                    <span class="text-xs font-bold text-emerald-400 text-shadow-sm">Todo OK en base metodológica</span>
+                                    <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Todo OK en base metodológica</span>
                                 @endif
                             </div>
                         </div>

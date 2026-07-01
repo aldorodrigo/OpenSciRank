@@ -12,7 +12,16 @@ class ActivitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'activitiesAsSubject';
 
-    protected static string | BackedEnum | null $icon = 'heroicon-o-clock';
+    protected static string|BackedEnum|null $icon = 'heroicon-o-clock';
+
+    /**
+     * Roadmap #35 — el historial de actividad (activity log) es información
+     * interna del staff. El evaluador no lo ve.
+     */
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {

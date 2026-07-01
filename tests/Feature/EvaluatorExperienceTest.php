@@ -331,6 +331,32 @@ class EvaluatorExperienceTest extends TestCase
         $response->assertSee('Ver ficha pública');
     }
 
+    public function test_task_detail_shows_instructions_and_hides_internal_sections_for_evaluator(): void
+    {
+        $evaluator = $this->evaluator();
+        $journal = $this->journalFor($evaluator);
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_PENDING,
+            'assigned_to' => $evaluator->id,
+            'notes' => 'Nota interna secreta del staff',
+        ]);
+
+        $response = $this->actingAs($evaluator)->get('/admin/admin-tasks/'.$task->id);
+
+        $response->assertOk();
+        // Instrucciones visibles para el evaluador…
+        $response->assertSee(__('evaluator_task.instructions_title'));
+        // …pero notas internas e historial ocultos.
+        $response->assertDontSee('Nota interna secreta del staff');
+        $response->assertDontSee(__('Notas internas'));
+        $response->assertDontSee(__('admin.activity.title'));
+    }
+
     public function test_evaluator_sees_their_pending_task_in_admin_tasks_table(): void
     {
         $evaluator = $this->evaluator();
