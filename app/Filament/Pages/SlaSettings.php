@@ -34,6 +34,16 @@ class SlaSettings extends Page implements HasForms
 
     public ?array $data = [];
 
+    /**
+     * Roadmap #35 — configuración de plazos SLA es exclusiva del super_admin.
+     * Cierra el acceso por navegación Y por URL directa (/admin/sla-settings)
+     * de un solo golpe: el evaluator nunca debe ver ni tocar esta página.
+     */
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
     public function mount(): void
     {
         $this->form->fill([

@@ -16,6 +16,16 @@ class AdminTasksOverview extends BaseWidget
     /** Ordenado antes que SealStatusOverview (sort -3 < -2). */
     protected static ?int $sort = -3;
 
+    /**
+     * Roadmap #35 — widget global de admin (conteos de TODAS las tasks).
+     * El evaluator tiene su propio EvaluatorTasksOverview scopeado a lo suyo;
+     * este widget solo lo ve el super_admin.
+     */
+    public static function canView(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
     protected function getStats(): array
     {
         $open = AdminTask::open()->count();

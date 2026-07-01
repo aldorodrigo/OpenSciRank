@@ -354,7 +354,11 @@ class AdminTasksTable
                         ->label(__('Asignar a…'))
                         ->icon('heroicon-o-user-plus')
                         ->color('info')
-                        ->visible(fn (AdminTask $record): bool => $record->isOpen())
+                        // Roadmap #35 — asignar es acción de super_admin. El
+                        // evaluator nunca reasigna tasks (sin auto-pickup).
+                        ->visible(fn (AdminTask $record): bool => $record->isOpen()
+                            && (auth()->user()?->hasRole('super_admin') ?? false)
+                        )
                         ->form([
                             Select::make('user_id')
                                 ->label(__('Usuario'))
@@ -675,6 +679,8 @@ class AdminTasksTable
                         ->label(__('Asignar a…'))
                         ->icon('heroicon-o-user-plus')
                         ->color('info')
+                        // Roadmap #35 — asignación masiva exclusiva de super_admin.
+                        ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
                         ->form([
                             Select::make('user_id')
                                 ->label(__('Usuario'))

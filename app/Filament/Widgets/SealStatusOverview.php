@@ -10,6 +10,15 @@ class SealStatusOverview extends BaseWidget
 {
     protected static ?int $sort = -2;
 
+    /**
+     * Roadmap #35 — sellos globales son asunto del super_admin. El evaluator
+     * no gestiona el ciclo de vida del sello, así que no ve este widget.
+     */
+    public static function canView(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
     protected function getStats(): array
     {
         $activeSeals = Journal::where('seal_status', 'active')
