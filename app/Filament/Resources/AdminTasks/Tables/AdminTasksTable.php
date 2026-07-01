@@ -62,7 +62,7 @@ class AdminTasksTable
                     ->sortable()
                     ->toggleable(),
 
-                // 2. Tarea (título renderizado)
+                // 2. Tarea (título renderizado, enlaza al recurso relacionado)
                 TextColumn::make('title_key')
                     ->label(__('Tarea'))
                     ->formatStateUsing(fn (AdminTask $record): string => $record->renderedTitle())
@@ -74,6 +74,22 @@ class AdminTasksTable
                         });
                     })
                     ->wrap()
+                    // Roadmap #35 — el título enlaza al recurso relacionado
+                    // (reemplaza la columna "Relacionado a"). El evaluador va a la
+                    // ficha pública; el super_admin al form de edición admin.
+                    ->url(fn (AdminTask $record): ?string => match (true) {
+                        $record->related === null => null,
+                        $record->related_type === 'App\\Models\\Journal'
+                            && (auth()->user()?->hasRole('evaluator') ?? false)
+                            && ! (auth()->user()?->hasRole('super_admin') ?? false) => filled($record->related->slug ?? null)
+                                ? route('journal.show', ['slug' => $record->related->slug])
+                                : null,
+                        $record->related_type === 'App\\Models\\Journal' => JournalResource::getUrl('edit', ['record' => $record->related_id]),
+                        $record->related_type === 'App\\Models\\Book' => BookResource::getUrl('edit', ['record' => $record->related_id]),
+                        $record->related_type === 'App\\Models\\User' => \App\Filament\Resources\Users\UserResource::getUrl('edit', ['record' => $record->related_id]),
+                        default => null,
+                    })
+                    ->openUrlInNewTab()
                     ->toggleable(),
 
                 // 2b. Sprint 3.7 — Cortesía (sin pago). Solo visible al admin.
@@ -110,37 +126,6 @@ class AdminTasksTable
                     // Roadmap #35 — el evaluador no necesita saber si la tarea se
                     // pagó o es cortesía; es información comercial del super_admin.
                     ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
-                    ->toggleable(),
-
-                // 3. Relacionado a (Journal/Book/User link polimórfico)
-                TextColumn::make('related_id')
-                    ->label(__('Relacionado a'))
-                    ->formatStateUsing(function (AdminTask $record): string {
-                        if (! $record->related) {
-                            return '—';
-                        }
-
-                        // Sprint 3.7 #46: User payable (support-credit, new-journal-consulting)
-                        // no tiene getTranslationWithFallback. Delegamos al helper.
-                        return \App\Support\PaymentPayableResolver::payableDisplayName($record->related);
-                    })
-                    ->url(fn (AdminTask $record): ?string => match (true) {
-                        $record->related === null => null,
-                        // Roadmap #35 — el evaluator va a la FICHA pública de la
-                        // revista (no al form de edición admin ni a la evaluación;
-                        // a la evaluación llega por la acción "Trabajar").
-                        $record->related_type === 'App\\Models\\Journal'
-                            && (auth()->user()?->hasRole('evaluator') ?? false)
-                            && ! (auth()->user()?->hasRole('super_admin') ?? false) => filled($record->related->slug ?? null)
-                                ? route('journal.show', ['slug' => $record->related->slug])
-                                : null,
-                        $record->related_type === 'App\\Models\\Journal' => JournalResource::getUrl('edit', ['record' => $record->related_id]),
-                        $record->related_type === 'App\\Models\\Book' => BookResource::getUrl('edit', ['record' => $record->related_id]),
-                        $record->related_type === 'App\\Models\\User' => \App\Filament\Resources\Users\UserResource::getUrl('edit', ['record' => $record->related_id]),
-                        default => null,
-                    })
-                    ->openUrlInNewTab()
-                    ->placeholder('—')
                     ->toggleable(),
 
                 // 4. Prioridad
