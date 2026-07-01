@@ -70,6 +70,15 @@ class EvaluateJournal extends Page
 
         static::authorizeResourceAccess();
 
+        // Roadmap #35 — defensa en profundidad: aunque el listado ya filtra
+        // por assigned_evaluator_id, bloqueamos acceso directo por URL a
+        // journals no asignados al evaluador logueado.
+        $user = auth()->user();
+        abort_unless(
+            ! $user->hasRole('evaluator') || $user->hasRole('super_admin') || $this->record->assigned_evaluator_id === $user->id,
+            403
+        );
+
         // Load existing scores
         $existingScores = $this->record->evaluationScores()
             ->pluck('is_met', 'criteria_item_id')

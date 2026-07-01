@@ -19,6 +19,10 @@ class AdminTaskPolicy
 
     public function view(AuthUser $authUser, AdminTask $adminTask): bool
     {
+        if ($authUser->hasRole('evaluator') && ! $authUser->hasRole('super_admin')) {
+            return $adminTask->assigned_to === $authUser->id;
+        }
+
         return $authUser->can('View:AdminTask');
     }
 
@@ -29,6 +33,10 @@ class AdminTaskPolicy
 
     public function update(AuthUser $authUser, AdminTask $adminTask): bool
     {
+        if ($authUser->hasRole('evaluator') && ! $authUser->hasRole('super_admin')) {
+            return $adminTask->assigned_to === $authUser->id;
+        }
+
         return $authUser->can('Update:AdminTask');
     }
 

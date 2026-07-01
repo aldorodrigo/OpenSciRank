@@ -19,6 +19,10 @@ class JournalPolicy
 
     public function view(AuthUser $authUser, Journal $journal): bool
     {
+        if ($authUser->hasRole('evaluator') && ! $authUser->hasRole('super_admin')) {
+            return $journal->assigned_evaluator_id === $authUser->id;
+        }
+
         return $authUser->can('View:Journal');
     }
 
@@ -29,6 +33,10 @@ class JournalPolicy
 
     public function update(AuthUser $authUser, Journal $journal): bool
     {
+        if ($authUser->hasRole('evaluator') && ! $authUser->hasRole('super_admin')) {
+            return $journal->assigned_evaluator_id === $authUser->id;
+        }
+
         return $authUser->can('Update:Journal');
     }
 

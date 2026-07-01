@@ -48,7 +48,9 @@ class ViewAdminTask extends ViewRecord
                 ->label(__('Asignar a…'))
                 ->icon('heroicon-o-user-plus')
                 ->color('info')
-                ->visible(fn (): bool => $this->record->isOpen())
+                ->visible(fn (): bool => $this->record->isOpen()
+                    && (auth()->user()?->hasRole('super_admin') ?? false)
+                )
                 ->form([
                     Select::make('user_id')
                         ->label(__('Usuario'))

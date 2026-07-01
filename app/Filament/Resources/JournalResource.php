@@ -11,6 +11,7 @@ use App\Notifications\EvaluatorAssigned;
 use App\Notifications\SealExpired;
 use App\Notifications\SealExpiringSoon;
 use App\Services\OaiPmhService;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Notifications\Notification;
@@ -37,6 +38,22 @@ class JournalResource extends Resource
     public static function getNavigationGroup(): ?string
     {
         return __('navigation.content');
+    }
+
+    /**
+     * Roadmap #35 — un evaluator solo ve journals que tiene asignados
+     * (assigned_evaluator_id). super_admin ve todo, sin scoping.
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            $query->where('assigned_evaluator_id', $user->id);
+        }
+
+        return $query;
     }
 
     public static function form(Schema $form): Schema
@@ -658,7 +675,9 @@ class JournalResource extends Resource
                     ->label(__('admin.journal.action_assign'))
                     ->icon('heroicon-o-user-plus')
                     ->color('info')
-                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation', 'evaluated']))
+                    ->visible(fn (Journal $record): bool => in_array($record->status, ['submitted', 'requires_changes_evaluation', 'evaluated'])
+                        && (auth()->user()?->hasRole('super_admin') ?? false)
+                    )
                     ->form([
                         Forms\Components\Select::make('assigned_evaluator_id')
                             ->label(__('admin.journal.evaluator_short'))

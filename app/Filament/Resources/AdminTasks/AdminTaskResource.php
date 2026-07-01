@@ -8,6 +8,7 @@ use App\Filament\Resources\AdminTasks\Schemas\AdminTaskInfolist;
 use App\Filament\Resources\AdminTasks\Tables\AdminTasksTable;
 use App\Models\AdminTask;
 use BackedEnum;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -17,6 +18,22 @@ class AdminTaskResource extends Resource
     protected static ?string $model = AdminTask::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-queue-list';
+
+    /**
+     * Roadmap #35 — un evaluator solo ve sus propias tasks (assigned_to).
+     * No hay "auto-pickup" de tasks sin asignar. super_admin ve todo.
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            $query->where('assigned_to', $user->id);
+        }
+
+        return $query;
+    }
 
     protected static ?int $navigationSort = 3;
 

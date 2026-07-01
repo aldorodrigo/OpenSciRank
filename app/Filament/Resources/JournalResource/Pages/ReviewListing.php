@@ -46,6 +46,13 @@ class ReviewListing extends Page
 
         static::authorizeResourceAccess();
 
+        // Roadmap #35 — el flujo de listing review (gratuito) queda fuera
+        // del alcance del rol evaluator: no existe campo de asignación para
+        // este flujo, así que se bloquea del todo en vez de heredar acceso
+        // implícito vía los permisos de Journal.
+        $user = auth()->user();
+        abort_if($user->hasRole('evaluator') && ! $user->hasRole('super_admin'), 403);
+
         $this->evaluation_notes = $this->record->evaluation_notes ?? '';
 
         // If it's already listed/rejected/requires_changes_listing, keep that status
