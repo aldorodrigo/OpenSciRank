@@ -6,11 +6,11 @@ use App\Models\Setting;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use UnitEnum;
 
@@ -53,6 +53,9 @@ class SlaSettings extends Page implements HasForms
             'sla_listing_calendar_days' => Setting::get('sla_listing_calendar_days', 7),
             'sla_orphan_calendar_days' => Setting::get('sla_orphan_calendar_days', 2),
             'sla_support_calendar_days' => Setting::get('sla_support_calendar_days', 7),
+            // Roadmap #35 — recordatorio "mensaje pendiente" al editor.
+            'sla_reminder_cooldown_hours' => Setting::get('sla_reminder_cooldown_hours', \App\Models\Conversation::REMINDER_COOLDOWN_HOURS),
+            'sla_reminder_max_total' => Setting::get('sla_reminder_max_total', \App\Models\Conversation::REMINDER_MAX_TOTAL),
         ]);
     }
 
@@ -120,6 +123,28 @@ class SlaSettings extends Page implements HasForms
                             ->required(),
                     ])
                     ->columns(3),
+
+                // Roadmap #35 — recordatorio "mensaje pendiente" al editor.
+                Section::make(__('sla_reminder.section'))
+                    ->description(__('sla_reminder.section_desc'))
+                    ->schema([
+                        TextInput::make('sla_reminder_cooldown_hours')
+                            ->label(__('sla_reminder.cooldown_label'))
+                            ->helperText(__('sla_reminder.cooldown_help'))
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(168)
+                            ->required(),
+
+                        TextInput::make('sla_reminder_max_total')
+                            ->label(__('sla_reminder.max_label'))
+                            ->helperText(__('sla_reminder.max_help'))
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(20)
+                            ->required(),
+                    ])
+                    ->columns(2),
             ]);
     }
 

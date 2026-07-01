@@ -137,6 +137,12 @@ class MessageThread extends Component
         // Bump last_message_at
         $this->conversation->update(['last_message_at' => now()]);
 
+        // Roadmap #35 — si responde el editor, reiniciamos contador y cooldown
+        // de recordatorios (nueva ronda si vuelve a quedar sin respuesta).
+        if ($this->role === 'editor') {
+            $this->conversation->update(['reminder_count' => 0, 'last_reminder_at' => null]);
+        }
+
         // Guardar adjuntos
         // Capturamos size, mime y original_name ANTES de storeAs(): el método
         // mueve el archivo del temp dir y getSize() falla con
@@ -288,6 +294,49 @@ class MessageThread extends Component
         ]);
 
         session()->flash('thread_info', 'Conversación reabierta.');
+    }
+
+    /**
+     * Roadmap #35 — recordatorio manual al editor (evaluador/admin) de que tiene
+     * un mensaje pendiente. Las reglas anti-spam viven en
+     * Conversation::reminderBlockReason (cooldown + tope + muteo + no-respuesta).
+     */
+    public function remindEditor(): void
+    {
+        abort_unless($this->canModerate(), 403);
+
+        $editor = $this->resolveEditorForCurrentContext();
+        if (! $editor) {
+            session()->flash('thread_error', __('pending_message_reminder.no_editor'));
+
+            return;
+        }
+
+        $reason = $this->conversation->reminderBlockReason($editor);
+        if ($reason !== null) {
+            session()->flash('thread_error', __($reason));
+
+            return;
+        }
+
+        try {
+            $editor->notify(new \App\Notifications\PendingMessageReminder($this->conversation->fresh()));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('PendingMessageReminder failed', [
+                'conversation_id' => $this->conversation->id,
+                'error' => $e->getMessage(),
+            ]);
+            session()->flash('thread_error', __('pending_message_reminder.send_failed'));
+
+            return;
+        }
+
+        $this->conversation->update([
+            'last_reminder_at' => now(),
+            'reminder_count' => (int) $this->conversation->reminder_count + 1,
+        ]);
+
+        session()->flash('thread_info', __('pending_message_reminder.sent'));
     }
 
     /** Eliminar archivo pendiente antes de enviar. */

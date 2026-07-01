@@ -23,13 +23,27 @@ class Conversation extends Model
     use LogsActivity;
 
     public const STATUS_OPEN = 'open';
+
     public const STATUS_CLOSED = 'closed';
+
     public const STATUS_ARCHIVED = 'archived';
 
     public const ROLE_EDITOR = 'editor';
+
     public const ROLE_ADMIN = 'admin';
+
     public const ROLE_EVALUATOR = 'evaluator';
+
     public const ROLE_OBSERVER = 'observer';
+
+    /**
+     * Roadmap #35 — defaults del recordatorio "mensaje pendiente" al editor
+     * (anti-spam). Configurables por SLA: sla_reminder_cooldown_hours y
+     * sla_reminder_max_total.
+     */
+    public const REMINDER_COOLDOWN_HOURS = 24;
+
+    public const REMINDER_MAX_TOTAL = 3;
 
     protected $fillable = [
         'subject',
@@ -38,11 +52,14 @@ class Conversation extends Model
         'started_by_user_id',
         'status',
         'last_message_at',
+        'last_reminder_at',
+        'reminder_count',
         'closed_at',
     ];
 
     protected $casts = [
         'last_message_at' => 'datetime',
+        'last_reminder_at' => 'datetime',
         'closed_at' => 'datetime',
     ];
 
@@ -128,7 +145,9 @@ class Conversation extends Model
     public function unreadCountFor(User $user): int
     {
         $participant = $this->participants()->where('user_id', $user->id)->first();
-        if (! $participant) return 0;
+        if (! $participant) {
+            return 0;
+        }
 
         $cutoff = $participant->last_read_at;
         $query = $this->messages()->where('user_id', '!=', $user->id);
@@ -155,6 +174,65 @@ class Conversation extends Model
         }
 
         return $query->get()->pluck('user')->filter();
+    }
+
+    // ── Roadmap #35: recordatorio "mensaje pendiente" al editor ──────────
+
+    /** Horas de cooldown entre recordatorios (SLA, con default). */
+    public static function reminderCooldownHours(): int
+    {
+        return (int) Setting::get('sla_reminder_cooldown_hours', self::REMINDER_COOLDOWN_HOURS);
+    }
+
+    /** Tope total de recordatorios por hilo (SLA, con default). */
+    public static function reminderMaxTotal(): int
+    {
+        return (int) Setting::get('sla_reminder_max_total', self::REMINDER_MAX_TOTAL);
+    }
+
+    /**
+     * ¿Se puede enviar un recordatorio al editor? Devuelve null si sí, o una
+     * clave i18n con el motivo del bloqueo (para mostrar al evaluador/admin).
+     *
+     * Reglas anti-spam:
+     *  1. Hilo abierto.
+     *  2. El editor no contestó (último mensaje es del staff, no del editor).
+     *  3. El editor no muteó el hilo.
+     *  4. Cooldown cumplido (sla_reminder_cooldown_hours).
+     *  5. No superó el tope total (sla_reminder_max_total).
+     */
+    public function reminderBlockReason(User $editor): ?string
+    {
+        if ($this->status !== self::STATUS_OPEN) {
+            return 'pending_message_reminder.blocked_closed';
+        }
+
+        // reorder() limpia el orderBy('created_at') ASC por defecto de la
+        // relación messages(); sin esto, latest() no traería el más reciente.
+        $lastMessage = $this->messages()->reorder()->latest()->first();
+        if (! $lastMessage || (int) $lastMessage->user_id === (int) $editor->id) {
+            return 'pending_message_reminder.blocked_replied';
+        }
+
+        $muted = $this->participants()
+            ->where('user_id', $editor->id)
+            ->where('email_muted', true)
+            ->exists();
+        if ($muted) {
+            return 'pending_message_reminder.blocked_muted';
+        }
+
+        if ($this->last_reminder_at
+            && $this->last_reminder_at->diffInHours(now()) < self::reminderCooldownHours()
+        ) {
+            return 'pending_message_reminder.blocked_cooldown';
+        }
+
+        if ((int) $this->reminder_count >= self::reminderMaxTotal()) {
+            return 'pending_message_reminder.blocked_max';
+        }
+
+        return null;
     }
 
     /**
