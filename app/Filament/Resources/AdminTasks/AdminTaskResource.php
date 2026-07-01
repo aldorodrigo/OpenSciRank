@@ -39,6 +39,13 @@ class AdminTaskResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
+        // Roadmap #35 — para el evaluador, Tareas vive junto a su escritorio en
+        // el grupo "Evaluación"; para el super_admin sigue en "Comercial".
+        $user = auth()->user();
+        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            return __('navigation.evaluation');
+        }
+
         return __('navigation.commercial');
     }
 

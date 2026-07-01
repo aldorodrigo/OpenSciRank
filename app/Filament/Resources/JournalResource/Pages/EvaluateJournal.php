@@ -419,7 +419,14 @@ class EvaluateJournal extends Page
             ->success()
             ->send();
 
-        $this->redirect(JournalResource::getUrl('index'));
+        // Roadmap #35 — el evaluador vuelve a su escritorio; el super_admin al
+        // listado de revistas.
+        $user = auth()->user();
+        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            $this->redirect(\App\Filament\Pages\EvaluatorDesk::getUrl());
+        } else {
+            $this->redirect(JournalResource::getUrl('index'));
+        }
     }
 
     public function saveDraft(): void

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\JournalResource\Pages;
 
-use App\Filament\Resources\AdminTasks\AdminTaskResource;
+use App\Filament\Pages\EvaluatorDesk;
 use App\Filament\Resources\JournalResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -22,7 +22,7 @@ class ListJournals extends ListRecords
         $user = auth()->user();
 
         if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
-            $this->redirect(AdminTaskResource::getUrl('index'));
+            $this->redirect(EvaluatorDesk::getUrl());
 
             return;
         }
