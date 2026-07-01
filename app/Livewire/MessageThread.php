@@ -185,7 +185,7 @@ class MessageThread extends Component
 
     /** Form del modal de cierre. */
     public array $closeForm = [
-        'send_history' => false,
+        'send_history' => true,
         'closing_note' => '',
     ];
 
@@ -208,7 +208,7 @@ class MessageThread extends Component
         abort_unless($this->canModerate(), 403);
         $this->showingCloseModal = true;
         $this->closeForm = [
-            'send_history' => false,
+            'send_history' => true,
             'closing_note' => '',
         ];
     }
