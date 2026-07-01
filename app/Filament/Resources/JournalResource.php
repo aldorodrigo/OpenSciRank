@@ -706,24 +706,36 @@ class JournalResource extends Resource
                             ->required(),
                     ])
                     ->action(function (Journal $record, array $data): void {
-                        $record->update([
-                            'assigned_evaluator_id' => $data['assigned_evaluator_id'],
-                        ]);
-
-                        // Notify assigned evaluator via email
                         $evaluator = User::find($data['assigned_evaluator_id']);
-                        if ($evaluator) {
-                            $evaluator->notify(new EvaluatorAssigned($record));
 
-                            activity()
-                                ->performedOn($record)
-                                ->causedBy(auth()->user())
-                                ->withProperties([
-                                    'evaluator_id' => $evaluator->id,
-                                    'evaluator_name' => $evaluator->name,
-                                ])
-                                ->log("Evaluador asignado: {$evaluator->name}");
+                        if (! $evaluator) {
+                            return;
                         }
+
+                        // Roadmap #35 — asignación unificada: sincroniza
+                        // assigned_evaluator_id + assigned_to de la(s) task(s)
+                        // abierta(s) y devuelve la task para notificar sobre ella.
+                        $task = $record->assignEvaluator($evaluator);
+
+                        // Una sola notificación con deep-link correcto: si hay
+                        // task abierta usamos TaskAssigned (link a la Tarea); si
+                        // no (ej. journal ya 'evaluated', pre-asignación antes de
+                        // pagar re-evaluación) caemos a EvaluatorAssigned, cuyo CTA
+                        // apunta a la página de evaluación del journal.
+                        $evaluator->notify($task
+                            ? new \App\Notifications\TaskAssigned($task)
+                            : new EvaluatorAssigned($record)
+                        );
+
+                        activity()
+                            ->performedOn($record)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'evaluator_id' => $evaluator->id,
+                                'evaluator_name' => $evaluator->name,
+                                'synced_task_id' => $task?->id,
+                            ])
+                            ->log("Evaluador asignado: {$evaluator->name}");
 
                         \Filament\Notifications\Notification::make()
                             ->title(__('admin.journal.notif_evaluator_assigned'))

@@ -23,7 +23,9 @@ class EvaluatorAssigned extends Notification
             ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
             ->line(__('The journal **":title"** has been assigned to you for evaluation.', ['title' => $this->journal->getTranslationWithFallback('title')]))
             ->line(__('Please review the journal data and complete the evaluation as soon as possible.'))
-            ->action(__('Go to Admin Panel'), url('/admin'))
+            // Roadmap #35 — deep-link directo a la página de evaluación del journal,
+            // no al panel genérico (el evaluador no navega el resto del admin).
+            ->action(__('Go to evaluation'), url('/admin/journals/'.$this->journal->id.'/evaluate'))
             ->line(__('Thank you for your collaboration.'));
     }
 }

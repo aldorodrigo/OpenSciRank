@@ -212,6 +212,42 @@ class Journal extends Model
         return !is_null($this->assigned_evaluator_id);
     }
 
+    /**
+     * Roadmap #35 — asignación unificada del evaluator.
+     *
+     * Único punto que sincroniza los DOS campos históricamente desacoplados:
+     * el `assigned_evaluator_id` del journal (scoping de JournalResource + auth
+     * de EvaluateJournal) y el `assigned_to` de la(s) task(s) abierta(s) de
+     * evaluación (scoping de AdminTaskResource + escritorio del evaluador).
+     *
+     * Un journal puede tener más de una task abierta de evaluación
+     * (evaluate / reevaluate / renewal) — replicamos el filtro de tipos +
+     * STATUSES_OPEN de EvaluateJournal::getCurrentTaskProperty y sincronizamos
+     * todas. Devolvemos la más reciente para poder notificar sobre ella.
+     */
+    public function assignEvaluator(User $evaluator): ?AdminTask
+    {
+        $this->update(['assigned_evaluator_id' => $evaluator->id]);
+
+        $tasks = AdminTask::query()
+            ->where('related_type', self::class)
+            ->where('related_id', $this->id)
+            ->whereIn('type', [
+                AdminTask::TYPE_EVALUATE_JOURNAL,
+                AdminTask::TYPE_REEVALUATE_JOURNAL,
+                AdminTask::TYPE_RENEWAL_EVALUATION,
+            ])
+            ->whereIn('status', AdminTask::STATUSES_OPEN)
+            ->orderByDesc('created_at')
+            ->get();
+
+        foreach ($tasks as $task) {
+            $task->assignToUser($evaluator);
+        }
+
+        return $tasks->first();
+    }
+
     public function isEvaluated(): bool
     {
         return !is_null($this->evaluated_at);

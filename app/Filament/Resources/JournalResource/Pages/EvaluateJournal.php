@@ -72,12 +72,17 @@ class EvaluateJournal extends Page
 
         // Roadmap #35 — defensa en profundidad: aunque el listado ya filtra
         // por assigned_evaluator_id, bloqueamos acceso directo por URL a
-        // journals no asignados al evaluador logueado.
+        // journals no asignados al evaluador logueado. Con la asignación
+        // unificada (Journal::assignEvaluator) ambos campos coinciden, pero
+        // autorizamos también por la task abierta para no depender de un solo
+        // campo si alguno quedara desincronizado.
         $user = auth()->user();
-        abort_unless(
-            ! $user->hasRole('evaluator') || $user->hasRole('super_admin') || $this->record->assigned_evaluator_id === $user->id,
-            403
-        );
+        if ($user->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            $assignedByJournal = $this->record->assigned_evaluator_id === $user->id;
+            $assignedByTask = $this->currentTask?->assigned_to === $user->id;
+
+            abort_unless($assignedByJournal || $assignedByTask, 403);
+        }
 
         // Load existing scores
         $existingScores = $this->record->evaluationScores()
