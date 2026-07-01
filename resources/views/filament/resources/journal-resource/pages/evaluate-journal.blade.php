@@ -477,15 +477,15 @@
 
                     <div class="flex items-center gap-4">
                         {{-- Live Stats Pill --}}
-                        <div class="hidden items-center gap-6 rounded-xl bg-slate-900 px-6 py-2.5 text-white shadow-inner sm:flex dark:bg-black">
+                        <div class="hidden items-center gap-6 rounded-xl bg-slate-50 px-6 py-2.5 text-slate-900 ring-1 ring-slate-200 sm:flex dark:bg-slate-800 dark:text-white dark:ring-slate-700">
                             <div class="flex flex-col">
                                 <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Completado</span>
                                 <span class="text-sm font-bold">{{ $this->getCompletedCount() }} / {{ $this->getTotalCount() }}</span>
                             </div>
-                            <div class="h-8 w-px bg-slate-800"></div>
+                            <div class="h-8 w-px bg-slate-200 dark:bg-slate-700"></div>
                             <div class="flex flex-col">
                                 <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">Nota Actual</span>
-                                <span class="text-sm font-bold {{ $this->calculateScore() >= 80 ? 'text-emerald-400' : ($this->calculateScore() >= 50 ? 'text-amber-400' : 'text-rose-400') }}">
+                                <span class="text-sm font-bold {{ $this->calculateScore() >= 80 ? 'text-emerald-600 dark:text-emerald-400' : ($this->calculateScore() >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400') }}">
                                     {{ $this->calculateScore() }}%
                                 </span>
                             </div>
