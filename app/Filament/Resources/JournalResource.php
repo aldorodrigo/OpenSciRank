@@ -56,6 +56,24 @@ class JournalResource extends Resource
         return $query;
     }
 
+    /**
+     * Roadmap #35 — el evaluator interactúa SOLO con Tareas, nunca navega el
+     * recurso Journals. Ocultamos el item del nav pero NO revocamos los permisos
+     * Journal: EvaluateJournal::authorizeResourceAccess() depende de canViewAny()
+     * (= ViewAny:Journal), así que quitar el permiso rompería la página de
+     * evaluación. La lista queda además bloqueada por URL en ListJournals::mount().
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+
+        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            return false;
+        }
+
+        return parent::shouldRegisterNavigation();
+    }
+
     public static function form(Schema $form): Schema
     {
         return $form
@@ -667,6 +685,8 @@ class JournalResource extends Resource
                     ->label(__('admin.common.export'))
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
+                    // Roadmap #35 — exportar el padrón de revistas es del super_admin.
+                    ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
                     ->exporter(JournalExporter::class),
             ])
             ->actions([
@@ -991,6 +1011,8 @@ class JournalResource extends Resource
                     ExportBulkAction::make()
                         ->label(__('admin.common.export_selected'))
                         ->icon('heroicon-o-arrow-down-tray')
+                        // Roadmap #35 — exportación masiva exclusiva de super_admin.
+                        ->visible(fn (): bool => auth()->user()?->hasRole('super_admin') ?? false)
                         ->exporter(JournalExporter::class),
                     \Filament\Actions\DeleteBulkAction::make(),
                     \Filament\Actions\ForceDeleteBulkAction::make(),

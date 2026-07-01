@@ -10,6 +10,23 @@ class EditJournal extends EditRecord
     protected static string $resource = JournalResource::class;
 
     /**
+     * Roadmap #35 — el evaluator conserva Update:Journal (lo exige el guardado
+     * de la evaluación), lo que técnicamente le abriría el form de edición admin
+     * completo (link "Relacionado a" de la Tarea apunta a 'edit'). Lo mandamos a
+     * su página de evaluación, la única superficie de Journal que le corresponde.
+     */
+    public function mount(int | string $record): void
+    {
+        parent::mount($record);
+
+        $user = auth()->user();
+
+        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            $this->redirect(JournalResource::getUrl('evaluate', ['record' => $this->record]));
+        }
+    }
+
+    /**
      * Hidrata los campos traducibles como arrays para que los Tabs por
      * locale (campo.es / campo.en / campo.pt) reciban el valor correcto.
      */

@@ -416,8 +416,13 @@ class ViewAdminTask extends ViewRecord
                 ->color('success')
                 // Sprint 3.7 #44: NO permitir completar si la task está
                 // awaiting_payment — primero el editor tiene que pagar.
+                // Roadmap #35: el evaluator NO cierra tasks a mano — sus
+                // evaluaciones se auto-completan al guardar en EvaluateJournal.
+                // Un cierre manual dejaría task=completed con journal=submitted.
                 ->visible(fn (): bool => $this->record->isOpen()
                     && $this->record->status !== AdminTask::STATUS_AWAITING_PAYMENT
+                    && ! ((auth()->user()?->hasRole('evaluator') ?? false)
+                        && ! (auth()->user()?->hasRole('super_admin') ?? false))
                 )
                 ->requiresConfirmation()
                 ->modalHeading(__('Completar tarea'))

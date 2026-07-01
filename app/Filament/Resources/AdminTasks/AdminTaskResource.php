@@ -61,7 +61,15 @@ class AdminTaskResource extends Resource
     {
         // Sprint 3.7 #44: el badge muestra tasks que requieren trabajo del admin.
         // No incluye awaiting_payment (espera del editor, no del admin).
-        $count = AdminTask::whereIn('status', AdminTask::STATUSES_WORK_QUEUE)->count();
+        $query = AdminTask::whereIn('status', AdminTask::STATUSES_WORK_QUEUE);
+
+        // Roadmap #35 — el evaluator ve el conteo de SU cola, no el global.
+        $user = auth()->user();
+        if ($user?->hasRole('evaluator') && ! $user->hasRole('super_admin')) {
+            $query->where('assigned_to', $user->id);
+        }
+
+        $count = $query->count();
 
         return $count > 0 ? (string) $count : null;
     }

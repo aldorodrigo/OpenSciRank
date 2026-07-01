@@ -18,6 +18,17 @@ class PaymentsRelationManager extends RelationManager
 
     protected static string|BackedEnum|null $icon = 'heroicon-o-credit-card';
 
+    /**
+     * Roadmap #35 — los pagos (montos, transacciones) son información comercial
+     * exclusiva del super_admin. Defensa en profundidad: aunque el evaluator ya
+     * no alcanza EditJournal (único page que monta este relation manager), lo
+     * blindamos igual por si otra página lo reusa.
+     */
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('admin.payments_rel.title');
