@@ -7,7 +7,6 @@ use App\Filament\Widgets\EvaluatorTasksOverview;
 use BackedEnum;
 use Filament\Pages\Dashboard;
 use Illuminate\Contracts\Support\Htmlable;
-use UnitEnum;
 
 /**
  * Roadmap #35 — escritorio (home) del rol evaluator.

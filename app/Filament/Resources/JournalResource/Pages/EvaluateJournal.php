@@ -28,9 +28,13 @@ class EvaluateJournal extends Page
     protected string $view = 'filament.resources.journal-resource.pages.evaluate-journal';
 
     public array $scores = [];
+
     public string $evaluation_notes = '';
+
     public bool $showConfirmModal = false;
+
     public string $assigned_level = '';
+
     public string $assigned_status = 'evaluated';
 
     /**
@@ -66,7 +70,7 @@ class EvaluateJournal extends Page
         return (bool) ($payment?->metadata['is_express'] ?? false);
     }
 
-    public function mount(int | string $record): void
+    public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
 
@@ -104,7 +108,7 @@ class EvaluateJournal extends Page
             : ($this->record->status ?? 'evaluated');
     }
 
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         $title = $this->record->getTranslationWithFallback('title');
 
@@ -132,7 +136,10 @@ class EvaluateJournal extends Page
 
     public function getCompletionPercentage(): float
     {
-        if ($this->getTotalCount() === 0) return 0;
+        if ($this->getTotalCount() === 0) {
+            return 0;
+        }
+
         return round(($this->getCompletedCount() / $this->getTotalCount()) * 100, 1);
     }
 
@@ -146,7 +153,9 @@ class EvaluateJournal extends Page
 
         foreach ($this->scores as $criteriaId => $isMet) {
             $item = $criteria->get($criteriaId);
-            if (!$item) continue;
+            if (! $item) {
+                continue;
+            }
 
             $totalWeight += $item->weight;
 
@@ -157,7 +166,9 @@ class EvaluateJournal extends Page
             }
         }
 
-        if ($totalWeight === 0) return 0;
+        if ($totalWeight === 0) {
+            return 0;
+        }
 
         $percentage = ($earnedWeight / $totalWeight) * 100;
 
@@ -177,9 +188,15 @@ class EvaluateJournal extends Page
     {
         $score = $this->calculateScore();
 
-        if ($score >= 80) return 'A';
-        if ($score >= 60) return 'B';
-        if ($score >= 40) return 'C';
+        if ($score >= 80) {
+            return 'A';
+        }
+        if ($score >= 60) {
+            return 'B';
+        }
+        if ($score >= 40) {
+            return 'C';
+        }
 
         return '';
     }
@@ -191,7 +208,9 @@ class EvaluateJournal extends Page
     public function qualifiesForSeal(): bool
     {
         $score = $this->calculateScore();
-        if ($score < 75) return false;
+        if ($score < 75) {
+            return false;
+        }
 
         // Critical Indicators (Criteria codes defined in methodology)
         $criticalCodes = ['1.1', '2.1', '3.1', '4.2', '5.1'];
@@ -213,7 +232,7 @@ class EvaluateJournal extends Page
 
         foreach ($this->scores as $criteriaId => $isMet) {
             $item = $criteria->get($criteriaId);
-            if ($item && !$isMet) {
+            if ($item && ! $isMet) {
                 $count++;
             }
         }
@@ -229,12 +248,13 @@ class EvaluateJournal extends Page
         $progress = [];
         foreach ($this->getCriteriaByCategory() as $categoryName => $items) {
             $total = $items->count();
-            $completed = $items->filter(fn ($item) => !empty($this->scores[$item->id]))->count();
+            $completed = $items->filter(fn ($item) => ! empty($this->scores[$item->id]))->count();
             $progress[$categoryName] = [
                 'completed' => $completed,
                 'total' => $total,
             ];
         }
+
         return $progress;
     }
 
@@ -266,7 +286,7 @@ class EvaluateJournal extends Page
             $this->assigned_status = 'certified';
         } else {
             // Si ya estaba en requires_changes_evaluation o rejected, mantenerlo o sugerir evaluated
-            if (!in_array($this->assigned_status, ['requires_changes_evaluation', 'rejected'])) {
+            if (! in_array($this->assigned_status, ['requires_changes_evaluation', 'rejected'])) {
                 $this->assigned_status = 'evaluated';
             }
         }
@@ -413,7 +433,7 @@ class EvaluateJournal extends Page
                 'renewal_context_preserved' => $isRenewalFlow && ! $clearPendingRenewal,
                 'sla_days' => $slaDays,
             ])
-            ->log(($isRenewalFlow ? 'Renovación evaluada' : 'Evaluación completada') . ": {$score}% — estado: {$this->assigned_status}");
+            ->log(($isRenewalFlow ? 'Renovación evaluada' : 'Evaluación completada').": {$score}% — estado: {$this->assigned_status}");
 
         Notification::make()
             ->title(__('admin.eval_page.completed'))

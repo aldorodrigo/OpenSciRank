@@ -19,6 +19,19 @@ class EvaluatorRoleSeeder extends Seeder
     {
         $role = Role::firstOrCreate(['name' => 'evaluator', 'guard_name' => 'web']);
 
+        // Roadmap #35 (escritorio del evaluator) — set FINAL de permisos. La
+        // acotación del rol NO se logra revocando permisos, sino por
+        // navegación/gating:
+        //   - ViewAny/View/Update:Journal se MANTIENEN aunque el evaluator no
+        //     navegue el recurso Journals: EvaluateJournal::authorizeResourceAccess()
+        //     depende de canViewAny() (= ViewAny:Journal). Se ocultan del nav vía
+        //     JournalResource::shouldRegisterNavigation()=false y se bloquea la
+        //     URL /admin/journals en ListJournals::mount().
+        //   - Los AdminTask se scopean a assigned_to (getEloquentQuery), sin
+        //     auto-pickup de tasks sin asignar.
+        // NO agregar permisos de Payment/User/Product/Category/CriteriaItem/
+        // Cms*/Book/SlaSettings ni de widgets: esas superficies quedan fuera
+        // por diseño (ver issue #35).
         $permissionNames = [
             'ViewAny:Journal',
             'View:Journal',
