@@ -72,6 +72,37 @@ class EditorMessagesResourceLinkTest extends TestCase
             ->assertSee(route('app.consulting'));
     }
 
+    public function test_inbox_treats_evaluator_participant_as_evaluator_and_shows_task_link(): void
+    {
+        $editor = User::factory()->create();
+        $evaluator = User::factory()->create();
+        $journal = Journal::create([
+            'user_id' => $editor->id,
+            'title' => 'Assigned Journal',
+            'slug' => 'assigned-'.uniqid(),
+            'primary_locale' => 'es',
+            'status' => 'submitted',
+        ]);
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'title_params' => ['name' => $journal->title],
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_IN_PROGRESS,
+            'assigned_to' => $evaluator->id,
+        ]);
+        $conv = $this->conversationFor($evaluator, Journal::class, $journal->id);
+        // El hilo lo abrió el evaluador → participa como ROLE_EVALUATOR.
+        $conv->participants()->where('user_id', $evaluator->id)
+            ->update(['role' => Conversation::ROLE_EVALUATOR]);
+
+        Livewire::actingAs($evaluator)
+            ->test(EditorMessagesInbox::class)
+            ->set('activeConversationId', $conv->id)
+            ->assertSee(url('/admin/admin-tasks/'.$task->id));
+    }
+
     public function test_general_conversation_has_no_resource_link(): void
     {
         $editor = User::factory()->create();

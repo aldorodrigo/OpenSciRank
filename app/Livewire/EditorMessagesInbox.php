@@ -141,6 +141,27 @@ class EditorMessagesInbox extends Component
     }
 
     /**
+     * Roadmap #35 — rol para el message-thread embebido, según el rol del
+     * usuario como participante del hilo activo. Un evaluador que abre /app/messages
+     * (sus hilos aparecen porque es participante) debe ser tratado como evaluator
+     * — no como editor — para ver "Ver tarea" y no la moderación de admin.
+     */
+    #[Computed]
+    public function threadRole(): string
+    {
+        $conv = $this->activeConversation;
+        if (! $conv) {
+            return 'editor';
+        }
+
+        return match ($conv->participants()->where('user_id', auth()->id())->value('role')) {
+            Conversation::ROLE_EVALUATOR => 'evaluator',
+            Conversation::ROLE_ADMIN => 'admin',
+            default => 'editor',
+        };
+    }
+
+    /**
      * Roadmap #35 — link al recurso del hilo activo (revista / libro /
      * consultoría) para que el editor salte al recurso desde la conversación.
      * Devuelve null en consultas generales (sin recurso).

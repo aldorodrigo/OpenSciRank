@@ -143,7 +143,7 @@
             <div class="flex flex-1 flex-col overflow-hidden">
                 @livewire('message-thread', [
                     'conversation' => $this->activeConversation,
-                    'role'         => 'editor',
+                    'role'         => $this->threadRole,
                 ], key('thread-'.$this->activeConversation->id))
             </div>
         @else
