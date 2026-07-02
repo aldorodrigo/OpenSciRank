@@ -314,7 +314,7 @@ class MessageThread extends Component
 
         $reason = $this->conversation->reminderBlockReason($editor);
         if ($reason !== null) {
-            session()->flash('thread_error', __($reason));
+            session()->flash('thread_error', __($reason['key'], $reason['params']));
 
             return;
         }

@@ -81,24 +81,31 @@ class PendingMessageReminderTest extends TestCase
         [$conv, $editor] = $this->scenario();
         Message::create(['conversation_id' => $conv->id, 'user_id' => $editor->id, 'body' => 'Listo']);
 
-        $this->assertSame('pending_message_reminder.blocked_replied', $conv->fresh()->reminderBlockReason($editor));
+        $this->assertSame('pending_message_reminder.blocked_replied', $conv->fresh()->reminderBlockReason($editor)['key']);
     }
 
-    public function test_blocked_by_cooldown(): void
+    public function test_blocked_by_cooldown_reports_remaining_hours(): void
     {
         [$conv, $editor] = $this->scenario();
-        $conv->update(['last_reminder_at' => now()->subHour(), 'reminder_count' => 1]);
+        $conv->update(['last_reminder_at' => now()->subHours(4), 'reminder_count' => 1]);
 
-        $this->assertSame('pending_message_reminder.blocked_cooldown', $conv->fresh()->reminderBlockReason($editor));
+        $reason = $conv->fresh()->reminderBlockReason($editor);
+
+        $this->assertSame('pending_message_reminder.blocked_cooldown', $reason['key']);
+        // Default 24h de cooldown, pasaron 4 → quedan 20.
+        $this->assertSame(20, $reason['params']['remaining']);
     }
 
-    public function test_blocked_by_max_total(): void
+    public function test_blocked_by_max_total_reports_the_cap(): void
     {
         [$conv, $editor] = $this->scenario();
         // Cooldown ya cumplido, pero alcanzó el tope.
         $conv->update(['last_reminder_at' => now()->subDays(2), 'reminder_count' => Conversation::REMINDER_MAX_TOTAL]);
 
-        $this->assertSame('pending_message_reminder.blocked_max', $conv->fresh()->reminderBlockReason($editor));
+        $reason = $conv->fresh()->reminderBlockReason($editor);
+
+        $this->assertSame('pending_message_reminder.blocked_max', $reason['key']);
+        $this->assertSame(Conversation::REMINDER_MAX_TOTAL, $reason['params']['max']);
     }
 
     public function test_blocked_when_editor_muted(): void
@@ -106,7 +113,7 @@ class PendingMessageReminderTest extends TestCase
         [$conv, $editor] = $this->scenario();
         $conv->participants()->where('user_id', $editor->id)->update(['email_muted' => true]);
 
-        $this->assertSame('pending_message_reminder.blocked_muted', $conv->fresh()->reminderBlockReason($editor));
+        $this->assertSame('pending_message_reminder.blocked_muted', $conv->fresh()->reminderBlockReason($editor)['key']);
     }
 
     public function test_closed_thread_is_blocked(): void
@@ -114,7 +121,7 @@ class PendingMessageReminderTest extends TestCase
         [$conv, $editor] = $this->scenario();
         $conv->update(['status' => Conversation::STATUS_CLOSED]);
 
-        $this->assertSame('pending_message_reminder.blocked_closed', $conv->fresh()->reminderBlockReason($editor));
+        $this->assertSame('pending_message_reminder.blocked_closed', $conv->fresh()->reminderBlockReason($editor)['key']);
     }
 
     public function test_editor_reply_resets_reminder_counter(): void

@@ -191,8 +191,9 @@ class Conversation extends Model
     }
 
     /**
-     * ¿Se puede enviar un recordatorio al editor? Devuelve null si sí, o una
-     * clave i18n con el motivo del bloqueo (para mostrar al evaluador/admin).
+     * ¿Se puede enviar un recordatorio al editor? Devuelve null si sí, o
+     * ['key' => clave i18n, 'params' => [...]] con el motivo del bloqueo (para
+     * mostrarlo, con valores, al evaluador/admin).
      *
      * Reglas anti-spam:
      *  1. Hilo abierto.
@@ -200,18 +201,20 @@ class Conversation extends Model
      *  3. El editor no muteó el hilo.
      *  4. Cooldown cumplido (sla_reminder_cooldown_hours).
      *  5. No superó el tope total (sla_reminder_max_total).
+     *
+     * @return array{key: string, params: array<string, int|string>}|null
      */
-    public function reminderBlockReason(User $editor): ?string
+    public function reminderBlockReason(User $editor): ?array
     {
         if ($this->status !== self::STATUS_OPEN) {
-            return 'pending_message_reminder.blocked_closed';
+            return ['key' => 'pending_message_reminder.blocked_closed', 'params' => []];
         }
 
         // reorder() limpia el orderBy('created_at') ASC por defecto de la
         // relación messages(); sin esto, latest() no traería el más reciente.
         $lastMessage = $this->messages()->reorder()->latest()->first();
         if (! $lastMessage || (int) $lastMessage->user_id === (int) $editor->id) {
-            return 'pending_message_reminder.blocked_replied';
+            return ['key' => 'pending_message_reminder.blocked_replied', 'params' => []];
         }
 
         $muted = $this->participants()
@@ -219,17 +222,23 @@ class Conversation extends Model
             ->where('email_muted', true)
             ->exists();
         if ($muted) {
-            return 'pending_message_reminder.blocked_muted';
+            return ['key' => 'pending_message_reminder.blocked_muted', 'params' => []];
         }
 
-        if ($this->last_reminder_at
-            && $this->last_reminder_at->diffInHours(now()) < self::reminderCooldownHours()
-        ) {
-            return 'pending_message_reminder.blocked_cooldown';
+        $cooldown = self::reminderCooldownHours();
+        if ($this->last_reminder_at) {
+            $elapsed = $this->last_reminder_at->diffInHours(now());
+            if ($elapsed < $cooldown) {
+                return [
+                    'key' => 'pending_message_reminder.blocked_cooldown',
+                    'params' => ['remaining' => max(1, (int) ceil($cooldown - $elapsed))],
+                ];
+            }
         }
 
-        if ((int) $this->reminder_count >= self::reminderMaxTotal()) {
-            return 'pending_message_reminder.blocked_max';
+        $max = self::reminderMaxTotal();
+        if ((int) $this->reminder_count >= $max) {
+            return ['key' => 'pending_message_reminder.blocked_max', 'params' => ['max' => $max]];
         }
 
         return null;
