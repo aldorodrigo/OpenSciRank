@@ -113,13 +113,13 @@
         .meta-row { width: 100%; border-collapse: collapse; }
         .meta-row td { vertical-align: middle; }
         .meta-label {
-            font-size: 8px;
-            letter-spacing: 2px;
+            font-size: 7px;
+            letter-spacing: 1.5px;
             color: #94a3b8;
             text-transform: uppercase;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
-        .meta-value { font-size: 13px; color: #0f172a; font-weight: bold; }
+        .meta-value { font-size: 10px; color: #475569; font-weight: bold; }
         .qr-cell { text-align: right; }
         .qr-img { width: 96px; height: 96px; }
         .qr-cap {
