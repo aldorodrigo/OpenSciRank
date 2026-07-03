@@ -27,7 +27,7 @@ This project uses **Laravel Sail** (Docker). All commands must run through Sail:
 - Filament Admin: `http://localhost:5000/admin`
 - Mailpit (email testing): `http://localhost:8025`
 
-**Admin credentials:** `admin@openscirank.com` / `password`
+**Admin credentials:** `admin@editorialstandards.com` / `password` (seeded by `AdminUserSeeder`, role `super_admin`). No hay usuario "editor" de prueba seedeado — registrar uno vía `/register` para probar flujos de editor.
 
 ## Architecture
 
