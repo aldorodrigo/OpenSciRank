@@ -11,6 +11,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 
 class PaymentsRelationManager extends RelationManager
 {
@@ -67,7 +68,7 @@ class PaymentsRelationManager extends RelationManager
                     ->summarize(
                         Sum::make()
                             ->label(__('admin.payments_rel.total_paid'))
-                            ->query(fn (Builder $query) => $query->where('status', 'completed'))
+                            ->query(fn (QueryBuilder $query) => $query->where('status', 'completed'))
                             ->money('USD')
                     ),
 
