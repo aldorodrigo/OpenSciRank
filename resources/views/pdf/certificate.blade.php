@@ -45,99 +45,100 @@
         }
         .lh-divider {
             border-bottom: 2px solid #172554;
-            margin: 8px 0 14px 0;
+            margin: 10px 0 16px 0;
         }
         .title {
-            font-size: 30px;
+            font-size: 36px;
             font-weight: bold;
-            margin: 14px 0 5px 0;
+            margin: 18px 0 6px 0;
             color: #172554;
             text-align: center;
         }
         .subtitle {
-            font-size: 12px;
+            font-size: 14px;
             color: #64748b;
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
         .awardedto {
-            font-size: 10px;
-            letter-spacing: 3px;
+            font-size: 11px;
+            letter-spacing: 4px;
             color: #64748b;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         .journal-name {
-            font-size: 25px;
+            font-size: 32px;
             font-weight: bold;
             color: #0f172a;
             text-align: center;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
         .journal-meta {
-            font-size: 10px;
-            color: #475569;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .description {
-            font-size: 10.5px;
+            font-size: 12px;
             color: #475569;
             text-align: center;
             line-height: 1.5;
-            margin: 0 auto 10px auto;
-            max-width: 640px;
+            margin-bottom: 12px;
+        }
+        .description {
+            font-size: 12.5px;
+            color: #475569;
+            text-align: center;
+            line-height: 1.6;
+            margin: 0 auto 2px auto;
+            max-width: 740px;
             font-style: italic;
         }
-        .scoreblock {
-            text-align: center;
-            margin: 2px 0 0 0;
-        }
+        /* Fila del puntaje: score centrado + QR a la derecha (sobre las firmas).
+           El espaciador izquierdo iguala el ancho de la celda del QR para que
+           el score quede realmente centrado en la página. */
+        .score-row { width: 100%; border-collapse: collapse; }
+        .score-row td { vertical-align: middle; }
+        .scoreblock { text-align: center; }
         .scoreblock .num {
-            font-size: 46px;
+            font-size: 58px;
             font-weight: bold;
             color: #1E3A8A;
             line-height: 1;
         }
         .scoreblock .lbl {
-            font-size: 9px;
-            letter-spacing: 3px;
+            font-size: 11px;
+            letter-spacing: 4px;
             color: #64748b;
             text-transform: uppercase;
+            margin-top: 4px;
         }
-        .sig-divider {
-            border-top: 1px solid #e2e8f0;
-            margin: 12px 0 8px 0;
-        }
-        /* Zona registral: letra chica centrada (espaciador izq = ancho del QR
-           para que el texto quede centrado de verdad) + QR a la derecha. */
-        .fineprint-row { width: 100%; border-collapse: collapse; }
-        .fineprint-row td { vertical-align: middle; }
-        .meta-line {
-            text-align: center;
-            font-size: 8.5px;
-            color: #94a3b8;
-        }
-        .meta-line strong { color: #64748b; font-weight: bold; }
-        .qr-img { width: 104px; height: 104px; }
+        .qr-cell { text-align: right; vertical-align: top; }
+        .qr-img { width: 100px; height: 100px; }
         .qr-cap {
-            font-size: 7.5px;
+            font-size: 8px;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 2px;
+            margin-top: 3px;
             text-align: center;
         }
+        .sig-divider {
+            border-top: 1px solid #e2e8f0;
+            margin: 14px 0 10px 0;
+        }
+        .meta-line {
+            text-align: center;
+            font-size: 9px;
+            color: #94a3b8;
+        }
+        .meta-line strong { color: #64748b; font-weight: bold; }
         .footer-note {
             text-align: center;
-            font-size: 8px;
+            font-size: 8.5px;
             color: #94a3b8;
-            margin-top: 4px;
+            margin-top: 5px;
         }
         .verify {
             text-align: center;
-            font-size: 9px;
+            font-size: 9.5px;
             color: #64748b;
             margin-top: 3px;
         }
@@ -170,39 +171,39 @@
         <div class="description">{{ $brand['certificate_description'] }}</div>
     @endif
 
-    <div class="scoreblock">
-        <div class="num">{{ rtrim(rtrim(number_format((float) $journal->current_score, 1), '0'), '.') }}%</div>
-        <div class="lbl">{{ __('Compliance score') }}</div>
-    </div>
+    <table class="score-row">
+        <tr>
+            <td style="width: 150px;"></td>
+            <td>
+                <div class="scoreblock">
+                    <div class="num">{{ rtrim(rtrim(number_format((float) $journal->current_score, 1), '0'), '.') }}%</div>
+                    <div class="lbl">{{ __('Compliance score') }}</div>
+                </div>
+            </td>
+            <td style="width: 150px;" class="qr-cell">
+                @if($qr)
+                    <img class="qr-img" src="{{ $qr }}" alt="QR">
+                    <div class="qr-cap">{{ __('View public profile') }}</div>
+                @endif
+            </td>
+        </tr>
+    </table>
 
     <div class="bottom">
         @include('pdf.partials.signatures', ['signatories' => $brand['signatories'] ?? []])
 
         <div class="sig-divider"></div>
 
-        <table class="fineprint-row">
-            <tr>
-                <td style="width: 112px;"></td>
-                <td>
-                    {{-- Metadatos registrales como letra chica, una sola línea --}}
-                    <div class="meta-line">
-                        {{ __('Awarded') }}: <strong>{{ optional($journal->seal_awarded_at)->format('Y-m-d') ?? '—' }}</strong>
-                        · {{ __('Valid until') }}: <strong>{{ optional($journal->seal_expires_at)->format('Y-m-d') ?? '—' }}</strong>
-                        · {{ __('Certificate ID') }}: <strong>ESP-{{ str_pad((string) $journal->id, 6, '0', STR_PAD_LEFT) }}</strong>
-                    </div>
-                    @if(! empty($brand['footer_note']))
-                        <div class="footer-note">{{ $brand['footer_note'] }}</div>
-                    @endif
-                    <div class="verify">{{ __('Verify at') }} {{ url('/badge/'.$journal->slug) }}</div>
-                </td>
-                <td style="width: 112px; text-align: right;">
-                    @if($qr)
-                        <img class="qr-img" src="{{ $qr }}" alt="QR">
-                        <div class="qr-cap">{{ __('View public profile') }}</div>
-                    @endif
-                </td>
-            </tr>
-        </table>
+        {{-- Zona registral: letra chica centrada (metadatos + nota legal + verify) --}}
+        <div class="meta-line">
+            {{ __('Awarded') }}: <strong>{{ optional($journal->seal_awarded_at)->format('Y-m-d') ?? '—' }}</strong>
+            · {{ __('Valid until') }}: <strong>{{ optional($journal->seal_expires_at)->format('Y-m-d') ?? '—' }}</strong>
+            · {{ __('Certificate ID') }}: <strong>ESP-{{ str_pad((string) $journal->id, 6, '0', STR_PAD_LEFT) }}</strong>
+        </div>
+        @if(! empty($brand['footer_note']))
+            <div class="footer-note">{{ $brand['footer_note'] }}</div>
+        @endif
+        <div class="verify">{{ __('Verify at') }} {{ url('/badge/'.$journal->slug) }}</div>
     </div>
 </div>
 </body>
