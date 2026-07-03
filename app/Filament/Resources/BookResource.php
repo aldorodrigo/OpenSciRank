@@ -608,7 +608,9 @@ class BookResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('admin.book.title'))
                     ->formatStateUsing(fn (Book $record): string => $record->getTranslationWithFallback('title'))
-                    ->searchable()
+                    // title/subtitle son JSON traducibles: buscar/ordenar vía macros.
+                    ->searchable(query: fn ($query, string $search) => $query->whereTranslatableLike(['title', 'subtitle'], $search))
+                    ->sortable(query: fn ($query, string $direction) => $query->orderByTranslatable('title', $direction))
                     ->limit(40),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label(__('admin.book.owner')),

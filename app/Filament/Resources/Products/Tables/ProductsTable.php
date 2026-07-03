@@ -19,7 +19,9 @@ class ProductsTable
                 TextColumn::make('name')
                     ->label(__('admin.product.name'))
                     ->formatStateUsing(fn (Product $record): string => $record->getTranslationWithFallback('name'))
-                    ->searchable(),
+                    // name es JSON traducible: buscar/ordenar vía macros.
+                    ->searchable(query: fn ($query, string $search) => $query->whereTranslatableLike('name', $search))
+                    ->sortable(query: fn ($query, string $direction) => $query->orderByTranslatable('name', $direction)),
                 TextColumn::make('slug')
                     ->label(__('admin.product.slug'))
                     ->toggleable()

@@ -158,7 +158,12 @@ class SearchJournals extends Component
                     ->orWhereNull('seal_expires_at')
                     ->orWhere('seal_expires_at', '>', now())
                 )
-                ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
+                ->when($this->search, fn($q) => $q->where(fn($sub) => $sub
+                    ->whereTranslatableLike(['title', 'abbreviated_name'], $this->search)
+                    ->orWhere('publisher', 'like', "%{$this->search}%")
+                    ->orWhere('issn_print', 'like', "%{$this->search}%")
+                    ->orWhere('issn_online', 'like', "%{$this->search}%")
+                ))
                 ->when($this->country, fn($q) => $q->where('country_code', $this->country))
                 ->when($this->subjectArea, fn($q) => $q->whereJsonContains('subject_areas', $this->subjectArea))
                 ->when($this->frequency, fn($q) => $q->where('publication_frequency', $this->frequency))
@@ -174,7 +179,7 @@ class SearchJournals extends Component
             match ($this->sortBy) {
                 'score' => $journalQuery->orderByDesc('current_score'),
                 'h_index' => $journalQuery->orderByRaw('h_index IS NULL, h_index DESC')->orderByDesc('total_citations'),
-                'title' => $journalQuery->orderBy('title'),
+                'title' => $journalQuery->orderByTranslatable('title'),
                 'recent' => $journalQuery->orderByDesc('created_at'),
                 default => $journalQuery->orderByDesc('current_score'),
             };
@@ -189,7 +194,7 @@ class SearchJournals extends Component
         if ($this->type !== 'journals') {
             $bookQuery = Book::query()
                 ->where('status', 'listed')
-                ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
+                ->when($this->search, fn($q) => $q->whereTranslatableLike(['title', 'subtitle'], $this->search))
                 ->when($this->subjectArea, fn($q) => $q->whereJsonContains('knowledge_areas', $this->subjectArea))
                 ->when($this->accessType, fn($q) => $q->where('access_type', $this->accessType));
 
@@ -205,7 +210,7 @@ class SearchJournals extends Component
 
             match ($this->sortBy) {
                 'score' => $bookQuery->orderByDesc('current_score'),
-                'title' => $bookQuery->orderBy('title'),
+                'title' => $bookQuery->orderByTranslatable('title'),
                 'recent' => $bookQuery->orderByDesc('created_at'),
                 default => $bookQuery->orderByDesc('current_score'),
             };
@@ -232,7 +237,7 @@ class SearchJournals extends Component
             $merged = match ($this->sortBy) {
                 'score' => $merged->sortByDesc(fn($r) => $r['item']->current_score ?? 0),
                 'h_index' => $merged->sortByDesc(fn($r) => $r['type'] === 'journal' ? ($r['item']->h_index ?? -1) : -1),
-                'title' => $merged->sortBy(fn($r) => $r['item']->title),
+                'title' => $merged->sortBy(fn($r) => mb_strtolower((string) $r['item']->title)),
                 'recent' => $merged->sortByDesc(fn($r) => $r['item']->created_at),
                 default => $merged->sortByDesc(fn($r) => $r['item']->current_score ?? 0),
             };

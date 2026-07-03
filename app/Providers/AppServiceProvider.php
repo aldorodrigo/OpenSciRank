@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Observers\BookObserver;
 use App\Observers\PaymentObserver;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +32,72 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->configureTranslatable();
         $this->registerObservers();
+        $this->registerQueryMacros();
+    }
+
+    /**
+     * Macros de query reutilizables para buscar/ordenar sobre columnas JSON
+     * traducibles (Spatie HasTranslations).
+     *
+     * En MySQL, las columnas JSON se comparan con collation binaria
+     * (utf8mb4_bin) => LIKE/ORDER BY sensibles a mayúsculas y acentos. Por eso
+     * un buscador plano `where('title','like','%ciencia%')` no encontraba
+     * "Ciencia"/"Científica". Estos macros extraen el valor por locale y fuerzan
+     * utf8mb4_0900_ai_ci (default MySQL 8.4: insensible a caso y acentos).
+     *
+     * Usar en cualquier buscador (Livewire y closures de Filament):
+     *   $q->whereTranslatableLike(['title', 'abbreviated_name'], $search);
+     *   $q->orderByTranslatable('title', $direction);
+     */
+    protected function registerQueryMacros(): void
+    {
+        Builder::macro('whereTranslatableLike', function (array|string $columns, ?string $search, array $locales = ['es', 'en', 'pt']) {
+            /** @var Builder $this */
+            $search = is_string($search) ? trim($search) : '';
+            if ($search === '') {
+                return $this;
+            }
+
+            $columns = (array) $columns;
+            $driver = $this->getQuery()->getConnection()->getDriverName();
+            $isMysql = in_array($driver, ['mysql', 'mariadb'], true);
+            $term = '%'.mb_strtolower($search).'%';
+
+            return $this->where(function (Builder $query) use ($columns, $locales, $term, $isMysql) {
+                foreach ($columns as $column) {
+                    foreach ($locales as $locale) {
+                        $path = '$."'.$locale.'"';
+                        if ($isMysql) {
+                            $query->orWhereRaw(
+                                "JSON_UNQUOTE(JSON_EXTRACT(`{$column}`, '{$path}')) COLLATE utf8mb4_0900_ai_ci LIKE ?",
+                                [$term]
+                            );
+                        } else {
+                            // sqlite/pgsql: al menos insensible a mayúsculas (ASCII).
+                            $query->orWhereRaw(
+                                "LOWER(JSON_EXTRACT(`{$column}`, '{$path}')) LIKE ?",
+                                [$term]
+                            );
+                        }
+                    }
+                }
+            });
+        });
+
+        Builder::macro('orderByTranslatable', function (string $column, string $direction = 'asc', string $locale = 'es') {
+            /** @var Builder $this */
+            $direction = strtolower($direction) === 'desc' ? 'desc' : 'asc';
+            $driver = $this->getQuery()->getConnection()->getDriverName();
+            $path = '$."'.$locale.'"';
+
+            if (in_array($driver, ['mysql', 'mariadb'], true)) {
+                return $this->orderByRaw(
+                    "JSON_UNQUOTE(JSON_EXTRACT(`{$column}`, '{$path}')) COLLATE utf8mb4_0900_ai_ci {$direction}"
+                );
+            }
+
+            return $this->orderByRaw("LOWER(JSON_EXTRACT(`{$column}`, '{$path}')) {$direction}");
+        });
     }
 
     protected function registerObservers(): void

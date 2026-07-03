@@ -203,7 +203,7 @@ class EditorMessagesInbox extends Component
     public function myJournals(): \Illuminate\Support\Collection
     {
         return Journal::where('user_id', auth()->id())
-            ->orderBy('title')
+            ->orderByTranslatable('title')
             ->get(['id', 'title']);
     }
 
@@ -211,7 +211,7 @@ class EditorMessagesInbox extends Component
     public function myBooks(): \Illuminate\Support\Collection
     {
         return Book::where('user_id', auth()->id())
-            ->orderBy('title')
+            ->orderByTranslatable('title')
             ->get(['id', 'title']);
     }
 

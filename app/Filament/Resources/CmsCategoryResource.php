@@ -132,7 +132,9 @@ class CmsCategoryResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('admin.cms_category.name'))
                     ->formatStateUsing(fn (CmsCategory $record): string => $record->getTranslationWithFallback('name'))
-                    ->searchable(),
+                    // name es JSON traducible: buscar/ordenar vía macros.
+                    ->searchable(query: fn ($query, string $search) => $query->whereTranslatableLike('name', $search))
+                    ->sortable(query: fn ($query, string $direction) => $query->orderByTranslatable('name', $direction)),
 
                 Tables\Columns\TextColumn::make('slug')
                     ->label(__('admin.cms_category.slug'))

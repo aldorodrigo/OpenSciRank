@@ -198,7 +198,9 @@ class CmsPostResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('admin.cms_post.title'))
                     ->formatStateUsing(fn (CmsPost $record): string => Str::limit($record->getTranslationWithFallback('title'), 50))
-                    ->searchable(),
+                    // title es JSON traducible: buscar/ordenar vía macros.
+                    ->searchable(query: fn ($query, string $search) => $query->whereTranslatableLike('title', $search))
+                    ->sortable(query: fn ($query, string $direction) => $query->orderByTranslatable('title', $direction)),
 
                 Tables\Columns\TextColumn::make('cat_label')
                     ->label(__('admin.cms_post.category')),

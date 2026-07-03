@@ -546,8 +546,11 @@ class JournalResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('admin.journal.title'))
                     ->formatStateUsing(fn (Journal $record): string => $record->getTranslationWithFallback('title'))
-                    ->searchable()
-                    ->sortable()
+                    // title/abbreviated_name son columnas JSON (HasTranslations). El LIKE
+                    // sobre JSON en MySQL es sensible a mayúsculas/acentos; usamos los
+                    // macros whereTranslatableLike/orderByTranslatable (AppServiceProvider).
+                    ->searchable(query: fn ($query, string $search) => $query->whereTranslatableLike(['title', 'abbreviated_name'], $search))
+                    ->sortable(query: fn ($query, string $direction) => $query->orderByTranslatable('title', $direction))
                     ->wrap()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('issn_print')
