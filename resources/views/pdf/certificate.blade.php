@@ -108,38 +108,38 @@
         }
         .sig-divider {
             border-top: 1px solid #e2e8f0;
-            margin: 12px 0 10px 0;
+            margin: 12px 0 8px 0;
         }
-        .meta-row { width: 100%; border-collapse: collapse; }
-        .meta-row td { vertical-align: middle; }
-        .meta-label {
-            font-size: 7px;
-            letter-spacing: 1.5px;
+        /* Zona registral: letra chica centrada (espaciador izq = ancho del QR
+           para que el texto quede centrado de verdad) + QR a la derecha. */
+        .fineprint-row { width: 100%; border-collapse: collapse; }
+        .fineprint-row td { vertical-align: middle; }
+        .meta-line {
+            text-align: center;
+            font-size: 8.5px;
             color: #94a3b8;
-            text-transform: uppercase;
-            margin-bottom: 1px;
         }
-        .meta-value { font-size: 10px; color: #475569; font-weight: bold; }
-        .qr-cell { text-align: right; }
-        .qr-img { width: 96px; height: 96px; }
+        .meta-line strong { color: #64748b; font-weight: bold; }
+        .qr-img { width: 104px; height: 104px; }
         .qr-cap {
             font-size: 7.5px;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-top: 2px;
+            text-align: center;
         }
         .footer-note {
             text-align: center;
             font-size: 8px;
             color: #94a3b8;
-            margin-top: 12px;
+            margin-top: 4px;
         }
         .verify {
             text-align: center;
             font-size: 9px;
             color: #64748b;
-            margin-top: 4px;
+            margin-top: 3px;
         }
     </style>
 </head>
@@ -180,21 +180,22 @@
 
         <div class="sig-divider"></div>
 
-        <table class="meta-row">
+        <table class="fineprint-row">
             <tr>
-                <td style="width: 25%;">
-                    <div class="meta-label">{{ __('Awarded') }}</div>
-                    <div class="meta-value">{{ optional($journal->seal_awarded_at)->format('Y-m-d') ?? '—' }}</div>
+                <td style="width: 112px;"></td>
+                <td>
+                    {{-- Metadatos registrales como letra chica, una sola línea --}}
+                    <div class="meta-line">
+                        {{ __('Awarded') }}: <strong>{{ optional($journal->seal_awarded_at)->format('Y-m-d') ?? '—' }}</strong>
+                        · {{ __('Valid until') }}: <strong>{{ optional($journal->seal_expires_at)->format('Y-m-d') ?? '—' }}</strong>
+                        · {{ __('Certificate ID') }}: <strong>ESP-{{ str_pad((string) $journal->id, 6, '0', STR_PAD_LEFT) }}</strong>
+                    </div>
+                    @if(! empty($brand['footer_note']))
+                        <div class="footer-note">{{ $brand['footer_note'] }}</div>
+                    @endif
+                    <div class="verify">{{ __('Verify at') }} {{ url('/badge/'.$journal->slug) }}</div>
                 </td>
-                <td style="width: 25%;">
-                    <div class="meta-label">{{ __('Valid until') }}</div>
-                    <div class="meta-value">{{ optional($journal->seal_expires_at)->format('Y-m-d') ?? '—' }}</div>
-                </td>
-                <td style="width: 28%;">
-                    <div class="meta-label">{{ __('Certificate ID') }}</div>
-                    <div class="meta-value">ESP-{{ str_pad((string) $journal->id, 6, '0', STR_PAD_LEFT) }}</div>
-                </td>
-                <td style="width: 22%;" class="qr-cell">
+                <td style="width: 112px; text-align: right;">
                     @if($qr)
                         <img class="qr-img" src="{{ $qr }}" alt="QR">
                         <div class="qr-cap">{{ __('View public profile') }}</div>
@@ -202,11 +203,6 @@
                 </td>
             </tr>
         </table>
-
-        @if(! empty($brand['footer_note']))
-            <div class="footer-note">{{ $brand['footer_note'] }}</div>
-        @endif
-        <div class="verify">{{ __('Verify at') }} {{ url('/badge/'.$journal->slug) }}</div>
     </div>
 </div>
 </body>
