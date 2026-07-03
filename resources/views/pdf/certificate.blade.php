@@ -58,7 +58,7 @@
             font-size: 12px;
             color: #64748b;
             text-align: center;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
         }
         .awardedto {
             font-size: 10px;
@@ -79,23 +79,23 @@
             font-size: 10px;
             color: #475569;
             text-align: center;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
         }
         .description {
-            font-size: 11px;
+            font-size: 10.5px;
             color: #475569;
             text-align: center;
-            line-height: 1.55;
-            margin: 0 auto 16px auto;
+            line-height: 1.5;
+            margin: 0 auto 10px auto;
             max-width: 640px;
             font-style: italic;
         }
         .scoreblock {
             text-align: center;
-            margin: 8px 0 0 0;
+            margin: 2px 0 0 0;
         }
         .scoreblock .num {
-            font-size: 48px;
+            font-size: 46px;
             font-weight: bold;
             color: #1E3A8A;
             line-height: 1;
@@ -106,23 +106,34 @@
             color: #64748b;
             text-transform: uppercase;
         }
-        .meta-row { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-        .meta-row td { vertical-align: bottom; }
+        .sig-divider {
+            border-top: 1px solid #e2e8f0;
+            margin: 12px 0 10px 0;
+        }
+        .meta-row { width: 100%; border-collapse: collapse; }
+        .meta-row td { vertical-align: middle; }
         .meta-label {
             font-size: 8px;
             letter-spacing: 2px;
             color: #94a3b8;
             text-transform: uppercase;
+            margin-bottom: 2px;
         }
-        .meta-value { font-size: 11px; color: #0f172a; font-weight: bold; }
-        .qr-box { text-align: right; }
-        .qr-box img { width: 78px; height: 78px; }
-        .qr-cap { font-size: 7px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .meta-value { font-size: 13px; color: #0f172a; font-weight: bold; }
+        .qr-cell { text-align: right; }
+        .qr-img { width: 96px; height: 96px; }
+        .qr-cap {
+            font-size: 7.5px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
         .footer-note {
             text-align: center;
             font-size: 8px;
             color: #94a3b8;
-            margin-top: 10px;
+            margin-top: 12px;
         }
         .verify {
             text-align: center;
@@ -165,30 +176,32 @@
     </div>
 
     <div class="bottom">
+        @include('pdf.partials.signatures', ['signatories' => $brand['signatories'] ?? []])
+
+        <div class="sig-divider"></div>
+
         <table class="meta-row">
             <tr>
-                <td style="width: 30%;">
+                <td style="width: 25%;">
                     <div class="meta-label">{{ __('Awarded') }}</div>
                     <div class="meta-value">{{ optional($journal->seal_awarded_at)->format('Y-m-d') ?? '—' }}</div>
                 </td>
-                <td style="width: 30%; text-align: center;">
+                <td style="width: 25%;">
                     <div class="meta-label">{{ __('Valid until') }}</div>
                     <div class="meta-value">{{ optional($journal->seal_expires_at)->format('Y-m-d') ?? '—' }}</div>
                 </td>
-                <td style="width: 20%;">
+                <td style="width: 28%;">
                     <div class="meta-label">{{ __('Certificate ID') }}</div>
                     <div class="meta-value">ESP-{{ str_pad((string) $journal->id, 6, '0', STR_PAD_LEFT) }}</div>
                 </td>
-                <td style="width: 20%;" class="qr-box">
+                <td style="width: 22%;" class="qr-cell">
                     @if($qr)
-                        <img src="{{ $qr }}" alt="QR">
+                        <img class="qr-img" src="{{ $qr }}" alt="QR">
                         <div class="qr-cap">{{ __('View public profile') }}</div>
                     @endif
                 </td>
             </tr>
         </table>
-
-        @include('pdf.partials.signatures', ['signatories' => $brand['signatories'] ?? []])
 
         @if(! empty($brand['footer_note']))
             <div class="footer-note">{{ $brand['footer_note'] }}</div>
