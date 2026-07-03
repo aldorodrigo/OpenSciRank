@@ -13,6 +13,7 @@ use App\Notifications\EvaluationCompleted;
 use App\Notifications\NewConversationOpened;
 use App\Notifications\SealRenewalApproved;
 use App\Notifications\SealRenewalRejected;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
@@ -118,6 +119,30 @@ class EvaluateJournal extends Page
         $title = $this->record->getTranslationWithFallback('title');
 
         return __('admin.eval_page.title', ['name' => $title]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('download_certificate')
+                ->label(__('Download Certificate (PDF)'))
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->url(fn () => route('app.journal.certificate.pdf', $this->getRecord()))
+                ->openUrlInNewTab()
+                ->visible(fn (): bool => $this->record->status === 'certified'
+                    && $this->record->seal_status === 'active'
+                    && $this->record->seal_expires_at
+                    && $this->record->seal_expires_at->isFuture()
+                ),
+
+            Action::make('download_report')
+                ->label(__('Download Evaluation Report (PDF)'))
+                ->icon('heroicon-o-document-arrow-down')
+                ->url(fn () => route('app.journal.report.pdf', $this->getRecord()))
+                ->openUrlInNewTab()
+                ->visible(fn (): bool => $this->record->evaluated_at !== null),
+        ];
     }
 
     public function getCriteriaByCategory(): Collection

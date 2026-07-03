@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Journal;
 use App\Services\JournalEvaluationBreakdown;
+use App\Support\DocumentBranding;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Response;
 
@@ -15,7 +16,7 @@ class JournalPdfController extends Controller
      * Certificado del sello editorial en PDF.
      * Solo descargable si la revista está certificada y el sello vigente.
      */
-    public function certificate(Journal $journal): Response
+    public function certificate(Journal $journal, DocumentBranding $branding): Response
     {
         $this->authorizeJournalAccess($journal);
 
@@ -30,6 +31,8 @@ class JournalPdfController extends Controller
 
         $pdf = Pdf::loadView('pdf.certificate', [
             'journal' => $journal,
+            'brand' => $branding->assemble($journal),
+            'qr' => $branding->qrForJournal($journal),
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download($this->filename($journal, 'certificate'));
@@ -39,7 +42,7 @@ class JournalPdfController extends Controller
      * Informe de evaluación completo en PDF (5 categorías + 18 indicadores).
      * Disponible para cualquier revista ya evaluada (evaluated_at presente).
      */
-    public function report(Journal $journal, JournalEvaluationBreakdown $breakdownService): Response
+    public function report(Journal $journal, JournalEvaluationBreakdown $breakdownService, DocumentBranding $branding): Response
     {
         $this->authorizeJournalAccess($journal);
 
@@ -52,6 +55,7 @@ class JournalPdfController extends Controller
         $pdf = Pdf::loadView('pdf.report', [
             'journal' => $journal,
             'breakdown' => $breakdownService->forJournal($journal),
+            'brand' => $branding->assemble($journal),
         ])->setPaper('a4', 'portrait');
 
         return $pdf->download($this->filename($journal, 'report'));

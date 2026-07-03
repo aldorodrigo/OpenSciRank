@@ -869,6 +869,25 @@ class JournalResource extends Resource
                         ))
                         ->url(fn (Journal $record): string => static::getUrl('evaluate', ['record' => $record])),
 
+                    \Filament\Actions\Action::make('download_certificate')
+                        ->label(__('Download Certificate (PDF)'))
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->color('success')
+                        ->url(fn (Journal $record) => route('app.journal.certificate.pdf', $record))
+                        ->openUrlInNewTab()
+                        ->visible(fn (Journal $record): bool => $record->status === 'certified'
+                            && $record->seal_status === 'active'
+                            && $record->seal_expires_at
+                            && $record->seal_expires_at->isFuture()
+                        ),
+
+                    \Filament\Actions\Action::make('download_report')
+                        ->label(__('Download Evaluation Report (PDF)'))
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->url(fn (Journal $record) => route('app.journal.report.pdf', $record))
+                        ->openUrlInNewTab()
+                        ->visible(fn (Journal $record): bool => $record->evaluated_at !== null),
+
                     \Filament\Actions\Action::make('harvest_oai')
                         ->label(__('admin.journal.action_harvest'))
                         ->icon('heroicon-o-arrow-path')

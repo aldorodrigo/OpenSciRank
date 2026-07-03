@@ -37,6 +37,19 @@
         }
         .subtitle { color: #475569; font-size: 11px; margin-bottom: 12px; }
 
+        .intro {
+            font-size: 10.5px;
+            color: #475569;
+            line-height: 1.55;
+            text-align: justify;
+            margin-bottom: 16px;
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-left: 3px solid #c7d2fe;
+        }
+
+        .signatures { margin-top: 28px; page-break-inside: avoid; }
+
         .summary {
             background: #f1f5f9;
             border-left: 4px solid #1E3A8A;
@@ -144,12 +157,15 @@
 <body>
 
 <div class="header">
-    <div class="brand">Editorial Standards</div>
-    <div class="sub">Platform</div>
+    @include('pdf.partials.letterhead', ['brand' => $brand])
 </div>
 
 <h1>{{ __('Evaluation Report') }}</h1>
 <div class="subtitle">{{ $journal->getTranslation('title', app()->getLocale()) ?: $journal->title }}</div>
+
+@if(! empty($brand['report_intro']))
+    <div class="intro">{{ $brand['report_intro'] }}</div>
+@endif
 
 <div class="summary">
     <table>
@@ -223,6 +239,12 @@
         </table>
     </div>
 @endforeach
+
+@if(! empty($brand['signatories']))
+    <div class="signatures">
+        @include('pdf.partials.signatures', ['signatories' => $brand['signatories']])
+    </div>
+@endif
 
 <div class="footer">
     {{ __('Generated :date · Verify at :url', ['date' => now()->format('Y-m-d'), 'url' => url('/badge/'.$journal->slug)]) }}

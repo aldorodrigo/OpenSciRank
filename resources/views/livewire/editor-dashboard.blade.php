@@ -683,6 +683,27 @@
 
                                     {{-- Columna Acciones --}}
                                     <td class="px-6 py-4">
+                                        {{-- Descargables directos (#65): visibles sin abrir el menú --}}
+                                        @if(($journal->status === 'certified' && $journal->seal_expires_at?->isFuture()) || $journal->evaluated_at)
+                                            <div class="mb-2 flex flex-wrap gap-1.5">
+                                                @if($journal->status === 'certified' && $journal->seal_expires_at?->isFuture())
+                                                    <a href="{{ route('app.journal.certificate.pdf', $journal) }}" target="_blank"
+                                                        title="{{ __('Download Certificate (PDF)') }}"
+                                                        class="inline-flex items-center gap-1 rounded-lg bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand transition hover:bg-brand/20 dark:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20">
+                                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                                                        {{ __('Certificate') }}
+                                                    </a>
+                                                @endif
+                                                @if($journal->evaluated_at)
+                                                    <a href="{{ route('app.journal.report.pdf', $journal) }}" target="_blank"
+                                                        title="{{ __('Download Evaluation Report (PDF)') }}"
+                                                        class="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                                                        {{ __('Report') }}
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        @endif
                                         <div x-data="{ open: false, top: '0px', left: '0px' }" @click.outside="open = false">
                                             <button @click.stop="const r = $el.getBoundingClientRect(); top = (r.bottom + 4) + 'px'; left = Math.max(0, r.right - 208) + 'px'; open = !open;"
                                                 class="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
@@ -760,23 +781,10 @@
                                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                                             {{ __('View Seal') }}
                                                         </a>
-
-                                                        {{-- Descargar Certificado PDF (Sprint Launch #55) --}}
-                                                        <a href="{{ route('app.journal.certificate.pdf', $journal) }}"
-                                                            class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
-                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
-                                                            {{ __('Download Certificate (PDF)') }}
-                                                        </a>
                                                     @endif
 
-                                                    {{-- Descargar Informe de Evaluación (PDF) — Sprint Launch #55 --}}
-                                                    @if($journal->evaluated_at)
-                                                        <a href="{{ route('app.journal.report.pdf', $journal) }}"
-                                                            class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700">
-                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                                            {{ __('Download Evaluation Report (PDF)') }}
-                                                        </a>
-                                                    @endif
+                                                    {{-- Descargar certificado/informe: ahora como chips visibles
+                                                         en la columna Acciones (#65), fuera del dropdown. --}}
 
                                                     {{-- Cosechar OAI --}}
                                                     @if($journal->status === 'indexed' && $journal->oai_base_url)

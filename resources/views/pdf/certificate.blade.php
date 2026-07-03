@@ -14,46 +14,43 @@
             background: #ffffff;
         }
         .frame {
+            /* A4 landscape ≈ 1122×793px (96dpi). Alto fijo para que el marco
+               llene la página completa y el bloque inferior ancle al fondo. */
             border: 12px solid #172554;
-            margin: 18px;
-            padding: 28px 40px 30px 40px;
-            min-height: 540px;
+            margin: 14px;
+            /* dompdf aplica height al content-box (ignora box-sizing):
+               793 (A4 landscape) − 28 margin − 24 borde − 48 padding ≈ 693 */
+            padding: 24px 40px 24px 40px;
+            height: 688px;
             position: relative;
         }
-        .frame::after {
-            content: '';
+        /* Línea interior fina: div real con top/right/bottom/left explícitos.
+           (dompdf no soporta la propiedad `inset` — un ::after con inset
+           quedaba desfasado del marco grueso.) */
+        .frame-inner {
             position: absolute;
-            inset: 6px;
+            top: 6px;
+            right: 6px;
+            bottom: 6px;
+            left: 6px;
             border: 1px solid #c7d2fe;
-            pointer-events: none;
         }
-        .header { text-align: center; }
-        .mark {
-            display: inline-block;
-            width: 56px;
-            height: 56px;
-            background: #1E3A8A;
-            position: relative;
-            margin-bottom: 6px;
+        /* Bloque inferior (fechas + QR + firmas + leyendas) anclado al fondo
+           del marco: el espacio sobrante queda entre el score y este bloque. */
+        .bottom {
+            position: absolute;
+            left: 40px;
+            right: 40px;
+            bottom: 22px;
         }
-        .brandline {
-            font-size: 13px;
-            letter-spacing: 5px;
-            color: #1E3A8A;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-top: 2px;
-        }
-        .brandsub {
-            font-size: 9px;
-            letter-spacing: 4px;
-            color: #64748b;
-            text-transform: uppercase;
+        .lh-divider {
+            border-bottom: 2px solid #172554;
+            margin: 8px 0 14px 0;
         }
         .title {
             font-size: 30px;
             font-weight: bold;
-            margin: 18px 0 6px 0;
+            margin: 14px 0 5px 0;
             color: #172554;
             text-align: center;
         }
@@ -64,7 +61,7 @@
             margin-bottom: 18px;
         }
         .awardedto {
-            font-size: 11px;
+            font-size: 10px;
             letter-spacing: 3px;
             color: #64748b;
             text-transform: uppercase;
@@ -72,21 +69,30 @@
             margin-bottom: 6px;
         }
         .journal-name {
-            font-size: 24px;
+            font-size: 25px;
             font-weight: bold;
             color: #0f172a;
             text-align: center;
             margin-bottom: 6px;
         }
         .journal-meta {
+            font-size: 10px;
+            color: #475569;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .description {
             font-size: 11px;
             color: #475569;
             text-align: center;
-            margin-bottom: 18px;
+            line-height: 1.55;
+            margin: 0 auto 16px auto;
+            max-width: 640px;
+            font-style: italic;
         }
         .scoreblock {
             text-align: center;
-            margin: 10px 0 14px 0;
+            margin: 8px 0 0 0;
         }
         .scoreblock .num {
             font-size: 48px;
@@ -95,43 +101,42 @@
             line-height: 1;
         }
         .scoreblock .lbl {
-            font-size: 10px;
+            font-size: 9px;
             letter-spacing: 3px;
             color: #64748b;
             text-transform: uppercase;
         }
-        .footer {
-            position: absolute;
-            bottom: 18px;
-            left: 40px;
-            right: 40px;
-            font-size: 10px;
-            color: #475569;
-        }
-        .footer table { width: 100%; }
-        .footer td { padding: 2px 0; }
-        .footer .label {
+        .meta-row { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+        .meta-row td { vertical-align: bottom; }
+        .meta-label {
             font-size: 8px;
             letter-spacing: 2px;
             color: #94a3b8;
             text-transform: uppercase;
         }
-        .footer .value { font-size: 11px; color: #0f172a; font-weight: bold; }
+        .meta-value { font-size: 11px; color: #0f172a; font-weight: bold; }
+        .qr-box { text-align: right; }
+        .qr-box img { width: 78px; height: 78px; }
+        .qr-cap { font-size: 7px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-note {
+            text-align: center;
+            font-size: 8px;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
         .verify {
             text-align: center;
             font-size: 9px;
             color: #64748b;
-            margin-top: 6px;
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
 <div class="frame">
-    <div class="header">
-        <div class="mark"></div>
-        <div class="brandline">Editorial Standards</div>
-        <div class="brandsub">Platform</div>
-    </div>
+    <div class="frame-inner"></div>
+    @include('pdf.partials.letterhead', ['brand' => $brand])
+    <div class="lh-divider"></div>
 
     <div class="title">{{ __('Editorial Standards Seal') }}</div>
     <div class="subtitle">{{ __('Certificate of editorial compliance') }}</div>
@@ -150,28 +155,44 @@
         @endif
     </div>
 
+    @if(! empty($brand['certificate_description']))
+        <div class="description">{{ $brand['certificate_description'] }}</div>
+    @endif
+
     <div class="scoreblock">
         <div class="num">{{ rtrim(rtrim(number_format((float) $journal->current_score, 1), '0'), '.') }}%</div>
         <div class="lbl">{{ __('Compliance score') }}</div>
     </div>
 
-    <div class="footer">
-        <table>
+    <div class="bottom">
+        <table class="meta-row">
             <tr>
-                <td>
-                    <div class="label">{{ __('Awarded') }}</div>
-                    <div class="value">{{ optional($journal->seal_awarded_at)->format('Y-m-d') ?? '—' }}</div>
+                <td style="width: 30%;">
+                    <div class="meta-label">{{ __('Awarded') }}</div>
+                    <div class="meta-value">{{ optional($journal->seal_awarded_at)->format('Y-m-d') ?? '—' }}</div>
                 </td>
-                <td style="text-align: center;">
-                    <div class="label">{{ __('Valid until') }}</div>
-                    <div class="value">{{ optional($journal->seal_expires_at)->format('Y-m-d') ?? '—' }}</div>
+                <td style="width: 30%; text-align: center;">
+                    <div class="meta-label">{{ __('Valid until') }}</div>
+                    <div class="meta-value">{{ optional($journal->seal_expires_at)->format('Y-m-d') ?? '—' }}</div>
                 </td>
-                <td style="text-align: right;">
-                    <div class="label">{{ __('Certificate ID') }}</div>
-                    <div class="value">ESP-{{ str_pad((string) $journal->id, 6, '0', STR_PAD_LEFT) }}</div>
+                <td style="width: 20%;">
+                    <div class="meta-label">{{ __('Certificate ID') }}</div>
+                    <div class="meta-value">ESP-{{ str_pad((string) $journal->id, 6, '0', STR_PAD_LEFT) }}</div>
+                </td>
+                <td style="width: 20%;" class="qr-box">
+                    @if($qr)
+                        <img src="{{ $qr }}" alt="QR">
+                        <div class="qr-cap">{{ __('View public profile') }}</div>
+                    @endif
                 </td>
             </tr>
         </table>
+
+        @include('pdf.partials.signatures', ['signatories' => $brand['signatories'] ?? []])
+
+        @if(! empty($brand['footer_note']))
+            <div class="footer-note">{{ $brand['footer_note'] }}</div>
+        @endif
         <div class="verify">{{ __('Verify at') }} {{ url('/badge/'.$journal->slug) }}</div>
     </div>
 </div>
