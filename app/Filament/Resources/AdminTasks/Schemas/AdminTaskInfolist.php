@@ -130,41 +130,6 @@ class AdminTaskInfolist
                             ->icon('heroicon-o-gift')
                             ->columnSpanFull(),
                     ]),
-
-                // ── 1b. Instrucciones para el evaluador (tipos de evaluación) ──
-                // Roadmap #35 — procedimiento formal para completar la evaluación.
-                Section::make(__('evaluator_task.instructions_title'))
-                    ->description(__('evaluator_task.instructions_subtitle'))
-                    ->icon('heroicon-o-clipboard-document-list')
-                    ->visible(fn (AdminTask $record): bool => in_array($record->type, [
-                        AdminTask::TYPE_EVALUATE_JOURNAL,
-                        AdminTask::TYPE_REEVALUATE_JOURNAL,
-                        AdminTask::TYPE_RENEWAL_EVALUATION,
-                    ], true))
-                    ->schema([
-                        TextEntry::make('evaluation_instructions')
-                            ->hiddenLabel()
-                            ->getStateUsing(fn (): string => __('evaluator_task.instructions_body'))
-                            ->markdown()
-                            ->columnSpanFull(),
-
-                        // Acceso directo a la ficha pública de la revista (paso 1).
-                        TextEntry::make('instructions_public_link')
-                            ->hiddenLabel()
-                            ->html()
-                            ->visible(fn (AdminTask $record): bool => $record->related_type === 'App\\Models\\Journal'
-                                && filled($record->related->slug ?? null)
-                            )
-                            ->getStateUsing(function (AdminTask $record): string {
-                                $url = route('journal.show', ['slug' => $record->related->slug]);
-                                $label = e(__('Ver ficha pública'));
-                                $eyeIcon = '<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>';
-
-                                return '<a href="'.e($url).'" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600">'.$eyeIcon.$label.'</a>';
-                            })
-                            ->columnSpanFull(),
-                    ]),
-
                 // ── 2. Estado, prioridad y asignación (unificado) ─────────────
                 Section::make(__('Estado, prioridad y asignación'))
                     ->icon('heroicon-o-signal')
@@ -271,6 +236,41 @@ class AdminTaskInfolist
                             ->columnSpanFull(),
                     ]),
 
+                // ── 1b. Instrucciones para el evaluador (tipos de evaluación) ──
+                // Roadmap #35 — procedimiento formal para completar la evaluación.
+                Section::make(__('evaluator_task.instructions_title'))
+                    ->description(__('evaluator_task.instructions_subtitle'))
+                    ->icon('heroicon-o-clipboard-document-list')
+                    ->visible(fn (AdminTask $record): bool => in_array($record->type, [
+                        AdminTask::TYPE_EVALUATE_JOURNAL,
+                        AdminTask::TYPE_REEVALUATE_JOURNAL,
+                        AdminTask::TYPE_RENEWAL_EVALUATION,
+                    ], true))
+                    ->schema([
+                        TextEntry::make('evaluation_instructions')
+                            ->hiddenLabel()
+                            ->getStateUsing(fn (): string => __('evaluator_task.instructions_body'))
+                            ->markdown()
+                            ->columnSpanFull(),
+
+                        // Acceso directo a la ficha pública de la revista (paso 1).
+                        TextEntry::make('instructions_public_link')
+                            ->hiddenLabel()
+                            ->html()
+                            ->visible(fn (AdminTask $record): bool => $record->related_type === 'App\\Models\\Journal'
+                                && filled($record->related->slug ?? null)
+                            )
+                            ->getStateUsing(function (AdminTask $record): string {
+                                $url = route('journal.show', ['slug' => $record->related->slug]);
+                                $label = e(__('Ver ficha pública'));
+                                $eyeIcon = '<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>';
+
+                                return '<a href="'.e($url).'" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600">'.$eyeIcon.$label.'</a>';
+                            })
+                            ->columnSpanFull(),
+                    ]),
+
+                
                 // ── 3. Notas internas ─────────────────────────────────────────
                 Section::make(__('Notas internas'))
                     ->icon('heroicon-o-pencil-square')
