@@ -45,12 +45,12 @@
         }
         .lh-divider {
             border-bottom: 2px solid #172554;
-            margin: 10px 0 16px 0;
+            margin: 10px 0 14px 0;
         }
         .title {
             font-size: 36px;
             font-weight: bold;
-            margin: 18px 0 6px 0;
+            margin: 8px 0 6px 0;
             color: #172554;
             text-align: center;
         }
@@ -58,7 +58,7 @@
             font-size: 14px;
             color: #64748b;
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .awardedto {
             font-size: 11px;
@@ -66,7 +66,7 @@
             color: #64748b;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .journal-name {
             font-size: 32px;
@@ -111,14 +111,24 @@
             margin-top: 4px;
         }
         .qr-cell { text-align: right; vertical-align: top; }
+        /* Envoltura de ancho = QR para que el caption quede centrado respecto
+           al código (no respecto a toda la celda). Es <a>, clickable en el PDF. */
+        .qr-wrap {
+            display: inline-block;
+            width: 100px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+        }
         .qr-img { width: 100px; height: 100px; }
         .qr-cap {
-            font-size: 8px;
+            font-size: 7px;
             color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-top: 3px;
             text-align: center;
+            white-space: nowrap;
         }
         .sig-divider {
             border-top: 1px solid #e2e8f0;
@@ -130,18 +140,13 @@
             color: #94a3b8;
         }
         .meta-line strong { color: #64748b; font-weight: bold; }
-        .footer-note {
+        .footer-line {
             text-align: center;
             font-size: 8.5px;
             color: #94a3b8;
             margin-top: 5px;
         }
-        .verify {
-            text-align: center;
-            font-size: 9.5px;
-            color: #64748b;
-            margin-top: 3px;
-        }
+        .footer-line a { color: #64748b; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -182,8 +187,10 @@
             </td>
             <td style="width: 150px;" class="qr-cell">
                 @if($qr)
-                    <img class="qr-img" src="{{ $qr }}" alt="QR">
-                    <div class="qr-cap">{{ __('View public profile') }}</div>
+                    <a href="{{ route('journal.show', $journal->slug) }}" class="qr-wrap">
+                        <img class="qr-img" src="{{ $qr }}" alt="QR">
+                        <div class="qr-cap">{{ __('View public profile') }}</div>
+                    </a>
                 @endif
             </td>
         </tr>
@@ -200,10 +207,11 @@
             · {{ __('Valid until') }}: <strong>{{ optional($journal->seal_expires_at)->format('Y-m-d') ?? '—' }}</strong>
             · {{ __('Certificate ID') }}: <strong>ESP-{{ str_pad((string) $journal->id, 6, '0', STR_PAD_LEFT) }}</strong>
         </div>
-        @if(! empty($brand['footer_note']))
-            <div class="footer-note">{{ $brand['footer_note'] }}</div>
-        @endif
-        <div class="verify">{{ __('Verify at') }} {{ url('/badge/'.$journal->slug) }}</div>
+        {{-- Pie en una sola línea: nota legal | Verificar en <url clickable> --}}
+        <div class="footer-line">
+            @if(! empty($brand['footer_note'])){{ $brand['footer_note'] }} | @endif
+            {{ __('Verify at') }}&nbsp;<a href="{{ url('/badge/'.$journal->slug) }}">{{ url('/badge/'.$journal->slug) }}</a>
+        </div>
     </div>
 </div>
 </body>
