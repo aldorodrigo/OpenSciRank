@@ -6,9 +6,7 @@ use App\Models\AdminTask;
 use App\Models\Book;
 use App\Models\Conversation;
 use App\Models\Journal;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notifica al destinatario apropiado cuando se abre un nuevo hilo de
@@ -17,13 +15,9 @@ use Illuminate\Notifications\Notification;
  *   - Admin abre hilo  → editor (destinatario inicial) recibe esta notificación.
  *
  * El subject line del email refleja el tipo de recurso vinculado al hilo.
- *
- * Sin ShouldQueue — QUEUE_CONNECTION=sync.
  */
-class NewConversationOpened extends Notification
+class NewConversationOpened extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(public Conversation $conversation) {}
 
     public function via(object $notifiable): array
@@ -37,19 +31,19 @@ class NewConversationOpened extends Notification
         // Roadmap #35 — tercera rama: un evaluador (no super_admin) recibe el
         // CTA hacia /admin, no hacia /app/messages (panel editor, inaccesible
         // para él). Reusa el copy "editor" (genérico "se abrió un hilo").
-        $isEvaluator  = ! $isSuperAdmin && $notifiable->hasRole('evaluator');
+        $isEvaluator = ! $isSuperAdmin && $notifiable->hasRole('evaluator');
 
-        $prefix       = $isSuperAdmin
+        $prefix = $isSuperAdmin
             ? 'notifications.new_conversation_opened.admin'
             : 'notifications.new_conversation_opened.editor';
 
-        $subjectLine  = $this->resolveSubjectLine($isSuperAdmin);
-        $starter      = $this->conversation->startedBy;
+        $subjectLine = $this->resolveSubjectLine($isSuperAdmin);
+        $starter = $this->conversation->startedBy;
 
         $url = match (true) {
             $isSuperAdmin => url('/admin/conversations/'.$this->conversation->id),
-            $isEvaluator  => $this->evaluatorDeepLink(),
-            default       => url('/app/messages/'.$this->conversation->id),
+            $isEvaluator => $this->evaluatorDeepLink(),
+            default => url('/app/messages/'.$this->conversation->id),
         };
 
         return (new MailMessage)
@@ -90,6 +84,7 @@ class NewConversationOpened extends Notification
             $key = $isSuperAdmin
                 ? 'notifications.new_conversation_opened.admin.subject_journal'
                 : 'notifications.new_conversation_opened.editor.subject_journal';
+
             return __($key, ['name' => $name]);
         }
 
@@ -98,6 +93,7 @@ class NewConversationOpened extends Notification
             $key = $isSuperAdmin
                 ? 'notifications.new_conversation_opened.admin.subject_book'
                 : 'notifications.new_conversation_opened.editor.subject_book';
+
             return __($key, ['name' => $name]);
         }
 
@@ -106,6 +102,7 @@ class NewConversationOpened extends Notification
             $key = $isSuperAdmin
                 ? 'notifications.new_conversation_opened.admin.subject_task'
                 : 'notifications.new_conversation_opened.editor.subject_task';
+
             return __($key, ['title' => $title]);
         }
 
@@ -113,6 +110,7 @@ class NewConversationOpened extends Notification
         $key = $isSuperAdmin
             ? 'notifications.new_conversation_opened.admin.subject_general'
             : 'notifications.new_conversation_opened.editor.subject_general';
+
         return __($key);
     }
 }

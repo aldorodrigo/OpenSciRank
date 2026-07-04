@@ -4,11 +4,9 @@ namespace App\Notifications;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class ListingRejected extends Notification
+class ListingRejected extends QueuedNotification
 {
-
     public function __construct(public Model $record, public ?string $notes = null) {}
 
     public function via(object $notifiable): array
@@ -22,7 +20,7 @@ class ListingRejected extends Notification
         $title = $this->record->getTranslationWithFallback('title');
 
         $mail = (new MailMessage)
-            ->subject(__('Listing request rejected') . ' - ' . config('app.name'))
+            ->subject(__('Listing request rejected').' - '.config('app.name'))
             ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
             ->line(__('We regret to inform you that the listing request for your :type **":title"** has not been approved.', ['type' => $type, 'title' => $title]));
 

@@ -3,20 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\AdminTask;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notifica al EVALUADOR (y super_admin) cuando el editor rechaza todas las
  * propuestas de horario y pide nuevas fechas.
- *
- * Sin ShouldQueue — QUEUE_CONNECTION=sync.
  */
-class ConsultingProposalsRejected extends Notification
+class ConsultingProposalsRejected extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(
         public AdminTask $task,
         public ?string $reason = null,
@@ -29,7 +23,7 @@ class ConsultingProposalsRejected extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $title      = $this->task->renderedTitle();
+        $title = $this->task->renderedTitle();
         $editorName = $this->task->editor()?->name ?? '—';
 
         $mail = (new MailMessage)

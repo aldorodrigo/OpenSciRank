@@ -227,10 +227,20 @@ class StripePaymentService
                 (int) $metadata->payable_id
             );
 
-            // Notificar al admin
+            // Notificar al admin. Con ShouldQueue esto solo encola; el try/catch
+            // cubre el caso de que falle el propio encolado (DB de cola caída) —
+            // el pago ya se creó, así que un fallo de correo no debe hacer que el
+            // webhook devuelva 500 y Stripe reintente un pago ya procesado.
             $admin = \App\Models\User::where('email', config('app.admin_email', 'admin@editorialstandards.com'))->first();
             if ($admin) {
-                $admin->notify(new PaymentOrphan($payment));
+                try {
+                    $admin->notify(new PaymentOrphan($payment));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('PaymentOrphan notification failed', [
+                        'payment_id' => $payment->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
 
             return $payment;
@@ -259,10 +269,18 @@ class StripePaymentService
                 ]),
             ]);
 
-            // Notificar al admin que hay una renovación pendiente de evaluación
+            // Notificar al admin que hay una renovación pendiente de evaluación.
+            // Encolar no debe poder tumbar el webhook (ver nota en pago huérfano).
             $admin = User::where('email', config('app.admin_email', 'admin@editorialstandards.com'))->first();
             if ($admin) {
-                $admin->notify(new NewRenewalEvaluation($payable, $years, (float) $payment->amount, $payment->currency));
+                try {
+                    $admin->notify(new NewRenewalEvaluation($payable, $years, (float) $payment->amount, $payment->currency));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('NewRenewalEvaluation notification failed', [
+                        'payment_id' => $payment->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
         } elseif ($payable instanceof Book) {
             // Sprint 3 #20: pago aplicado a un Book.

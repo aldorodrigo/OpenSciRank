@@ -4,16 +4,13 @@ namespace App\Notifications;
 
 use App\Models\AdminTask;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notificación enviada cuando una admin_task pasa su due_at (Sprint 3.6 #32).
  * El cron `tasks:check-overdue` la dispara contra el assignee (o contra el
  * super_admin si la task quedó sin asignar).
- *
- * Sin ShouldQueue — el proyecto usa QUEUE_CONNECTION=sync.
  */
-class TaskOverdue extends Notification
+class TaskOverdue extends QueuedNotification
 {
     public function __construct(public AdminTask $task)
     {

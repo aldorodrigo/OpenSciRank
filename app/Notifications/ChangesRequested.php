@@ -4,11 +4,9 @@ namespace App\Notifications;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class ChangesRequested extends Notification
+class ChangesRequested extends QueuedNotification
 {
-
     public function __construct(
         public Model $record,
         public string $context,
@@ -27,7 +25,7 @@ class ChangesRequested extends Notification
         $contextLabel = $this->context === 'evaluation' ? __('evaluation') : __('listing');
 
         $mail = (new MailMessage)
-            ->subject(__('Corrections requested (:context)', ['context' => $contextLabel]) . ' - ' . config('app.name'))
+            ->subject(__('Corrections requested (:context)', ['context' => $contextLabel]).' - '.config('app.name'))
             ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
             ->line(__('Corrections have been requested for your :type **":title"** as part of the :context process.', ['type' => $type, 'title' => $title, 'context' => $contextLabel]));
 

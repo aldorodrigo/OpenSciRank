@@ -4,17 +4,14 @@ namespace App\Notifications;
 
 use App\Models\Journal;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notificación enviada al admin cuando un editor paga una renovación del sello.
  * El journal vuelve al flujo de evaluación y queda esperando una nueva revisión
  * editorial antes de extender el sello (política Opción B, 2026-05-10).
  */
-class NewRenewalEvaluation extends Notification
+class NewRenewalEvaluation extends QueuedNotification
 {
-    // Sin ShouldQueue — el proyecto usa QUEUE_CONNECTION=sync
-
     public function __construct(
         public Journal $journal,
         public int $years,
@@ -35,7 +32,7 @@ class NewRenewalEvaluation extends Notification
         $amount = number_format($this->amount, 2);
 
         return (new MailMessage)
-            ->subject(__('renewal_evaluation.subject') . ' — ' . config('app.name'))
+            ->subject(__('renewal_evaluation.subject').' — '.config('app.name'))
             ->greeting(__('renewal_evaluation.greeting', ['name' => $notifiable->name]))
             ->line(__('renewal_evaluation.intro'))
             ->line(__('renewal_evaluation.journal', ['title' => $title]))
@@ -43,6 +40,6 @@ class NewRenewalEvaluation extends Notification
             ->line(__('renewal_evaluation.years', ['years' => $this->years]))
             ->line(__('renewal_evaluation.amount', ['amount' => $amount, 'currency' => $this->currency]))
             ->line(__('renewal_evaluation.instruction'))
-            ->action(__('renewal_evaluation.cta'), url('/admin/journals/' . $this->journal->id . '/evaluate'));
+            ->action(__('renewal_evaluation.cta'), url('/admin/journals/'.$this->journal->id.'/evaluate'));
     }
 }

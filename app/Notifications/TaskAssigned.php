@@ -4,15 +4,12 @@ namespace App\Notifications;
 
 use App\Models\AdminTask;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notificación enviada al usuario asignado cuando se le asigna una
  * admin_task (Sprint 3.6 #32).
- *
- * Sin ShouldQueue — el proyecto usa QUEUE_CONNECTION=sync.
  */
-class TaskAssigned extends Notification
+class TaskAssigned extends QueuedNotification
 {
     public function __construct(public AdminTask $task)
     {

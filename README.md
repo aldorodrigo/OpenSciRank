@@ -437,7 +437,7 @@ nano /etc/supervisor/conf.d/editorial-standards-worker.conf
 ```ini
 [program:editorial-standards-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/editorial-standards/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/editorial-standards/artisan queue:work database --queue=mail,default --sleep=3 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -454,6 +454,20 @@ supervisorctl reread
 supervisorctl update
 supervisorctl start editorial-standards-worker:*
 ```
+
+> **Cola `mail` y correo.** Todas las notificaciones extienden `QueuedNotification`
+> (`ShouldQueue`, cola `mail`). `--queue=mail,default` prioriza el correo. Con
+> `QUEUE_CONNECTION=database` el correo se envía en el worker: si SES tarda o
+> falla, no bloquea el request del usuario ni el webhook de Stripe, y reintenta
+> con backoff (hasta 6h; luego a `failed_jobs`, visible en **/admin → Monitor de
+> cola**).
+>
+> **Mantener `numprocs=1`.** El rate-limit de SES (`RateLimiter::for('ses')`,
+> ~12 msg/s) es por proceso sobre el cache. Con más de un worker sin un store
+> compartido (Redis) el límite efectivo se multiplica y puede exceder SES.
+>
+> En local con `QUEUE_CONNECTION=sync` no hace falta worker: el correo se envía
+> inline y Mailpit lo captura igual.
 
 ---
 
@@ -495,6 +509,7 @@ php artisan migrate --force
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan queue:restart               # el worker recarga el código nuevo (si no, corre el viejo)
 supervisorctl restart editorial-standards-worker:*
 ```
 

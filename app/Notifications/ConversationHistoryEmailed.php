@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Models\Conversation;
 use App\Support\TimezoneHelper;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 
 /**
@@ -18,13 +17,12 @@ use Illuminate\Support\Facades\URL;
  *
  * Sin queue. Multiidioma vía HasLocalePreference. Fechas en TZ del destinatario.
  */
-class ConversationHistoryEmailed extends Notification
+class ConversationHistoryEmailed extends QueuedNotification
 {
     public function __construct(
         public Conversation $conversation,
         public ?string $closingNote = null,
-    ) {
-    }
+    ) {}
 
     public function via(object $notifiable): array
     {
@@ -69,6 +67,7 @@ class ConversationHistoryEmailed extends Notification
                         now()->addDays(30),
                         ['attachment' => $att->id]
                     );
+
                     return "📎 [{$att->original_name}]({$url})";
                 })->implode("\n");
 

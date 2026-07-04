@@ -3,9 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Message;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notifica a los participantes del hilo (excepto al autor) cuando llega
@@ -14,13 +12,9 @@ use Illuminate\Notifications\Notification;
  * La URL de destino cambia según el rol del destinatario:
  *   - super_admin → /admin/conversations/{id}
  *   - otros       → /app/messages/{id}
- *
- * Sin ShouldQueue — QUEUE_CONNECTION=sync.
  */
-class NewConversationMessage extends Notification
+class NewConversationMessage extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(public Message $message) {}
 
     public function via(object $notifiable): array
@@ -30,9 +24,9 @@ class NewConversationMessage extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $conversation  = $this->message->conversation;
-        $author        = $this->message->user;
-        $preview       = mb_strimwidth(strip_tags($this->message->body ?? ''), 0, 200, '…');
+        $conversation = $this->message->conversation;
+        $author = $this->message->user;
+        $preview = mb_strimwidth(strip_tags($this->message->body ?? ''), 0, 200, '…');
         $hasAttachments = $this->message->attachments()->exists();
 
         $isSuperAdmin = $notifiable->hasRole('super_admin');

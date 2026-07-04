@@ -4,20 +4,14 @@ namespace App\Notifications;
 
 use App\Models\AdminTask;
 use App\Support\TimezoneHelper;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notifica al EDITOR cuando el evaluador envía propuestas de horario.
  * Muestra cada slot en la TZ del editor con un link de aceptación por slot.
- *
- * Sin ShouldQueue — QUEUE_CONNECTION=sync.
  */
-class ConsultingProposalSent extends Notification
+class ConsultingProposalSent extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(public AdminTask $task) {}
 
     public function via(object $notifiable): array
@@ -27,7 +21,7 @@ class ConsultingProposalSent extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $title     = $this->task->renderedTitle();
+        $title = $this->task->renderedTitle();
         $proposals = $this->task->activeProposals()->get();
 
         $mail = (new MailMessage)
@@ -41,7 +35,7 @@ class ConsultingProposalSent extends Notification
             $acceptUrl = url('/app/consulting/'.$this->task->id.'/accept/'.$proposal->id);
             $mail->line(__('notifications.consulting_proposal_sent.slot_line', [
                 'date' => $dateFormatted,
-                'url'  => $acceptUrl,
+                'url' => $acceptUrl,
             ]));
         }
 

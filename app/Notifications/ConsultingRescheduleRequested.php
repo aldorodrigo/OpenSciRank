@@ -3,20 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\AdminTask;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notifica al EVALUADOR cuando el editor solicita reagendar la sesión.
  * El editor ya sabe que pidió reagendar, así que no se le notifica a él.
- *
- * Sin ShouldQueue — QUEUE_CONNECTION=sync.
  */
-class ConsultingRescheduleRequested extends Notification
+class ConsultingRescheduleRequested extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(
         public AdminTask $task,
         public string $reason,
@@ -29,7 +23,7 @@ class ConsultingRescheduleRequested extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $title      = $this->task->renderedTitle();
+        $title = $this->task->renderedTitle();
         $editorName = $this->task->editor()?->name ?? '—';
 
         return (new MailMessage)

@@ -3,20 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\AdminTask;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notifica a editor + evaluador + super_admin cuando las propuestas de horario
  * vencen sin respuesta del editor. La task vuelve a pending.
- *
- * Sin ShouldQueue — QUEUE_CONNECTION=sync.
  */
-class ConsultingProposalsExpired extends Notification
+class ConsultingProposalsExpired extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(public AdminTask $task) {}
 
     public function via(object $notifiable): array
@@ -26,8 +20,8 @@ class ConsultingProposalsExpired extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $title      = $this->task->renderedTitle();
-        $isEditor   = $notifiable->is($this->task->editor());
+        $title = $this->task->renderedTitle();
+        $isEditor = $notifiable->is($this->task->editor());
 
         $prefix = $isEditor
             ? 'notifications.consulting_proposals_expired.editor'

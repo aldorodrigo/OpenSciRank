@@ -4,17 +4,14 @@ namespace App\Notifications;
 
 use App\Models\AdminTask;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notificación enviada cuando el editor resubmite un journal/book tras
  * un pedido de cambios. La admin_task asociada ya estaba in_progress;
  * acá avisamos al asignado (o super_admin) que las correcciones llegaron
  * y puede retomar el trabajo (Sprint 3.6 #37).
- *
- * Sin ShouldQueue — el proyecto usa QUEUE_CONNECTION=sync.
  */
-class TaskResubmitted extends Notification
+class TaskResubmitted extends QueuedNotification
 {
     public function __construct(public AdminTask $task)
     {

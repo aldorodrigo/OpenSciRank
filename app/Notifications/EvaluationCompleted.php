@@ -4,9 +4,8 @@ namespace App\Notifications;
 
 use App\Models\Journal;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class EvaluationCompleted extends Notification
+class EvaluationCompleted extends QueuedNotification
 {
     public function __construct(public Journal $journal) {}
 

@@ -6,17 +6,15 @@ use App\Models\Book;
 use App\Models\Conversation;
 use App\Models\Journal;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Roadmap #35 — recordatorio al editor de que tiene un mensaje pendiente en un
  * hilo. Lo dispara manualmente el evaluador/admin cuando el editor no contesta,
  * con reglas anti-spam (cooldown + respeta muteo) en MessageThread::remindEditor.
  *
- * Sin ShouldQueue — QUEUE_CONNECTION=sync. Se traduce al idioma del editor
  * (User implementa HasLocalePreference).
  */
-class PendingMessageReminder extends Notification
+class PendingMessageReminder extends QueuedNotification
 {
     public function __construct(public Conversation $conversation) {}
 

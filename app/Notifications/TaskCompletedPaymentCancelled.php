@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Models\AdminTask;
 use App\Models\Product;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Sprint 3.7 #44 Fase 2 — aviso al editor cuando una task se cierra y había
@@ -13,11 +12,9 @@ use Illuminate\Notifications\Notification;
  *
  * Sin queue (QUEUE_CONNECTION=sync). Multiidioma vía HasLocalePreference.
  */
-class TaskCompletedPaymentCancelled extends Notification
+class TaskCompletedPaymentCancelled extends QueuedNotification
 {
-    public function __construct(public AdminTask $task)
-    {
-    }
+    public function __construct(public AdminTask $task) {}
 
     public function via(object $notifiable): array
     {

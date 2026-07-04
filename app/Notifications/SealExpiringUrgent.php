@@ -3,14 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\Journal;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class SealExpiringUrgent extends Notification
+class SealExpiringUrgent extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(public Journal $journal, public int $daysLeft) {}
 
     public function via(object $notifiable): array

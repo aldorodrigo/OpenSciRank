@@ -3,20 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\AdminTask;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notificación enviada al editor y al evaluador asignado cuando el admin
  * agenda (o reagenda) una sesión de consultoría (Sprint 3.6 #32).
- *
- * Sin ShouldQueue — el proyecto usa QUEUE_CONNECTION=sync.
  */
-class ConsultingScheduled extends Notification
+class ConsultingScheduled extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(
         public AdminTask $task,
         public bool $isRescheduling = false,
@@ -33,9 +27,9 @@ class ConsultingScheduled extends Notification
             && $this->task->related->user
             && $this->task->related->user->is($notifiable);
 
-        $prefix   = $isEditor ? 'consulting_scheduled.editor' : 'consulting_scheduled.evaluator';
-        $title    = $this->task->renderedTitle();
-        $date     = $this->task->scheduled_for->format('d/m/Y H:i');
+        $prefix = $isEditor ? 'consulting_scheduled.editor' : 'consulting_scheduled.evaluator';
+        $title = $this->task->renderedTitle();
+        $date = $this->task->scheduled_for->format('d/m/Y H:i');
         $resource = $this->task->related?->name ?? $title;
 
         $subjectKey = $this->isRescheduling
@@ -59,7 +53,7 @@ class ConsultingScheduled extends Notification
 
         if ($this->task->payment) {
             $mail->line(__("{$prefix}.amount_paid", [
-                'amount'   => number_format($this->task->payment->amount, 2),
+                'amount' => number_format($this->task->payment->amount, 2),
                 'currency' => strtoupper($this->task->payment->currency ?? 'USD'),
             ]));
         }

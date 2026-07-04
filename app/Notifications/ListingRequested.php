@@ -4,11 +4,9 @@ namespace App\Notifications;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class ListingRequested extends Notification
+class ListingRequested extends QueuedNotification
 {
-
     public function __construct(public Model $record) {}
 
     public function via(object $notifiable): array
@@ -22,7 +20,7 @@ class ListingRequested extends Notification
         $title = $this->record->getTranslationWithFallback('title');
 
         return (new MailMessage)
-            ->subject(__('Listing request received') . ' - ' . config('app.name'))
+            ->subject(__('Listing request received').' - '.config('app.name'))
             ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
             ->line(__('We have received your request to list your :type **":title"** on our platform.', ['type' => $type, 'title' => $title]))
             ->line(__('Our team will review the provided information and notify you when the review is complete.'))

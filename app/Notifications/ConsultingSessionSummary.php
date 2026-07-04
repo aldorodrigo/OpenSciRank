@@ -3,9 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\AdminTask;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Envía al EDITOR el resumen de la sesión de consultoría una vez marcada
@@ -14,13 +12,9 @@ use Illuminate\Notifications\Notification;
  * El caller (EvaluateJournal o AdminTask::complete) debe verificar
  * client_visible_notes antes de llamar notify(), o puede instanciar
  * la notificación directamente — la guarda es interna en shouldSend().
- *
- * Sin ShouldQueue — QUEUE_CONNECTION=sync.
  */
-class ConsultingSessionSummary extends Notification
+class ConsultingSessionSummary extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(public AdminTask $task) {}
 
     public function via(object $notifiable): array

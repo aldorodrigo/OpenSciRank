@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\Journal;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notificación al editor cuando su re-evaluación de renovación NO alcanzó
@@ -12,10 +11,8 @@ use Illuminate\Notifications\Notification;
  * garantía de sello). Se invita a comprar una re-evaluación si quiere
  * reintentar tras corregir indicadores.
  */
-class SealRenewalRejected extends Notification
+class SealRenewalRejected extends QueuedNotification
 {
-    // Sin ShouldQueue — el proyecto usa QUEUE_CONNECTION=sync
-
     public function __construct(public Journal $journal) {}
 
     public function via(object $notifiable): array
@@ -29,7 +26,7 @@ class SealRenewalRejected extends Notification
         $score = number_format((float) $this->journal->current_score, 1);
 
         $mail = (new MailMessage)
-            ->subject(__('renewal_rejected.subject') . ' — ' . config('app.name'))
+            ->subject(__('renewal_rejected.subject').' — '.config('app.name'))
             ->greeting(__('renewal_rejected.greeting', ['name' => $notifiable->name]))
             ->line(__('renewal_rejected.intro', ['title' => $title]))
             ->line(__('renewal_rejected.score', ['score' => $score]))
@@ -42,7 +39,7 @@ class SealRenewalRejected extends Notification
 
         return $mail
             ->line(__('renewal_rejected.retry_offer'))
-            ->action(__('renewal_rejected.cta'), url('/app/checkout/' . $this->journal->id))
+            ->action(__('renewal_rejected.cta'), url('/app/checkout/'.$this->journal->id))
             ->line(__('renewal_rejected.support'));
     }
 }

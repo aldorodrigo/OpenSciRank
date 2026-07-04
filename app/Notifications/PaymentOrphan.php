@@ -4,17 +4,14 @@ namespace App\Notifications;
 
 use App\Models\Payment;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Notificación enviada al admin cuando se registra un pago huérfano,
  * es decir, cuando el payable (Journal o Book) no se encontró al procesar
  * el webhook de Stripe (posible soft-delete entre checkout y webhook).
  */
-class PaymentOrphan extends Notification
+class PaymentOrphan extends QueuedNotification
 {
-    // Sin ShouldQueue — el proyecto usa QUEUE_CONNECTION=sync
-
     public function __construct(public Payment $payment)
     {
         //
@@ -35,7 +32,7 @@ class PaymentOrphan extends Notification
         $transactionId = $this->payment->transaction_id ?? '—';
 
         return (new MailMessage)
-            ->subject(__('payment_orphan.subject', ['id' => $transactionId]) . ' — ' . config('app.name'))
+            ->subject(__('payment_orphan.subject', ['id' => $transactionId]).' — '.config('app.name'))
             ->greeting(__('payment_orphan.greeting', ['name' => $notifiable->name]))
             ->line(__('payment_orphan.intro'))
             ->line(__('payment_orphan.session_id', ['session_id' => $sessionId]))
@@ -44,6 +41,6 @@ class PaymentOrphan extends Notification
             ->line(__('payment_orphan.payable', ['type' => $payableType, 'id' => $payableId]))
             ->line(__('payment_orphan.payment_id', ['id' => $this->payment->id]))
             ->line(__('payment_orphan.instruction'))
-            ->action(__('payment_orphan.cta'), url('/admin/payments/' . $this->payment->id));
+            ->action(__('payment_orphan.cta'), url('/admin/payments/'.$this->payment->id));
     }
 }

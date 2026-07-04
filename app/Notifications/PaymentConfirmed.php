@@ -4,11 +4,9 @@ namespace App\Notifications;
 
 use App\Models\Payment;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class PaymentConfirmed extends Notification
+class PaymentConfirmed extends QueuedNotification
 {
-
     public function __construct(public Payment $payment) {}
 
     public function via(object $notifiable): array
@@ -21,7 +19,7 @@ class PaymentConfirmed extends Notification
         $item = $this->payment->product?->getTranslationWithFallback('name') ?: __('Service');
 
         return (new MailMessage)
-            ->subject(__('Payment confirmed') . ' - ' . config('app.name'))
+            ->subject(__('Payment confirmed').' - '.config('app.name'))
             ->greeting(__('Hello :name,', ['name' => $notifiable->name]))
             ->line(__('Your payment of **$:amount :currency** has been successfully processed.', ['amount' => $this->payment->amount, 'currency' => $this->payment->currency]))
             ->line(__('**Concept:** :item', ['item' => $item]))

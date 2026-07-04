@@ -2,10 +2,8 @@
 
 namespace App\Notifications;
 
-use App\Models\User;
 use App\Support\TimezoneHelper;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
 
 /**
@@ -17,14 +15,12 @@ use Illuminate\Support\Collection;
  *
  * Sin queue. Multiidioma vía HasLocalePreference.
  */
-class ConversationsDailyDigest extends Notification
+class ConversationsDailyDigest extends QueuedNotification
 {
     /**
      * @param  Collection<int, array{conversation: \App\Models\Conversation, unread_count: int, last_message: \App\Models\Message}>  $items
      */
-    public function __construct(public Collection $items)
-    {
-    }
+    public function __construct(public Collection $items) {}
 
     public function via(object $notifiable): array
     {

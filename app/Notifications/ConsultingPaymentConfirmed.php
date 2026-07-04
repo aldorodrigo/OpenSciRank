@@ -3,21 +3,15 @@
 namespace App\Notifications;
 
 use App\Models\Payment;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Reemplaza PaymentConfirmed para los SKUs de consultoría:
  * - action-plan-consulting ($215, payable=Journal)
  * - new-journal-consulting ($1500, payable=User)
- *
- * Solo se envía al editor (cliente). Sin ShouldQueue — QUEUE_CONNECTION=sync.
  */
-class ConsultingPaymentConfirmed extends Notification
+class ConsultingPaymentConfirmed extends QueuedNotification
 {
-    use Queueable;
-
     public function __construct(public Payment $payment) {}
 
     public function via(object $notifiable): array
@@ -27,14 +21,14 @@ class ConsultingPaymentConfirmed extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $slug     = $this->payment->product?->slug ?? '';
+        $slug = $this->payment->product?->slug ?? '';
         $isNewJournal = $slug === 'new-journal-consulting';
 
         $mail = (new MailMessage)
             ->subject(__('notifications.consulting_payment_confirmed.editor.subject'))
             ->greeting(__('notifications.consulting_payment_confirmed.editor.greeting', ['name' => $notifiable->name]))
             ->line(__('notifications.consulting_payment_confirmed.editor.intro', [
-                'amount'   => number_format((float) $this->payment->amount, 2),
+                'amount' => number_format((float) $this->payment->amount, 2),
                 'currency' => strtoupper($this->payment->currency ?? 'USD'),
             ]));
 

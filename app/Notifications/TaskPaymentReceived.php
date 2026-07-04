@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Models\AdminTask;
 use App\Models\Product;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 /**
  * Sprint 3.7 #44 — aviso al admin asignado cuando un editor paga el link
@@ -14,11 +13,9 @@ use Illuminate\Notifications\Notification;
  *
  * Sin queue. Multiidioma vía HasLocalePreference.
  */
-class TaskPaymentReceived extends Notification
+class TaskPaymentReceived extends QueuedNotification
 {
-    public function __construct(public AdminTask $task)
-    {
-    }
+    public function __construct(public AdminTask $task) {}
 
     public function via(object $notifiable): array
     {

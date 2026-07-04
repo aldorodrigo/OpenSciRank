@@ -57,7 +57,7 @@ class CheckoutSuccessController extends Controller
      */
     protected function verifyAndSyncPayment(?string $sessionId, Model $payable): array
     {
-        if (!$sessionId) {
+        if (! $sessionId) {
             return ['paid' => false];
         }
 
@@ -76,14 +76,14 @@ class CheckoutSuccessController extends Controller
                 ->where('transaction_id', $session->payment_intent)
                 ->first();
 
-            if (!$existingPayment) {
+            if (! $existingPayment) {
                 // Webhook hasn't arrived yet — create payment as fallback
                 $service = app(StripePaymentService::class);
                 $service->createPaymentFromSession($session);
 
                 Log::info('CheckoutSuccess: Created payment as webhook fallback', [
                     'session_id' => $sessionId,
-                    'payable' => get_class($payable) . '#' . $payable->id,
+                    'payable' => get_class($payable).'#'.$payable->id,
                 ]);
             }
 
@@ -115,13 +115,24 @@ class CheckoutSuccessController extends Controller
                 // específico con los próximos pasos (qué esperar, cuándo).
                 // Para new-journal-consulting payable=User → $payable es el
                 // editor mismo, no tiene relación `user`.
-                $editor = $payable instanceof User ? $payable : $payable->user;
-                $slug = $payment->product?->slug;
+                //
+                // El correo va en su propio try/catch: un fallo de notificación
+                // NO debe caer al catch externo y devolver ['paid' => false] a
+                // quien SÍ pagó (el pago ya está confirmado en este punto).
+                try {
+                    $editor = $payable instanceof User ? $payable : $payable->user;
+                    $slug = $payment->product?->slug;
 
-                if (in_array($slug, ['action-plan-consulting', 'new-journal-consulting'], true)) {
-                    $editor->notify(new ConsultingPaymentConfirmed($payment));
-                } else {
-                    $editor->notify(new PaymentConfirmed($payment));
+                    if (in_array($slug, ['action-plan-consulting', 'new-journal-consulting'], true)) {
+                        $editor->notify(new ConsultingPaymentConfirmed($payment));
+                    } else {
+                        $editor->notify(new PaymentConfirmed($payment));
+                    }
+                } catch (\Throwable $e) {
+                    Log::warning('Payment confirmation notification failed', [
+                        'payment_id' => $payment->id,
+                        'error' => $e->getMessage(),
+                    ]);
                 }
             }
 
