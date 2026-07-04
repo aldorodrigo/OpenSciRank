@@ -6,6 +6,7 @@ use DateTimeInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Support\Facades\Date;
 
 /**
@@ -56,5 +57,15 @@ abstract class QueuedNotification extends Notification implements ShouldQueue
     public function viaQueues(): array
     {
         return ['mail' => config('mail_logging.queue_name', 'mail')];
+    }
+
+    /**
+     * Middleware del job de envío: throttle por el rate-limiter `ses`
+     * (registrado en AppServiceProvider) para no exceder el límite de SES.
+     * Al superarlo, el worker re-libera el job con delay en vez de fallar.
+     */
+    public function middleware(): array
+    {
+        return [new RateLimited('ses')];
     }
 }

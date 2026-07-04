@@ -7,9 +7,11 @@ use App\Models\Payment;
 use App\Observers\BookObserver;
 use App\Observers\PaymentObserver;
 use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Translatable\Translatable;
@@ -33,6 +35,22 @@ class AppServiceProvider extends ServiceProvider
         $this->configureTranslatable();
         $this->registerObservers();
         $this->registerQueryMacros();
+        $this->registerRateLimiters();
+    }
+
+    /**
+     * Rate-limiter del envío por SES. El middleware RateLimited('ses') de
+     * QueuedNotification consume este limiter: cuando el worker de la cola
+     * `mail` excede ~N msg/s, re-libera el job con delay en vez de fallar.
+     *
+     * Correcto con 1 worker (numprocs=1); con >1 sin store compartido (Redis)
+     * el límite efectivo se multiplica. Ver config/mail_logging.php y README.
+     */
+    protected function registerRateLimiters(): void
+    {
+        RateLimiter::for('ses', fn () => Limit::perSecond(
+            (int) config('mail_logging.ses_rate_per_second', 12)
+        ));
     }
 
     /**
