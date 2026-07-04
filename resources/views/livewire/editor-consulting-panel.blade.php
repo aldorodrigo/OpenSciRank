@@ -9,6 +9,14 @@
      }">
     <div class="container mx-auto px-4">
 
+        {{-- ── Volver al dashboard ────────────────────────────────── --}}
+        <a href="{{ route('app.dashboard') }}"
+           wire:navigate
+           class="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Volver al dashboard
+        </a>
+
         {{-- ── Encabezado ─────────────────────────────────────────── --}}
         <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
