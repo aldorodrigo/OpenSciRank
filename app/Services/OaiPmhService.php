@@ -43,104 +43,139 @@ class OaiPmhService
      * Harvest all records from a journal's OAI endpoint using ListRecords verb.
      * Supports resumption token pagination.
      * Returns count of new/updated records.
+     *
+     * Conveniencia síncrona (CLI): itera internamente sobre harvestPage() hasta
+     * agotar los resumption tokens. Para ejecución en background reanudable, usar
+     * HarvestJournalArticles (que llama a harvestPage() página por página).
      */
     public function listRecords(Journal $journal, ?callable $onProgress = null): int
     {
-        if (!$journal->oai_base_url) {
-            throw new \RuntimeException("Journal #{$journal->id} has no OAI base URL configured.");
-        }
-
-        // Determine best metadata prefix if not set
-        $metadataPrefix = $journal->oai_metadata_prefix;
-        if (!$metadataPrefix) {
-            $metadataPrefix = $this->getBestMetadataPrefix($journal->oai_base_url);
-            $journal->update(['oai_metadata_prefix' => $metadataPrefix]);
-        }
-
-        $count = 0;
-        $resumptionToken = null;
-
-        // Use from parameter for incremental harvesting
-        $from = $journal->oai_last_harvested_at?->toIso8601String();
+        $total = 0;
+        $token = null;
+        $prefix = null;
 
         do {
-            $params = $this->buildListRecordsParams($journal, $resumptionToken, $from);
-            // Ensure we use the correct metadata prefix in the params
-            if (!$resumptionToken) {
-                $params['metadataPrefix'] = $metadataPrefix;
-            }
+            $base = $total;
+            $result = $this->harvestPage(
+                $journal,
+                $token,
+                $prefix,
+                $onProgress ? fn (int $i, ?string $title) => $onProgress($base + $i, $title) : null,
+            );
 
-            $response = Http::timeout(60)->get($journal->oai_base_url, $params);
-
-            if ($response->failed()) {
-                Log::error("OAI harvest failed for journal #{$journal->id}", [
-                    'status' => $response->status(),
-                    'url' => $journal->oai_base_url,
-                ]);
-                throw new \RuntimeException("HTTP request failed with status: {$response->status()}");
-            }
-
-            $xml = simplexml_load_string($response->body());
-            if ($xml === false) {
-                throw new \RuntimeException("Invalid XML response from: {$journal->oai_base_url}");
-            }
-
-            // Check for OAI-PMH errors
-            if (isset($xml->error)) {
-                $errorCode = (string) $xml->error['code'];
-                $errorMessage = (string) $xml->error;
-
-                // noRecordsMatch is not fatal — just means no new records
-                if ($errorCode === 'noRecordsMatch') {
-                    break;
-                }
-
-                throw new \RuntimeException("OAI-PMH error [{$errorCode}]: {$errorMessage}");
-            }
-
-            $listRecords = $xml->ListRecords;
-            if (!$listRecords) {
-                break;
-            }
-
-            foreach ($listRecords->record as $record) {
-                $parsed = null;
-                if ($metadataPrefix === 'marcxml') {
-                    $parsed = $this->parseRecordMarc($record);
-                } else {
-                    $parsed = $this->parseRecord($record);
-                }
-
-                if ($parsed === null) {
-                    continue;
-                }
-
-                HarvestedArticle::updateOrCreate(
-                    ['identifier' => $parsed['identifier']],
-                    array_merge($parsed, ['journal_id' => $journal->id])
-                );
-
-                $count++;
-
-                if ($onProgress) {
-                    $onProgress($count, $parsed['title']);
-                }
-            }
-
-            // Handle resumption token for pagination
-            $resumptionToken = null;
-            if (isset($listRecords->resumptionToken) && (string) $listRecords->resumptionToken !== '') {
-                $resumptionToken = (string) $listRecords->resumptionToken;
-            }
-
-        } while ($resumptionToken !== null);
+            $total += $result['count'];
+            $prefix = $result['metadataPrefix'];
+            $token = $result['nextToken'];
+        } while ($token !== null);
 
         // Update harvest timestamp
         $journal->update([
             'oai_last_harvested_at' => now(),
         ]);
 
-        return $count;
+        return $total;
+    }
+
+    /**
+     * Cosecha UNA página del endpoint OAI (un request HTTP + parseo + upsert).
+     *
+     * Unidad de trabajo reanudable: devuelve el resumption token de la página
+     * siguiente (o null si es la última), sin actualizar oai_last_harvested_at
+     * (eso lo decide quien orquesta el ciclo completo).
+     *
+     * @param  string|null  $resumptionToken  Token de la página a pedir; null = primera página.
+     * @param  string|null  $metadataPrefix  Prefijo ya resuelto; null = se resuelve en la primera página.
+     * @param  callable|null  $onProgress  fn(int $indexEnPagina, ?string $title)
+     * @return array{count:int, nextToken:?string, metadataPrefix:string}
+     */
+    public function harvestPage(
+        Journal $journal,
+        ?string $resumptionToken = null,
+        ?string $metadataPrefix = null,
+        ?callable $onProgress = null,
+    ): array {
+        if (! $journal->oai_base_url) {
+            throw new \RuntimeException("Journal #{$journal->id} has no OAI base URL configured.");
+        }
+
+        // Determinar el mejor prefijo de metadatos si aún no viene resuelto.
+        if (! $metadataPrefix) {
+            $metadataPrefix = $journal->oai_metadata_prefix ?: $this->getBestMetadataPrefix($journal->oai_base_url);
+            if (! $journal->oai_metadata_prefix) {
+                $journal->update(['oai_metadata_prefix' => $metadataPrefix]);
+            }
+        }
+
+        // Cosecha incremental: usar oai_last_harvested_at como `from` en la primera página.
+        $from = $journal->oai_last_harvested_at?->toIso8601String();
+
+        $params = $this->buildListRecordsParams($journal, $resumptionToken, $from);
+        if (! $resumptionToken) {
+            $params['metadataPrefix'] = $metadataPrefix;
+        }
+
+        $response = Http::timeout(60)->get($journal->oai_base_url, $params);
+
+        if ($response->failed()) {
+            Log::error("OAI harvest failed for journal #{$journal->id}", [
+                'status' => $response->status(),
+                'url' => $journal->oai_base_url,
+            ]);
+            throw new \RuntimeException("HTTP request failed with status: {$response->status()}");
+        }
+
+        $xml = simplexml_load_string($response->body());
+        if ($xml === false) {
+            throw new \RuntimeException("Invalid XML response from: {$journal->oai_base_url}");
+        }
+
+        // Errores OAI-PMH
+        if (isset($xml->error)) {
+            $errorCode = (string) $xml->error['code'];
+            $errorMessage = (string) $xml->error;
+
+            // noRecordsMatch no es fatal — simplemente no hay registros nuevos.
+            if ($errorCode === 'noRecordsMatch') {
+                return ['count' => 0, 'nextToken' => null, 'metadataPrefix' => $metadataPrefix];
+            }
+
+            throw new \RuntimeException("OAI-PMH error [{$errorCode}]: {$errorMessage}");
+        }
+
+        $listRecords = $xml->ListRecords;
+        if (! $listRecords) {
+            return ['count' => 0, 'nextToken' => null, 'metadataPrefix' => $metadataPrefix];
+        }
+
+        $count = 0;
+        foreach ($listRecords->record as $record) {
+            $parsed = ($metadataPrefix === 'marcxml')
+                ? $this->parseRecordMarc($record)
+                : $this->parseRecord($record);
+
+            if ($parsed === null) {
+                continue;
+            }
+
+            HarvestedArticle::updateOrCreate(
+                ['identifier' => $parsed['identifier']],
+                array_merge($parsed, ['journal_id' => $journal->id])
+            );
+
+            $count++;
+
+            if ($onProgress) {
+                $onProgress($count, $parsed['title']);
+            }
+        }
+
+        // Resumption token de la página siguiente.
+        $nextToken = null;
+        if (isset($listRecords->resumptionToken) && (string) $listRecords->resumptionToken !== '') {
+            $nextToken = (string) $listRecords->resumptionToken;
+        }
+
+        return ['count' => $count, 'nextToken' => $nextToken, 'metadataPrefix' => $metadataPrefix];
     }
 
     /**
@@ -161,7 +196,7 @@ class OaiPmhService
 
         $xml = simplexml_load_string($response->body());
         if ($xml === false) {
-            throw new \RuntimeException("Invalid XML response");
+            throw new \RuntimeException('Invalid XML response');
         }
 
         if (isset($xml->error)) {
@@ -171,7 +206,9 @@ class OaiPmhService
         $records = [];
         $i = 0;
         foreach ($xml->ListRecords->record ?? [] as $record) {
-            if ($i >= $limit) break;
+            if ($i >= $limit) {
+                break;
+            }
             $parsed = ($prefix === 'marcxml') ? $this->parseRecordMarc($record) : $this->parseRecord($record);
             if ($parsed) {
                 $records[] = $parsed;
@@ -226,7 +263,7 @@ class OaiPmhService
         }
 
         $metadata = $record->metadata;
-        if (!$metadata || !$metadata->children('oai_dc', true)->count()) {
+        if (! $metadata || ! $metadata->children('oai_dc', true)->count()) {
             return null;
         }
 
@@ -251,7 +288,7 @@ class OaiPmhService
             }
         }
         // Priority 2: First available
-        if (!$title && !empty($titles)) {
+        if (! $title && ! empty($titles)) {
             $title = $titles[0]['value'];
         }
 
@@ -310,14 +347,14 @@ class OaiPmhService
             }
         }
         // Priority 2: First available
-        if (!$description && !empty($descriptions)) {
+        if (! $description && ! empty($descriptions)) {
             $description = $descriptions[0]['value'];
         }
 
         if ($description) {
             $description = strip_tags($description);
             if (strlen($description) > 2000) {
-                $description = substr($description, 0, 2000) . '...';
+                $description = substr($description, 0, 2000).'...';
             }
         }
 
@@ -332,7 +369,7 @@ class OaiPmhService
                 foreach ($dcElements->$field as $val) {
                     $values[] = (string) $val;
                 }
-                if (!empty($values)) {
+                if (! empty($values)) {
                     $rawMeta[$field] = count($values) === 1 ? $values[0] : $values;
                 }
             }
@@ -348,7 +385,7 @@ class OaiPmhService
             'pdf_url' => $pdfUrl,
             'language' => $language ? substr($language, 0, 10) : null,
             'description' => $description,
-            'metadata' => !empty($rawMeta) ? $rawMeta : null,
+            'metadata' => ! empty($rawMeta) ? $rawMeta : null,
         ];
     }
 
@@ -364,7 +401,7 @@ class OaiPmhService
             }
 
             $xml = simplexml_load_string($response->body());
-            if ($xml === false || !isset($xml->ListMetadataFormats)) {
+            if ($xml === false || ! isset($xml->ListMetadataFormats)) {
                 return 'oai_dc';
             }
 
@@ -383,7 +420,8 @@ class OaiPmhService
 
             return 'oai_dc';
         } catch (\Exception $e) {
-            Log::warning("Failed to determine metadata formats for {$baseUrl}: " . $e->getMessage());
+            Log::warning("Failed to determine metadata formats for {$baseUrl}: ".$e->getMessage());
+
             return 'oai_dc';
         }
     }
@@ -402,30 +440,30 @@ class OaiPmhService
         }
 
         $metadata = $record->metadata;
-        if (!$metadata) {
+        if (! $metadata) {
             return null;
         }
 
         // Namespaces can be tricky, try standard marc first
         $marc = $metadata->children('http://www.loc.gov/MARC21/slim');
-        if (!$marc->count()) {
+        if (! $marc->count()) {
             // Try without namespace or other common variations if needed
-            $marc = $metadata->children('marc', true); 
+            $marc = $metadata->children('marc', true);
         }
-        
+
         $recordNode = $marc->record ?? $record->metadata->record ?? null;
 
-        if (!$recordNode) {
-             // Fallback: try finding 'record' element anywhere in metadata children
-             foreach($metadata->children() as $child) {
-                 if ($child->getName() == 'record') {
-                     $recordNode = $child;
-                     break;
-                 }
-             }
+        if (! $recordNode) {
+            // Fallback: try finding 'record' element anywhere in metadata children
+            foreach ($metadata->children() as $child) {
+                if ($child->getName() == 'record') {
+                    $recordNode = $child;
+                    break;
+                }
+            }
         }
-        
-        if (!$recordNode) {
+
+        if (! $recordNode) {
             return null;
         }
 
@@ -433,33 +471,37 @@ class OaiPmhService
         $getSubfield = function ($dataField, $code) {
             // Try direct access first, then with attributes()
             foreach ($dataField->subfield as $subfield) {
-                if ((string)$subfield['code'] === $code) {
-                    return (string)$subfield;
+                if ((string) $subfield['code'] === $code) {
+                    return (string) $subfield;
                 }
                 // Fallback for namespaced attributes
                 $attrs = $subfield->attributes();
-                if (isset($attrs['code']) && (string)$attrs['code'] === $code) {
-                     return (string)$subfield;
+                if (isset($attrs['code']) && (string) $attrs['code'] === $code) {
+                    return (string) $subfield;
                 }
             }
+
             return null;
         };
 
         // Helper to get tag
-        $getTag = function($field) {
-             $tag = (string)$field['tag'];
-             if ($tag) return $tag;
-             
-             $attrs = $field->attributes();
-             return (string)($attrs['tag'] ?? '');
+        $getTag = function ($field) {
+            $tag = (string) $field['tag'];
+            if ($tag) {
+                return $tag;
+            }
+
+            $attrs = $field->attributes();
+
+            return (string) ($attrs['tag'] ?? '');
         };
 
         // Title (245 $a $b)
         $title = '';
         foreach ($recordNode->datafield as $field) {
             if ($getTag($field) === '245') {
-                $title = $getSubfield($field, 'a') . ' ' . $getSubfield($field, 'b');
-                $title = trim($title, " /:.");
+                $title = $getSubfield($field, 'a').' '.$getSubfield($field, 'b');
+                $title = trim($title, ' /:.');
                 break;
             }
         }
@@ -476,7 +518,7 @@ class OaiPmhService
                 $name = $getSubfield($field, 'a');
                 $affiliation = $getSubfield($field, 'u');
                 $orcid = $getSubfield($field, '0'); // ORCID usually in $0
-                
+
                 // Clean ORCID (sometimes it's a URL)
                 if ($orcid) {
                     $orcid = str_replace('https://orcid.org/', '', $orcid);
@@ -484,11 +526,11 @@ class OaiPmhService
                 }
 
                 if ($name) {
-                    $authors[] = trim($name, ",.");
+                    $authors[] = trim($name, ',.');
                     $authorsStructured[] = [
-                        'name' => trim($name, ",."),
+                        'name' => trim($name, ',.'),
                         'affiliation' => $affiliation,
-                        'orcid' => $orcid
+                        'orcid' => $orcid,
                     ];
                 }
             }
@@ -504,7 +546,7 @@ class OaiPmhService
                     if (preg_match('/(\d{4})-\d{2}-\d{2}/', $dateStr, $matches)) {
                         $date = $matches[0];
                     } elseif (preg_match('/(\d{4})/', $dateStr, $matches)) {
-                        $date = $matches[1] . '-01-01';
+                        $date = $matches[1].'-01-01';
                     }
                 }
             }
@@ -517,24 +559,28 @@ class OaiPmhService
             if ($getTag($field) === '856') {
                 $u = $getSubfield($field, 'u');
                 if ($u) {
-                     // Heuristic to detect PDF vs abstract
-                     // 856 with ind1=4, ind2=0 is usually HTTP URL
-                     // Check if it looks like a file or download link
+                    // Heuristic to detect PDF vs abstract
+                    // 856 with ind1=4, ind2=0 is usually HTTP URL
+                    // Check if it looks like a file or download link
                     if (preg_match('/\.pdf$/i', $u) || str_contains($u, '/download/') || str_contains($u, '/view/')) {
                         // OJS specific: /view/ID/ID is often PDF, /view/ID is abstract
-                        // But verifying exact URL type is hard without HEAD request. 
+                        // But verifying exact URL type is hard without HEAD request.
                         // We will assume first 856 is URL, if specific PDF indicators exist, use as PDF.
-                        
+
                         // OJS often puts PDF in a separate 856 with implicit logic
                         // Let's grab the first one as main URL
-                        if (!$url) $url = $u;
-                        
+                        if (! $url) {
+                            $url = $u;
+                        }
+
                         // If it has file extension or explicit hint
-                         if (preg_match('/\.pdf$/i', $u)) {
-                             $pdfUrl = $u;
-                         }
+                        if (preg_match('/\.pdf$/i', $u)) {
+                            $pdfUrl = $u;
+                        }
                     } else {
-                        if (!$url) $url = $u;
+                        if (! $url) {
+                            $url = $u;
+                        }
                     }
                 }
             }
@@ -549,25 +595,25 @@ class OaiPmhService
             }
         }
 
-         // Language (008 or 546 or 041)
-         $language = 'en'; // default ??
-         // 008 is fixed length, lang is chars 35-37.
-         if (isset($recordNode->controlfield)) {
-             foreach ($recordNode->controlfield as $cf) {
-                 if ((string)$cf['tag'] === '008') {
-                     $val = (string)$cf;
-                     if (strlen($val) >= 38) {
-                         $language = substr($val, 35, 3);
-                     }
-                 }
-             }
-         }
+        // Language (008 or 546 or 041)
+        $language = 'en'; // default ??
+        // 008 is fixed length, lang is chars 35-37.
+        if (isset($recordNode->controlfield)) {
+            foreach ($recordNode->controlfield as $cf) {
+                if ((string) $cf['tag'] === '008') {
+                    $val = (string) $cf;
+                    if (strlen($val) >= 38) {
+                        $language = substr($val, 35, 3);
+                    }
+                }
+            }
+        }
 
         return [
             'identifier' => $identifier,
             'title' => $title,
             'authors' => implode('; ', $authors) ?: null,
-            'authors_json' => !empty($authorsStructured) ? $authorsStructured : null,
+            'authors_json' => ! empty($authorsStructured) ? $authorsStructured : null,
             'date' => $date,
             'url' => $url,
             'pdf_url' => $pdfUrl,

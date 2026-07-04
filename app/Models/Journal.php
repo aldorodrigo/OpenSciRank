@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Translatable\HasTranslations;
 
 class Journal extends Model
 {
-    use HasFactory, SoftDeletes, HasTranslations, LogsActivity;
+    use HasFactory, HasTranslations, LogsActivity, SoftDeletes;
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -118,6 +118,9 @@ class Journal extends Model
         'oai_set_spec',
         'oai_metadata_prefix',
         'oai_last_harvested_at',
+        'oai_harvest_status',
+        'oai_last_harvest_count',
+        'oai_last_harvest_error',
         // Impact metrics
         'openalex_venue_id',
         'h_index',
@@ -161,6 +164,7 @@ class Journal extends Model
         'pending_renewal_years' => 'integer',
         'submitted_at' => 'datetime',
         'oai_last_harvested_at' => 'datetime',
+        'oai_last_harvest_count' => 'integer',
         'h_index' => 'integer',
         'total_citations' => 'integer',
         'mean_citedness_2y' => 'decimal:3',
@@ -170,9 +174,10 @@ class Journal extends Model
     public function getTranslationWithFallback(string $field): string
     {
         $value = $this->getTranslation($field, app()->getLocale(), false);
-        if (!empty($value)) {
+        if (! empty($value)) {
             return $value;
         }
+
         return $this->getTranslation($field, $this->primary_locale ?? 'es', false) ?? '';
     }
 
@@ -209,7 +214,7 @@ class Journal extends Model
     // Helper methods
     public function isAssignedToEvaluator(): bool
     {
-        return !is_null($this->assigned_evaluator_id);
+        return ! is_null($this->assigned_evaluator_id);
     }
 
     /**
@@ -250,13 +255,13 @@ class Journal extends Model
 
     public function isEvaluated(): bool
     {
-        return !is_null($this->evaluated_at);
+        return ! is_null($this->evaluated_at);
     }
 
     public function calculateScore(): float
     {
         $scores = $this->evaluationScores()->with('criteriaItem')->get();
-        
+
         if ($scores->isEmpty()) {
             return 0;
         }
@@ -267,7 +272,9 @@ class Journal extends Model
 
         foreach ($scores as $score) {
             $item = $score->criteriaItem;
-            if (!$item || !$item->is_active) continue;
+            if (! $item || ! $item->is_active) {
+                continue;
+            }
 
             $totalWeight += $item->weight;
 
@@ -324,7 +331,7 @@ class Journal extends Model
     public function isSealExpiringSoon(int $days = 30): bool
     {
         return $this->seal_expires_at
-            && !$this->seal_expires_at->isPast()
+            && ! $this->seal_expires_at->isPast()
             && $this->seal_expires_at->diffInDays(now()) <= $days;
     }
 

@@ -112,7 +112,9 @@ Coupons are stored in the local `coupons` table (`App\Models\Coupon`) **and must
 
 ### Notifications (app/Notifications/)
 
-All notifications are **synchronous** (no ShouldQueue) — they send immediately via SMTP. In dev, Mailpit captures all emails at localhost:8025.
+All notifications extend `QueuedNotification` (implements `ShouldQueue`, queue `mail`, `RateLimited('ses')`, backoff) — they are **processed by the queue worker**, not inline. In dev, Mailpit captures all emails at localhost:8025.
+
+**Queue infra (Issue #42):** `QUEUE_CONNECTION=database` (tables `jobs`/`job_batches`/`failed_jobs`). A `queue-worker` program in `docker/8.3/supervisord.conf` runs `queue:work --queue=harvest,mail,default`, draining the OAI harvest queue (`harvest`) and the mail queue. **Deploy requirement:** run `php artisan queue:restart` after each release so the worker reloads new code. The OAI harvest (`HarvestJournalArticles`, continuation pattern) is dispatched from the `harvest_oai` Filament action and the weekly `oai:harvest --all --queue` cron.
 
 Triggered from: `CheckoutSuccessController`, `EvaluateJournal::save()`, `ReviewListing::save()`, `JournalResource` (assign evaluator, notify seal).
 

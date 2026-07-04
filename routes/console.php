@@ -76,3 +76,11 @@ Schedule::command('email-logs:prune')
     ->dailyAt('03:45')
     ->withoutOverlapping()
     ->onOneServer();
+
+// Issue #42 — cosecha OAI-PMH automática de revistas listed/certified con OAI
+// configurado. Encola un Job por revista (--queue); el worker los procesa en
+// background sin bloquear nada. Semanal, lunes 02:30 UTC.
+Schedule::command('oai:harvest --all --queue')
+    ->weeklyOn(1, '02:30')
+    ->withoutOverlapping()
+    ->onOneServer();

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Exports\JournalExporter;
 use App\Filament\Resources\JournalResource\Pages;
 use App\Filament\Resources\JournalResource\RelationManagers;
+use App\Jobs\HarvestJournalArticles;
 use App\Models\Journal;
 use App\Models\User;
 use App\Notifications\EvaluatorAssigned;
@@ -525,6 +526,21 @@ class JournalResource extends Resource
                                     ])
                                     ->default('oai_dc')
                                     ->dehydrated(),
+                                Forms\Components\Placeholder::make('oai_harvest_status')
+                                    ->label(__('admin.journal.oai_harvest_status'))
+                                    ->content(function (?Journal $record): string {
+                                        if (! $record) {
+                                            return '—';
+                                        }
+                                        $status = $record->oai_harvest_status ?: 'idle';
+                                        $label = __('admin.journal.oai_harvest_status_'.$status);
+                                        if ($status === 'failed' && $record->oai_last_harvest_error) {
+                                            return $label.' — '.$record->oai_last_harvest_error;
+                                        }
+
+                                        return $label;
+                                    })
+                                    ->hiddenOn('create'),
                                 Forms\Components\Placeholder::make('oai_last_harvested_at')
                                     ->label(__('admin.journal.oai_last_harvest'))
                                     ->content(fn (?Journal $record): string => $record?->oai_last_harvested_at?->format('d/m/Y H:i') ?? '—')
@@ -891,6 +907,51 @@ class JournalResource extends Resource
                         ->openUrlInNewTab()
                         ->visible(fn (Journal $record): bool => $record->evaluated_at !== null),
 
+                    \Filament\Actions\Action::make('test_oai_connection')
+                        ->label(__('admin.journal.action_test_oai'))
+                        ->icon('heroicon-o-signal')
+                        ->color('gray')
+                        ->visible(fn (Journal $record): bool => ! empty($record->oai_base_url))
+                        ->action(function (Journal $record): void {
+                            try {
+                                $service = app(OaiPmhService::class);
+                                $info = $service->identify($record->oai_base_url);
+                                $samples = $service->previewRecords(
+                                    $record->oai_base_url,
+                                    $record->oai_set_spec,
+                                    $record->oai_metadata_prefix ?: 'oai_dc',
+                                    3,
+                                );
+
+                                $titles = collect($samples)
+                                    ->pluck('title')
+                                    ->filter()
+                                    ->map(fn (string $t) => '• '.\Illuminate\Support\Str::limit($t, 80))
+                                    ->implode("\n");
+
+                                Notification::make()
+                                    ->title(__('admin.journal.notif_test_oai_ok', [
+                                        'repo' => $info['repositoryName'] ?: '—',
+                                    ]))
+                                    ->body(trim(sprintf(
+                                        "%s: %s\n%s",
+                                        __('admin.journal.oai_granularity'),
+                                        $info['granularity'] ?: '—',
+                                        $titles ?: __('admin.journal.notif_test_oai_no_samples'),
+                                    )))
+                                    ->success()
+                                    ->duration(12000)
+                                    ->send();
+                            } catch (\Throwable $e) {
+                                Notification::make()
+                                    ->title(__('admin.journal.notif_test_oai_err'))
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->duration(10000)
+                                    ->send();
+                            }
+                        }),
+
                     \Filament\Actions\Action::make('harvest_oai')
                         ->label(__('admin.journal.action_harvest'))
                         ->icon('heroicon-o-arrow-path')
@@ -900,39 +961,16 @@ class JournalResource extends Resource
                         ->modalHeading(__('admin.journal.modal_harvest_heading'))
                         ->modalDescription(__('admin.journal.modal_harvest_desc'))
                         ->action(function (Journal $record): void {
-                            try {
-                                $service = app(OaiPmhService::class);
-                                $count = $service->listRecords($record);
+                            $record->update(['oai_harvest_status' => 'queued']);
 
-                                activity()
-                                    ->performedOn($record)
-                                    ->causedBy(auth()->user())
-                                    ->withProperties([
-                                        'articles_count' => $count,
-                                        'oai_base_url' => $record->oai_base_url,
-                                    ])
-                                    ->log("Cosecha OAI-PMH ejecutada: {$count} artículo(s)");
+                            HarvestJournalArticles::dispatch($record, causedByUserId: auth()->id());
 
-                                Notification::make()
-                                    ->title(__('admin.journal.notif_harvest_ok'))
-                                    ->body(__('admin.journal.notif_harvest_ok_body', ['count' => $count]))
-                                    ->success()
-                                    ->duration(8000)
-                                    ->send();
-                            } catch (\Exception $e) {
-                                activity()
-                                    ->performedOn($record)
-                                    ->causedBy(auth()->user())
-                                    ->withProperties(['error' => $e->getMessage()])
-                                    ->log('Cosecha OAI-PMH fallida');
-
-                                Notification::make()
-                                    ->title(__('admin.journal.notif_harvest_err'))
-                                    ->body($e->getMessage())
-                                    ->danger()
-                                    ->duration(8000)
-                                    ->send();
-                            }
+                            Notification::make()
+                                ->title(__('admin.journal.notif_harvest_queued'))
+                                ->body(__('admin.journal.notif_harvest_queued_body'))
+                                ->success()
+                                ->duration(8000)
+                                ->send();
                         }),
 
                     \Filament\Actions\Action::make('notify_seal')
