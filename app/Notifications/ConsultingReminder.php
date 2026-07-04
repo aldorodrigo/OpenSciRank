@@ -6,7 +6,6 @@ use App\Models\AdminTask;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Recordatorio enviado 24h antes de una sesión de consultoría al editor
@@ -27,8 +26,6 @@ class ConsultingReminder extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $isEditor = $this->task->related
             && $this->task->related->user
             && $this->task->related->user->is($notifiable);

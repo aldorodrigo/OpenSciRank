@@ -6,7 +6,6 @@ use App\Models\AdminTask;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Notifica a editor + evaluador + super_admin cuando las propuestas de horario
@@ -27,8 +26,6 @@ class ConsultingProposalsExpired extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $title      = $this->task->renderedTitle();
         $isEditor   = $notifiable->is($this->task->editor());
 

@@ -6,7 +6,6 @@ use App\Models\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Notifica a los participantes del hilo (excepto al autor) cuando llega
@@ -31,8 +30,6 @@ class NewConversationMessage extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $conversation  = $this->message->conversation;
         $author        = $this->message->user;
         $preview       = mb_strimwidth(strip_tags($this->message->body ?? ''), 0, 200, '…');

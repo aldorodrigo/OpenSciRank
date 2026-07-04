@@ -9,7 +9,6 @@ use App\Models\Journal;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Notifica al destinatario apropiado cuando se abre un nuevo hilo de
@@ -34,8 +33,6 @@ class NewConversationOpened extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $isSuperAdmin = $notifiable->hasRole('super_admin');
         // Roadmap #35 — tercera rama: un evaluador (no super_admin) recibe el
         // CTA hacia /admin, no hacia /app/messages (panel editor, inaccesible

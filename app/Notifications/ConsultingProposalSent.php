@@ -7,7 +7,6 @@ use App\Support\TimezoneHelper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Notifica al EDITOR cuando el evaluador envía propuestas de horario.
@@ -28,8 +27,6 @@ class ConsultingProposalSent extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $title     = $this->task->renderedTitle();
         $proposals = $this->task->activeProposals()->get();
 

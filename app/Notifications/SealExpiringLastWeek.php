@@ -6,7 +6,6 @@ use App\Models\Journal;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 class SealExpiringLastWeek extends Notification
 {
@@ -21,8 +20,6 @@ class SealExpiringLastWeek extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         return (new MailMessage)
             ->subject(__('notifications.seal_expiring_last_week.subject', ['days' => $this->daysLeft]))
             ->greeting(__('notifications.seal_expiring_last_week.greeting', ['name' => $notifiable->name]))

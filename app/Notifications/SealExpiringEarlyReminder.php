@@ -6,7 +6,6 @@ use App\Models\Journal;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 class SealExpiringEarlyReminder extends Notification
 {
@@ -21,8 +20,6 @@ class SealExpiringEarlyReminder extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         // Fecha límite de la promoción: 30 días antes del vencimiento del sello.
         // Coincide con el cierre de la ventana D-60..D-30 controlada en
         // PaymentCheckout::getIsInEarlyRenewalWindowProperty().

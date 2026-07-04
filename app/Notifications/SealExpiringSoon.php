@@ -6,7 +6,6 @@ use App\Models\Journal;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 class SealExpiringSoon extends Notification
 {
@@ -21,8 +20,6 @@ class SealExpiringSoon extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $daysLeft = (int) now()->diffInDays($this->journal->seal_expires_at);
 
         return (new MailMessage)

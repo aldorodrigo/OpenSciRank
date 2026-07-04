@@ -6,7 +6,6 @@ use App\Models\Payment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Reemplaza PaymentConfirmed para los SKUs de consultoría:
@@ -28,8 +27,6 @@ class ConsultingPaymentConfirmed extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $slug     = $this->payment->product?->slug ?? '';
         $isNewJournal = $slug === 'new-journal-consulting';
 

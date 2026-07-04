@@ -6,7 +6,6 @@ use App\Models\AdminTask;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Notificación enviada al editor y al evaluador asignado cuando el admin
@@ -30,8 +29,6 @@ class ConsultingScheduled extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $isEditor = $this->task->related
             && $this->task->related->user
             && $this->task->related->user->is($notifiable);

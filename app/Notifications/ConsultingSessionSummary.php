@@ -6,7 +6,6 @@ use App\Models\AdminTask;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Envía al EDITOR el resumen de la sesión de consultoría una vez marcada
@@ -39,8 +38,6 @@ class ConsultingSessionSummary extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $title = $this->task->renderedTitle();
 
         return (new MailMessage)

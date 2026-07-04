@@ -6,7 +6,6 @@ use App\Models\AdminTask;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Notifica al EVALUADOR cuando el editor solicita reagendar la sesión.
@@ -30,8 +29,6 @@ class ConsultingRescheduleRequested extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $title      = $this->task->renderedTitle();
         $editorName = $this->task->editor()?->name ?? '—';
 

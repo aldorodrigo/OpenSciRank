@@ -6,7 +6,6 @@ use App\Models\AdminTask;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 /**
  * Notifica al super_admin cuando una task de consultoría supera el cap de
@@ -28,8 +27,6 @@ class ConsultingProposalsEscalated extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         $title      = $this->task->renderedTitle();
         $editorName = $this->task->editor()?->name ?? '—';
         $rounds     = $this->task->proposal_count_sent;

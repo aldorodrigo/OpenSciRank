@@ -6,7 +6,6 @@ use App\Models\Journal;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 class SealRecoveryOffer extends Notification
 {
@@ -21,8 +20,6 @@ class SealRecoveryOffer extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        App::setLocale($notifiable->preferred_locale ?? 'es');
-
         return (new MailMessage)
             ->subject(__('notifications.seal_recovery.subject', ['title' => $this->journal->getTranslationWithFallback('title')]))
             ->greeting(__('notifications.seal_recovery.greeting', ['name' => $notifiable->name]))
