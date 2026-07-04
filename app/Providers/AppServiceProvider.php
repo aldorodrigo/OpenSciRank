@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Listeners\Mail\LogMessageSending;
+use App\Listeners\Mail\LogMessageSent;
+use App\Listeners\Mail\LogNotificationFailed;
+use App\Listeners\Mail\LogNotificationSending;
 use App\Models\Book;
 use App\Models\Payment;
 use App\Observers\BookObserver;
@@ -9,8 +13,13 @@ use App\Observers\PaymentObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Notifications\Events\NotificationFailed;
+use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -36,6 +45,19 @@ class AppServiceProvider extends ServiceProvider
         $this->registerObservers();
         $this->registerQueryMacros();
         $this->registerRateLimiters();
+        $this->registerMailEventListeners();
+    }
+
+    /**
+     * Poblado del log de correos (email_logs) para el panel de observabilidad.
+     * Los listeners son best-effort: un fallo de logging nunca aborta el envío.
+     */
+    protected function registerMailEventListeners(): void
+    {
+        Event::listen(NotificationSending::class, LogNotificationSending::class);
+        Event::listen(MessageSending::class, LogMessageSending::class);
+        Event::listen(MessageSent::class, LogMessageSent::class);
+        Event::listen(NotificationFailed::class, LogNotificationFailed::class);
     }
 
     /**

@@ -69,3 +69,10 @@ Schedule::command('metrics:refresh-journals')
     ->monthlyOn(1, '03:15')
     ->withoutOverlapping()
     ->onOneServer();
+
+// Auditoría de correos — purga el log de correos (email_logs) según la
+// retención de config/mail_logging.php (90 días). Ventana nocturna, 03:45.
+Schedule::command('email-logs:prune')
+    ->dailyAt('03:45')
+    ->withoutOverlapping()
+    ->onOneServer();
