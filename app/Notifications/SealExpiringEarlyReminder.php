@@ -3,16 +3,14 @@
 namespace App\Notifications;
 
 use App\Models\Journal;
+use App\Notifications\Concerns\ReminderNotification;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class SealExpiringEarlyReminder extends QueuedNotification
 {
-    public function __construct(public Journal $journal, public int $daysLeft) {}
+    use ReminderNotification;
 
-    public function via(object $notifiable): array
-    {
-        return ['mail'];
-    }
+    public function __construct(public Journal $journal, public int $daysLeft) {}
 
     public function toMail(object $notifiable): MailMessage
     {
@@ -22,6 +20,7 @@ class SealExpiringEarlyReminder extends QueuedNotification
         $promoDeadline = $this->journal->seal_expires_at->copy()->subDays(30)->format('d/m/Y');
 
         return (new MailMessage)
+            ->withSymfonyMessage($this->unsubscribeHeaders($notifiable))
             ->subject(__('notifications.seal_early_reminder.subject', ['title' => $this->journal->getTranslationWithFallback('title')]))
             ->greeting(__('notifications.seal_early_reminder.greeting', ['name' => $notifiable->name]))
             ->line(__('notifications.seal_early_reminder.line1', [

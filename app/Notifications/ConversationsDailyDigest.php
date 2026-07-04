@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Concerns\ReminderNotification;
 use App\Support\TimezoneHelper;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Collection;
@@ -17,15 +18,12 @@ use Illuminate\Support\Collection;
  */
 class ConversationsDailyDigest extends QueuedNotification
 {
+    use ReminderNotification;
+
     /**
      * @param  Collection<int, array{conversation: \App\Models\Conversation, unread_count: int, last_message: \App\Models\Message}>  $items
      */
     public function __construct(public Collection $items) {}
-
-    public function via(object $notifiable): array
-    {
-        return ['mail'];
-    }
 
     public function toMail(object $notifiable): MailMessage
     {
@@ -33,6 +31,7 @@ class ConversationsDailyDigest extends QueuedNotification
         $totalConversations = $this->items->count();
 
         $msg = (new MailMessage)
+            ->withSymfonyMessage($this->unsubscribeHeaders($notifiable))
             ->subject(__('conversations_daily_digest.subject', [
                 'count' => $totalMessages,
             ]))

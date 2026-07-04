@@ -3,20 +3,19 @@
 namespace App\Notifications;
 
 use App\Models\Journal;
+use App\Notifications\Concerns\ReminderNotification;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class SealExpired extends QueuedNotification
 {
-    public function __construct(public Journal $journal) {}
+    use ReminderNotification;
 
-    public function via(object $notifiable): array
-    {
-        return ['mail'];
-    }
+    public function __construct(public Journal $journal) {}
 
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
+            ->withSymfonyMessage($this->unsubscribeHeaders($notifiable))
             ->subject(__('notifications.seal_expired.subject', ['title' => $this->journal->getTranslationWithFallback('title')]))
             ->greeting(__('notifications.seal_expired.greeting', ['name' => $notifiable->name]))
             ->line(__('notifications.seal_expired.line1', ['title' => $this->journal->getTranslationWithFallback('title')]))

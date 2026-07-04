@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Middleware\HandleAppearance;
-use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
+            // Baja de correos: RFC 8058 one-click hace POST desde el cliente de
+            // correo (sin sesión). La ruta se protege con firma, no con CSRF.
+            'email/unsubscribe/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

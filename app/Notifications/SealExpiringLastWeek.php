@@ -3,20 +3,19 @@
 namespace App\Notifications;
 
 use App\Models\Journal;
+use App\Notifications\Concerns\ReminderNotification;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class SealExpiringLastWeek extends QueuedNotification
 {
-    public function __construct(public Journal $journal, public int $daysLeft) {}
+    use ReminderNotification;
 
-    public function via(object $notifiable): array
-    {
-        return ['mail'];
-    }
+    public function __construct(public Journal $journal, public int $daysLeft) {}
 
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
+            ->withSymfonyMessage($this->unsubscribeHeaders($notifiable))
             ->subject(__('notifications.seal_expiring_last_week.subject', ['days' => $this->daysLeft]))
             ->greeting(__('notifications.seal_expiring_last_week.greeting', ['name' => $notifiable->name]))
             ->line(__('notifications.seal_expiring_last_week.line1', [

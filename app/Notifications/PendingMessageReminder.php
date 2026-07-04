@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\Book;
 use App\Models\Conversation;
 use App\Models\Journal;
+use App\Notifications\Concerns\ReminderNotification;
 use Illuminate\Notifications\Messages\MailMessage;
 
 /**
@@ -16,12 +17,9 @@ use Illuminate\Notifications\Messages\MailMessage;
  */
 class PendingMessageReminder extends QueuedNotification
 {
-    public function __construct(public Conversation $conversation) {}
+    use ReminderNotification;
 
-    public function via(object $notifiable): array
-    {
-        return ['mail'];
-    }
+    public function __construct(public Conversation $conversation) {}
 
     public function toMail(object $notifiable): MailMessage
     {
@@ -34,6 +32,7 @@ class PendingMessageReminder extends QueuedNotification
         $url = url('/app/messages/'.$this->conversation->id);
 
         return (new MailMessage)
+            ->withSymfonyMessage($this->unsubscribeHeaders($notifiable))
             ->subject(__('pending_message_reminder.subject'))
             ->greeting(__('pending_message_reminder.greeting', ['name' => $notifiable->name]))
             ->line(__('pending_message_reminder.intro', ['resource' => $resource]))

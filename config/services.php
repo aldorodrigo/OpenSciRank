@@ -26,6 +26,12 @@ return [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+        // Configuration set de SES (publica eventos de rebote/queja y aplica la
+        // supresión). Se crea del lado AWS (issue #41); array_filter evita
+        // pasar el option en null mientras aún no esté configurado.
+        'options' => array_filter([
+            'ConfigurationSetName' => env('MAIL_SES_CONFIGURATION_SET'),
+        ]),
     ],
 
     'slack' => [

@@ -1,21 +1,21 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Models\Journal;
-use App\Models\Book;
-use App\Livewire\EditorDashboard;
-use App\Livewire\SubmissionWizard;
-use App\Livewire\BookSubmissionWizard;
-use App\Livewire\PaymentCheckout;
-use App\Livewire\BookPaymentCheckout;
-use App\Livewire\UserProfile;
-use App\Http\Controllers\CheckoutSuccessController;
+use App\Http\Controllers\AdminTaskConversationController;
 use App\Http\Controllers\BadgeController;
+use App\Http\Controllers\CheckoutSuccessController;
+use App\Http\Controllers\JournalPdfController;
+use App\Http\Controllers\MessageAttachmentController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\StripeWebhookController;
-use App\Http\Controllers\MessageAttachmentController;
-use App\Http\Controllers\AdminTaskConversationController;
-use App\Http\Controllers\JournalPdfController;
+use App\Livewire\BookPaymentCheckout;
+use App\Livewire\BookSubmissionWizard;
+use App\Livewire\EditorDashboard;
+use App\Livewire\PaymentCheckout;
+use App\Livewire\SubmissionWizard;
+use App\Livewire\UserProfile;
+use App\Models\Book;
+use App\Models\Journal;
+use Illuminate\Support\Facades\Route;
 
 // Sitemap & SEO (no locale prefix)
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -24,6 +24,12 @@ Route::get('/badge/{slug}.svg', [BadgeController::class, 'show'])->name('badge.s
 // Stripe Webhook (CSRF excluded in bootstrap/app.php)
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
     ->name('stripe.webhook');
+
+// Baja global de correos de recordatorio (Fase 5). Ruta firmada, sin sesión:
+// GET desde el enlace del pie del correo, POST para el one-click (RFC 8058).
+Route::match(['get', 'post'], '/email/unsubscribe/{user}', \App\Http\Controllers\EmailUnsubscribeController::class)
+    ->name('email.unsubscribe')
+    ->middleware('signed');
 
 // ────────────────────────────────────────────────────────
 // Adjuntos de mensajes (ruta firmada — auth requerido)
@@ -94,6 +100,7 @@ $publicRoutes = function () {
 
     Route::get('/pricing', function () {
         $products = \App\Models\Product::where('is_active', true)->get()->keyBy('slug');
+
         return view('pricing', compact('products'));
     })->name('pricing');
 
@@ -152,17 +159,20 @@ $publicRoutes = function () {
         $journal = Journal::where('slug', $slug)
             ->with(['evaluationScores.criteriaItem.category', 'user', 'harvestedArticles', 'editorialMembers'])
             ->firstOrFail();
+
         return view('journal.show', compact('journal'));
     })->name('journal.show');
 
     Route::get('/journal/{slug}/articles', function (string $slug) {
         $journal = Journal::where('slug', $slug)->firstOrFail();
         $articles = $journal->harvestedArticles()->orderByDesc('date')->paginate(20);
+
         return view('journal.articles', compact('journal', 'articles'));
     })->name('journal.articles');
 
     Route::get('/book/{slug}', function (string $slug) {
         $book = Book::where('slug', $slug)->firstOrFail();
+
         return view('book.show', compact('book'));
     })->name('book.show');
 };
@@ -221,5 +231,5 @@ Route::middleware(['auth', 'verified'])->prefix('app')->name('app.')->group($aut
 
 // Non-default locales — /{locale}/app/*
 foreach ($nonDefaultLocales as $locale) {
-    Route::middleware(['auth', 'verified'])->prefix($locale . '/app')->name('app.')->group($authenticatedRoutes);
+    Route::middleware(['auth', 'verified'])->prefix($locale.'/app')->name('app.')->group($authenticatedRoutes);
 }
