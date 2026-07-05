@@ -36,7 +36,9 @@ use Spatie\Permission\Models\Role;
  */
 class UserGuideDemoSeeder extends Seeder
 {
-    public const EDITOR_EMAIL = 'editor.prueba@editorialstandards.com';
+    // Fuente única de verdad: reutiliza el editor de EditorTestJournalsSeeder
+    // (issue #56) en vez de redeclarar el email y arriesgar drift entre ambos.
+    public const EDITOR_EMAIL = EditorTestJournalsSeeder::EDITOR_EMAIL;
 
     public const EVALUATOR_EMAIL = 'evaluador.prueba@editorialstandards.com';
 
@@ -44,6 +46,14 @@ class UserGuideDemoSeeder extends Seeder
 
     public function run(): void
     {
+        // Guard de entorno (issue #56): datos DEMO con passwords conocidos.
+        // Nunca en producción, aunque se invoque directamente con --class.
+        if (app()->environment('production')) {
+            $this->command?->warn('UserGuideDemoSeeder omitido: no se siembran datos demo en producción.');
+
+            return;
+        }
+
         // ── 0. Prerrequisitos ───────────────────────────────────────────
         // Asegurar que el editor de prueba y sus revistas draft existan.
         $editor = User::where('email', self::EDITOR_EMAIL)->first();
@@ -75,15 +85,20 @@ class UserGuideDemoSeeder extends Seeder
             $evaluator->assignRole('evaluator');
         }
 
-        // ── 2. Revistas del editor en variedad de estados ───────────────
-        // Reutilizamos 5 de las 6 revistas draft por slug (definidas en
-        // EditorTestJournalsSeeder). Cada una pasa a un estado distinto.
-        $journals = Journal::where('user_id', $editor->id)
+        // ── 2. Revistas en variedad de estados (pool del admin) ─────────
+        // Las 6 revistas del editor de prueba quedan TODAS en `draft` (no se
+        // tocan acá). Los estados intermedios se pueblan sobre el catálogo del
+        // admin (JournalSeeder), que viene `listed`. Tomamos 5: journals[0..3]
+        // pasan a submitted/certified/evaluated/requires_changes y journals[4]
+        // se deja listed (ejemplo de ficha listada). El resto sigue listed.
+        $admin = User::where('email', 'admin@editorialstandards.com')->first();
+        $journals = Journal::where('user_id', $admin?->id)
+            ->where('status', 'listed')
             ->orderBy('id')
             ->get();
 
         if ($journals->count() < 5) {
-            $this->command->error('Se esperaban >=5 revistas del editor de prueba; hay '.$journals->count().'. Abortando.');
+            $this->command->error('Se esperaban >=5 revistas listed del admin; hay '.$journals->count().'. ¿Corriste JournalSeeder? Abortando.');
 
             return;
         }
@@ -111,7 +126,7 @@ class UserGuideDemoSeeder extends Seeder
                 'status' => 'completed',
             ],
             [
-                'user_id' => $editor->id,
+                'user_id' => $admin->id,
                 'product_id' => $evalProduct?->id,
                 'provider' => 'stripe',
                 'transaction_id' => 'demo_pi_'.$submitted->id,
@@ -154,10 +169,10 @@ class UserGuideDemoSeeder extends Seeder
             'evaluated_at' => now()->subMonths(2),
             'current_score' => 82,
             'current_level' => null,
-            'evaluation_notes' => "La revista cumple con los estándares editoriales exigidos. "
-                ."Se destacan la política de acceso abierto, la revisión por pares doble ciego "
-                ."y la transparencia del comité editorial. Recomendaciones menores: ampliar la "
-                ."declaración de uso de IA y detallar la política de conservación digital.",
+            'evaluation_notes' => 'La revista cumple con los estándares editoriales exigidos. '
+                .'Se destacan la política de acceso abierto, la revisión por pares doble ciego '
+                .'y la transparencia del comité editorial. Recomendaciones menores: ampliar la '
+                .'declaración de uso de IA y detallar la política de conservación digital.',
             'seal_awarded_at' => now()->subMonths(2),
             'seal_expires_at' => now()->addMonths(10),
             'seal_status' => 'active',
@@ -174,12 +189,12 @@ class UserGuideDemoSeeder extends Seeder
             'evaluated_at' => now()->subMonths(1),
             'current_score' => 61,
             'current_level' => null,
-            'evaluation_notes' => "La revista alcanza un 61% de cumplimiento y no obtiene el Sello "
-                ."de Estándares Editoriales en esta instancia. Observaciones principales: "
-                ."(1) falta publicar la política antiplagio y la herramienta utilizada; "
-                ."(2) el comité editorial no expone las afiliaciones institucionales completas; "
-                ."(3) no se declara la política de conflictos de interés. Se sugiere subsanar "
-                ."estos puntos y solicitar una re-evaluación.",
+            'evaluation_notes' => 'La revista alcanza un 61% de cumplimiento y no obtiene el Sello '
+                .'de Estándares Editoriales en esta instancia. Observaciones principales: '
+                .'(1) falta publicar la política antiplagio y la herramienta utilizada; '
+                .'(2) el comité editorial no expone las afiliaciones institucionales completas; '
+                .'(3) no se declara la política de conflictos de interés. Se sugiere subsanar '
+                .'estos puntos y solicitar una re-evaluación.',
             'seal_status' => null,
             'assigned_evaluator_id' => $evaluator->id,
         ]);
@@ -192,14 +207,14 @@ class UserGuideDemoSeeder extends Seeder
             'submitted_at' => now()->subDays(6),
             'evaluated_at' => now()->subDays(2),
             'current_score' => null,
-            'evaluation_notes' => "Antes de continuar con la evaluación necesitamos que corrijas "
+            'evaluation_notes' => 'Antes de continuar con la evaluación necesitamos que corrijas '
                 ."los siguientes puntos: \n\n"
-                ."1) El enlace a la política de acceso abierto (open_access_policy_url) "
+                .'1) El enlace a la política de acceso abierto (open_access_policy_url) '
                 ."devuelve error 404. Actualizá la URL. \n"
                 ."2) Falta cargar el ISSN online en el formulario. \n"
-                ."3) La declaración de licencia (CC-BY) no aparece visible en los artículos "
+                .'3) La declaración de licencia (CC-BY) no aparece visible en los artículos '
                 ."publicados; adjuntá una captura o corregí el pie de los PDF. \n\n"
-                ."Una vez corregido, reenviá la revista (la reevaluación de estos cambios es gratuita).",
+                .'Una vez corregido, reenviá la revista (la reevaluación de estos cambios es gratuita).',
             'assigned_evaluator_id' => $evaluator->id,
         ]);
 
@@ -244,13 +259,14 @@ class UserGuideDemoSeeder extends Seeder
             ]
         );
 
-        // ── 4. Conversación anclada a la revista submitted ──────────────
-        $this->seedConversation($submitted, $editor, $evaluator);
+        // ── 4. Conversación anclada a la revista submitted (owner=admin) ─
+        $this->seedConversation($submitted, $admin, $evaluator);
 
         // ── Resumen ─────────────────────────────────────────────────────
         $this->command->info('UserGuideDemoSeeder: datos demo generados.');
-        $this->command->info('Editor:    '.self::EDITOR_EMAIL.' / '.self::PASSWORD.' (verificado)');
+        $this->command->info('Editor:    '.self::EDITOR_EMAIL.' / '.self::PASSWORD.' (verificado, 6 revistas en draft)');
         $this->command->info('Evaluador: '.self::EVALUATOR_EMAIL.' / '.self::PASSWORD.' (verificado, rol evaluator)');
+        $this->command->line('Estados variados sobre el catálogo del admin (JournalSeeder):');
         $this->command->line(" - submitted:                  #{$submitted->id} {$submitted->slug} (task eval asignada al evaluador)");
         $this->command->line(" - certified:                  #{$certified->id} {$certified->slug} (sello activo, 82%)");
         $this->command->line(" - evaluated:                  #{$evaluated->id} {$evaluated->slug} (61%, sin sello)");
@@ -263,8 +279,8 @@ class UserGuideDemoSeeder extends Seeder
     /**
      * Crea/actualiza los scores por criterio de una revista.
      *
-     * @param  array<int,string>  $failCodes     códigos de criterio que quedan NO cumplidos
-     * @param  array<int,string>  $criticalCodes códigos críticos (se fuerzan a met si $met=true)
+     * @param  array<int,string>  $failCodes  códigos de criterio que quedan NO cumplidos
+     * @param  array<int,string>  $criticalCodes  códigos críticos (se fuerzan a met si $met=true)
      */
     protected function seedScores(Journal $journal, $criteria, User $evaluator, bool $met, array $failCodes, array $criticalCodes): void
     {

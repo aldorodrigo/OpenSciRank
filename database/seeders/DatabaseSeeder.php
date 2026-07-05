@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 
@@ -29,6 +28,9 @@ class DatabaseSeeder extends Seeder
         Artisan::call('shield:super-admin', ['--user' => 1, '--panel' => 'admin']);
         $this->command->info('Shield: permisos generados y super_admin asignado.');
 
+        // Datos de configuración/catálogo: se ejecutan en todos los entornos,
+        // producción incluida (roles, criterios, productos, cupones, ajustes,
+        // catálogo de revistas de referencia y contenidos del blog).
         $this->call([
             EvaluatorRoleSeeder::class,
             EvaluationCategorySeeder::class,
@@ -40,5 +42,20 @@ class DatabaseSeeder extends Seeder
             CmsCategorySeeder::class,
             CmsPostSeeder::class,
         ]);
+
+        // Fixtures de desarrollo/QA: NUNCA en producción (issue #56). Crean un
+        // editor de prueba con password conocido y revistas ficticias. Se
+        // ejecutan solo en local/testing; en prod el guard interno del propio
+        // seeder es la segunda barrera si alguien lo invoca con --class.
+        if (app()->environment('local', 'testing')) {
+            $this->call([
+                EditorTestJournalsSeeder::class,
+            ]);
+        } else {
+            $this->command->warn(
+                'Fixtures de prueba omitidas (entorno '.app()->environment().'): '
+                .'EditorTestJournalsSeeder solo corre en local/testing.'
+            );
+        }
     }
 }
