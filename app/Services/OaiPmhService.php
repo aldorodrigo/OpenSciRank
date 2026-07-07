@@ -353,8 +353,10 @@ class OaiPmhService
 
         if ($description) {
             $description = strip_tags($description);
-            if (strlen($description) > 2000) {
-                $description = substr($description, 0, 2000).'...';
+            // mb_substr (no substr) para no cortar a mitad de un carácter multibyte:
+            // un byte suelto deja UTF-8 inválido y MySQL rechaza el insert (error 1366).
+            if (mb_strlen($description) > 2000) {
+                $description = mb_substr($description, 0, 2000).'...';
             }
         }
 
@@ -377,16 +379,50 @@ class OaiPmhService
 
         return [
             'identifier' => $identifier,
-            'title' => $title,
-            'authors' => implode('; ', $authors) ?: null,
+            'title' => $this->sanitizeUtf8($title),
+            'authors' => $this->sanitizeUtf8(implode('; ', $authors) ?: null),
             'authors_json' => null, // oai_dc does not support structured authors
             'date' => $date,
             'url' => $url,
             'pdf_url' => $pdfUrl,
             'language' => $language ? substr($language, 0, 10) : null,
-            'description' => $description,
-            'metadata' => ! empty($rawMeta) ? $rawMeta : null,
+            'description' => $this->sanitizeUtf8($description),
+            'metadata' => ! empty($rawMeta) ? $this->deepSanitizeUtf8($rawMeta) : null,
         ];
+    }
+
+    /**
+     * Elimina secuencias UTF-8 inválidas (bytes sueltos por feeds mal codificados o
+     * por truncados a nivel de byte) que MySQL rechaza con "Incorrect string value"
+     * (error 1366) y que también rompen json_encode de la metadata. Los bytes
+     * inválidos se sustituyen; devuelve null si entra null.
+     */
+    private function sanitizeUtf8(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+    }
+
+    /**
+     * Aplica sanitizeUtf8 recursivamente a los strings dentro de un array (metadata).
+     *
+     * @param  array<mixed>  $data
+     * @return array<mixed>
+     */
+    private function deepSanitizeUtf8(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_string($value)) {
+                $data[$key] = $this->sanitizeUtf8($value);
+            } elseif (is_array($value)) {
+                $data[$key] = $this->deepSanitizeUtf8($value);
+            }
+        }
+
+        return $data;
     }
 
     /**

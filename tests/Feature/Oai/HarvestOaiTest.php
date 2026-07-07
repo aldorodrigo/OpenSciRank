@@ -164,4 +164,53 @@ XML;
         // No debe finalizar todavía: sigue "running".
         $this->assertSame('running', $journal->fresh()->oai_harvest_status);
     }
+
+    /**
+     * Regresión: una descripción larga con un carácter multibyte justo en el límite
+     * de truncado (2000). El truncado por bytes (substr) partía el carácter y dejaba
+     * un byte suelto → UTF-8 inválido → MySQL rechazaba el insert (error 1366) y la
+     * cosecha quedaba trabada reintentando. Con mb_substr + sanitizeUtf8 el artículo
+     * se persiste con UTF-8 válido.
+     */
+    public function test_long_description_with_multibyte_at_boundary_is_stored_valid(): void
+    {
+        // 1999 ASCII + 'é' (carácter 2000, 2 bytes) + relleno → byte 2000 cae dentro de 'é'.
+        $description = str_repeat('a', 1999).'é'.str_repeat('b', 100);
+
+        $xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+         xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <ListRecords>
+    <record>
+      <header><identifier>oai:test:mb</identifier></header>
+      <metadata>
+        <oai_dc:dc>
+          <dc:title xml:lang="es">Artículo multibyte</dc:title>
+          <dc:description xml:lang="es">{$description}</dc:description>
+          <dc:identifier>https://revista.test/article/mb</dc:identifier>
+        </oai_dc:dc>
+      </metadata>
+    </record>
+  </ListRecords>
+</OAI-PMH>
+XML;
+
+        Http::fake(['revista.test/oai*' => Http::response($xml)]);
+
+        $journal = $this->journal();
+        $result = app(OaiPmhService::class)->harvestPage($journal);
+
+        $this->assertSame(1, $result['count']);
+
+        $article = HarvestedArticle::where('identifier', 'oai:test:mb')->firstOrFail();
+
+        // UTF-8 válido: nada de bytes sueltos por cortar un carácter a la mitad.
+        $this->assertTrue(mb_check_encoding($article->description, 'UTF-8'));
+        // El carácter multibyte se conserva entero (no se perdió al truncar).
+        $this->assertStringContainsString('é', $article->description);
+        // Truncado a ~2000 caracteres + puntos suspensivos.
+        $this->assertLessThanOrEqual(2003, mb_strlen($article->description));
+    }
 }
