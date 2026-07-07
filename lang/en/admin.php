@@ -631,7 +631,11 @@ return [
         'confirm_refresh_heading' => 'Refresh metrics',
         'confirm_refresh_body' => 'OpenAlex and Crossref will be queried using the journal ISSN. Takes a few seconds.',
         'notif_refreshed' => 'Metrics refreshed',
+        'notif_refresh_partial' => 'Some sources returned no data: :detail',
+        'notif_refresh_failed' => 'Could not fetch metrics',
+        'notif_refresh_failed_body' => 'No source returned data. Nothing was recorded in the history.',
         'notif_scholar_registered' => 'Scholar snapshot recorded',
+        'error_unknown' => 'Unknown error',
     ],
 
     'editorial_members' => [
@@ -801,6 +805,8 @@ return [
         'total_queue' => 'Queued (total)',
         'failed_jobs' => 'Failed',
         'sent_today' => 'Sent today',
+        'harvest_queue' => 'Harvests queued',
+        'harvest_failed' => 'Harvests failed',
         'recent_failures' => 'Recent failures',
         'no_failures' => 'No failed jobs.',
         'job' => 'Job',

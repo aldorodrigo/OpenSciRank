@@ -52,10 +52,9 @@ class RefreshJournalMetrics extends Command
             }
 
             try {
-                $snapshots = $service->refresh($journal);
-                $hadAtLeastOneOk = collect($snapshots)->contains(fn ($s) => ! $s->failed);
+                $result = $service->refresh($journal);
 
-                if ($hadAtLeastOneOk) {
+                if ($result->hasAnyData()) {
                     $updated++;
                     $journal->refresh();
                     $this->line(sprintf('       h-index=%s · citas=%s · source=%s',
@@ -65,7 +64,7 @@ class RefreshJournalMetrics extends Command
                     ));
                 } else {
                     $errors++;
-                    $this->warn('       todas las fuentes fallaron');
+                    $this->warn('       todas las fuentes fallaron: '.$result->errorSummary());
                 }
             } catch (\Throwable $e) {
                 $errors++;

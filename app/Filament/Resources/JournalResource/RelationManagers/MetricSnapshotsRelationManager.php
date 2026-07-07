@@ -75,17 +75,12 @@ class MetricSnapshotsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('mean_citedness_2y')
                     ->label(__('admin.metrics.mean_citedness'))
                     ->placeholder('—'),
-                Tables\Columns\IconColumn::make('failed')
-                    ->label(__('admin.metrics.failed'))
-                    ->boolean()
-                    ->trueIcon('heroicon-o-exclamation-triangle')
-                    ->trueColor('danger')
-                    ->falseIcon('heroicon-o-check-circle')
-                    ->falseColor('success'),
                 Tables\Columns\TextColumn::make('capturedBy.name')
                     ->label(__('admin.metrics.captured_by'))
                     ->placeholder('—'),
             ])
+            // El historial solo muestra capturas con datos; las fuentes que fallan no se registran.
+            ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query->where('failed', false))
             ->defaultSort('captured_at', 'desc')
             ->headerActions([
                 Actions\Action::make('refresh_metrics')
@@ -98,12 +93,32 @@ class MetricSnapshotsRelationManager extends RelationManager
                     ->action(function (): void {
                         /** @var Journal $journal */
                         $journal = $this->getOwnerRecord();
-                        app(JournalMetricsService::class)->refresh($journal);
+                        $result = app(JournalMetricsService::class)->refresh($journal);
 
-                        Notification::make()
+                        // Ninguna fuente devolvió datos: avisar el motivo, no un falso éxito.
+                        if (! $result->hasAnyData()) {
+                            Notification::make()
+                                ->title(__('admin.metrics.notif_refresh_failed'))
+                                ->body($result->errorSummary() ?: __('admin.metrics.notif_refresh_failed_body'))
+                                ->danger()
+                                ->persistent()
+                                ->send();
+
+                            return;
+                        }
+
+                        $notification = Notification::make()
                             ->title(__('admin.metrics.notif_refreshed'))
-                            ->success()
-                            ->send();
+                            ->success();
+
+                        // Éxito parcial: alguna fuente falló, mostrar cuál y por qué.
+                        if ($result->hasErrors()) {
+                            $notification
+                                ->body(__('admin.metrics.notif_refresh_partial', ['detail' => $result->errorSummary()]))
+                                ->warning();
+                        }
+
+                        $notification->send();
                     }),
                 Actions\Action::make('register_scholar')
                     ->label(__('admin.metrics.action_register_scholar'))

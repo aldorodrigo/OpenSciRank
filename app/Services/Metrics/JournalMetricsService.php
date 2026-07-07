@@ -31,23 +31,33 @@ class JournalMetricsService
     /**
      * Refresca las métricas externas (OpenAlex + Crossref) y aplica reglas de combinación.
      *
-     * @return JournalMetricSnapshot[]  snapshots creados en esta corrida
+     * Las fuentes que no devuelven datos NO generan snapshot (no ensucian el historial);
+     * su motivo de falla queda en el resultado para poder mostrarlo al admin.
      */
-    public function refresh(Journal $journal): array
+    public function refresh(Journal $journal): MetricsRefreshResult
     {
         $snapshots = [];
+        $errors = [];
 
         $issn = $journal->issn_online ?: $journal->issn_print;
 
         $openAlexResult = $this->openAlex->fetchByIssn($issn);
-        $snapshots[] = $this->persistSnapshot($journal, $openAlexResult);
+        if ($snapshot = $this->persistSnapshot($journal, $openAlexResult)) {
+            $snapshots[] = $snapshot;
+        } else {
+            $errors['openalex'] = $openAlexResult->errorMessage ?: __('admin.metrics.error_unknown');
+        }
 
         $crossrefResult = $this->crossref->fetchByIssn($issn);
-        $snapshots[] = $this->persistSnapshot($journal, $crossrefResult);
+        if ($snapshot = $this->persistSnapshot($journal, $crossrefResult)) {
+            $snapshots[] = $snapshot;
+        } else {
+            $errors['crossref'] = $crossrefResult->errorMessage ?: __('admin.metrics.error_unknown');
+        }
 
         $this->applyCombinationRules($journal, $openAlexResult);
 
-        return $snapshots;
+        return new MetricsRefreshResult($snapshots, $errors);
     }
 
     /**
@@ -156,9 +166,23 @@ class JournalMetricsService
         );
     }
 
-    private function persistSnapshot(Journal $journal, SourceResult $result): JournalMetricSnapshot
+    /**
+     * Persiste un snapshot SOLO si la fuente devolvió datos.
+     * Si falló, no se guarda nada en el historial y se devuelve null.
+     */
+    private function persistSnapshot(Journal $journal, SourceResult $result): ?JournalMetricSnapshot
     {
-        $payload = [
+        if (! $result->found) {
+            Log::info('Metrics snapshot vacío/fallido — no persistido', [
+                'journal_id' => $journal->id,
+                'source' => $result->source,
+                'error' => $result->errorMessage,
+            ]);
+
+            return null;
+        }
+
+        return JournalMetricSnapshot::create([
             'journal_id' => $journal->id,
             'source' => $result->source,
             'h_index' => $result->hIndex,
@@ -166,18 +190,8 @@ class JournalMetricsService
             'mean_citedness_2y' => $result->meanCitedness2y,
             'raw_payload' => $result->rawPayload ?: null,
             'captured_at' => now(),
-            'failed' => ! $result->found,
-            'error_message' => $result->errorMessage,
-        ];
-
-        if (! $result->found) {
-            Log::info('Metrics snapshot empty/failed', [
-                'journal_id' => $journal->id,
-                'source' => $result->source,
-                'error' => $result->errorMessage,
-            ]);
-        }
-
-        return JournalMetricSnapshot::create($payload);
+            'failed' => false,
+            'error_message' => null,
+        ]);
     }
 }

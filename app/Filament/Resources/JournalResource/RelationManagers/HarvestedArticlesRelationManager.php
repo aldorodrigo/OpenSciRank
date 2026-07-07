@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\JournalResource\RelationManagers;
 
-use Filament\Forms;
+use App\Filament\Actions\JournalOaiActions;
+use App\Models\Journal;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 
 class HarvestedArticlesRelationManager extends RelationManager
@@ -21,6 +21,33 @@ class HarvestedArticlesRelationManager extends RelationManager
     public static function getModelLabel(): string
     {
         return __('admin.harvested.model');
+    }
+
+    /**
+     * Badge en la tab con el estado de cosecha, solo cuando hay algo que mirar
+     * (encolada / corriendo / falló). En idle o sin cosechar no muestra badge.
+     */
+    public static function getBadge(Model $ownerRecord, string $pageClass): ?string
+    {
+        /** @var Journal $ownerRecord */
+        $status = $ownerRecord->oai_harvest_status;
+
+        if (! in_array($status, ['queued', 'running', 'failed'], true)) {
+            return null;
+        }
+
+        return __('admin.journal.oai_harvest_status_'.$status);
+    }
+
+    public static function getBadgeColor(Model $ownerRecord, string $pageClass): ?string
+    {
+        /** @var Journal $ownerRecord */
+        return match ($ownerRecord->oai_harvest_status) {
+            'running' => 'info',
+            'failed' => 'danger',
+            'queued' => 'gray',
+            default => null,
+        };
     }
 
     public function table(Table $table): Table
@@ -63,6 +90,12 @@ class HarvestedArticlesRelationManager extends RelationManager
                     ->formatStateUsing(fn () => 'PDF'),
             ])
             ->defaultSort('date', 'desc')
+            // Refresco automático mientras una cosecha está en curso (estado + tabla).
+            ->poll('10s')
+            ->headerActions([
+                JournalOaiActions::testConnection(fn (): Journal => $this->getOwnerRecord()),
+                JournalOaiActions::harvest(fn (): Journal => $this->getOwnerRecord()),
+            ])
             ->filters([
                 //
             ])

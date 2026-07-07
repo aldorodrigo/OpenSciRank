@@ -54,9 +54,10 @@ class JournalMetricsServiceTest extends TestCase
         $journal = $this->certifiedJournalWithIssn();
         $service = app(JournalMetricsService::class);
 
-        $snapshots = $service->refresh($journal);
+        $result = $service->refresh($journal);
 
-        $this->assertCount(2, $snapshots);
+        $this->assertCount(2, $result->snapshots);
+        $this->assertFalse($result->hasErrors());
         $journal->refresh();
 
         $this->assertSame(80, $journal->h_index);
@@ -110,7 +111,12 @@ class JournalMetricsServiceTest extends TestCase
         ]);
 
         $journal = $this->certifiedJournalWithIssn('9999-999X');
-        app(JournalMetricsService::class)->refresh($journal);
+        $result = app(JournalMetricsService::class)->refresh($journal);
+
+        // Ninguna fuente devolvió datos: no se persiste ningún snapshot en el historial.
+        $this->assertFalse($result->hasAnyData());
+        $this->assertTrue($result->hasErrors());
+        $this->assertSame(0, $journal->metricSnapshots()->count());
 
         $journal->refresh();
         $this->assertNull($journal->h_index);

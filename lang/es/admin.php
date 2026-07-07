@@ -662,7 +662,11 @@ return [
         'confirm_refresh_heading' => 'Refrescar métricas',
         'confirm_refresh_body' => 'Se consultará OpenAlex y Crossref usando el ISSN de la revista. La operación toma unos segundos.',
         'notif_refreshed' => 'Métricas refrescadas',
+        'notif_refresh_partial' => 'Algunas fuentes no devolvieron datos: :detail',
+        'notif_refresh_failed' => 'No se pudieron obtener métricas',
+        'notif_refresh_failed_body' => 'Ninguna fuente devolvió datos. No se registró nada en el historial.',
         'notif_scholar_registered' => 'Snapshot Scholar registrado',
+        'error_unknown' => 'Error desconocido',
     ],
 
     // Editorial team members
@@ -837,6 +841,8 @@ return [
         'total_queue' => 'En cola (total)',
         'failed_jobs' => 'Fallidos',
         'sent_today' => 'Enviados hoy',
+        'harvest_queue' => 'Cosechas en cola',
+        'harvest_failed' => 'Cosechas fallidas',
         'recent_failures' => 'Últimos fallos',
         'no_failures' => 'No hay jobs fallidos.',
         'job' => 'Job',

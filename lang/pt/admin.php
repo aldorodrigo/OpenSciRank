@@ -620,7 +620,11 @@ return [
         'confirm_refresh_heading' => 'Atualizar métricas',
         'confirm_refresh_body' => 'OpenAlex e Crossref serão consultados pelo ISSN da revista. Demora alguns segundos.',
         'notif_refreshed' => 'Métricas atualizadas',
+        'notif_refresh_partial' => 'Algumas fontes não retornaram dados: :detail',
+        'notif_refresh_failed' => 'Não foi possível obter métricas',
+        'notif_refresh_failed_body' => 'Nenhuma fonte retornou dados. Nada foi registrado no histórico.',
         'notif_scholar_registered' => 'Snapshot Scholar registrado',
+        'error_unknown' => 'Erro desconhecido',
     ],
 
     'editorial_members' => [
@@ -801,6 +805,8 @@ return [
         'total_queue' => 'Na fila (total)',
         'failed_jobs' => 'Falhas',
         'sent_today' => 'Enviados hoje',
+        'harvest_queue' => 'Colheitas na fila',
+        'harvest_failed' => 'Colheitas com falha',
         'recent_failures' => 'Últimas falhas',
         'no_failures' => 'Não há jobs com falha.',
         'job' => 'Job',

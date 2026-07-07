@@ -42,6 +42,29 @@
         </x-filament::section>
     </div>
 
+    {{-- Estado de la cola de cosecha OAI (#57) --}}
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <x-filament::section>
+            <div class="flex items-center gap-3">
+                <x-filament::icon icon="heroicon-o-arrow-path" class="h-8 w-8 text-primary-500" />
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('admin.queue_monitor.harvest_queue') }}</p>
+                    <p class="text-2xl font-bold">{{ $this->getHarvestQueueCount() }}</p>
+                </div>
+            </div>
+        </x-filament::section>
+
+        <x-filament::section>
+            <a href="{{ \App\Filament\Resources\JournalResource::getUrl('index') }}" class="flex items-center gap-3">
+                <x-filament::icon icon="heroicon-o-exclamation-triangle" class="h-8 w-8 text-danger-500" />
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('admin.queue_monitor.harvest_failed') }}</p>
+                    <p class="text-2xl font-bold text-danger-600">{{ $this->getHarvestFailedCount() }}</p>
+                </div>
+            </a>
+        </x-filament::section>
+    </div>
+
     {{-- Listado de últimos jobs fallidos --}}
     <x-filament::section class="mt-6">
         <x-slot name="heading">

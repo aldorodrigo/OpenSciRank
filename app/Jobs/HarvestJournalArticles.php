@@ -4,10 +4,12 @@ namespace App\Jobs;
 
 use App\Models\Journal;
 use App\Models\User;
+use App\Notifications\OaiHarvestFailed;
 use App\Services\OaiPmhService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\Notification;
 use Throwable;
 
 /**
@@ -124,5 +126,14 @@ class HarvestJournalArticles implements ShouldQueue
             ->causedBy($this->causedByUserId ? User::find($this->causedByUserId) : null)
             ->withProperties(['error' => $exception->getMessage()])
             ->log('Cosecha OAI-PMH fallida');
+
+        // #57 — avisar a los super_admins para que actúen (endpoint/config/reintento).
+        $admins = User::role('super_admin')->get();
+        if ($admins->isNotEmpty()) {
+            Notification::send(
+                $admins,
+                new OaiHarvestFailed($this->journal, $exception->getMessage()),
+            );
+        }
     }
 }

@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\JournalResource\Pages;
 
+use App\Filament\Actions\JournalOaiActions;
 use App\Filament\Resources\JournalResource;
+use App\Jobs\HarvestJournalArticles;
+use App\Jobs\RefreshJournalMetricsJob;
 use App\Models\AdminTask;
 use App\Models\Conversation;
 use App\Models\CriteriaItem;
@@ -142,6 +145,13 @@ class EvaluateJournal extends Page
                 ->url(fn () => route('app.journal.report.pdf', $this->getRecord()))
                 ->openUrlInNewTab()
                 ->visible(fn (): bool => $this->record->evaluated_at !== null),
+
+            // #57 — evidencia OAI/métricas dentro de la tarea de evaluación.
+            // El mount() ya autoriza al evaluador asignado (o super_admin), por eso
+            // no re-chequeamos rol; testConnection/harvest ya se ocultan sin oai_base_url.
+            JournalOaiActions::testConnection(fn (): Journal => $this->getRecord()),
+            JournalOaiActions::harvest(fn (): Journal => $this->getRecord()),
+            JournalOaiActions::refreshMetrics(fn (): Journal => $this->getRecord()),
         ];
     }
 
@@ -395,6 +405,17 @@ class EvaluateJournal extends Page
         } elseif (! $isRenewalFlow && $this->assigned_status === 'certified') {
             // Flujo de evaluación normal certificada — sello de 1 año.
             $this->record->awardSeal(1);
+        }
+
+        // #57 — al certificar, encolar cosecha OAI + refresco de métricas para tener
+        // datos frescos desde el día 1 (async, no bloquea el guardado de la evaluación).
+        if ($this->assigned_status === 'certified') {
+            if (! empty($this->record->oai_base_url)) {
+                $this->record->update(['oai_harvest_status' => 'queued']);
+                HarvestJournalArticles::dispatch($this->record, causedByUserId: auth()->id());
+            }
+
+            RefreshJournalMetricsJob::dispatch($this->record);
         }
 
         $coresFailed = $this->getCoresFailedCount();

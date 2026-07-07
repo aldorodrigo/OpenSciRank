@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\EmailLog;
+use App\Models\Journal;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -74,6 +75,22 @@ class QueueMonitor extends Page
     public function getFailedJobsCount(): int
     {
         return DB::table('failed_jobs')->count();
+    }
+
+    /**
+     * Jobs pendientes en la cola `harvest` (cosechas OAI-PMH esperando al worker).
+     */
+    public function getHarvestQueueCount(): int
+    {
+        return DB::table('jobs')->where('queue', 'harvest')->count();
+    }
+
+    /**
+     * Revistas cuya última cosecha OAI agotó reintentos (estado `failed`).
+     */
+    public function getHarvestFailedCount(): int
+    {
+        return Journal::query()->where('oai_harvest_status', 'failed')->count();
     }
 
     /**
