@@ -6,17 +6,23 @@ use App\Listeners\Mail\LogMessageSending;
 use App\Listeners\Mail\LogMessageSent;
 use App\Listeners\Mail\LogNotificationFailed;
 use App\Listeners\Mail\LogNotificationSending;
+use App\Listeners\RecordScheduledTaskFailed;
+use App\Listeners\RecordScheduledTaskFinished;
+use App\Listeners\RecordWorkerHeartbeat;
 use App\Models\Book;
 use App\Models\Payment;
 use App\Observers\BookObserver;
 use App\Observers\PaymentObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Console\Events\ScheduledTaskFailed;
+use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Events\NotificationSending;
+use Illuminate\Queue\Events\Looping;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -46,6 +52,19 @@ class AppServiceProvider extends ServiceProvider
         $this->registerQueryMacros();
         $this->registerRateLimiters();
         $this->registerMailEventListeners();
+        $this->registerQueueMonitoringListeners();
+    }
+
+    /**
+     * #59 — observabilidad de colas: heartbeat del worker + salud de crons.
+     * Registro explícito (el auto-discovery de eventos está apagado en la app).
+     * Listeners best-effort: un fallo de registro nunca aborta el job/cron.
+     */
+    protected function registerQueueMonitoringListeners(): void
+    {
+        Event::listen(Looping::class, RecordWorkerHeartbeat::class);
+        Event::listen(ScheduledTaskFinished::class, RecordScheduledTaskFinished::class);
+        Event::listen(ScheduledTaskFailed::class, RecordScheduledTaskFailed::class);
     }
 
     /**

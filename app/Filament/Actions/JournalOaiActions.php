@@ -9,42 +9,45 @@ use App\Services\OaiPmhService;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
  * Factory de acciones Filament reutilizables sobre un Journal: probar conexión OAI,
- * cosechar artículos y refrescar métricas de impacto.
+ * cosechar artículos, refrescar métricas y destrabar una cosecha.
  *
- * Se reusa en contextos distintos (header de relation manager, header de la página
- * Evaluar) que resuelven el journal de formas diferentes; por eso cada método recibe
- * un `Closure` que devuelve el Journal actual (`fn () => $this->getOwnerRecord()`,
- * `fn () => $this->getRecord()`, etc.). Evita mantener copias divergentes de la misma
- * lógica.
+ * Funciona en dos contextos:
+ *  - Header/página (un solo journal): pasar `$resolve` (`fn () => $this->getRecord()`).
+ *  - Fila de tabla (un journal por fila): omitir `$resolve`; Filament inyecta el
+ *    `$record` de la fila en los closures.
  *
- * @param  Closure(): Journal  $resolve
+ * Cada closure resuelve el journal con `self::journal($record, $resolve)`: usa el
+ * `$record` inyectado si existe (tabla) y si no, el `$resolve` (header/página).
+ *
+ * @param  Closure(): Journal|null  $resolve
  */
 class JournalOaiActions
 {
     /**
      * Probar conexión OAI: identify() + muestra de 3 registros. Solo lectura.
      */
-    public static function testConnection(Closure $resolve): Action
+    public static function testConnection(?Closure $resolve = null): Action
     {
         return Action::make('test_oai_connection')
             ->label(__('admin.journal.action_test_oai'))
             ->icon('heroicon-o-signal')
             ->color('gray')
-            ->visible(fn (): bool => ! empty($resolve()->oai_base_url))
-            ->action(function () use ($resolve): void {
-                $record = $resolve();
+            ->visible(fn (?Journal $record = null): bool => ! empty(self::journal($record, $resolve)?->oai_base_url))
+            ->action(function (?Journal $record = null) use ($resolve): void {
+                $journal = self::journal($record, $resolve);
 
                 try {
                     $service = app(OaiPmhService::class);
-                    $info = $service->identify($record->oai_base_url);
+                    $info = $service->identify($journal->oai_base_url);
                     $samples = $service->previewRecords(
-                        $record->oai_base_url,
-                        $record->oai_set_spec,
-                        $record->oai_metadata_prefix ?: 'oai_dc',
+                        $journal->oai_base_url,
+                        $journal->oai_set_spec,
+                        $journal->oai_metadata_prefix ?: 'oai_dc',
                         3,
                     );
 
@@ -81,21 +84,21 @@ class JournalOaiActions
     /**
      * Cosechar OAI: marca el estado en `queued` y despacha el job a la cola `harvest`.
      */
-    public static function harvest(Closure $resolve): Action
+    public static function harvest(?Closure $resolve = null): Action
     {
         return Action::make('harvest_oai')
             ->label(__('admin.journal.action_harvest'))
             ->icon('heroicon-o-arrow-path')
             ->color('success')
-            ->visible(fn (): bool => ! empty($resolve()->oai_base_url))
+            ->visible(fn (?Journal $record = null): bool => ! empty(self::journal($record, $resolve)?->oai_base_url))
             ->requiresConfirmation()
             ->modalHeading(__('admin.journal.modal_harvest_heading'))
             ->modalDescription(__('admin.journal.modal_harvest_desc'))
-            ->action(function () use ($resolve): void {
-                $record = $resolve();
-                $record->update(['oai_harvest_status' => 'queued']);
+            ->action(function (?Journal $record = null) use ($resolve): void {
+                $journal = self::journal($record, $resolve);
+                $journal->update(['oai_harvest_status' => 'queued']);
 
-                HarvestJournalArticles::dispatch($record, causedByUserId: auth()->id());
+                HarvestJournalArticles::dispatch($journal, causedByUserId: auth()->id());
 
                 Notification::make()
                     ->title(__('admin.journal.notif_harvest_queued'))
@@ -111,7 +114,7 @@ class JournalOaiActions
      * el motivo; si hay éxito parcial, lo advierte. Mismo comportamiento que el header
      * de MetricSnapshotsRelationManager.
      */
-    public static function refreshMetrics(Closure $resolve): Action
+    public static function refreshMetrics(?Closure $resolve = null): Action
     {
         return Action::make('refresh_metrics')
             ->label(__('admin.metrics.action_refresh'))
@@ -120,8 +123,8 @@ class JournalOaiActions
             ->requiresConfirmation()
             ->modalHeading(__('admin.metrics.confirm_refresh_heading'))
             ->modalDescription(__('admin.metrics.confirm_refresh_body'))
-            ->action(function () use ($resolve): void {
-                $journal = $resolve();
+            ->action(function (?Journal $record = null) use ($resolve): void {
+                $journal = self::journal($record, $resolve);
                 $result = app(JournalMetricsService::class)->refresh($journal);
 
                 if (! $result->hasAnyData()) {
@@ -147,5 +150,49 @@ class JournalOaiActions
 
                 $notification->send();
             });
+    }
+
+    /**
+     * Destrabar una cosecha clavada en `queued`/`running` sin tocar la consola:
+     * borra el lock viejo de WithoutOverlapping (que quedó tras un worker muerto
+     * a mitad de job) y devuelve el estado a `idle`. No re-encola — para eso está
+     * el botón "cosechar". Ver incidente #58.
+     */
+    public static function reset(?Closure $resolve = null): Action
+    {
+        return Action::make('reset_harvest')
+            ->label(__('admin.journal.action_reset_harvest'))
+            ->icon('heroicon-o-arrow-uturn-left')
+            ->color('warning')
+            ->visible(fn (?Journal $record = null): bool => in_array(self::journal($record, $resolve)?->oai_harvest_status, ['queued', 'running'], true))
+            ->requiresConfirmation()
+            ->modalHeading(__('admin.journal.modal_reset_harvest_heading'))
+            ->modalDescription(__('admin.journal.modal_reset_harvest_desc'))
+            ->action(function (?Journal $record = null) use ($resolve): void {
+                $journal = self::journal($record, $resolve);
+
+                // El lock de WithoutOverlapping vive con clave
+                // `...:oai-harvest-<id>` en cache/cache_locks (store database).
+                $needle = '%oai-harvest-'.$journal->id.'%';
+                foreach (['cache_locks', 'cache'] as $table) {
+                    DB::table($table)->where('key', 'like', $needle)->delete();
+                }
+
+                $journal->update(['oai_harvest_status' => 'idle']);
+
+                Notification::make()
+                    ->title(__('admin.journal.notif_reset_harvest'))
+                    ->success()
+                    ->send();
+            });
+    }
+
+    /**
+     * Resuelve el journal objetivo: el `$record` inyectado por Filament (fila de
+     * tabla) tiene prioridad; si no hay, se usa el `$resolve` (header/página).
+     */
+    private static function journal(?Journal $record, ?Closure $resolve): ?Journal
+    {
+        return $record ?? ($resolve ? $resolve() : null);
     }
 }

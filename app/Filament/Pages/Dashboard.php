@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\Contracts\QueueMonitorWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 /**
@@ -20,5 +21,17 @@ class Dashboard extends BaseDashboard
         }
 
         return parent::shouldRegisterNavigation();
+    }
+
+    /**
+     * #59 — los widgets del panel de colas se auto-descubren (para registrarse
+     * como componentes Livewire) pero pertenecen a QueueMonitor, no al dashboard.
+     */
+    public function getWidgets(): array
+    {
+        return array_values(array_filter(
+            parent::getWidgets(),
+            fn (string $widget): bool => ! is_subclass_of($widget, QueueMonitorWidget::class),
+        ));
     }
 }
