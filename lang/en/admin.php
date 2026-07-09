@@ -839,6 +839,18 @@ return [
         'cron_failed' => 'Failed',
         'cron_overdue' => 'Overdue',
         'cron_ok' => 'OK',
+        'cron_desc' => [
+            'seal:check-expiration' => 'Checks seals that are expiring or expired and updates their status (daily 03:00).',
+            'books:check-featured' => 'Clears the featured flag from books whose paid period expired (daily 04:00).',
+            'tasks:check-overdue' => 'Detects overdue admin tasks and notifies the assignee (daily 09:00).',
+            'consulting:send-reminders' => 'Sends a reminder 24h before consulting sessions (daily 09:30).',
+            'consulting:expire-proposals' => 'Expires unanswered consulting proposals and returns them to pending (daily 09:45).',
+            'sitemap:generate' => 'Regenerates the public sitemap.xml (daily 03:30).',
+            'email-logs:prune' => 'Prunes old email logs per the configured retention (daily 03:45).',
+            'messages:daily-digest' => 'Sends the unread-conversations digest (hourly, with a per-user cooldown).',
+            'oai:harvest' => 'Queues the OAI-PMH harvest for all listed/certified journals (weekly, Monday 02:30).',
+            'metrics:refresh-journals' => 'Refreshes h-index and citations (OpenAlex + Crossref) for certified journals (monthly, day 1).',
+        ],
         // OAI harvests
         'harvests_heading' => 'OAI harvests by journal',
         'harvest_journal' => 'Journal',

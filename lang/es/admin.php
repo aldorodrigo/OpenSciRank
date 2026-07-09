@@ -875,6 +875,18 @@ return [
         'cron_failed' => 'Falló',
         'cron_overdue' => 'Atrasado',
         'cron_ok' => 'OK',
+        'cron_desc' => [
+            'seal:check-expiration' => 'Revisa sellos por vencer y vencidos, y actualiza su estado (diario 03:00).',
+            'books:check-featured' => 'Quita el destacado a los libros cuyo período pago expiró (diario 04:00).',
+            'tasks:check-overdue' => 'Detecta tareas de administración vencidas y avisa al responsable (diario 09:00).',
+            'consulting:send-reminders' => 'Envía recordatorio 24 h antes de las sesiones de consultoría (diario 09:30).',
+            'consulting:expire-proposals' => 'Expira propuestas de consultoría sin respuesta y las devuelve a pendiente (diario 09:45).',
+            'sitemap:generate' => 'Regenera el sitemap.xml público (diario 03:30).',
+            'email-logs:prune' => 'Purga los logs de correo antiguos según la retención configurada (diario 03:45).',
+            'messages:daily-digest' => 'Envía el resumen de conversaciones no leídas (cada hora, con cooldown por usuario).',
+            'oai:harvest' => 'Encola la cosecha OAI-PMH de todas las revistas listadas/certificadas (semanal, lunes 02:30).',
+            'metrics:refresh-journals' => 'Refresca h-index y citas (OpenAlex + Crossref) de las revistas certificadas (mensual, día 1).',
+        ],
         // Cosechas OAI
         'harvests_heading' => 'Cosechas OAI por revista',
         'harvest_journal' => 'Revista',

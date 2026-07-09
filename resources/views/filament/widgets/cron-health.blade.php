@@ -17,7 +17,10 @@
                 <tbody>
                     @foreach ($this->getRows() as $row)
                         <tr class="border-b border-gray-100 dark:border-white/5">
-                            <td class="py-2 pr-4 align-top font-mono text-xs">{{ $row['command'] }}</td>
+                            <td class="py-2 pr-4 align-top">
+                                <span class="font-mono text-xs">{{ $row['command'] }}</span>
+                                <span class="block text-xs text-gray-500 dark:text-gray-400">{{ $row['description'] }}</span>
+                            </td>
                             <td class="py-2 pr-4 align-top whitespace-nowrap">
                                 @if ($row['never'])
                                     <span class="text-gray-400">{{ __('admin.queue_monitor.cron_never') }}</span>

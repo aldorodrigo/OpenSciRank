@@ -59,6 +59,7 @@ class CronHealthWidget extends Widget implements QueueMonitorWidget
 
             $rows[] = [
                 'command' => $command,
+                'description' => __('admin.queue_monitor.cron_desc.'.$command),
                 'last_ran_at' => $lastRan?->format('d/m/Y H:i'),
                 'ago' => $lastRan?->diffForHumans(),
                 'runtime' => $run?->runtime_ms !== null ? $this->formatRuntime($run->runtime_ms) : null,
