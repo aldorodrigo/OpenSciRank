@@ -86,6 +86,66 @@ class AdminTaskTest extends TestCase
         $this->assertEquals($oldCompletedAt, $task->fresh()->completed_at);
     }
 
+    public function test_mark_changes_requested_keeps_task_open(): void
+    {
+        // Sprint 4 #61: pedir cambios deja la tarea abierta pero en un sub-estado
+        // que la distingue de "pendiente"/"en progreso".
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+            'title_key' => 'tasks.review_listing_journal',
+            'status' => AdminTask::STATUS_PENDING,
+            'priority' => AdminTask::PRIORITY_NORMAL,
+        ]);
+
+        $task->start();
+        $task->markChangesRequested();
+
+        $this->assertSame(AdminTask::STATUS_CHANGES_REQUESTED, $task->status);
+        $this->assertTrue($task->isOpen());
+        $this->assertFalse($task->isTerminal());
+    }
+
+    public function test_resubmitted_task_can_be_started(): void
+    {
+        // Sprint 4 #61: el editor reenvía → resubmitted → el revisor la arranca.
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+            'title_key' => 'tasks.review_listing_journal',
+            'status' => AdminTask::STATUS_PENDING,
+            'priority' => AdminTask::PRIORITY_NORMAL,
+        ]);
+
+        $task->markChangesRequested();
+        $task->markResubmitted();
+        $this->assertSame(AdminTask::STATUS_RESUBMITTED, $task->status);
+        $this->assertTrue($task->isOpen());
+
+        // resubmitted es "startable": start() la lleva a in_progress.
+        $task->start();
+        $this->assertSame(AdminTask::STATUS_IN_PROGRESS, $task->status);
+        $this->assertNotNull($task->started_at);
+    }
+
+    public function test_mark_resubmitted_reopens_completed_task(): void
+    {
+        // Sprint 4 #61: si la tarea estaba completada y el editor reenvía, se reabre.
+        $task = AdminTask::create([
+            'type' => AdminTask::TYPE_EVALUATE_JOURNAL,
+            'title_key' => 'tasks.evaluate_journal',
+            'status' => AdminTask::STATUS_PENDING,
+            'priority' => AdminTask::PRIORITY_NORMAL,
+        ]);
+
+        $task->start();
+        $task->complete('done');
+        $this->assertSame(AdminTask::STATUS_COMPLETED, $task->status);
+
+        $task->markResubmitted();
+        $this->assertSame(AdminTask::STATUS_RESUBMITTED, $task->status);
+        $this->assertNull($task->completed_at);
+        $this->assertTrue($task->isOpen());
+    }
+
     public function test_cancel_with_reason(): void
     {
         $task = AdminTask::create([

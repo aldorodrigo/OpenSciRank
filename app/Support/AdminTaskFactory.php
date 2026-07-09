@@ -84,14 +84,16 @@ class AdminTaskFactory
      */
     public static function notifyJournalResubmission(Journal $journal): int
     {
+        // Sprint 4 #61: el listado se maneja explícito en requestJournalListing()
+        // (EditorDashboard::resubmitForListing / SubmissionWizard::listJournal),
+        // por eso NO incluimos TYPE_REVIEW_LISTING_JOURNAL acá.
         $evalTypes = [
             AdminTask::TYPE_EVALUATE_JOURNAL,
             AdminTask::TYPE_REEVALUATE_JOURNAL,
             AdminTask::TYPE_RENEWAL_EVALUATION,
-            AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
         ];
 
-        // Caso A: hay tasks ABIERTAS del journal → solo notificamos resubmisión.
+        // Caso A: hay tasks ABIERTAS del journal → marcamos reenviada + notificamos.
         $openTasks = AdminTask::query()
             ->where('related_type', Journal::class)
             ->where('related_id', $journal->id)
@@ -99,12 +101,15 @@ class AdminTaskFactory
             ->whereIn('status', AdminTask::STATUSES_OPEN)
             ->get();
 
-        $superAdmin = \App\Models\User::where('email', config('app.admin_email', 'admin@editorialstandards.com'))->first();
+        $superAdmin = self::resolveSuperAdmin();
 
         if ($openTasks->isNotEmpty()) {
             foreach ($openTasks as $task) {
+                // Sprint 4 #61: sub-estado "reenviada" para que el revisor
+                // distinga esta tarea de "en progreso" / "cambios solicitados".
+                $task->markResubmitted();
                 self::appendResubmissionNote($task);
-                self::notifyResubmission($task, $superAdmin);
+                self::notifyResubmission($task->fresh(), $superAdmin);
             }
             return $openTasks->count();
         }
@@ -123,13 +128,9 @@ class AdminTaskFactory
             ->first();
 
         if ($lastCompleted) {
-            // Reabrir manteniendo assignment, payment_id, etc.
-            $lastCompleted->update([
-                'status' => $lastCompleted->assigned_to
-                    ? AdminTask::STATUS_IN_PROGRESS
-                    : AdminTask::STATUS_PENDING,
-                'completed_at' => null,
-            ]);
+            // Reabrir manteniendo assignment, payment_id, etc. Sprint 4 #61:
+            // el sub-estado "reenviada" marca que el editor corrigió y reenvió.
+            $lastCompleted->markResubmitted();
             self::appendResubmissionNote($lastCompleted, reopened: true);
 
             activity()
@@ -202,6 +203,15 @@ class AdminTaskFactory
     }
 
     /**
+     * Helper: resuelve el super_admin destinatario por defecto de notificaciones
+     * de tareas sin asignar (por email de configuración).
+     */
+    protected static function resolveSuperAdmin(): ?\App\Models\User
+    {
+        return \App\Models\User::where('email', config('app.admin_email', 'admin@editorialstandards.com'))->first();
+    }
+
+    /**
      * Task generada cuando un editor solicita listing gratuito de revista.
      * Llamado desde SubmissionWizard::listJournal() (sin pago de por medio).
      */
@@ -213,6 +223,59 @@ class AdminTaskFactory
             related: $journal,
             isExpress: false,
         );
+    }
+
+    /**
+     * Sprint 4 #61 — el revisor pidió cambios: pasar las tareas ABIERTAS del
+     * journal (de los tipos dados) al sub-estado changes_requested, para que
+     * en la lista del evaluador se distinga de "pendiente"/"en progreso".
+     * Devuelve cuántas tareas se tocaron.
+     */
+    public static function markChangesRequested(Journal $journal, array $types): int
+    {
+        $tasks = AdminTask::query()
+            ->where('related_type', Journal::class)
+            ->where('related_id', $journal->id)
+            ->whereIn('type', $types)
+            ->whereIn('status', AdminTask::STATUSES_OPEN)
+            ->get();
+
+        $tasks->each(fn (AdminTask $task) => $task->markChangesRequested());
+
+        return $tasks->count();
+    }
+
+    /**
+     * Sprint 4 #61 — el editor (re)solicita el listado de una revista.
+     *
+     * - Primer listado (no hay tarea abierta) → se crea la tarea normal.
+     * - Reenvío tras requires_changes_listing (ya hay una tarea abierta, típicamente
+     *   en changes_requested) → se REUTILIZA esa tarea marcándola "reenviada",
+     *   en vez de crear una segunda tarea pending (arregla el bug de duplicados).
+     *
+     * Llamado desde SubmissionWizard::listJournal() y EditorDashboard::resubmitForListing().
+     */
+    public static function requestJournalListing(Journal $journal): AdminTask
+    {
+        $task = AdminTask::query()
+            ->where('related_type', Journal::class)
+            ->where('related_id', $journal->id)
+            ->where('type', AdminTask::TYPE_REVIEW_LISTING_JOURNAL)
+            ->whereIn('status', AdminTask::STATUSES_OPEN)
+            ->orderByDesc('id')
+            ->first();
+
+        if (! $task) {
+            // Primer listado: crear la tarea de revisión de listado.
+            return self::forJournalListing($journal);
+        }
+
+        // Reenvío: reutilizar la tarea abierta y marcarla como reenviada.
+        $task->markResubmitted();
+        self::appendResubmissionNote($task);
+        self::notifyResubmission($task->fresh(), self::resolveSuperAdmin());
+
+        return $task->fresh();
     }
 
     /**

@@ -85,10 +85,20 @@ class AdminTask extends Model
 
     public const STATUS_CANCELLED = 'cancelled';
 
+    // Sprint 4 #61 — sub-estados de revisión (listado y evaluación de revistas).
+    // changes_requested: el revisor pidió cambios, la pelota está en el editor
+    // (abierto pero no accionable). resubmitted: el editor corrigió y reenvió,
+    // listo para re-revisar (accionable → start() lo pasa a in_progress).
+    public const STATUS_CHANGES_REQUESTED = 'changes_requested';
+
+    public const STATUS_RESUBMITTED = 'resubmitted';
+
     public const STATUSES_OPEN = [
         self::STATUS_AWAITING_PAYMENT,
         self::STATUS_PENDING,
         self::STATUS_IN_PROGRESS,
+        self::STATUS_CHANGES_REQUESTED,
+        self::STATUS_RESUBMITTED,
         self::STATUS_PROPOSAL_SENT,
         self::STATUS_SCHEDULED,
         self::STATUS_IN_SESSION,
@@ -99,6 +109,8 @@ class AdminTask extends Model
     public const STATUSES_WORK_QUEUE = [
         self::STATUS_PENDING,
         self::STATUS_IN_PROGRESS,
+        self::STATUS_CHANGES_REQUESTED,
+        self::STATUS_RESUBMITTED,
         self::STATUS_PROPOSAL_SENT,
         self::STATUS_SCHEDULED,
         self::STATUS_IN_SESSION,
@@ -506,13 +518,45 @@ class AdminTask extends Model
      */
     public function start(): self
     {
-        if ($this->status !== self::STATUS_PENDING) {
+        // Se puede iniciar desde pending (primera revisión) o desde
+        // resubmitted (el editor reenvió tras pedirle cambios). Sprint 4 #61.
+        if (! in_array($this->status, [self::STATUS_PENDING, self::STATUS_RESUBMITTED], true)) {
             return $this;
         }
 
         $this->update([
             'status' => self::STATUS_IN_PROGRESS,
             'started_at' => now(),
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Sprint 4 #61 — el revisor pidió cambios al editor. La tarea queda
+     * ABIERTA (el trabajo sigue vivo) pero en un sub-estado que la distingue
+     * de "pendiente"/"en progreso": la pelota está en el editor. Idempotente.
+     */
+    public function markChangesRequested(): self
+    {
+        if ($this->isTerminal()) {
+            return $this;
+        }
+
+        $this->update(['status' => self::STATUS_CHANGES_REQUESTED]);
+
+        return $this;
+    }
+
+    /**
+     * Sprint 4 #61 — el editor corrigió y reenvió. La tarea vuelve a estar en
+     * la cancha del revisor, lista para re-revisar. Reabre si estaba completada.
+     */
+    public function markResubmitted(): self
+    {
+        $this->update([
+            'status' => self::STATUS_RESUBMITTED,
+            'completed_at' => null,
         ]);
 
         return $this;

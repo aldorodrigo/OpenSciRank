@@ -29,9 +29,12 @@ class EvaluatorTasksOverview extends BaseWidget
     {
         $userId = auth()->id();
 
+        // Sprint 4 #61: "reenviada" (editor corrigió, listo para re-revisar) también
+        // requiere acción del evaluador → cuenta como pendiente. "cambios solicitados"
+        // queda a la espera del editor, no se cuenta acá (visible en la cola).
         $pending = AdminTask::query()
             ->where('assigned_to', $userId)
-            ->where('status', AdminTask::STATUS_PENDING)
+            ->whereIn('status', [AdminTask::STATUS_PENDING, AdminTask::STATUS_RESUBMITTED])
             ->count();
 
         $inProgress = AdminTask::query()
@@ -79,7 +82,7 @@ class EvaluatorTasksOverview extends BaseWidget
                 ->description(__('evaluator_desk.stats.pending_desc'))
                 ->descriptionIcon('heroicon-o-inbox')
                 ->color($pending > 0 ? 'warning' : 'gray')
-                ->url($tasksUrl.'?tableFilters[status][values][0]='.AdminTask::STATUS_PENDING),
+                ->url($tasksUrl.'?tableFilters[status][values][0]='.AdminTask::STATUS_PENDING.'&tableFilters[status][values][1]='.AdminTask::STATUS_RESUBMITTED),
 
             Stat::make(__('evaluator_desk.stats.in_progress'), $inProgress)
                 ->description(__('evaluator_desk.stats.in_progress_desc'))

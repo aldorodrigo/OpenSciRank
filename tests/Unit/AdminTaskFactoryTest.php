@@ -166,6 +166,63 @@ class AdminTaskFactoryTest extends TestCase
         $this->assertSame($journal->id, $task->related_id);
     }
 
+    public function test_request_journal_listing_creates_task_on_first_call(): void
+    {
+        // Sprint 4 #61: primer listado → crea la tarea de revisión.
+        $journal = $this->journal();
+
+        $task = AdminTaskFactory::requestJournalListing($journal);
+
+        $this->assertSame(AdminTask::TYPE_REVIEW_LISTING_JOURNAL, $task->type);
+        $this->assertSame(AdminTask::STATUS_PENDING, $task->status);
+        $this->assertSame(1, AdminTask::where('related_id', $journal->id)
+            ->where('type', AdminTask::TYPE_REVIEW_LISTING_JOURNAL)
+            ->count());
+    }
+
+    public function test_request_journal_listing_reuses_open_task_on_resubmit(): void
+    {
+        // Sprint 4 #61: reenviar NO debe crear una segunda tarea (fix duplicados).
+        $journal = $this->journal();
+        $first = AdminTaskFactory::requestJournalListing($journal);
+
+        // El revisor pide cambios → changes_requested.
+        AdminTaskFactory::markChangesRequested($journal, [AdminTask::TYPE_REVIEW_LISTING_JOURNAL]);
+        $this->assertSame(AdminTask::STATUS_CHANGES_REQUESTED, $first->fresh()->status);
+
+        // El editor reenvía → reutiliza la MISMA tarea, marcada "reenviada".
+        $second = AdminTaskFactory::requestJournalListing($journal);
+
+        $this->assertSame($first->id, $second->id);
+        $this->assertSame(AdminTask::STATUS_RESUBMITTED, $second->status);
+        $this->assertSame(1, AdminTask::where('related_id', $journal->id)
+            ->where('type', AdminTask::TYPE_REVIEW_LISTING_JOURNAL)
+            ->count());
+    }
+
+    public function test_mark_changes_requested_only_touches_open_tasks_of_given_types(): void
+    {
+        // Sprint 4 #61: solo las tareas abiertas de los tipos indicados pasan a changes_requested.
+        $journal = $this->journal();
+
+        $listing = AdminTaskFactory::forJournalListing($journal);
+        $completed = AdminTask::create([
+            'type' => AdminTask::TYPE_REVIEW_LISTING_JOURNAL,
+            'title_key' => 'tasks.review_listing_journal',
+            'related_type' => Journal::class,
+            'related_id' => $journal->id,
+            'status' => AdminTask::STATUS_COMPLETED,
+            'priority' => AdminTask::PRIORITY_NORMAL,
+        ]);
+
+        $touched = AdminTaskFactory::markChangesRequested($journal, [AdminTask::TYPE_REVIEW_LISTING_JOURNAL]);
+
+        $this->assertSame(1, $touched);
+        $this->assertSame(AdminTask::STATUS_CHANGES_REQUESTED, $listing->fresh()->status);
+        // La completada no se toca.
+        $this->assertSame(AdminTask::STATUS_COMPLETED, $completed->fresh()->status);
+    }
+
     public function test_orphan_payment_creates_high_priority_task(): void
     {
         $product = $this->product('journal-evaluation');

@@ -111,8 +111,13 @@ class Payment extends Model
             return 'completed';
         }
 
+        // Sprint 4 #61: changes_requested (revisor pidió cambios) y resubmitted
+        // (editor reenvió) son etapas activas de la entrega del servicio, no
+        // "trabajo pendiente sin empezar" → cuentan como en progreso.
         $inProgress = $tasks->whereIn('status', [
             AdminTask::STATUS_IN_PROGRESS,
+            AdminTask::STATUS_CHANGES_REQUESTED,
+            AdminTask::STATUS_RESUBMITTED,
             AdminTask::STATUS_SCHEDULED,
             AdminTask::STATUS_IN_SESSION,
         ])->count();

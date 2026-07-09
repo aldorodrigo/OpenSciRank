@@ -245,6 +245,8 @@ class AdminTasksTable
                         AdminTask::STATUS_AWAITING_PAYMENT => 'warning',
                         AdminTask::STATUS_PENDING => 'gray',
                         AdminTask::STATUS_IN_PROGRESS => 'info',
+                        AdminTask::STATUS_RESUBMITTED => 'warning',
+                        AdminTask::STATUS_CHANGES_REQUESTED => 'gray',
                         AdminTask::STATUS_PROPOSAL_SENT => 'primary',
                         AdminTask::STATUS_SCHEDULED => 'primary',
                         AdminTask::STATUS_IN_SESSION => 'warning',
@@ -256,6 +258,8 @@ class AdminTasksTable
                         AdminTask::STATUS_AWAITING_PAYMENT => __('Pago pendiente'),
                         AdminTask::STATUS_PENDING => __('Pendiente'),
                         AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                        AdminTask::STATUS_CHANGES_REQUESTED => __('Cambios solicitados'),
+                        AdminTask::STATUS_RESUBMITTED => __('Reenviada'),
                         AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada'),
                         AdminTask::STATUS_SCHEDULED => __('Agendada'),
                         AdminTask::STATUS_IN_SESSION => __('En sesión'),
@@ -292,6 +296,8 @@ class AdminTasksTable
                             AdminTask::STATUS_AWAITING_PAYMENT => __('Pago pendiente'),
                             AdminTask::STATUS_PENDING => __('Pendiente'),
                             AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                            AdminTask::STATUS_CHANGES_REQUESTED => __('Cambios solicitados'),
+                            AdminTask::STATUS_RESUBMITTED => __('Reenviada'),
                             AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada'),
                             AdminTask::STATUS_SCHEDULED => __('Agendada'),
                             AdminTask::STATUS_IN_SESSION => __('En sesión'),
@@ -418,7 +424,8 @@ class AdminTasksTable
                         })
                         ->icon('heroicon-o-play')
                         ->color('warning')
-                        ->visible(fn (AdminTask $record): bool => $record->status === AdminTask::STATUS_PENDING)
+                        // Sprint 4 #61: también accionable en "reenviada" (editor corrigió).
+                        ->visible(fn (AdminTask $record): bool => in_array($record->status, [AdminTask::STATUS_PENDING, AdminTask::STATUS_RESUBMITTED], true))
                         ->action(function (AdminTask $record) {
                             // Auto-asignar al admin actual si la task estaba sin asignar
                             $autoAssigned = false;

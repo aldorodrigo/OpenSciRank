@@ -8,6 +8,7 @@ use App\Models\Journal;
 use App\Notifications\ChangesRequested;
 use App\Notifications\ListingApproved;
 use App\Notifications\ListingRejected;
+use App\Support\AdminTaskFactory;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
@@ -114,8 +115,9 @@ class ReviewListing extends Page
         }
 
         // Sprint 3.6 #32: cerrar admin_task asociada cuando el listing
-        // termina (listed/rejected). requires_changes_listing deja la
-        // task abierta porque el admin sigue trabajando.
+        // termina (listed/rejected). Sprint 4 #61: requires_changes_listing
+        // deja la task abierta pero la marca "cambios solicitados" para que
+        // el evaluador distinga que la pelota está en el editor.
         if (in_array($this->assigned_status, ['listed', 'rejected'], true)) {
             AdminTask::query()
                 ->where('related_type', Journal::class)
@@ -126,6 +128,11 @@ class ReviewListing extends Page
                 ->each(fn (AdminTask $task) => $task->complete(
                     "Cerrada automáticamente: listing revisado con status {$this->assigned_status}"
                 ));
+        } elseif ($this->assigned_status === 'requires_changes_listing') {
+            AdminTaskFactory::markChangesRequested(
+                $this->record,
+                [AdminTask::TYPE_REVIEW_LISTING_JOURNAL]
+            );
         }
 
         activity()

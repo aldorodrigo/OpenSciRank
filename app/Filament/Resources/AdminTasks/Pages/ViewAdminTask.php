@@ -96,7 +96,8 @@ class ViewAdminTask extends ViewRecord
                 })
                 ->icon('heroicon-o-play')
                 ->color('warning')
-                ->visible(fn (): bool => $this->record->status === AdminTask::STATUS_PENDING)
+                // Sprint 4 #61: también accionable en "reenviada" (editor corrigió).
+                ->visible(fn (): bool => in_array($this->record->status, [AdminTask::STATUS_PENDING, AdminTask::STATUS_RESUBMITTED], true))
                 ->action(function () {
                     $autoAssigned = false;
                     if (! $this->record->assigned_to) {

@@ -466,8 +466,10 @@ class SubmissionWizard extends Component
         // Notify user that listing request was received
         auth()->user()->notify(new ListingRequested($this->journal));
 
-        // Sprint 3.6 #32: generar task de revisión de listado para el admin.
-        \App\Support\AdminTaskFactory::forJournalListing($this->journal);
+        // Sprint 3.6 #32 / Sprint 4 #61: generar (primer listado) o reutilizar
+        // (reenvío tras requires_changes_listing) la task de revisión de listado.
+        // requestJournalListing evita duplicar la task en el reenvío.
+        \App\Support\AdminTaskFactory::requestJournalListing($this->journal);
 
         session()->flash('message', __('Your request to list the journal has been submitted.'));
         return redirect()->route('app.dashboard');

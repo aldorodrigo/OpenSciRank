@@ -44,9 +44,11 @@ class EvaluatorQueue extends BaseWidget
                     // Tareas (/admin/admin-tasks), scopeado al evaluador.
                     ->whereIn('status', AdminTask::STATUSES_WORK_QUEUE)
             )
-            // En progreso → pendiente → resto, luego por prioridad y vencimiento.
+            // Reenviada → en progreso → pendiente → cambios solicitados → resto,
+            // luego por prioridad y vencimiento. Sprint 4 #61: incluir los sub-estados
+            // nuevos (FIELD() devuelve 0 para valores ausentes y 0 ordena primero).
             ->defaultSort(fn (Builder $query) => $query
-                ->orderByRaw("FIELD(status, 'in_progress', 'pending', 'proposal_sent', 'scheduled', 'in_session')")
+                ->orderByRaw("FIELD(status, 'resubmitted', 'in_progress', 'pending', 'changes_requested', 'proposal_sent', 'scheduled', 'in_session')")
                 ->orderByRaw("FIELD(priority, 'high', 'normal', 'low')")
                 ->orderByRaw('due_at IS NULL, due_at ASC')
             )
@@ -134,12 +136,16 @@ class EvaluatorQueue extends BaseWidget
                     ->color(fn (string $state): string => match ($state) {
                         AdminTask::STATUS_PENDING => 'gray',
                         AdminTask::STATUS_IN_PROGRESS => 'info',
+                        AdminTask::STATUS_RESUBMITTED => 'warning',
+                        AdminTask::STATUS_CHANGES_REQUESTED => 'gray',
                         AdminTask::STATUS_COMPLETED => 'success',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         AdminTask::STATUS_PENDING => __('Pendiente'),
                         AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                        AdminTask::STATUS_CHANGES_REQUESTED => __('Cambios solicitados'),
+                        AdminTask::STATUS_RESUBMITTED => __('Reenviada'),
                         AdminTask::STATUS_PROPOSAL_SENT => __('Propuesta enviada'),
                         AdminTask::STATUS_SCHEDULED => __('Agendada'),
                         AdminTask::STATUS_IN_SESSION => __('En sesión'),
@@ -153,22 +159,25 @@ class EvaluatorQueue extends BaseWidget
                     ->options([
                         AdminTask::STATUS_PENDING => __('Pendiente'),
                         AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                        AdminTask::STATUS_CHANGES_REQUESTED => __('Cambios solicitados'),
+                        AdminTask::STATUS_RESUBMITTED => __('Reenviada'),
                     ]),
             ])
             ->recordActions([
                 Action::make('work')
-                    ->label(fn (AdminTask $record): string => $record->status === AdminTask::STATUS_PENDING
+                    ->label(fn (AdminTask $record): string => in_array($record->status, [AdminTask::STATUS_PENDING, AdminTask::STATUS_RESUBMITTED], true)
                         ? __('evaluator_desk.queue.action_start')
                         : __('evaluator_desk.queue.action_continue')
                     )
                     ->icon('heroicon-o-arrow-right-circle')
                     ->color(fn (AdminTask $record): string => $record->isOverdue() ? 'danger' : 'primary')
                     // Solo tasks abiertas se "trabajan"; las completadas son solo lectura.
-                    ->visible(fn (AdminTask $record): bool => $record->isOpen())
+                    // Sprint 4 #61: changes_requested está a la espera del editor → sin acción.
+                    ->visible(fn (AdminTask $record): bool => $record->isOpen() && $record->status !== AdminTask::STATUS_CHANGES_REQUESTED)
                     ->action(function (AdminTask $record) {
-                        // Auto-iniciar si estaba pendiente (marca started_at) y
-                        // llevar a la página de trabajo (evaluación del journal).
-                        if ($record->status === AdminTask::STATUS_PENDING) {
+                        // Auto-iniciar si estaba pendiente o reenviada (marca started_at)
+                        // y llevar a la página de trabajo (evaluación del journal).
+                        if (in_array($record->status, [AdminTask::STATUS_PENDING, AdminTask::STATUS_RESUBMITTED], true)) {
                             $record->start();
                         }
 

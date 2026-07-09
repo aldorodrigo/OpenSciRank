@@ -16,6 +16,7 @@ use App\Notifications\EvaluationCompleted;
 use App\Notifications\NewConversationOpened;
 use App\Notifications\SealRenewalApproved;
 use App\Notifications\SealRenewalRejected;
+use App\Support\AdminTaskFactory;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
@@ -444,15 +445,16 @@ class EvaluateJournal extends Page
         }
 
         // Sprint 3.6 #32: auto-cerrar admin_tasks asociadas cuando llegamos
-        // a status terminal (certified/evaluated/rejected). Si es
-        // requires_changes_evaluation, la task queda abierta — el admin sigue
-        // trabajando, solo pausa para que el editor corrija.
+        // a status terminal (certified/evaluated/rejected). Sprint 4 #61: si es
+        // requires_changes_evaluation, la task queda abierta pero se marca
+        // "cambios solicitados" — el admin sigue a cargo, solo pausa para que
+        // el editor corrija, y el evaluador lo distingue de "en progreso".
         $terminalStatuses = ['certified', 'evaluated', 'rejected'];
-        if (in_array($this->assigned_status, $terminalStatuses, true)) {
-            $taskTypes = $isRenewalFlow
-                ? [AdminTask::TYPE_RENEWAL_EVALUATION]
-                : [AdminTask::TYPE_EVALUATE_JOURNAL, AdminTask::TYPE_REEVALUATE_JOURNAL];
+        $taskTypes = $isRenewalFlow
+            ? [AdminTask::TYPE_RENEWAL_EVALUATION]
+            : [AdminTask::TYPE_EVALUATE_JOURNAL, AdminTask::TYPE_REEVALUATE_JOURNAL];
 
+        if (in_array($this->assigned_status, $terminalStatuses, true)) {
             $closed = AdminTask::query()
                 ->where('related_type', Journal::class)
                 ->where('related_id', $this->record->id)
@@ -463,6 +465,8 @@ class EvaluateJournal extends Page
             foreach ($closed as $task) {
                 $task->complete("Cerrada automáticamente: evaluación finalizada con status {$this->assigned_status}, score {$score}%");
             }
+        } elseif ($this->assigned_status === 'requires_changes_evaluation') {
+            AdminTaskFactory::markChangesRequested($this->record, $taskTypes);
         }
 
         // SLA: días entre submisión y evaluación, si tenemos submitted_at.

@@ -221,6 +221,11 @@ class EditorDashboard extends Component
             'status' => 'pending_listing',
             'submitted_at' => now(),
         ]);
+
+        // Sprint 4 #61: reutilizar la task abierta (en changes_requested) y
+        // marcarla "reenviada" para que el evaluador vea que hay que re-revisar.
+        \App\Support\AdminTaskFactory::requestJournalListing($journal);
+
         session()->flash('message', __('Your journal has been resubmitted for listing review.'));
     }
 

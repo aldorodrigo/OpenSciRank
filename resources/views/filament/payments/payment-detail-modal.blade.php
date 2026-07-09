@@ -234,6 +234,8 @@
                                 $statusLabel = match ($t->status) {
                                     \App\Models\AdminTask::STATUS_PENDING => __('Pendiente'),
                                     \App\Models\AdminTask::STATUS_IN_PROGRESS => __('En progreso'),
+                                    \App\Models\AdminTask::STATUS_CHANGES_REQUESTED => __('Cambios solicitados'),
+                                    \App\Models\AdminTask::STATUS_RESUBMITTED => __('Reenviada'),
                                     \App\Models\AdminTask::STATUS_SCHEDULED => __('Agendada'),
                                     \App\Models\AdminTask::STATUS_IN_SESSION => __('En sesión'),
                                     \App\Models\AdminTask::STATUS_COMPLETED => __('Completada'),
@@ -244,6 +246,8 @@
                                 $statusColor = match ($t->status) {
                                     \App\Models\AdminTask::STATUS_PENDING => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
                                     \App\Models\AdminTask::STATUS_IN_PROGRESS => 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300',
+                                    \App\Models\AdminTask::STATUS_CHANGES_REQUESTED => 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+                                    \App\Models\AdminTask::STATUS_RESUBMITTED => 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
                                     \App\Models\AdminTask::STATUS_SCHEDULED => 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
                                     \App\Models\AdminTask::STATUS_IN_SESSION => 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
                                     \App\Models\AdminTask::STATUS_COMPLETED => 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
