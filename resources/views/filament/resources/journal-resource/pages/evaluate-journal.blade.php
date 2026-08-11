@@ -286,7 +286,7 @@
                             <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">
                                 <span class="text-slate-400">Frecuencia</span>
                                 <span class="font-semibold text-slate-700 dark:text-slate-300">
-                                    {{ match($record->publication_frequency) { 'annual' => 'Anual', 'biannual' => 'Semestral', 'quarterly' => 'Trimestral', 'bimonthly' => 'Bimestral', 'monthly' => 'Mensual', 'continuous' => 'Continua', default => '—' } }}
+                                    {{ match($record->publication_frequency) { 'annual' => 'Anual', 'biannual' => 'Semestral', 'triannual' => 'Cuatrimestral', 'quarterly' => 'Trimestral', 'bimonthly' => 'Bimestral', 'monthly' => 'Mensual', 'continuous' => 'Continua', default => '—' } }}
                                 </span>
                             </div>
                             <div class="flex justify-between border-b border-slate-50 pb-1 dark:border-slate-800/50">

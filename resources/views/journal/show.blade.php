@@ -120,7 +120,7 @@
                                 <span>📅 {{ __('Since') }} {{ $journal->start_year }}</span>
                             @endif
                             @if($journal->publication_frequency)
-                                <span>📰 {{ match($journal->publication_frequency) { 'annual' => __('Annual'), 'biannual' => __('Biannual'), 'quarterly' => __('Quarterly'), 'bimonthly' => __('Bimonthly'), 'monthly' => __('Monthly'), 'continuous' => __('Continuous'), default => $journal->publication_frequency } }}</span>
+                                <span>📰 {{ match($journal->publication_frequency) { 'annual' => __('Annual'), 'biannual' => __('Biannual'), 'triannual' => __('Triannual'), 'quarterly' => __('Quarterly'), 'bimonthly' => __('Bimonthly'), 'monthly' => __('Monthly'), 'continuous' => __('Continuous'), default => $journal->publication_frequency } }}</span>
                             @endif
                             @if($journal->peer_review_type)
                                 <span>🔍 {{ match($journal->peer_review_type) { 'double_blind' => __('Double blind'), 'single_blind' => __('Single blind'), 'open' => __('Open review'), default => $journal->peer_review_type } }}</span>
@@ -313,9 +313,13 @@
                     <section class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
                         <div class="mb-4 flex items-center justify-between">
                             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">📄 {{ __('Recent Articles') }}</h2>
-                            <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-brand dark:bg-blue-900/30 dark:text-blue-400">
+                            <a href="{{ route('journal.articles', $journal->slug) }}"
+                                class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-brand transition-colors hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
                                 {{ $journal->harvestedArticles->count() }} {{ __('articles') }}
-                            </span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
                         </div>
                         <div class="divide-y divide-gray-100 dark:divide-gray-800">
                             @foreach($recentArticles as $article)
@@ -594,7 +598,7 @@
                         @if($journal->publication_frequency)
                             <div class="flex justify-between">
                                 <dt class="text-gray-500 dark:text-gray-400">{{ __('Frequency') }}</dt>
-                                <dd class="font-medium text-gray-900 dark:text-white">{{ match($journal->publication_frequency) { 'annual' => __('Annual'), 'biannual' => __('Biannual'), 'quarterly' => __('Quarterly'), 'bimonthly' => __('Bimonthly'), 'monthly' => __('Monthly'), 'continuous' => __('Continuous'), default => $journal->publication_frequency } }}</dd>
+                                <dd class="font-medium text-gray-900 dark:text-white">{{ match($journal->publication_frequency) { 'annual' => __('Annual'), 'biannual' => __('Biannual'), 'triannual' => __('Triannual'), 'quarterly' => __('Quarterly'), 'bimonthly' => __('Bimonthly'), 'monthly' => __('Monthly'), 'continuous' => __('Continuous'), default => $journal->publication_frequency } }}</dd>
                             </div>
                         @endif
                         @if($journal->peer_review_type)

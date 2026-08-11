@@ -119,6 +119,7 @@ class SubmissionWizard extends Component
         'monthly' => 'Mensual',
         'bimonthly' => 'Bimestral',
         'quarterly' => 'Trimestral',
+        'triannual' => 'Cuatrimestral',
         'biannual' => 'Semestral',
         'annual' => 'Anual',
     ];

@@ -392,6 +392,7 @@ class JournalResource extends Resource
                                     ->options([
                                         'annual' => __('admin.journal.freq_annual'),
                                         'biannual' => __('admin.journal.freq_biannual'),
+                                        'triannual' => __('admin.journal.freq_triannual'),
                                         'quarterly' => __('admin.journal.freq_quarterly'),
                                         'bimonthly' => __('admin.journal.freq_bimonthly'),
                                         'monthly' => __('admin.journal.freq_monthly'),

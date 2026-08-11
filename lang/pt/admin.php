@@ -120,6 +120,7 @@ return [
         'frequency' => 'Frequência de Publicação',
         'freq_annual' => 'Anual',
         'freq_biannual' => 'Semestral',
+        'freq_triannual' => 'Quadrimestral',
         'freq_quarterly' => 'Trimestral',
         'freq_bimonthly' => 'Bimestral',
         'freq_monthly' => 'Mensal',
