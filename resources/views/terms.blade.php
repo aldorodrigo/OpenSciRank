@@ -6,7 +6,7 @@
             {{-- Header --}}
             <div class="mb-12 text-center">
                 <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl">{{ __('Terms of Use') }}</h1>
-                <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">{{ __('Last updated:') }} {{ date('d/m/Y') }}</p>
+                <x-legal-updated-at document="terms" class="mt-4 text-lg text-gray-600 dark:text-gray-400" />
             </div>
 
             {{-- Content --}}
