@@ -159,7 +159,10 @@
             @endif
         </div>
         <div class="footer">
-            <a href="{{ url('/contact') }}">{{ __('Reportar este problema') }}</a> · {{ now()->format('Y') }} Editorial Standards Platform
+            @if(page_enabled('contact'))
+                <a href="{{ url('/contact') }}">{{ __('Reportar este problema') }}</a> ·
+            @endif
+            {{ now()->format('Y') }} Editorial Standards Platform
         </div>
     </div>
 </body>

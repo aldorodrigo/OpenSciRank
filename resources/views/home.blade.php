@@ -64,9 +64,12 @@
                     </svg>
                     {{ __('Register my Journal for Free') }}
                 </a>
-                <a href="/pricing" class="inline-flex items-center justify-center rounded-2xl border-2 border-white/30 bg-white/10 px-10 py-5 text-lg font-bold text-white backdrop-blur-md transition-all hover:border-white hover:bg-white/20 active:scale-95">
-                    {{ __('Request Evaluation') }} →
-                </a>
+                {{-- Roadmap #62 — si el admin apagó Precios, este CTA llevaría a un 404. --}}
+                @if(page_in_menu('pricing'))
+                    <a href="{{ locale_path('/pricing') }}" class="inline-flex items-center justify-center rounded-2xl border-2 border-white/30 bg-white/10 px-10 py-5 text-lg font-bold text-white backdrop-blur-md transition-all hover:border-white hover:bg-white/20 active:scale-95">
+                        {{ __('Request Evaluation') }} →
+                    </a>
+                @endif
             </div>
             <div class="mt-12 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-blue-100/60 font-medium">
                 <div class="flex items-center gap-2">

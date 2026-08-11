@@ -12,6 +12,11 @@
         $panelRole = auth()->user()->primaryPanelRole();
     }
     $isEvaluator = $panelRole === 'evaluator';
+    // Roadmap #62 — grupos del nav: se usan para decidir si el separador vertical
+    // sigue teniendo sentido cuando el admin apaga páginas.
+    $hasDirectoryLinks = page_in_menu('search') || page_in_menu('ranking');
+    $hasContentLinks = collect(['methodology', 'pricing', 'blog', 'about', 'contact'])
+        ->contains(fn ($page) => page_in_menu($page));
 @endphp
 {{-- Roadmap #35 — acento ámbar de contexto: señal de que el evaluador está en
      un panel de trabajo, distinto del sitio del editor. --}}
@@ -34,29 +39,56 @@
             <span class="text-base font-semibold text-slate-900 sm:hidden dark:text-white">ESP</span>
         </a>
 
-        {{-- Desktop Nav --}}
+        {{-- Desktop Nav — Roadmap #62: cada link se pinta solo si el admin lo dejó
+             visible en Sistema → Menús (`page_in_menu`). --}}
         <nav class="hidden items-center gap-1 md:flex">
             {{-- Direct directory links --}}
-            <a href="{{ locale_path('/search') }}"
-               @class([
-                   'flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold transition',
-                   'bg-blue-50 text-brand dark:bg-blue-900/30 dark:text-blue-400' => $isSearchActive,
-                   'text-gray-700 hover:bg-gray-100 hover:text-brand dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-blue-400' => !$isSearchActive,
-               ])
-               @if($isSearchActive) aria-current="page" @endif>
-                <span aria-hidden="true">📰</span>{{ __('Journals') }}
-            </a>
-            <a href="{{ locale_path('/search?type=books') }}"
-               class="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-brand dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-blue-400">
-                <span aria-hidden="true">📚</span>{{ __('Books') }}
-            </a>
-            <span class="mx-2 h-5 w-px bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
+            @if(page_in_menu('search'))
+                <a href="{{ locale_path('/search') }}"
+                   @class([
+                       'flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold transition',
+                       'bg-blue-50 text-brand dark:bg-blue-900/30 dark:text-blue-400' => $isSearchActive,
+                       'text-gray-700 hover:bg-gray-100 hover:text-brand dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-blue-400' => !$isSearchActive,
+                   ])
+                   @if($isSearchActive) aria-current="page" @endif>
+                    <span aria-hidden="true">📰</span>{{ __('Journals') }}
+                </a>
+                <a href="{{ locale_path('/search?type=books') }}"
+                   class="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-brand dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-blue-400">
+                    <span aria-hidden="true">📚</span>{{ __('Books') }}
+                </a>
+            @endif
+            @if(page_in_menu('ranking'))
+                <a href="{{ locale_path('/ranking') }}"
+                   @class([
+                       'flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-semibold transition',
+                       'bg-blue-50 text-brand dark:bg-blue-900/30 dark:text-blue-400' => request()->routeIs('ranking'),
+                       'text-gray-700 hover:bg-gray-100 hover:text-brand dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-blue-400' => !request()->routeIs('ranking'),
+                   ])
+                   @if(request()->routeIs('ranking')) aria-current="page" @endif>
+                    <span aria-hidden="true">🏆</span>{{ __('Ranking') }}
+                </a>
+            @endif
+            {{-- El separador solo tiene sentido si quedan links a ambos lados. --}}
+            @if($hasDirectoryLinks && $hasContentLinks)
+                <span class="mx-2 h-5 w-px bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
+            @endif
 
-            <a href="{{ locale_path('/methodology') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Methodology') }}</a>
-            <a href="{{ locale_path('/pricing') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Pricing') }}</a>
-            <a href="{{ locale_path('/blog') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">Blog</a>
-            <a href="{{ locale_path('/about') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('About Us') }}</a>
-            <a href="{{ locale_path('/contact') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Contact') }}</a>
+            @if(page_in_menu('methodology'))
+                <a href="{{ locale_path('/methodology') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Methodology') }}</a>
+            @endif
+            @if(page_in_menu('pricing'))
+                <a href="{{ locale_path('/pricing') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Pricing') }}</a>
+            @endif
+            @if(page_in_menu('blog'))
+                <a href="{{ locale_path('/blog') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">Blog</a>
+            @endif
+            @if(page_in_menu('about'))
+                <a href="{{ locale_path('/about') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('About Us') }}</a>
+            @endif
+            @if(page_in_menu('contact'))
+                <a href="{{ locale_path('/contact') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400">{{ __('Contact') }}</a>
+            @endif
         </nav>
 
         {{-- Auth Actions (Desktop) --}}
@@ -155,14 +187,31 @@
         class="border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-950 md:hidden"
         style="display:none;">
         <nav class="container mx-auto space-y-1 px-4 py-4">
-            <a href="{{ locale_path('/search') }}" class="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2.5 text-sm font-bold text-brand dark:bg-blue-900/30 dark:text-blue-300">📰 {{ __('Journals directory') }}</a>
-            <a href="{{ locale_path('/search?type=books') }}" class="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">📚 {{ __('Books directory') }}</a>
-            <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
-            <a href="{{ locale_path('/methodology') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Methodology') }}</a>
-            <a href="{{ locale_path('/pricing') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Pricing') }}</a>
-            <a href="{{ locale_path('/blog') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">Blog</a>
-            <a href="{{ locale_path('/about') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('About Us') }}</a>
-            <a href="{{ locale_path('/contact') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Contact') }}</a>
+            @if(page_in_menu('search'))
+                <a href="{{ locale_path('/search') }}" class="flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2.5 text-sm font-bold text-brand dark:bg-blue-900/30 dark:text-blue-300">📰 {{ __('Journals directory') }}</a>
+                <a href="{{ locale_path('/search?type=books') }}" class="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">📚 {{ __('Books directory') }}</a>
+            @endif
+            @if(page_in_menu('ranking'))
+                <a href="{{ locale_path('/ranking') }}" class="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-2.5 text-sm font-bold text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300">🏆 {{ __('Ranking') }}</a>
+            @endif
+            @if($hasDirectoryLinks && $hasContentLinks)
+                <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
+            @endif
+            @if(page_in_menu('methodology'))
+                <a href="{{ locale_path('/methodology') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Methodology') }}</a>
+            @endif
+            @if(page_in_menu('pricing'))
+                <a href="{{ locale_path('/pricing') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Pricing') }}</a>
+            @endif
+            @if(page_in_menu('blog'))
+                <a href="{{ locale_path('/blog') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">Blog</a>
+            @endif
+            @if(page_in_menu('about'))
+                <a href="{{ locale_path('/about') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('About Us') }}</a>
+            @endif
+            @if(page_in_menu('contact'))
+                <a href="{{ locale_path('/contact') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-brand dark:text-gray-300 dark:hover:bg-blue-900/30">{{ __('Contact') }}</a>
+            @endif
             <div class="my-2 border-t border-gray-100 dark:border-gray-800"></div>
             @auth
                 @if($isEvaluator)

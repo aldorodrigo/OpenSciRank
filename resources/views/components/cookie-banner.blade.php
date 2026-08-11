@@ -39,9 +39,11 @@
                     <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ __('Usamos cookies') }}</h3>
                     <p class="mt-1 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
                         {{ __('Usamos cookies necesarias para que el sitio funcione (sesión, seguridad) y, con tu consentimiento, cookies opcionales para analizar tráfico y mejorar tu experiencia.') }}
-                        <a href="{{ url('/privacy') }}" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400" target="_blank" rel="noopener">
-                            {{ __('Política de privacidad') }}
-                        </a>
+                        @if(page_enabled('privacy'))
+                            <a href="{{ url('/privacy') }}" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400" target="_blank" rel="noopener">
+                                {{ __('Política de privacidad') }}
+                            </a>
+                        @endif
                     </p>
                 </div>
             </div>

@@ -658,6 +658,32 @@ return [
         'orcid_help' => 'Format 0000-0000-0000-0000.',
     ],
 
+    // Menus and public page visibility (Roadmap #62)
+    'menus' => [
+        'navigation' => 'Menus',
+        'title' => 'Menus & public pages',
+        'section' => 'Public site pages',
+        'section_desc' => 'Control which pages exist for visitors. Turning "Accessible" off returns 404 even for a direct URL; "In menu" only removes the link from the header and footer.',
+        'enabled' => 'Accessible',
+        'in_menu' => 'In menu',
+        'locked_hint' => '(cannot be disabled)',
+        'saved' => 'Menus updated',
+        'saved_body' => 'The changes are already live on the public site.',
+        'pages' => [
+            'home' => 'Home',
+            'search' => 'Directory (journals & books)',
+            'ranking' => 'Ranking',
+            'pricing' => 'Pricing',
+            'seal_renewal' => 'Seal renewal',
+            'methodology' => 'Methodology',
+            'blog' => 'Blog',
+            'about' => 'About us',
+            'contact' => 'Contact',
+            'terms' => 'Terms of use',
+            'privacy' => 'Privacy',
+        ],
+    ],
+
     'sla' => [
         'navigation' => 'SLA Times',
         'title' => 'Times & SLA',

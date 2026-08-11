@@ -9,13 +9,20 @@
             {{ __('Evaluación editorial transparente para revistas científicas y libros académicos.') }}
         </p>
         <p style="margin: 0; color: #a1a1aa; font-size: 11px;">
+            {{-- Roadmap #62 — no enlazamos páginas que el admin deshabilitó (darían 404). --}}
             <a href="{{ url('/') }}" style="color: #1E3A8A; text-decoration: none;">{{ __('Sitio web') }}</a>
-            &nbsp;·&nbsp;
-            <a href="{{ url('/contact') }}" style="color: #1E3A8A; text-decoration: none;">{{ __('Contacto') }}</a>
-            &nbsp;·&nbsp;
-            <a href="{{ url('/privacy') }}" style="color: #1E3A8A; text-decoration: none;">{{ __('Privacidad') }}</a>
-            &nbsp;·&nbsp;
-            <a href="{{ url('/terms') }}" style="color: #1E3A8A; text-decoration: none;">{{ __('Términos') }}</a>
+            @if(page_enabled('contact'))
+                &nbsp;·&nbsp;
+                <a href="{{ url('/contact') }}" style="color: #1E3A8A; text-decoration: none;">{{ __('Contacto') }}</a>
+            @endif
+            @if(page_enabled('privacy'))
+                &nbsp;·&nbsp;
+                <a href="{{ url('/privacy') }}" style="color: #1E3A8A; text-decoration: none;">{{ __('Privacidad') }}</a>
+            @endif
+            @if(page_enabled('terms'))
+                &nbsp;·&nbsp;
+                <a href="{{ url('/terms') }}" style="color: #1E3A8A; text-decoration: none;">{{ __('Términos') }}</a>
+            @endif
         </p>
         @if($slot ?? false)
             <div style="margin-top: 12px; color: #a1a1aa; font-size: 11px;">

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Book;
 use App\Models\CmsPost;
 use App\Models\Journal;
+use App\Support\PageVisibility;
 use Illuminate\Console\Command;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -40,27 +41,38 @@ class GenerateSitemap extends Command
         $this->info('Generando sitemap.xml…');
 
         // ── Páginas estáticas (prioridad alta, frecuencia baja) ──
+        // Roadmap #62 — la clave es la del registro `config/site_pages.php`: una
+        // página que el admin deshabilitó devuelve 404, así que no se publica.
         $staticPages = [
-            ['url' => '/',                  'priority' => 1.0,  'frequency' => Url::CHANGE_FREQUENCY_WEEKLY],
-            ['url' => '/search',            'priority' => 0.9,  'frequency' => Url::CHANGE_FREQUENCY_DAILY],
-            ['url' => '/pricing',           'priority' => 0.9,  'frequency' => Url::CHANGE_FREQUENCY_MONTHLY],
-            ['url' => '/methodology',       'priority' => 0.8,  'frequency' => Url::CHANGE_FREQUENCY_MONTHLY],
-            ['url' => '/seal-renewal',      'priority' => 0.7,  'frequency' => Url::CHANGE_FREQUENCY_MONTHLY],
-            ['url' => '/about',             'priority' => 0.6,  'frequency' => Url::CHANGE_FREQUENCY_MONTHLY],
-            ['url' => '/contact',           'priority' => 0.6,  'frequency' => Url::CHANGE_FREQUENCY_YEARLY],
-            ['url' => '/blog',              'priority' => 0.8,  'frequency' => Url::CHANGE_FREQUENCY_WEEKLY],
-            ['url' => '/terms',             'priority' => 0.3,  'frequency' => Url::CHANGE_FREQUENCY_YEARLY],
-            ['url' => '/privacy',           'priority' => 0.3,  'frequency' => Url::CHANGE_FREQUENCY_YEARLY],
+            ['key' => 'home',         'url' => '/',              'priority' => 1.0,  'frequency' => Url::CHANGE_FREQUENCY_WEEKLY],
+            ['key' => 'search',       'url' => '/search',        'priority' => 0.9,  'frequency' => Url::CHANGE_FREQUENCY_DAILY],
+            ['key' => 'ranking',      'url' => '/ranking',       'priority' => 0.8,  'frequency' => Url::CHANGE_FREQUENCY_WEEKLY],
+            ['key' => 'pricing',      'url' => '/pricing',       'priority' => 0.9,  'frequency' => Url::CHANGE_FREQUENCY_MONTHLY],
+            ['key' => 'methodology',  'url' => '/methodology',   'priority' => 0.8,  'frequency' => Url::CHANGE_FREQUENCY_MONTHLY],
+            ['key' => 'seal_renewal', 'url' => '/seal-renewal',  'priority' => 0.7,  'frequency' => Url::CHANGE_FREQUENCY_MONTHLY],
+            ['key' => 'about',        'url' => '/about',         'priority' => 0.6,  'frequency' => Url::CHANGE_FREQUENCY_MONTHLY],
+            ['key' => 'contact',      'url' => '/contact',       'priority' => 0.6,  'frequency' => Url::CHANGE_FREQUENCY_YEARLY],
+            ['key' => 'blog',         'url' => '/blog',          'priority' => 0.8,  'frequency' => Url::CHANGE_FREQUENCY_WEEKLY],
+            ['key' => 'terms',        'url' => '/terms',         'priority' => 0.3,  'frequency' => Url::CHANGE_FREQUENCY_YEARLY],
+            ['key' => 'privacy',      'url' => '/privacy',       'priority' => 0.3,  'frequency' => Url::CHANGE_FREQUENCY_YEARLY],
         ];
 
+        $publishedPages = 0;
         foreach ($staticPages as $page) {
+            if (! PageVisibility::enabled($page['key'])) {
+                continue;
+            }
+
             $sitemap->add(
                 Url::create($page['url'])
                     ->setPriority($page['priority'])
                     ->setChangeFrequency($page['frequency'])
             );
+            $publishedPages++;
         }
-        $this->info('  ✓ '.count($staticPages).' páginas estáticas');
+
+        $skipped = count($staticPages) - $publishedPages;
+        $this->info("  ✓ {$publishedPages} páginas estáticas".($skipped > 0 ? " ({$skipped} deshabilitada(s) omitida(s))" : ''));
 
         // ── Journals públicos (listed o certified) ──
         // Solo journals que pasaron el filtro mínimo (listed o con sello).
@@ -119,28 +131,31 @@ class GenerateSitemap extends Command
         $this->info("  ✓ {$bookCount} books");
 
         // ── Posts del blog ──
+        // Si el blog está deshabilitado, `/blog/{slug}` también devuelve 404.
         $postCount = 0;
-        CmsPost::query()
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', now())
-            ->whereNotNull('slug')
-            ->chunk(200, function ($posts) use ($sitemap, &$postCount) {
-                foreach ($posts as $post) {
-                    $sitemap->add(
-                        Url::create("/blog/{$post->slug}")
-                            ->setLastModificationDate($post->updated_at ?? $post->published_at)
-                            ->setPriority($post->is_featured ?? false ? 0.7 : 0.5)
-                            ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
-                    );
-                    $postCount++;
-                }
-            });
+        if (PageVisibility::enabled('blog')) {
+            CmsPost::query()
+                ->whereNotNull('published_at')
+                ->where('published_at', '<=', now())
+                ->whereNotNull('slug')
+                ->chunk(200, function ($posts) use ($sitemap, &$postCount) {
+                    foreach ($posts as $post) {
+                        $sitemap->add(
+                            Url::create("/blog/{$post->slug}")
+                                ->setLastModificationDate($post->updated_at ?? $post->published_at)
+                                ->setPriority($post->is_featured ?? false ? 0.7 : 0.5)
+                                ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
+                        );
+                        $postCount++;
+                    }
+                });
+        }
         $this->info("  ✓ {$postCount} posts del blog");
 
         // ── Escribir archivo ──
         $sitemap->writeToFile($path);
 
-        $total = count($staticPages) + $journalCount + $bookCount + $postCount;
+        $total = $publishedPages + $journalCount + $bookCount + $postCount;
         $size = number_format(filesize($path) / 1024, 1);
         $this->newLine();
         $this->info("✅ Sitemap generado: {$path}");

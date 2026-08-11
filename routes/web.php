@@ -89,46 +89,51 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureSuperAdmin::class])->group
 // ────────────────────────────────────────────────────────
 // Localizable public routes
 // ────────────────────────────────────────────────────────
+// Roadmap #62 — cada página pública lleva `page:{clave}` (ver config/site_pages.php).
+// Si el admin la deshabilita en Sistema → Menús, la ruta devuelve 404 aunque se
+// conozca la URL; ocultar el link del menú por sí solo no bloqueaba nada.
 $publicRoutes = function () {
     Route::get('/', function () {
         return view('home');
-    })->name('home');
+    })->name('home')->middleware('page:home');
 
     Route::get('/search', function () {
         return view('search');
-    })->name('search');
+    })->name('search')->middleware('page:search');
 
     Route::get('/pricing', function () {
         $products = \App\Models\Product::where('is_active', true)->get()->keyBy('slug');
 
         return view('pricing', compact('products'));
-    })->name('pricing');
+    })->name('pricing')->middleware('page:pricing');
 
-    Route::get('/seal-renewal', fn () => view('seal-renewal-info'))->name('seal.renewal.info');
+    Route::get('/seal-renewal', fn () => view('seal-renewal-info'))
+        ->name('seal.renewal.info')
+        ->middleware('page:seal_renewal');
 
     Route::get('/methodology', function () {
         return view('methodology');
-    })->name('methodology');
+    })->name('methodology')->middleware('page:methodology');
 
     Route::get('/contact', function () {
         return view('contact');
-    })->name('contact');
+    })->name('contact')->middleware('page:contact');
 
     Route::get('/about', function () {
         return view('about');
-    })->name('about');
+    })->name('about')->middleware('page:about');
 
     Route::get('/ranking', function () {
         return view('ranking');
-    })->name('ranking');
+    })->name('ranking')->middleware('page:ranking');
 
     Route::get('/terms', function () {
         return view('terms');
-    })->name('terms');
+    })->name('terms')->middleware('page:terms');
 
     Route::get('/privacy', function () {
         return view('privacy');
-    })->name('privacy');
+    })->name('privacy')->middleware('page:privacy');
 
     Route::get('/blog', function (Illuminate\Http\Request $request) {
         $query = App\Models\CmsPost::published()->latest('published_at');
@@ -141,7 +146,7 @@ $publicRoutes = function () {
         $featured = App\Models\CmsPost::published()->featured()->latest('published_at')->first();
 
         return view('blog.index', compact('posts', 'featured'));
-    })->name('blog.index');
+    })->name('blog.index')->middleware('page:blog');
 
     Route::get('/blog/{slug}', function (string $slug) {
         $post = App\Models\CmsPost::published()->where('slug', $slug)->firstOrFail();
@@ -153,7 +158,7 @@ $publicRoutes = function () {
             ->get();
 
         return view('blog.show', compact('post', 'related'));
-    })->name('blog.show');
+    })->name('blog.show')->middleware('page:blog'); // apagar el blog apaga también los posts
 
     Route::get('/journal/{slug}', function (string $slug) {
         $journal = Journal::where('slug', $slug)
@@ -165,9 +170,29 @@ $publicRoutes = function () {
 
     Route::get('/journal/{slug}/articles', function (string $slug) {
         $journal = Journal::where('slug', $slug)->firstOrFail();
-        $articles = $journal->harvestedArticles()->orderByDesc('date')->paginate(20);
 
-        return view('journal.articles', compact('journal', 'articles'));
+        $filters = [
+            'q' => trim((string) request('q')),
+            'from' => request('from'),
+            'to' => request('to'),
+        ];
+
+        $articles = $journal->harvestedArticles()
+            ->when($filters['q'] !== '', function ($query) use ($filters) {
+                $term = '%'.$filters['q'].'%';
+                $query->where(function ($sub) use ($term) {
+                    $sub->where('title', 'like', $term)
+                        ->orWhere('authors', 'like', $term)
+                        ->orWhere('authors_json', 'like', $term);
+                });
+            })
+            ->when($filters['from'], fn ($query, $from) => $query->whereDate('date', '>=', $from))
+            ->when($filters['to'], fn ($query, $to) => $query->whereDate('date', '<=', $to))
+            ->orderByDesc('date')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('journal.articles', compact('journal', 'articles', 'filters'));
     })->name('journal.articles');
 
     Route::get('/book/{slug}', function (string $slug) {

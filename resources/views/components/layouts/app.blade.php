@@ -117,9 +117,17 @@
                         <div>
                             <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Platform') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="{{ locale_path('/search') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Scientific Journals') }}</a></li>
-                                <li><a href="{{ locale_path('/search?type=books') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Academic Books') }}</a></li>
-                                <li><a href="{{ locale_path('/blog') }}" class="transition hover:text-brand dark:hover:text-blue-400">Blog</a></li>
+                                {{-- Roadmap #62 — links gestionados desde Sistema → Menús. --}}
+                                @if(page_in_menu('search'))
+                                    <li><a href="{{ locale_path('/search') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Scientific Journals') }}</a></li>
+                                    <li><a href="{{ locale_path('/search?type=books') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Academic Books') }}</a></li>
+                                @endif
+                                @if(page_in_menu('ranking'))
+                                    <li><a href="{{ locale_path('/ranking') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Ranking') }}</a></li>
+                                @endif
+                                @if(page_in_menu('blog'))
+                                    <li><a href="{{ locale_path('/blog') }}" class="transition hover:text-brand dark:hover:text-blue-400">Blog</a></li>
+                                @endif
                             </ul>
                         </div>
 
@@ -127,11 +135,19 @@
                         <div>
                             <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Services') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="{{ locale_path('/methodology') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Methodology') }}</a></li>
-                                <li><a href="{{ locale_path('/pricing') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Editorial Evaluation') }}</a></li>
-                                <li><a href="{{ locale_path('/seal-renewal') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Seal renewal information') }}</a></li>
+                                @if(page_in_menu('methodology'))
+                                    <li><a href="{{ locale_path('/methodology') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Methodology') }}</a></li>
+                                @endif
+                                @if(page_in_menu('pricing'))
+                                    <li><a href="{{ locale_path('/pricing') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Editorial Evaluation') }}</a></li>
+                                @endif
+                                @if(page_in_menu('seal_renewal'))
+                                    <li><a href="{{ locale_path('/seal-renewal') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Seal renewal information') }}</a></li>
+                                @endif
                                 <li><a href="{{ locale_path('/register') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Register Journal') }}</a></li>
-                                <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('For Institutions') }}</a></li>
+                                @if(page_in_menu('contact'))
+                                    <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('For Institutions') }}</a></li>
+                                @endif
                             </ul>
                         </div>
 
@@ -139,10 +155,18 @@
                         <div>
                             <h4 class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ __('Company') }}</h4>
                             <ul class="space-y-2.5 text-sm text-gray-600 dark:text-gray-400">
-                                <li><a href="{{ locale_path('/about') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('About Us') }}</a></li>
-                                <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Contact') }}</a></li>
-                                <li><a href="{{ locale_path('/terms') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Terms of Use') }}</a></li>
-                                <li><a href="{{ locale_path('/privacy') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Privacy') }}</a></li>
+                                @if(page_in_menu('about'))
+                                    <li><a href="{{ locale_path('/about') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('About Us') }}</a></li>
+                                @endif
+                                @if(page_in_menu('contact'))
+                                    <li><a href="{{ locale_path('/contact') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Contact') }}</a></li>
+                                @endif
+                                @if(page_in_menu('terms'))
+                                    <li><a href="{{ locale_path('/terms') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Terms of Use') }}</a></li>
+                                @endif
+                                @if(page_in_menu('privacy'))
+                                    <li><a href="{{ locale_path('/privacy') }}" class="transition hover:text-brand dark:hover:text-blue-400">{{ __('Privacy') }}</a></li>
+                                @endif
                             </ul>
                         </div>
                     </div>

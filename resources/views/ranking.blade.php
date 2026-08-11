@@ -11,12 +11,16 @@
             <p class="mx-auto mt-4 max-w-2xl text-blue-200">{{ __('ranking.subtitle') }}</p>
 
             <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
-                <a href="{{ route('search') }}" class="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:bg-white/10">
-                    {{ __('ranking.cta_directory') }}
-                </a>
-                <a href="{{ route('methodology') }}" class="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:bg-white/10">
-                    {{ __('ranking.cta_methodology') }}
-                </a>
+                @if(page_enabled('search'))
+                    <a href="{{ route('search') }}" class="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:bg-white/10">
+                        {{ __('ranking.cta_directory') }}
+                    </a>
+                @endif
+                @if(page_enabled('methodology'))
+                    <a href="{{ route('methodology') }}" class="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:bg-white/10">
+                        {{ __('ranking.cta_methodology') }}
+                    </a>
+                @endif
             </div>
         </div>
     </section>

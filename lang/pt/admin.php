@@ -658,6 +658,32 @@ return [
         'pdf' => 'PDF',
     ],
 
+    // Menus e visibilidade das páginas públicas (Roadmap #62)
+    'menus' => [
+        'navigation' => 'Menus',
+        'title' => 'Menus e páginas públicas',
+        'section' => 'Páginas do site público',
+        'section_desc' => 'Controle quais páginas existem para o visitante. Com «Acessível» desligado a rota devolve 404 mesmo pela URL direta; «No menu» apenas remove o link do cabeçalho e do rodapé.',
+        'enabled' => 'Acessível',
+        'in_menu' => 'No menu',
+        'locked_hint' => '(não pode ser desativada)',
+        'saved' => 'Menus atualizados',
+        'saved_body' => 'As alterações já estão ativas no site público.',
+        'pages' => [
+            'home' => 'Início',
+            'search' => 'Diretório (revistas e livros)',
+            'ranking' => 'Ranking',
+            'pricing' => 'Preços',
+            'seal_renewal' => 'Renovação do selo',
+            'methodology' => 'Metodologia',
+            'blog' => 'Blog',
+            'about' => 'Sobre nós',
+            'contact' => 'Contato',
+            'terms' => 'Termos de uso',
+            'privacy' => 'Privacidade',
+        ],
+    ],
+
     'sla' => [
         'navigation' => 'Prazos SLA',
         'title' => 'Prazos e SLA',

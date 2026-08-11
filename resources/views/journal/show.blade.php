@@ -37,8 +37,10 @@
             <nav class="mb-6 text-sm text-gray-500 dark:text-gray-400">
                 <a href="/" class="hover:text-brand">{{ __('Home') }}</a>
                 <span class="mx-2">/</span>
-                <a href="/search" class="hover:text-brand">{{ __('Search') }}</a>
-                <span class="mx-2">/</span>
+                @if(page_enabled('search'))
+                    <a href="/search" class="hover:text-brand">{{ __('Search') }}</a>
+                    <span class="mx-2">/</span>
+                @endif
                 <span class="text-gray-900 dark:text-white">{{ $journal->getTranslationWithFallback('title') }}</span>
             </nav>
 
@@ -559,10 +561,12 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 {{ __('Verify seal') }}
                             </a>
-                            <a href="/methodology" class="flex items-center gap-2 text-sm font-medium text-brand hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                {{ __('Learn about the methodology') }}
-                            </a>
+                            @if(page_enabled('methodology'))
+                                <a href="/methodology" class="flex items-center gap-2 text-sm font-medium text-brand hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    {{ __('Learn about the methodology') }}
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endif

@@ -690,6 +690,32 @@ return [
         'orcid_help' => 'Formato 0000-0000-0000-0000.',
     ],
 
+    // Menús y visibilidad de páginas públicas (Roadmap #62)
+    'menus' => [
+        'navigation' => 'Menús',
+        'title' => 'Menús y páginas públicas',
+        'section' => 'Páginas del sitio público',
+        'section_desc' => 'Controlá qué páginas existen para el visitante. «Accesible» apagado devuelve 404 incluso con la URL directa; «En el menú» solo saca el link del encabezado y del pie.',
+        'enabled' => 'Accesible',
+        'in_menu' => 'En el menú',
+        'locked_hint' => '(no se puede deshabilitar)',
+        'saved' => 'Menús actualizados',
+        'saved_body' => 'Los cambios ya están activos en el sitio público.',
+        'pages' => [
+            'home' => 'Inicio',
+            'search' => 'Directorio (revistas y libros)',
+            'ranking' => 'Ranking',
+            'pricing' => 'Precios',
+            'seal_renewal' => 'Renovación del sello',
+            'methodology' => 'Metodología',
+            'blog' => 'Blog',
+            'about' => 'Nosotros',
+            'contact' => 'Contacto',
+            'terms' => 'Términos de uso',
+            'privacy' => 'Privacidad',
+        ],
+    ],
+
     // SLA Settings
     'sla' => [
         'navigation' => 'Plazos SLA',
