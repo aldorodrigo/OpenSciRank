@@ -1,6 +1,14 @@
 <x-layouts.app :title="__('Pricing - Editorial Standards Platform')" :description="__('Learn about our plans and prices for editorial evaluation of scientific journals and academic book listing.')">
     <x-slot:header>true</x-slot:header>
 
+    {{-- Precio de un producto por slug, con fallback si la fila no existe en la BD
+         (ej. ProductSeeder no corrido) o si el producto está inactivo. --}}
+    @php
+        $price = fn (string $slug, string $fallback) => ($products[$slug] ?? null)?->price
+            ? number_format($products[$slug]->price, 0)
+            : $fallback;
+    @endphp
+
     {{-- Hero --}}
     <section class="bg-brand-deep py-16 text-white">
         <div class="container mx-auto px-4 text-center">
@@ -68,7 +76,7 @@
                     <h3 class="text-xl font-bold">{{ __('Editorial Evaluation') }}</h3>
                     <p class="mt-2 text-sm text-blue-200">{{ __('Complete technical evaluation + possibility of Editorial Seal.') }}</p>
                     <div class="mt-6">
-                        <span class="text-4xl font-extrabold">${{ $products['journal-evaluation']?->price ? number_format($products['journal-evaluation']->price, 0) : '99' }}</span>
+                        <span class="text-4xl font-extrabold">${{ $price('journal-evaluation', '99') }}</span>
                         <span class="text-sm text-blue-200"> USD</span>
                     </div>
                     <p class="mt-1 text-xs text-blue-300">{{ __('Standard timeframe: :days business days', ['days' => \App\Models\Setting::get('sla_evaluation_business_days', 15)]) }}</p>
@@ -119,7 +127,7 @@
                         <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 text-center dark:border-gray-700 dark:bg-gray-800">
                             <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('1 Year') }}</p>
                             <p class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
-                                ${{ $products['seal-renewal-1y']?->price ? number_format($products['seal-renewal-1y']->price, 0) : '89' }}
+                                ${{ $price('seal-renewal-1y', '89') }}
                                 <span class="text-xs font-normal text-gray-500">USD</span>
                             </p>
                         </div>
@@ -127,7 +135,7 @@
                         <div class="rounded-xl bg-blue-50 p-6 text-center ring-1 ring-blue-200 dark:bg-blue-900/30 dark:ring-brand">
                             <p class="text-xs uppercase tracking-wide text-brand dark:text-blue-300">{{ __('2 Years') }} · {{ __('most picked') }}</p>
                             <p class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
-                                ${{ $products['seal-renewal-2y']?->price ? number_format($products['seal-renewal-2y']->price, 0) : '149' }}
+                                ${{ $price('seal-renewal-2y', '149') }}
                                 <span class="text-xs font-normal text-gray-500">USD</span>
                             </p>
                         </div>
@@ -135,7 +143,7 @@
                         <div class="rounded-xl bg-blue-50 p-6 text-center ring-1 ring-blue-200 dark:bg-blue-900/20 dark:ring-blue-700">
                             <p class="text-xs uppercase tracking-wide text-blue-700 dark:text-blue-300">{{ __('3 Years') }} · {{ __('best value') }}</p>
                             <p class="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white">
-                                ${{ $products['seal-renewal-3y']?->price ? number_format($products['seal-renewal-3y']->price, 0) : '199' }}
+                                ${{ $price('seal-renewal-3y', '199') }}
                                 <span class="text-xs font-normal text-gray-500">USD</span>
                             </p>
                         </div>
@@ -182,7 +190,7 @@
                             <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Permanent inclusion in the academic publications index.') }}</p>
                         </div>
                         <div class="text-right">
-                            <span class="text-3xl font-extrabold text-gray-900 dark:text-white">${{ $products['book-listing']?->price ? number_format($products['book-listing']->price, 0) : '49' }}</span>
+                            <span class="text-3xl font-extrabold text-gray-900 dark:text-white">${{ $price('book-listing', '49') }}</span>
                             <span class="text-sm text-gray-500 dark:text-gray-400"> USD</span>
                         </div>
                     </div>
@@ -367,7 +375,7 @@
                                     <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Action Plan + Consulting') }}</h3>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Specific recommendations per criterion, 30-min consulting session with the evaluator and a prioritized roadmap.') }}</p>
                                 </div>
-                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['action-plan-consulting']?->price ? number_format($products['action-plan-consulting']->price, 0) : '215' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
+                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $price('action-plan-consulting', '215') }} <span class="text-xs font-normal text-gray-500">USD</span></span>
                             </div>
                         </div>
                     </div>
@@ -383,7 +391,7 @@
                                     <h3 class="font-bold text-gray-900 dark:text-white">{{ __('Editorial Re-evaluation') }}</h3>
                                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Full new evaluation to improve your score or achieve the seal.') }}</p>
                                 </div>
-                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $products['journal-reevaluation']?->price ? number_format($products['journal-reevaluation']->price, 0) : '99' }} <span class="text-xs font-normal text-gray-500">USD</span></span>
+                                <span class="whitespace-nowrap text-lg font-extrabold text-gray-900 dark:text-white">${{ $price('journal-reevaluation', '99') }} <span class="text-xs font-normal text-gray-500">USD</span></span>
                             </div>
                         </div>
                     </div>
@@ -400,15 +408,15 @@
                                 <div class="mt-4 grid gap-3 sm:grid-cols-3">
                                     <div class="rounded-lg bg-gray-50 p-3 text-center dark:bg-gray-800">
                                         <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('1 Year') }}</p>
-                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-1y']?->price ? number_format($products['seal-renewal-1y']->price, 0) : '89' }} <span class="text-xs font-normal text-gray-500">USD</span></p>
+                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $price('seal-renewal-1y', '89') }} <span class="text-xs font-normal text-gray-500">USD</span></p>
                                     </div>
                                     <div class="rounded-lg bg-blue-50 p-3 text-center ring-1 ring-blue-200 dark:bg-blue-900/30 dark:ring-brand">
                                         <p class="text-xs uppercase tracking-wide text-brand dark:text-blue-300">{{ __('2 Years') }} · {{ __('most picked') }}</p>
-                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-2y']?->price ? number_format($products['seal-renewal-2y']->price, 0) : '149' }} <span class="text-xs font-normal text-gray-500">USD</span></p>
+                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $price('seal-renewal-2y', '149') }} <span class="text-xs font-normal text-gray-500">USD</span></p>
                                     </div>
                                     <div class="rounded-lg bg-blue-50 p-3 text-center ring-1 ring-blue-200 dark:bg-blue-900/20 dark:ring-blue-700">
                                         <p class="text-xs uppercase tracking-wide text-blue-700 dark:text-blue-300">{{ __('3 Years') }} · {{ __('best value') }}</p>
-                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $products['seal-renewal-3y']?->price ? number_format($products['seal-renewal-3y']->price, 0) : '199' }} <span class="text-xs font-normal text-gray-500">USD</span></p>
+                                        <p class="text-xl font-extrabold text-gray-900 dark:text-white">${{ $price('seal-renewal-3y', '199') }} <span class="text-xs font-normal text-gray-500">USD</span></p>
                                     </div>
                                 </div>
                             </div>
