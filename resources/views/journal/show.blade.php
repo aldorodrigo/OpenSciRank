@@ -752,22 +752,6 @@
                     </div>
                 </div>
 
-                {{-- Registered By --}}
-                @if($journal->user)
-                    <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-900">
-                        <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">{{ __('Registered By') }}</h3>
-                        <div class="flex items-center gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400 font-bold text-sm">
-                                {{ strtoupper(substr($journal->user->name, 0, 2)) }}
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $journal->user->name }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $journal->created_at->format('d/m/Y') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
             </aside>
         </div>
     </div>
