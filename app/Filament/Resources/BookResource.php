@@ -146,6 +146,7 @@ class BookResource extends Resource
                                 Forms\Components\FileUpload::make('cover_image')
                                     ->label(__('admin.book.f.cover_image'))
                                     ->image()
+                                    ->disk('public')
                                     ->directory('book-covers')
                                     ->columnSpanFull(),
                                 Forms\Components\Select::make('user_id')
@@ -333,6 +334,7 @@ class BookResource extends Resource
                                     ]),
                                 Forms\Components\FileUpload::make('table_of_contents_file')
                                     ->label(__('admin.book.f.toc_file'))
+                                    ->disk('public')
                                     ->directory('book-toc')
                                     ->acceptedFileTypes(['application/pdf', 'image/*'])
                                     ->columnSpanFull(),
@@ -504,6 +506,7 @@ class BookResource extends Resource
                             ->schema([
                                 Forms\Components\FileUpload::make('main_file')
                                     ->label(__('admin.book.f.main_file'))
+                                    ->disk('public')
                                     ->directory('books')
                                     ->acceptedFileTypes(['application/pdf', 'application/epub+zip'])
                                     ->columnSpanFull(),
@@ -515,6 +518,7 @@ class BookResource extends Resource
                                             ->required(),
                                         Forms\Components\FileUpload::make('file')
                                             ->label(__('admin.book.f.file'))
+                                            ->disk('public')
                                             ->directory('book-chapters')
                                             ->acceptedFileTypes(['application/pdf']),
                                     ])
@@ -529,6 +533,7 @@ class BookResource extends Resource
                                             ->required(),
                                         Forms\Components\FileUpload::make('file')
                                             ->label(__('admin.book.f.file'))
+                                            ->disk('public')
                                             ->directory('book-supplementary'),
                                     ])
                                     ->columns(2)
@@ -602,6 +607,7 @@ class BookResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('cover_image')
                     ->label(__('admin.book.cover'))
+                    ->disk('public')
                     ->circular(false)
                     ->width(50)
                     ->height(70),

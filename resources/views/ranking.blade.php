@@ -52,7 +52,7 @@
                     <div class="flex flex-col items-center bg-white py-6 text-center dark:bg-gray-900 {{ $pos === 0 ? 'bg-amber-50 dark:bg-amber-900/10' : '' }}">
                         <div class="mb-2 text-3xl">{{ $pos === 0 ? '🥇' : ($pos === 1 ? '🥈' : '🥉') }}</div>
                         @if($j->logo)
-                            <img src="{{ Storage::url($j->logo) }}" alt="{{ $j->getTranslationWithFallback('title') }}" class="h-10 w-10 rounded-lg object-cover">
+                            <img src="{{ Storage::disk('public')->url($j->logo) }}" alt="{{ $j->getTranslationWithFallback('title') }}" class="h-10 w-10 rounded-lg object-cover">
                         @else
                             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -98,7 +98,7 @@
                                 <td class="px-6 py-4">
                                     <a href="{{ route('journal.show', $j->slug) }}" class="flex items-center gap-3">
                                         @if($j->logo)
-                                            <img src="{{ Storage::url($j->logo) }}" alt="{{ $j->getTranslationWithFallback('title') }}" class="h-9 w-9 rounded-lg object-cover">
+                                            <img src="{{ Storage::disk('public')->url($j->logo) }}" alt="{{ $j->getTranslationWithFallback('title') }}" class="h-9 w-9 rounded-lg object-cover">
                                         @else
                                             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>

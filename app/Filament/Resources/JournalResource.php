@@ -105,6 +105,7 @@ class JournalResource extends Resource
                                     ->hintIcon('heroicon-o-information-circle', tooltip: __('admin.journal.logo_tooltip'))
                                     ->image()
                                     ->imageEditor()
+                                    ->disk('public')
                                     ->directory('journal-logos')
                                     ->maxSize(2048)
                                     ->columnSpanFull(),

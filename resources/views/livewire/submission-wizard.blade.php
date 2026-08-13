@@ -149,7 +149,7 @@
                         <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Journal Logo') }} <x-field-tooltip :text="__('Upload the official journal logo. Accepted formats: JPG, PNG, SVG, WEBP. Maximum 2 MB.')" /></label>
                         @if($existing_logo && !$logo)
                             <div class="mb-3 flex items-center gap-4">
-                                <img src="{{ Storage::url($existing_logo) }}" alt="{{ __('Current logo') }}" class="max-h-32 w-auto rounded-lg object-contain shadow">
+                                <img src="{{ Storage::disk('public')->url($existing_logo) }}" alt="{{ __('Current logo') }}" class="max-h-32 w-auto rounded-lg object-contain shadow">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Current logo') }}</span>
                             </div>
                         @endif

@@ -216,7 +216,7 @@
                 <a href="{{ route('journal.show', $fj->slug) }}" class="group rounded-xl border border-gray-200 bg-white p-6 transition hover:border-blue-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:hover:border-brand" style="text-decoration:none;">
                     <div class="mb-4 flex items-center gap-4">
                         @if($fj->logo)
-                            <img src="{{ Storage::url($fj->logo) }}" alt="{{ $fj->getTranslationWithFallback('title') }}" class="h-12 w-12 rounded-lg object-cover">
+                            <img src="{{ Storage::disk('public')->url($fj->logo) }}" alt="{{ $fj->getTranslationWithFallback('title') }}" class="h-12 w-12 rounded-lg object-cover">
                         @else
                             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

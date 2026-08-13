@@ -39,7 +39,7 @@
                 <a href="{{ route('blog.show', $featured->slug) }}" class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-lg transition hover:shadow-xl dark:bg-gray-900 md:flex-row">
                     <div class="flex h-64 items-center justify-center bg-blue-100 p-12 dark:from-blue-900/50 dark:to-blue-900/50 md:h-auto md:w-72 md:shrink-0">
                         @if($featured->image_path)
-                            <img src="{{ Storage::url($featured->image_path) }}" alt="{{ $featured->getTranslationWithFallback('title') }}" class="h-full w-full object-cover">
+                            <img src="{{ Storage::disk('public')->url($featured->image_path) }}" alt="{{ $featured->getTranslationWithFallback('title') }}" class="h-full w-full object-cover">
                         @else
                             <span class="text-8xl">{{ $featured->emoji ?? '📝' }}</span>
                         @endif
@@ -73,7 +73,7 @@
                     <a href="{{ route('blog.show', $post->slug) }}" class="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-lg dark:bg-gray-900">
                         <div class="flex h-48 items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700">
                             @if($post->image_path)
-                                <img src="{{ Storage::url($post->image_path) }}" alt="{{ $post->getTranslationWithFallback('title') }}" class="h-full w-full object-cover">
+                                <img src="{{ Storage::disk('public')->url($post->image_path) }}" alt="{{ $post->getTranslationWithFallback('title') }}" class="h-full w-full object-cover">
                             @else
                                 <span class="text-6xl">{{ $post->emoji ?? '📝' }}</span>
                             @endif

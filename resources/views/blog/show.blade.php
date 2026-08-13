@@ -46,7 +46,7 @@
                 {{-- Featured image or emoji --}}
                 <div class="mb-10 overflow-hidden rounded-2xl">
                     @if($post->image_path)
-                        <img src="{{ Storage::url($post->image_path) }}" alt="{{ $post->getTranslationWithFallback('title') }}" class="w-full h-auto object-cover">
+                        <img src="{{ Storage::disk('public')->url($post->image_path) }}" alt="{{ $post->getTranslationWithFallback('title') }}" class="w-full h-auto object-cover">
                     @else
                         <div class="flex h-64 items-center justify-center bg-blue-100 dark:from-blue-900/50 dark:to-blue-900/50">
                             <span class="text-9xl">{{ $post->emoji ?? '📝' }}</span>
@@ -82,7 +82,7 @@
                 <a href="{{ route('blog.show', $relatedPost->slug) }}" class="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm transition hover:shadow-lg dark:bg-gray-950">
                     <div class="flex h-48 items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700">
                         @if($relatedPost->image_path)
-                            <img src="{{ Storage::url($relatedPost->image_path) }}" alt="{{ $relatedPost->getTranslationWithFallback('title') }}" class="h-full w-full object-cover">
+                            <img src="{{ Storage::disk('public')->url($relatedPost->image_path) }}" alt="{{ $relatedPost->getTranslationWithFallback('title') }}" class="h-full w-full object-cover">
                         @else
                             <span class="text-6xl">{{ $relatedPost->emoji ?? '📝' }}</span>
                         @endif

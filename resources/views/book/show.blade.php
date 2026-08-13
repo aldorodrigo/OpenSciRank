@@ -47,7 +47,7 @@
                 {{-- Cover / Icon --}}
                 <div class="shrink-0">
                     @if($book->cover ?? null)
-                        <img src="{{ Storage::url($book->cover) }}" alt="{{ $book->getTranslationWithFallback('title') }}" class="h-40 w-32 rounded-xl object-cover shadow-lg">
+                        <img src="{{ Storage::disk('public')->url($book->cover) }}" alt="{{ $book->getTranslationWithFallback('title') }}" class="h-40 w-32 rounded-xl object-cover shadow-lg">
                     @else
                         <div class="flex h-40 w-32 items-center justify-center rounded-xl bg-blue-100 shadow-lg dark:from-blue-900/50 dark:to-blue-900/50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">

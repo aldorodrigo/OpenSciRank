@@ -49,7 +49,7 @@
                 <div class="flex flex-col items-start gap-6 md:flex-row md:items-center">
                     {{-- Logo --}}
                     @if($journal->logo)
-                        <img src="{{ Storage::url($journal->logo) }}" alt="{{ $journal->getTranslationWithFallback('title') }}" class="max-h-24 w-auto rounded-xl object-contain shadow-md" style="max-width: 112px;">
+                        <img src="{{ Storage::disk('public')->url($journal->logo) }}" alt="{{ $journal->getTranslationWithFallback('title') }}" class="max-h-24 w-auto rounded-xl object-contain shadow-md" style="max-width: 112px;">
                     @else
                         <div class="flex h-24 w-24 items-center justify-center rounded-xl bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

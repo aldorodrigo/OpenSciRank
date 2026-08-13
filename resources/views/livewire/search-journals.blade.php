@@ -256,7 +256,7 @@
                                     <div class="mb-3 flex items-start gap-3">
                                         {{-- Logo / Icon --}}
                                         @if($itemType === 'journal' && $item->logo)
-                                            <img src="{{ Storage::url($item->logo) }}" alt="" class="h-12 w-12 shrink-0 rounded-lg object-contain shadow-sm">
+                                            <img src="{{ Storage::disk('public')->url($item->logo) }}" alt="" class="h-12 w-12 shrink-0 rounded-lg object-contain shadow-sm">
                                         @else
                                             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg {{ $itemType === 'journal' ? 'bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400' : 'bg-blue-100 text-brand dark:bg-blue-900/50 dark:text-blue-400' }}">
                                                 @if($itemType === 'journal')

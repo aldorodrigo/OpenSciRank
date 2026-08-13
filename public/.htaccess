@@ -46,7 +46,9 @@
     # 🛡️ Permissions-Policy: deshabilita features del browser que NO necesitamos.
     # Si una librería intenta abrir cámara/micrófono/GPS sin permiso, el browser
     # bloquea silenciosamente. Reduce superficie de ataque.
-    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(self 'https://checkout.stripe.com'), fullscreen=(self)"
+    # Sintaxis structured-fields: los orígenes van entre comillas DOBLES (las
+    # comillas simples son sintaxis de CSP y rompen el parser del browser).
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(self \"https://checkout.stripe.com\"), fullscreen=(self)"
 
     # 🛡️ HSTS — fuerza HTTPS en todas las requests futuras durante 1 año.
     # SOLO se envía sobre conexiones HTTPS (env=HTTPS), no rompe local HTTP.
