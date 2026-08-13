@@ -195,7 +195,7 @@ El panel admin permite exportar a CSV o XLSX desde tres recursos:
 
 1. El admin pulsa "Exportar" → Filament abre un modal para elegir CSV o XLSX y las columnas a incluir.
 2. Si la tabla tiene filtros activos, **solo se exporta lo filtrado**.
-3. La exportación se procesa en segundo plano vía cola (`exports` queue). En `QUEUE_CONNECTION=sync` (modo Hostinger compartido sin worker) se procesa de inmediato.
+3. La exportación se procesa en segundo plano vía la cola `default` (las `ExportAction` no sobrescriben la cola). Requiere worker activo — ver [Worker de colas](#worker-de-colas--obligatorio).
 4. Una notificación en el panel ofrece el botón "Descargar" cuando termina.
 
 ### Requisitos
@@ -437,7 +437,7 @@ nano /etc/supervisor/conf.d/editorial-standards-worker.conf
 ```ini
 [program:editorial-standards-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/editorial-standards/artisan queue:work database --queue=mail,default --sleep=3 --max-time=3600
+command=php /var/www/editorial-standards/artisan queue:work database --queue=harvest,mail,default --sleep=3 --tries=3 --max-time=3600 --timeout=310
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -455,8 +455,20 @@ supervisorctl update
 supervisorctl start editorial-standards-worker:*
 ```
 
+> **Las tres colas son obligatorias.** `harvest` lleva `HarvestJournalArticles`
+> (cosecha OAI-PMH, encolada por la acción de Filament y por el cron semanal
+> `oai:harvest --all --queue`); `mail` lleva todas las notificaciones; `default`
+> lleva `RefreshJournalMetricsJob` y las exportaciones CSV/XLSX de Filament. Si
+> omitís una, esos jobs se acumulan en la tabla `jobs` y no se procesan nunca.
+> El orden `harvest,mail,default` es el de `docker/8.3/supervisord.conf`, salvo
+> que ahí `harvest` va primero por ser el más lento; para producción priorizar
+> el correo con `--queue=mail,default,harvest` también es válido.
+>
+> **`--timeout=310`** acompaña al `$timeout = 300` declarado en
+> `HarvestJournalArticles`: el worker debe tolerar algo más que el job.
+>
 > **Cola `mail` y correo.** Todas las notificaciones extienden `QueuedNotification`
-> (`ShouldQueue`, cola `mail`). `--queue=mail,default` prioriza el correo. Con
+> (`ShouldQueue`, cola `mail`). Con
 > `QUEUE_CONNECTION=database` el correo se envía en el worker: si SES tarda o
 > falla, no bloquea el request del usuario ni el webhook de Stripe, y reintenta
 > con backoff (hasta 6h; luego a `failed_jobs`, visible en **/admin → Monitor de
@@ -468,6 +480,25 @@ supervisorctl start editorial-standards-worker:*
 >
 > En local con `QUEUE_CONNECTION=sync` no hace falta worker: el correo se envía
 > inline y Mailpit lo captura igual.
+
+#### Cron del scheduler (obligatorio, aparte del worker)
+
+El worker procesa jobs ya encolados; **no** dispara las tareas programadas. Son
+dos piezas distintas y ambas hacen falta. Agregar la entrada de crontab del
+usuario que corre la app:
+
+```bash
+crontab -u www-data -e
+```
+
+```
+* * * * * cd /var/www/editorial-standards && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Verificar con `php artisan schedule:list`. El listado completo de tareas y qué
+rompe cada una si no corre está en la
+[tabla de tareas programadas](#9-configurar-cron-jobs-scheduler-de-laravel) de la
+sección de Hostinger — es el mismo `routes/console.php` en ambos entornos.
 
 ---
 
@@ -632,6 +663,8 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 ```
 
+> 🚨 **`QUEUE_CONNECTION=database` obliga a tener un worker corriendo.** Todas las notificaciones son `ShouldQueue`: si no configurás el worker del [paso 9](#worker-de-colas--obligatorio), los emails se encolan en la tabla `jobs` y **nunca se envían**, sin ningún error visible.
+
 > **Email en Hostinger:** crea primero una cuenta de correo en hPanel → **Emails → Cuentas de correo** y usa esas credenciales SMTP.
 
 ---
@@ -680,13 +713,22 @@ Si el sitio muestra un error 500 o rutas no encontradas, agrega esto al `.htacce
 
 El scheduler de Laravel necesita una entrada cron que se ejecute **cada minuto**. Laravel decide internamente qué tareas correr según lo configurado en `routes/console.php`.
 
-**Tareas programadas actualmente registradas:**
+**Tareas programadas actualmente registradas** (fuente de verdad: `routes/console.php`):
 
 | Comando | Frecuencia | Propósito |
 |---------|------------|-----------|
-| `seal:check-expiration` | Diaria a las 03:00 | Detecta sellos próximos a vencer (30 días), los marca como `expiring_soon` y envía notificación. Cuando expiran, cambia `seal_status` a `expired` y revierte `status` de la revista de `certified` a `evaluated`. |
+| `oai:harvest --all --queue` | Semanal, lunes 02:30 | Encola un `HarvestJournalArticles` por revista `listed`/`certified` con OAI configurado. **Requiere worker de colas.** |
+| `seal:check-expiration` | Diaria 03:00 | Marca sellos `expiring_soon` (30 días) y `expired`; revierte la revista de `certified` a `evaluated`. |
+| `metrics:refresh-journals` | Mensual, día 1 a las 03:15 | Refresca h-index/citas vía OpenAlex + Crossref para journals certified vigentes. |
+| `sitemap:generate` | Diaria 03:30 | Regenera `public/sitemap.xml`. |
+| `email-logs:prune` | Diaria 03:45 | Purga `email_logs` según la retención de `config/mail_logging.php` (90 días). |
+| `books:check-featured` | Diaria 04:00 | Baja `is_featured` en libros destacados vencidos. |
+| `tasks:check-overdue` | Diaria 09:00 | Notifica `admin_tasks` vencidas al assignee (cooldown 24h). |
+| `consulting:send-reminders` | Diaria 09:30 | `ConsultingReminder` 24h antes de cada sesión agendada. |
+| `consulting:expire-proposals` | Diaria 09:45 | Expira propuestas de consultoría sin responder y devuelve la task a `pending`. |
+| `messages:daily-digest` | Cada hora | Digest de conversaciones a las 9:00 hora local de cada usuario. |
 
-> ⚠️ **Sin este cron, los sellos vencidos seguirán apareciendo como `certified` indefinidamente.** El comando existe en el código (`app/Console/Commands/CheckSealExpiration.php`) pero solo se ejecuta si Hostinger dispara el scheduler.
+> ⚠️ **Sin este cron, los sellos vencidos seguirán apareciendo como `certified` indefinidamente**, los libros destacados nunca dejarán de estarlo y no saldrá ningún digest de mensajes. Los comandos existen en el código pero solo se ejecutan si el servidor dispara el scheduler.
 
 #### Pasos en hPanel → Avanzado → Cron Jobs
 
@@ -702,15 +744,75 @@ El scheduler de Laravel necesita una entrada cron que se ejecute **cada minuto**
 
 > Para encontrar la ruta exacta del proyecto en tu servidor, conéctate por SSH y ejecuta `pwd` desde la raíz de Laravel.
 
-#### Cola de trabajos (opcional, si en el futuro se usan colas)
+#### Worker de colas — OBLIGATORIO
 
-Hoy las notificaciones son **síncronas** (no usan queue), así que no es necesario. Si en el futuro alguna notificación implementa `ShouldQueue`, agregar un segundo cron:
+> 🚨 **Sin worker de colas el sitio funciona con normalidad pero NO envía un solo email.** Desde el issue #42 todas las notificaciones extienden `QueuedNotification` (`ShouldQueue`): se encolan en la tabla `jobs` y se quedan ahí para siempre si nadie las procesa. El editor no ve ningún error — simplemente nunca le llega la confirmación de pago, el aviso de evaluación ni el recordatorio de sello. Nadie se entera hasta que alguien reclama.
+
+**Colas en uso y quién las llena:**
+
+| Cola | Qué lleva | Origen |
+|------|-----------|--------|
+| `mail` | Todas las notificaciones (pagos, evaluación, sello, consultoría, mensajería) | `QueuedNotification::viaQueues()` |
+| `harvest` | `HarvestJournalArticles` — cosecha OAI-PMH, un job por página con resumption token | Acción `harvest_oai` en Filament + cron `oai:harvest --all --queue` |
+| `default` | `RefreshJournalMetricsJob`, exportaciones CSV/XLSX de Filament | `EvaluateJournal`, `ExportAction` |
+
+El worker debe escuchar **las tres**: `--queue=harvest,mail,default`.
+
+**Verificación rápida de que hay backlog sin procesar** (por SSH):
+
+```bash
+php artisan queue:monitor default,mail,harvest
+```
+
+O directo contra la BD: `SELECT queue, COUNT(*) FROM jobs GROUP BY queue;` — si los números suben y nunca bajan, no hay worker vivo.
+
+---
+
+**Opción A — VPS (recomendado): Supervisor**
+
+Es la configuración con la que se desarrolla el proyecto (ver `docker/8.3/supervisord.conf`). Crear `/etc/supervisor/conf.d/editorial-standards-worker.conf`:
+
+```ini
+[program:editorial-standards-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /home/deploy/editorial-standards/artisan queue:work --queue=harvest,mail,default --sleep=3 --tries=3 --max-time=3600 --timeout=310
+autostart=true
+autorestart=true
+stopwaitsecs=3600
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/home/deploy/editorial-standards/storage/logs/worker.log
+```
+
+```bash
+sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start editorial-standards-worker:*
+```
+
+`--timeout=310` es deliberado: `HarvestJournalArticles` declara `$timeout = 300`.
+
+---
+
+**Opción B — Hosting compartido (Hostinger): cron cada minuto**
+
+En compartido no hay Supervisor ni procesos permanentes. La alternativa es un segundo cron que levante un worker efímero cada minuto y lo deje morir:
 
 ```
-* * * * * cd /home/u123456789/domains/tudominio.com/public_html && /usr/bin/php artisan queue:work --once --queue=default >> /dev/null 2>&1
+* * * * * cd /home/u123456789/domains/tudominio.com/public_html && flock -n storage/framework/queue.lock /usr/bin/php artisan queue:work --stop-when-empty --max-time=55 --tries=3 --queue=mail,default,harvest >> /dev/null 2>&1
 ```
 
-> En hosting compartido no hay Supervisor. El cron con `--once` es la alternativa: procesa un job por minuto.
+- `--stop-when-empty` vacía toda la cola pendiente y sale (mucho mejor que `--once`, que procesaba un solo job por minuto y acumulaba backlog en cuanto había ráfagas).
+- `--max-time=55` evita que dos workers se pisen entre minutos.
+- `flock -n` es el seguro: si el worker anterior sigue vivo, el nuevo no arranca. Si `flock` no existe en tu servidor, quitá esa parte del comando.
+- El orden `mail,default,harvest` prioriza los emails; el harvest queda último porque es el más lento.
+
+**Limitaciones reales de esta opción — asumirlas antes de elegirla:**
+
+- Latencia de hasta ~1 minuto en cada email.
+- La cuota de CPU / procesos del hosting compartido puede matar un job largo a mitad. El harvest OAI aguanta bastante bien porque procesa **una página por job** y se re-encola con el resumption token, pero con `--tries=3` un job repetidamente interrumpido termina en `failed_jobs`. Revisar el panel QueueMonitor después de cada corrida semanal.
+- `queue:restart` no tiene a quién avisar, pero tampoco hace falta: cada worker vive menos de un minuto, así que el código nuevo entra solo en el siguiente ciclo.
+
+> ⚠️ **Nunca poner `QUEUE_CONNECTION=sync` como "solución"** en producción: los emails se enviarían dentro del request HTTP (checkout lento y con riesgo de timeout) y `oai:harvest --all --queue` bloquearía el cron durante minutos.
 
 #### Verificar que el scheduler está activo
 
@@ -794,7 +896,10 @@ php artisan migrate --force
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
+php artisan queue:restart
 ```
+
+> ⚠️ **`queue:restart` no es opcional en VPS.** El worker de Supervisor mantiene el código PHP en memoria: sin este comando sigue ejecutando la versión anterior del deploy indefinidamente, y los síntomas (notificaciones con el texto viejo, jobs que fallan por columnas que "no existen") son difíciles de diagnosticar. En hosting compartido con el cron efímero el comando es inofensivo — dejalo igual para que el checklist sea el mismo en ambos entornos.
 
 > **Nota sobre paquetes nuevos:** cuando un deploy agrega un paquete de Composer (ej. `spatie/laravel-activitylog`), no es necesario correr `composer require` ni `vendor:publish` en el servidor — `composer install` ya instala el paquete porque está en `composer.lock`, y los archivos publicados (migraciones, configs) viajan en el repo. Solo asegúrate de correr `php artisan migrate --force` si el deploy incluye migraciones nuevas.
 
