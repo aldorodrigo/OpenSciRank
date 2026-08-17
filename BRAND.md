@@ -232,13 +232,15 @@ Estos colores **no representan a la marca**. Sirven sólo para señalética sem�
 
 **Estado actual de los SVGs:** geometría reconstruida internamente por inspección visual del brand guide entregado por el diseñador, mientras esperamos los archivos source originales. Aproximación cercana pero no pixel-perfect — cuando llegue el zip con `.fig`/`.ai` + SVGs exportados con SVGO, se swappean directamente en `public/brand/` y `public/favicon.svg` sin cambios en la integración.
 
+### Redes sociales (SVG + PNG) — disponibles ahora
+
+Once assets en [`public/brand/social/`](public/brand/social), uno por formato: avatar (3 variantes), Open Graph, header de X, banner y portada de LinkedIn, portada de Facebook, post y story de Instagram, art de YouTube. Tamaños, zonas seguras de cada plataforma y comando de regeneración en [`public/brand/social/README.md`](public/brand/social/README.md).
+
+Se generan con [`scripts/brand-social.mjs`](scripts/brand-social.mjs) (rasterizador `@resvg/resvg-js` + Inter 400/500/600 fuera del repo, ver cabecera del script). Los lockups reproducen la geometría de `logo-horizontal-dark.svg` y `logo-stacked-dark.svg` escalada — no se inventan proporciones nuevas.
+
 ### Pendientes de generación externa — TODO post-EPIC
 
-Los siguientes formatos rasterizados **no se generaron** en este sprint porque no hay `convert`/`rsvg-convert`/`inkscape` disponibles en el setup local (WSL Ubuntu + Git Bash Windows). Se necesita:
-
-- (a) recibir el zip del diseñador con todos los PNG/ICO ya exportados (ver `LOGO_BRIEF.md` sección 8), o
-- (b) generar localmente con ImageMagick/Inkscape, o
-- (c) usar una herramienta online tipo CloudConvert / RealFaviconGenerator a partir de los SVG existentes.
+Los formatos de favicon rasterizado siguen pendientes. Ya se puede generar todo con `scripts/brand-social.mjs` como base (el rasterizador está resuelto); falta escribir las variantes y el contenedor `.ico` multi-res.
 
 | Archivo | Tamaño | Estado |
 |---|---|---|
@@ -249,7 +251,7 @@ Los siguientes formatos rasterizados **no se generaron** en este sprint porque n
 | `public/favicon-192.png` | 192×192 (Android) | falta |
 | `public/favicon-512.png` | 512×512 (Android) | falta |
 | `public/safari-pinned-tab.svg` | monocromo | falta |
-| `public/images/og-default.png` | 1200×630 PNG | **legacy** — reemplazar con render del SVG nuevo |
+| `public/images/og-default.png` | 1200×630 PNG | **hecho** (2026-08-17) — render de `social/og-1200x630` |
 | `public/brand/*.png` | PNG @1x/@2x/@3x de cada lockup | falta |
 
 Mientras tanto, los browsers modernos (Chrome 80+, Firefox 41+, Edge 79+, Safari 9+) usan `favicon.svg` directamente — la web ya muestra la nueva mark en la pestaña sin necesidad del `.ico`. Apple iOS y algunos crawlers viejos siguen usando los archivos legacy hasta que se reemplacen.
