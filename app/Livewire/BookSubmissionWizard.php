@@ -167,6 +167,8 @@ class BookSubmissionWizard extends Component
             $this->keywords = [];
             $this->knowledge_areas = [];
         }
+
+        $this->normalizeAuthors();
     }
     
     // Provide options arrays for Blade
@@ -314,6 +316,21 @@ class BookSubmissionWizard extends Component
         $this->supplementary_files = array_values($this->supplementary_files);
     }
 
+    /**
+     * El select de rol no ofrece opción vacía: un rol en blanco siempre viene de un
+     * estado viejo (snapshot de Livewire previo a esta corrección o fila antigua),
+     * nunca de una elección del editor. Se normaliza antes de validar o guardar para
+     * que no vuelva a bloquear el paso 2 con un campo que en pantalla se ve completo.
+     */
+    protected function normalizeAuthors(): void
+    {
+        $this->authors = array_map(function ($author) {
+            $author['role'] = filled($author['role'] ?? null) ? $author['role'] : 'author';
+
+            return $author;
+        }, $this->authors);
+    }
+
     public function nextStep()
     {
         $this->validateCurrentStep();
@@ -335,6 +352,8 @@ class BookSubmissionWizard extends Component
 
     protected function validateCurrentStep()
     {
+        $this->normalizeAuthors();
+
         $primary = $this->primary_locale;
         $rules = match($this->currentStep) {
             1 => [
@@ -379,6 +398,8 @@ class BookSubmissionWizard extends Component
 
     public function saveDraft()
     {
+        $this->normalizeAuthors();
+
         // Filtra entradas vacías de los arrays de traducciones
         $cleanTranslations = fn(array $arr) => array_filter($arr, fn($v) => filled($v));
 
@@ -515,7 +536,7 @@ class BookSubmissionWizard extends Component
             foreach ($this->authors as $index => $author) {
                 if (!empty($author['full_name'])) {
                     $this->book->authors()->create([
-                        'role' => $author['role'] ?? 'author',
+                        'role' => $author['role'] ?: 'author',
                         'full_name' => $author['full_name'],
                         'orcid' => $author['orcid'] ?: null,
                         'affiliation' => $author['affiliation'] ?: null,

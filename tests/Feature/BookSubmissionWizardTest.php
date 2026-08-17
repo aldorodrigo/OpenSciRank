@@ -62,6 +62,37 @@ class BookSubmissionWizardTest extends TestCase
             ->assertSet('currentStep', 3);
     }
 
+    /**
+     * Un rol vacío en el estado (snapshot de Livewire viejo, fila antigua) no puede
+     * bloquear el paso 2: el select muestra "Autor" y el editor no tiene forma de
+     * corregir un campo que en pantalla ya se ve completo.
+     */
+    public function test_paso_2_no_se_bloquea_con_un_rol_vacio_heredado(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(BookSubmissionWizard::class)
+            ->set('primary_locale', 'es')
+            ->set('title.es', 'Metodología de la investigación')
+            ->set('book_type', 'monograph')
+            ->set('primary_language', 'es')
+            ->set('publisher', 'Editorial Prueba')
+            ->set('publisher_country', 'PY')
+            ->call('nextStep')
+            ->set('authors.0.role', '')
+            ->set('authors.0.full_name', 'Ana Pérez')
+            ->set('abstract.es', str_repeat('Resumen académico del libro. ', 10))
+            ->set('keywords', ['metodología', 'investigación', 'ciencia'])
+            ->set('knowledge_areas', ['ciencias_sociales'])
+            ->call('nextStep')
+            ->assertHasNoErrors()
+            ->assertSet('currentStep', 3)
+            ->assertSet('authors.0.role', 'author');
+
+        $this->assertSame('author', Book::first()->authors()->first()->role);
+    }
+
     /** El input type=date exige yyyy-MM-dd; el cast del modelo devuelve un Carbon. */
     public function test_editar_un_borrador_carga_la_fecha_en_formato_de_input(): void
     {
