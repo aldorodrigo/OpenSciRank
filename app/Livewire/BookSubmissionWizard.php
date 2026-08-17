@@ -42,7 +42,9 @@ class BookSubmissionWizard extends Component
     public $exact_publication_date = '';
 
     // Step 2: Autores y Contenido Académico
-    public $authors = [['full_name' => '', 'role' => '', 'affiliation' => '', 'country_code' => '', 'orcid' => '']];
+    // El rol arranca en 'author': el select del paso 2 no tiene opción vacía, así que
+    // dejarlo en '' muestra "Autor" en pantalla pero falla el required al continuar.
+    public $authors = [['full_name' => '', 'role' => 'author', 'affiliation' => '', 'country_code' => '', 'orcid' => '']];
     public array $abstract = ['es' => '', 'en' => '', 'pt' => ''];
     public $keywords = [];
     public $knowledge_areas = [];
@@ -113,7 +115,8 @@ class BookSubmissionWizard extends Component
             $this->sponsor_entity = array_merge($emptyLocales, $book->getTranslations('sponsor_entity') ?? []);
             $this->total_pages = $book->total_pages ?? '';
             $this->format = $book->format ?? '';
-            $this->exact_publication_date = $book->exact_publication_date ?? '';
+            // El cast 'date' devuelve un Carbon y el input type=date solo acepta yyyy-MM-dd.
+            $this->exact_publication_date = $book->exact_publication_date?->format('Y-m-d') ?? '';
             
             $this->abstract = array_merge($emptyLocales, $book->getTranslations('abstract') ?? []);
             $this->keywords = is_array($book->keywords) ? $book->keywords : json_decode($book->keywords ?? '[]', true);
@@ -160,7 +163,7 @@ class BookSubmissionWizard extends Component
             // We do not load file objects back into Livewire variables since they are already saved,
             // the view relies on `$book->main_file` to show existing files.
         } else {
-            $this->authors = [['full_name' => '', 'role' => '', 'affiliation' => '', 'country_code' => '', 'orcid' => '']];
+            $this->authors = [['full_name' => '', 'role' => 'author', 'affiliation' => '', 'country_code' => '', 'orcid' => '']];
             $this->keywords = [];
             $this->knowledge_areas = [];
         }

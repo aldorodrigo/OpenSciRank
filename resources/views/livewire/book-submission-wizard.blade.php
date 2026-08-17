@@ -285,6 +285,7 @@
                                                 <option value="{{ $value }}">{{ $label }}</option>
                                             @endforeach
                                         </select>
+                                        @error('authors.'.$index.'.role') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                                     </div>
 
                                     <div>
@@ -358,7 +359,7 @@
                             <input type="text"
                                 class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                 placeholder="{{ __("Type a keyword and press Enter (e.g., 'Artificial Intelligence', ENTER)") }}"
-                                @keydown.enter.prevent="$wire.set('keywords', [...$wire.keywords, $event.target.value]); $event.target.value = ''">
+                                @keydown.enter.prevent="if ($event.target.value.trim()) { $wire.set('keywords', [...$wire.keywords, $event.target.value.trim()]); $event.target.value = '' }">
                             @error('keywords') <p class="mt-1 text-sm text-red-500">{{ $message }}</p> @enderror
                         </div>
 
@@ -1005,6 +1006,19 @@
                             <strong>{{ __('Note:') }}</strong> {{ __('By continuing you will be redirected to the payment page. Once the payment is completed, your book will be sent for review.') }}
                         </p>
                     </div>
+                </div>
+            @endif
+
+            {{-- Resumen de errores: sin esto, un campo inválido fuera de pantalla hace que
+                 "Siguiente" no haga nada aparente y el editor no sabe qué corregir. --}}
+            @if($errors->any())
+                <div class="mt-8 rounded-lg border border-red-300 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                    <p class="mb-2 text-sm font-semibold text-red-700 dark:text-red-300">{{ __('Revisá estos campos antes de continuar:') }}</p>
+                    <ul class="list-inside list-disc space-y-1 text-sm text-red-600 dark:text-red-400">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
