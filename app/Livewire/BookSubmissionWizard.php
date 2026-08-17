@@ -364,12 +364,13 @@ class BookSubmissionWizard extends Component
             default => [],
         };
         
-        // Conditional validation for Step 5
-        if ($this->currentStep === 5 && !$this->book?->main_file && !$this->main_file) {
-             // $rules['main_file'] = 'required|file|mimes:pdf,epub|max:51200';
-             // We'll leave it optional for draft saving, but enforce logic if needed later
+        // El paso 5 (archivos) no tiene reglas: todo es opcional para poder guardar
+        // borradores. Livewire lanza MissingRulesException si se le pasa un array
+        // vacío a validate(), así que salimos antes.
+        if (empty($rules)) {
+            return;
         }
-        
+
         $this->validate($rules);
     }
 
@@ -377,6 +378,11 @@ class BookSubmissionWizard extends Component
     {
         // Filtra entradas vacías de los arrays de traducciones
         $cleanTranslations = fn(array $arr) => array_filter($arr, fn($v) => filled($v));
+
+        // Los inputs numéricos opcionales llegan como '' cuando el editor los deja
+        // en blanco, y MySQL en modo estricto rechaza '' en columnas INT/DECIMAL.
+        $toInt = fn($v) => blank($v) ? null : (int) $v;
+        $toDecimal = fn($v) => blank($v) ? null : (float) $v;
 
         $data = [
             'primary_locale' => $this->primary_locale,
@@ -387,7 +393,7 @@ class BookSubmissionWizard extends Component
             'book_type' => $this->book_type ?: null,
             'primary_language' => $this->primary_language ?: null,
             'secondary_language' => $this->secondary_language ?: null,
-            'publication_year' => $this->publication_year,
+            'publication_year' => $toInt($this->publication_year),
             'edition' => $this->edition ?: null,
             'isbn' => $this->isbn ?: null,
             'doi' => $this->doi ?: null,
@@ -399,7 +405,7 @@ class BookSubmissionWizard extends Component
             'publisher_city' => $this->publisher_city ?: null,
             'collection_series' => $cleanTranslations($this->collection_series),
             'sponsor_entity' => $cleanTranslations($this->sponsor_entity),
-            'total_pages' => $this->total_pages,
+            'total_pages' => $toInt($this->total_pages),
             'format' => $this->format ?: null,
             'exact_publication_date' => $this->exact_publication_date ?: null,
 
@@ -422,8 +428,8 @@ class BookSubmissionWizard extends Component
 
             // Step 6
             'publication_model' => $this->publication_model ?: null,
-            'access_cost' => $this->access_cost,
-            'author_apc' => $this->author_apc,
+            'access_cost' => $toDecimal($this->access_cost),
+            'author_apc' => $toDecimal($this->author_apc),
             'funded_by' => $this->funded_by,
 
             // Step 7
@@ -437,7 +443,7 @@ class BookSubmissionWizard extends Component
             // Step 8
             'is_indexed' => $this->is_indexed,
             'indexes' => $this->indexes,
-            'citation_count' => $this->citation_count,
+            'citation_count' => $toInt($this->citation_count),
             'available_metrics' => $cleanTranslations($this->available_metrics),
 
             // Step 9 - metadata
