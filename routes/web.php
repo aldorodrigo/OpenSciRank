@@ -198,6 +198,15 @@ $publicRoutes = function () {
     Route::get('/book/{slug}', function (string $slug) {
         $book = Book::where('slug', $slug)->firstOrFail();
 
+        // Issue #75: listar es lo que publica. Antes cualquiera con el slug
+        // llegaba a la ficha de un libro en borrador o rechazado, aunque el
+        // directorio filtre por `listed`. La excepción es necesaria porque el
+        // editor tiene un link a su propia ficha desde `pending_listing`.
+        $user = auth()->user();
+        $canPreview = $user && ($user->id === $book->user_id || $user->hasRole('super_admin'));
+
+        abort_if($book->status !== 'listed' && ! $canPreview, 404);
+
         return view('book.show', compact('book'));
     })->name('book.show');
 };

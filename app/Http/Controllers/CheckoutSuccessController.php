@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Notifications\ConsultingPaymentConfirmed;
 use App\Notifications\PaymentConfirmed;
 use App\Services\StripePaymentService;
+use App\Support\BookListing;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -93,15 +94,29 @@ class CheckoutSuccessController extends Controller
             // ya certified/evaluated, NO debemos resetear su estado a submitted.
             // Solo aplicar el reset cuando viene de un estado pre-evaluación.
             $isRenewal = ($session->metadata->is_renewal ?? '0') === '1';
-            $preEvaluationStatuses = ['draft', 'requires_changes_evaluation', 'pending_listing', 'requires_changes_listing', 'listed'];
-            if (! $isRenewal
-                && $payable->status !== 'submitted'
-                && in_array($payable->status, $preEvaluationStatuses, true)
-            ) {
-                $payable->update([
-                    'status' => 'submitted',
-                    'submitted_at' => now(),
-                ]);
+
+            // Issue #75: los libros no van a `submitted` (es un estado del flujo
+            // de evaluación de revistas) sino a la cola de revisión de listado.
+            // Ramificamos por tipo porque `$preEvaluationStatuses` incluye
+            // `pending_listing` y `listed`: aplicado a un libro, este fallback
+            // degradaba uno que el webhook ya había dejado en la cola, y podía
+            // resetear uno `listed` que sólo compró el destacado. BookListing
+            // resuelve las dos cosas con su guarda de estados de entrada.
+            if ($payable instanceof Book) {
+                if (! $isRenewal) {
+                    BookListing::enterReviewQueue($payable);
+                }
+            } else {
+                $preEvaluationStatuses = ['draft', 'requires_changes_evaluation', 'pending_listing', 'requires_changes_listing', 'listed'];
+                if (! $isRenewal
+                    && $payable->status !== 'submitted'
+                    && in_array($payable->status, $preEvaluationStatuses, true)
+                ) {
+                    $payable->update([
+                        'status' => 'submitted',
+                        'submitted_at' => now(),
+                    ]);
+                }
             }
 
             // Send payment confirmation email

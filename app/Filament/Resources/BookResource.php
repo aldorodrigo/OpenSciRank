@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Actions\BookCourtesyActions;
+use App\Filament\Actions\BookListingActions;
 use App\Filament\Exports\BookExporter;
 use App\Filament\Resources\BookResource\Pages;
 use App\Models\Book;
@@ -657,12 +658,18 @@ class BookResource extends Resource
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),
+                // Issue #75: resolución de la revisión de listado sin abrir la
+                // ficha. Sólo aparecen si el libro está en pending_listing.
+                BookListingActions::approve(),
+                BookListingActions::requestChanges(),
+                BookListingActions::reject(),
                 // Publicar libro de cortesía: exonera el book-listing y manda
                 // el libro a revisión con un Payment de monto 0 como traza.
                 BookCourtesyActions::listing(),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
+                    BookListingActions::bulkApprove(),
                     // Sprint 3 #20: bulk activar el destacado por 1 año. Si
                     // alguno de los libros ya tenía un featured_until futuro,
                     // sumamos 12 meses para no quitarle valor al editor (misma

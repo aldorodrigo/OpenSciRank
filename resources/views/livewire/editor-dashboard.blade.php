@@ -265,11 +265,14 @@
 
         {{-- Stats Overview (clickable as quick filters) --}}
         @php
-            $underEvaluationCount = $allJournals->where('status', 'submitted')->count() + $allBooks->where('status', 'submitted')->count();
+            // Issue #75: el tile cubre revistas en evaluación y libros en revisión
+            // de listado. Los libros nunca se evalúan, así que su estado es
+            // pending_listing y el label del tile es "En revisión".
+            $underEvaluationCount = $allJournals->where('status', 'submitted')->count() + $allBooks->where('status', 'pending_listing')->count();
             $isAllActive = $journalStatusFilter === '' && $bookStatusFilter === '' && $journalSearch === '' && $journalScoreFilter === '' && $journalSealFilter === '' && $bookSearch === '' && $bookScoreFilter === '';
             $isCertActive = $journalStatusFilter === 'certified';
             $isActionActive = $journalStatusFilter === 'action_needed';
-            $isUnderEvalActive = $journalStatusFilter === 'submitted' && $bookStatusFilter === 'submitted';
+            $isUnderEvalActive = $journalStatusFilter === 'submitted' && $bookStatusFilter === 'pending_listing';
         @endphp
         <div class="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <button type="button" wire:click="applyQuickFilter('all')"
@@ -333,7 +336,10 @@
                     </div>
                     <div class="min-w-0 flex-1">
                         <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $underEvaluationCount }}</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Under Evaluation') }}</p>
+                        {{-- Clave propia: "Under Evaluation" se reutiliza como badge de
+                             revista acá abajo y en la ficha pública, donde el texto sigue
+                             siendo correcto. --}}
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ __('In Review') }}</p>
                         @if($underEvaluationCount > 0)
                             <p class="mt-0.5 text-xs text-brand opacity-0 transition group-hover:opacity-100 dark:text-blue-400">{{ __('Filter') }} →</p>
                         @endif
@@ -562,6 +568,14 @@
                                                 default => ucfirst($journal->status)
                                             } }}
                                         </span>
+                                        {{-- Ver ficha con la observación del evaluador cuando se pidieron cambios --}}
+                                        @if(str_starts_with($journal->status, 'requires_changes'))
+                                            <a href="{{ route('journal.show', $journal->slug) }}"
+                                                class="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-500 hover:underline dark:text-red-400 dark:hover:text-red-300">
+                                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                {{ __('View record') }}
+                                            </a>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4">
                                         @if($journal->current_score)
@@ -928,9 +942,10 @@
                             <div>
                                 <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{{ __('Status') }}</label>
                                 <select wire:model.live="bookStatusFilter" class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                                    {{-- Sin "submitted": los libros no se evalúan, van
+                                         directo a pending_listing (#75). --}}
                                     <option value="">{{ __('All') }}</option>
                                     <option value="draft">{{ __('Draft') }}</option>
-                                    <option value="submitted">{{ __('Submitted') }}</option>
                                     <option value="pending_listing">{{ __('Pending listing') }}</option>
                                     <option value="listed">{{ __('Listed') }}</option>
                                     <option value="requires_changes_listing">{{ __('Requires changes') }}</option>
@@ -990,22 +1005,29 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold
-                                            @if(in_array($book->status, ['indexed', 'listed'])) bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400
-                                            @elseif(in_array($book->status, ['submitted', 'pending_listing'])) bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-400
-                                            @elseif(str_starts_with($book->status, 'requires_changes')) bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400
+                                            @if($book->status === 'listed') bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400
+                                            @elseif($book->status === 'pending_listing') bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-400
+                                            @elseif(str_starts_with($book->status, 'requires_changes') || $book->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400
                                             @else bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400
                                             @endif
                                         ">
                                             {{ match($book->status) {
                                                 'draft' => __('Draft'),
-                                                'submitted' => __('Submitted'),
                                                 'pending_listing' => __('Pending Listing'),
                                                 'requires_changes_listing' => __('Changes (Listing)'),
                                                 'listed' => __('Listed'),
-                                                'indexed' => __('Indexed'),
+                                                'rejected' => __('Rejected'),
                                                 default => ucfirst($book->status)
                                             } }}
                                         </span>
+                                        {{-- Ver observación del revisor cuando se pidieron cambios --}}
+                                        @if(str_starts_with($book->status, 'requires_changes'))
+                                            <button type="button" wire:click="showObservations({{ $book->id }}, 'book')"
+                                                class="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-500 hover:underline dark:text-red-400 dark:hover:text-red-300">
+                                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                                {{ __('View observation') }}
+                                            </button>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4">
                                         @if($book->current_score)
@@ -1206,10 +1228,18 @@
                     class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
                     {{ __('Close') }}
                 </button>
-                <button wire:click="confirmResubmitForListing"
-                    class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700">
-                    {{ __("I've corrected it, resubmit request") }}
-                </button>
+                @if($observationsFlow === 'evaluation')
+                    {{-- La corrección de evaluación se reenvía editando la postulación (gratis) --}}
+                    <a href="{{ $observationsEditUrl }}"
+                        class="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-blue-500">
+                        {{ __('Fix and Resubmit') }}
+                    </a>
+                @else
+                    <button wire:click="confirmResubmitForListing"
+                        class="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700">
+                        {{ __("I've corrected it, resubmit request") }}
+                    </button>
+                @endif
             </div>
         </div>
     </div>

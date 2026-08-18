@@ -28,11 +28,11 @@ class CourtesyListing
     /**
      * Estados del libro desde los que tiene sentido regalar el listado.
      *
-     * Se excluye `requires_changes_listing` (esa resubmisión ya es gratuita por
-     * diseño) y `submitted`/`pending_listing`/`listed` (ya pagaron o ya están en
-     * la cola de revisión).
+     * Son los mismos desde los que se puede entrar a la cola pagando: la
+     * cortesía no abre puertas extra, sólo saltea el cobro. Issue #75 unificó la
+     * definición en BookListing para que no haya dos listas que se desincronicen.
      */
-    public const ELIGIBLE_BOOK_STATUSES = ['draft', 'rejected'];
+    public const ELIGIBLE_BOOK_STATUSES = BookListing::ENTRY_STATUSES;
 
     /**
      * ¿El libro puede recibir la cortesía de listado?
@@ -78,11 +78,9 @@ class CourtesyListing
                 extraMetadata: ['previous_status' => $previousStatus],
             );
 
-            $book->update([
-                'status' => 'pending_listing',
-                'submitted_at' => now(),
-                'submission_date' => now()->toDateString(),
-            ]);
+            // Mismo escritor de estado que el camino pagado (#75): la cortesía no
+            // tiene un flujo propio, sólo entra a la cola sin pasar por el cobro.
+            BookListing::enterReviewQueue($book);
 
             // Mismo camino que el webhook de Stripe: el slug book-listing resuelve
             // a TYPE_REVIEW_LISTING_BOOK, así la task queda idéntica a la de un

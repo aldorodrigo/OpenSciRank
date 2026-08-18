@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Notifications\NewRenewalEvaluation;
 use App\Notifications\PaymentOrphan;
 use App\Support\AdminTaskFactory;
+use App\Support\BookListing;
 use App\Support\ProductValidator;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -304,16 +305,18 @@ class StripePaymentService
 
             // Si el producto principal es el destacado puro (libro ya listed),
             // no tocamos el status del libro — sigue listed. Si en cambio es
-            // book-listing (con o sin addon featured), mantenemos el flujo
-            // estándar de submission.
+            // book-listing (con o sin addon featured), el libro entra a la cola
+            // de revisión de listado.
             if ($mainSlug === 'book-listing-featured-1y') {
                 // Solo addon: el libro ya está listed, no resetear estado.
                 $payable->save();
             } else {
-                $payable->update([
-                    'status' => 'submitted',
-                    'submitted_at' => now(),
-                ]);
+                // Issue #75: `pending_listing`, igual que la cortesía. Antes esto
+                // escribía `submitted` —un estado del flujo de revistas— y el
+                // mismo libro terminaba en un estado distinto según si lo pagó o
+                // se lo exoneró. BookListing se auto-protege de reabrir un libro
+                // que ya salió de la cola.
+                BookListing::enterReviewQueue($payable);
             }
         } elseif ($payable instanceof User) {
             // Sprint 3.7 #38 — new-journal-consulting standalone. El payable

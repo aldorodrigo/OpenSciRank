@@ -47,6 +47,12 @@ class EditorDashboard extends Component
 
     public ?int $observationsBookId = null;
 
+    // Flujo de la corrección: 'listing' (reenvío gratuito) o 'evaluation' (editar y reenviar).
+    public string $observationsFlow = 'listing';
+
+    // URL de edición cuando el flujo es de evaluación (no hay reenvío directo).
+    public ?string $observationsEditUrl = null;
+
     // Ordenamiento
     public string $journalSortField = 'title';
 
@@ -138,8 +144,10 @@ class EditorDashboard extends Component
         } elseif ($type === 'action_needed') {
             $this->journalStatusFilter = 'action_needed';
         } elseif ($type === 'submitted') {
+            // Tile "En revisión" (#75): las revistas en evaluación y los libros en
+            // revisión de listado. Los libros no tienen estado de evaluación.
             $this->journalStatusFilter = 'submitted';
-            $this->bookStatusFilter = 'submitted';
+            $this->bookStatusFilter = 'pending_listing';
         }
 
         $this->dispatch('scroll-to-tables');
@@ -179,6 +187,16 @@ class EditorDashboard extends Component
             $this->observationsBookId = $id;
             $this->observationsJournalId = null;
             $this->observationsTitle = $record->getTranslationWithFallback('title');
+        }
+
+        // La corrección de evaluación (requires_changes_evaluation) se reenvía editando la
+        // postulación, no con un reenvío directo como el listing. Ajustamos el CTA del modal.
+        if ($type === 'journal' && $record->status === 'requires_changes_evaluation') {
+            $this->observationsFlow = 'evaluation';
+            $this->observationsEditUrl = route('app.submit.edit', $record);
+        } else {
+            $this->observationsFlow = 'listing';
+            $this->observationsEditUrl = null;
         }
 
         $this->observationsNotes = $record->evaluation_notes ?? __('No observations recorded.');
@@ -241,6 +259,11 @@ class EditorDashboard extends Component
             'status' => 'pending_listing',
             'submitted_at' => now(),
         ]);
+
+        // Issue #75: marcar la task como reenviada y avisar al revisor, igual
+        // que hace el flujo de revistas.
+        \App\Support\AdminTaskFactory::notifyBookResubmission($book);
+
         session()->flash('message', __('Your book has been resubmitted for listing review.'));
     }
 

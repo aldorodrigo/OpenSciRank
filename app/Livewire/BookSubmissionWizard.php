@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Book;
 use App\Models\BookAuthor;
+use App\Support\AdminTaskFactory;
 use App\Support\BookVocabulary;
 use App\Support\Countries;
 use Illuminate\Validation\Rule;
@@ -387,8 +388,6 @@ class BookSubmissionWizard extends Component
             'download_url' => $this->download_url ?: null,
             'file_size' => $this->file_size ?: null,
             'file_checksum' => $this->file_checksum ?: null,
-
-            'status' => 'draft',
         ];
 
         // Handle file uploads
@@ -436,10 +435,16 @@ class BookSubmissionWizard extends Component
         }
 
         if ($this->book) {
+            // El status NO se toca al guardar: antes `$data` traía
+            // `status => 'draft'` fijo, así que editar un libro devuelto con
+            // correcciones lo bajaba a borrador y dejaba muerta la resubmisión
+            // gratuita de submit() — el editor terminaba en el checkout pagando
+            // el listado por segunda vez (#75).
             unset($data['slug']);
             $this->book->update($data);
         } else {
             $data['user_id'] = auth()->id();
+            $data['status'] = 'draft';
             $this->book = Book::create($data);
         }
 
@@ -472,6 +477,11 @@ class BookSubmissionWizard extends Component
                 'status' => 'pending_listing',
                 'submitted_at' => now(),
             ]);
+
+            // Issue #75: avisarle al revisor que la pelota volvió a su lado.
+            // Antes la tarea quedaba en "cambios solicitados" para siempre.
+            AdminTaskFactory::notifyBookResubmission($this->book);
+
             session()->flash('message', __('Your corrections were submitted. The listing review will resume shortly.'));
             return redirect()->route('app.dashboard');
         }

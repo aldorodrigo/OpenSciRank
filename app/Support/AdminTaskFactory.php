@@ -166,6 +166,70 @@ class AdminTaskFactory
     }
 
     /**
+     * Issue #75 — el editor corrigió y reenvió un LIBRO tras un pedido de
+     * cambios en la revisión de listado.
+     *
+     * Sin esto la tarea quedaba en `changes_requested` para siempre y nadie le
+     * avisaba al revisor que la pelota había vuelto a su lado — el equivalente
+     * para revistas ya existía (`notifyJournalResubmission`).
+     *
+     * No crea tareas: un libro sin tarea de listado nunca pagó ni recibió
+     * cortesía, así que no hay revisión que reanudar.
+     *
+     * @return int cantidad de tareas afectadas (0 si no había ninguna).
+     */
+    public static function notifyBookResubmission(Book $book): int
+    {
+        $superAdmin = self::resolveSuperAdmin();
+
+        $openTasks = AdminTask::query()
+            ->where('related_type', Book::class)
+            ->where('related_id', $book->id)
+            ->where('type', AdminTask::TYPE_REVIEW_LISTING_BOOK)
+            ->whereIn('status', AdminTask::STATUSES_OPEN)
+            ->get();
+
+        if ($openTasks->isNotEmpty()) {
+            foreach ($openTasks as $task) {
+                $task->markResubmitted();
+                self::appendResubmissionNote($task);
+                self::notifyResubmission($task->fresh(), $superAdmin);
+            }
+
+            return $openTasks->count();
+        }
+
+        // La tarea pudo haberse cerrado (ej. el admin rechazó y después el
+        // editor volvió a mandar). La reabrimos para no perder el trabajo.
+        $lastCompleted = AdminTask::query()
+            ->where('related_type', Book::class)
+            ->where('related_id', $book->id)
+            ->where('type', AdminTask::TYPE_REVIEW_LISTING_BOOK)
+            ->where('status', AdminTask::STATUS_COMPLETED)
+            ->orderByDesc('completed_at')
+            ->first();
+
+        if (! $lastCompleted) {
+            return 0;
+        }
+
+        $lastCompleted->markResubmitted();
+        self::appendResubmissionNote($lastCompleted, reopened: true);
+
+        activity()
+            ->performedOn($lastCompleted)
+            ->withProperties([
+                'reopened_at' => now()->toIso8601String(),
+                'previous_status' => 'completed',
+            ])
+            ->log(__('Task reopened due to book resubmission'));
+
+        self::notifyResubmission($lastCompleted->fresh(), $superAdmin);
+
+        return 1;
+    }
+
+    /**
      * Helper: agrega nota "Editor resubmitted on X" a las notas de la task.
      */
     protected static function appendResubmissionNote(AdminTask $task, bool $reopened = false): void
@@ -227,15 +291,18 @@ class AdminTaskFactory
 
     /**
      * Sprint 4 #61 — el revisor pidió cambios: pasar las tareas ABIERTAS del
-     * journal (de los tipos dados) al sub-estado changes_requested, para que
+     * recurso (de los tipos dados) al sub-estado changes_requested, para que
      * en la lista del evaluador se distinga de "pendiente"/"en progreso".
      * Devuelve cuántas tareas se tocaron.
+     *
+     * Issue #75: acepta cualquier modelo relacionado, no sólo Journal — la
+     * revisión de listado de libros usa el mismo sub-estado.
      */
-    public static function markChangesRequested(Journal $journal, array $types): int
+    public static function markChangesRequested(Model $record, array $types): int
     {
         $tasks = AdminTask::query()
-            ->where('related_type', Journal::class)
-            ->where('related_id', $journal->id)
+            ->where('related_type', $record::class)
+            ->where('related_id', $record->id)
             ->whereIn('type', $types)
             ->whereIn('status', AdminTask::STATUSES_OPEN)
             ->get();

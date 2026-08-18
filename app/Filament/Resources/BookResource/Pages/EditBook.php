@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BookResource\Pages;
 
 use App\Filament\Actions\BookCourtesyActions;
+use App\Filament\Actions\BookListingActions;
 use App\Filament\Resources\BookResource;
 use App\Models\Book;
 use Filament\Resources\Pages\EditRecord;
@@ -12,12 +13,20 @@ class EditBook extends EditRecord
     protected static string $resource = BookResource::class;
 
     /**
-     * "Publicar de cortesía" también en el header de la ficha: el admin suele
-     * revisar el libro antes de decidir la exoneración.
+     * Acciones sobre la ficha abierta, que es donde aterriza el admin cuando
+     * arranca la tarea de revisión (`AdminTask::workUrl()`).
+     *
+     * Issue #75: la resolución del listado se hace desde acá, después de mirar
+     * los datos del libro, sin tocar el select de "Estado Interno".
+     * "Publicar de cortesía" sigue disponible para el caso previo: el libro
+     * todavía en borrador al que se le exonera el cobro.
      */
     protected function getHeaderActions(): array
     {
         return [
+            BookListingActions::approve(fn (): ?Book => $this->getRecord()),
+            BookListingActions::requestChanges(fn (): ?Book => $this->getRecord()),
+            BookListingActions::reject(fn (): ?Book => $this->getRecord()),
             BookCourtesyActions::listing(fn (): ?Book => $this->getRecord()),
         ];
     }

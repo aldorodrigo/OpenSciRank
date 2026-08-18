@@ -47,7 +47,10 @@ certified → seal_status: active → expiring_soon (30d) → expired → status
 
 Resubmisión tras `requires_changes_*` es **gratuita** (business-logic 16.5). Cada nueva evaluación o re-evaluación sí tiene costo asociado.
 
-Books: `draft → [pay $49] → submitted → pending_listing → listed / rejected / requires_changes_listing → [free resubmit] → pending_listing`
+Books: `draft → [pay $49 o cortesía] → pending_listing → listed / rejected`
+`pending_listing → requires_changes_listing → [reenvío gratis] → pending_listing`
+
+Los libros **no se evalúan** (sin criterios ni puntaje) y **no usan `submitted`**: ese estado es del flujo de revistas. Issue #75 unificó la entrada a la cola —pago y cortesía escriben `pending_listing` vía `App\Support\BookListing::enterReviewQueue()`— y la salida: el super_admin resuelve con las acciones de `BookListingActions` (listar / pedir correcciones / rechazar), que delegan en `BookListing::resolve()`. `BookObserver` cierra la `AdminTask` al llegar a `listed`/`rejected`. La ficha pública (`/book/{slug}`) sólo es visible si el libro está `listed`, salvo para su dueño y el super_admin.
 
 ### Scoring Algorithm
 
