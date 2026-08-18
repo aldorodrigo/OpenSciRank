@@ -598,9 +598,8 @@ class BookResource extends Resource
                 Tables\Columns\TextColumn::make('publication_year')
                     ->label(__('admin.book.year'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('current_score')
-                    ->label(__('admin.book.score'))
-                    ->sortable(),
+                // Sin columna de puntuación: los libros no se evalúan, sólo se
+                // listan. `current_score` nunca se calcula y salía siempre "—".
                 // Sprint 3 #20: columna "Destacado" — sólo prende si el flag está
                 // activo Y el featured_until aún no venció.
                 Tables\Columns\TextColumn::make('is_featured')
