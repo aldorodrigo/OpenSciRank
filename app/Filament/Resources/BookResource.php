@@ -32,6 +32,45 @@ class BookResource extends Resource
         return __('navigation.content');
     }
 
+    /**
+     * Estados posibles de un libro, con su etiqueta traducida.
+     *
+     * Fuente única para el select del formulario, la columna de la tabla y el
+     * filtro: antes cada uno listaba su propio subconjunto y `pending_listing`
+     * (el estado en que queda todo libro tras pagar el listado o recibir la
+     * cortesía) se mostraba en crudo y no era filtrable.
+     *
+     * @return array<string, string>
+     */
+    public static function statusOptions(): array
+    {
+        return [
+            'draft' => __('admin.book.status_draft'),
+            'submitted' => __('admin.book.status_submitted'),
+            'pending_listing' => __('admin.book.f.status_pending_listing'),
+            'requires_changes_listing' => __('admin.book.f.status_changes_listing'),
+            'listed' => __('admin.book.f.status_listed_book'),
+            'rejected' => __('admin.book.f.status_rejected_book'),
+        ];
+    }
+
+    /**
+     * Color del badge por estado. `rejected` tiene que distinguirse de `draft`.
+     *
+     * @return array<string, string>
+     */
+    public static function statusColors(): array
+    {
+        return [
+            'draft' => 'gray',
+            'submitted' => 'info',
+            'pending_listing' => 'warning',
+            'requires_changes_listing' => 'danger',
+            'listed' => 'success',
+            'rejected' => 'danger',
+        ];
+    }
+
     public static function form(Schema $form): Schema
     {
         return $form
@@ -559,14 +598,7 @@ class BookResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('status')
                                     ->label(__('admin.book.status'))
-                                    ->options([
-                                        'draft' => __('admin.book.status_draft'),
-                                        'submitted' => __('admin.book.status_submitted'),
-                                        'pending_listing' => __('admin.book.f.status_pending_listing'),
-                                        'requires_changes_listing' => __('admin.book.f.status_changes_listing'),
-                                        'listed' => __('admin.book.f.status_listed_book'),
-                                        'rejected' => __('admin.book.f.status_rejected_book'),
-                                    ])
+                                    ->options(fn (): array => self::statusOptions())
                                     ->required()
                                     ->default('draft'),
                                 Forms\Components\DatePicker::make('submission_date')
@@ -636,20 +668,8 @@ class BookResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('admin.book.status'))
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'draft' => 'gray',
-                        'submitted' => 'warning',
-                        'requires_changes_listing' => 'danger',
-                        'listed' => 'success',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'draft' => __('admin.book.status_draft'),
-                        'submitted' => __('admin.book.status_submitted'),
-                        'requires_changes_listing' => __('admin.book.status_changes'),
-                        'listed' => __('admin.book.status_listed'),
-                        default => $state,
-                    }),
+                    ->color(fn (string $state): string => self::statusColors()[$state] ?? 'gray')
+                    ->formatStateUsing(fn (string $state): string => self::statusOptions()[$state] ?? $state),
                 Tables\Columns\TextColumn::make('publication_year')
                     ->label(__('admin.book.year'))
                     ->sortable(),
@@ -680,12 +700,7 @@ class BookResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('admin.book.status'))
-                    ->options([
-                        'draft' => __('admin.book.status_draft'),
-                        'submitted' => __('admin.book.status_submitted'),
-                        'requires_changes_listing' => __('admin.book.status_changes'),
-                        'listed' => __('admin.book.status_listed'),
-                    ]),
+                    ->options(fn (): array => self::statusOptions()),
                 Tables\Filters\SelectFilter::make('book_type')
                     ->label(__('admin.book.type'))
                     ->options([
