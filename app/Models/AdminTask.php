@@ -242,22 +242,30 @@ class AdminTask extends Model
     }
 
     /**
-     * Sprint 3.7 — tarea "de cortesía": no tiene ni pago asociado ni link de
-     * pago pendiente. Casos típicos:
+     * Sprint 3.7 — tarea "de cortesía": el servicio se otorgó sin cobro.
+     * Casos típicos:
      *  - Evaluación forzada (#36) sin pago para instituciones / prueba
      *  - Listing gratuito de revista (`forJournalListing`)
+     *  - Listado de libro de cortesía (Payment de monto 0, ver CourtesyPayment)
      *  - Resubmisiones post-`requires_changes_*` (gratis por design)
      *  - Tareas manuales del admin sin cobro
      *
      * NO es cortesía:
      *  - status=awaiting_payment (esperando que el editor pague el link)
-     *  - tiene effective_payment (vía payment_id o solicited_by_admin_task_id)
+     *  - tiene effective_payment real (vía payment_id o solicited_by_admin_task_id)
+     *
+     * Un Payment con provider 'courtesy' NO descalifica: existe solo como traza
+     * documental de la exoneración, con amount = 0.
      *
      * Solo se muestra en el admin panel — el editor no tiene visibilidad.
      */
     public function isComplimentary(): bool
     {
-        if ($this->effective_payment !== null) {
+        // Un Payment de cortesía (monto 0, provider 'courtesy') documenta la
+        // exoneración pero no es un cobro: la task sigue siendo de cortesía.
+        $payment = $this->effective_payment;
+
+        if ($payment !== null && ! $payment->isCourtesy()) {
             return false;
         }
 
@@ -443,6 +451,11 @@ class AdminTask extends Model
     {
         if (! $this->payment) {
             return null;
+        }
+        // Cortesía: el pago existe solo como traza de la exoneración, el
+        // importe real percibido por esta task es 0.
+        if ($this->payment->isCourtesy()) {
+            return 0.0;
         }
 
         return match ($this->type) {

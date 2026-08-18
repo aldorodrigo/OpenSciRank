@@ -120,7 +120,7 @@ class AdminTasksTable
                         default => $state,
                     })
                     ->tooltip(fn (AdminTask $record): ?string => $record->isComplimentary()
-                        ? __('Tarea de cortesía: sin pago asociado.')
+                        ? __('Tarea de cortesía: servicio otorgado sin cobro.')
                         : null
                     )
                     // Roadmap #35 — el evaluador no necesita saber si la tarea se

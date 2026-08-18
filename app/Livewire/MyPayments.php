@@ -2,8 +2,6 @@
 
 namespace App\Livewire;
 
-use App\Models\Book;
-use App\Models\Journal;
 use App\Models\Payment;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
@@ -45,9 +43,12 @@ class MyPayments extends Component
 
     public function showDetail(int $paymentId): void
     {
-        // Asegurarse que el payment pertenece al usuario
+        // Asegurarse que el payment pertenece al usuario. Los pagos de cortesía
+        // quedan fuera: son un registro interno de la exoneración, no una
+        // transacción del editor.
         $exists = Payment::where('id', $paymentId)
             ->where('user_id', auth()->id())
+            ->notCourtesy()
             ->exists();
 
         if (! $exists) {
@@ -68,6 +69,7 @@ class MyPayments extends Component
     {
         return Payment::query()
             ->where('user_id', auth()->id())
+            ->notCourtesy()
             ->with(['product', 'payable', 'adminTasks'])
             ->when($this->statusFilter, fn (Builder $q) => $q->where('status', $this->statusFilter))
             ->when($this->productFilter, fn (Builder $q) => $q->whereHas('product', fn ($q2) => $q2->where('slug', $this->productFilter)))
@@ -83,6 +85,7 @@ class MyPayments extends Component
 
         return Payment::with(['product', 'payable'])
             ->where('user_id', auth()->id())
+            ->notCourtesy()
             ->find($this->selectedPaymentId);
     }
 

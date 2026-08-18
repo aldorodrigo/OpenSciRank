@@ -88,6 +88,12 @@ class PaymentsTable
                 TextColumn::make('provider')
                     ->label(__('admin.payment.provider'))
                     ->badge()
+                    // Los pagos de cortesía (monto 0) se distinguen del cobro real.
+                    ->color(fn (string $state): string => $state === Payment::PROVIDER_COURTESY ? 'emerald' : 'gray')
+                    ->formatStateUsing(fn (string $state): string => $state === Payment::PROVIDER_COURTESY
+                        ? __('admin.payment.provider_courtesy')
+                        : $state
+                    )
                     ->searchable(),
                 TextColumn::make('transaction_id')
                     ->label(__('admin.payment.transaction_id_short'))
@@ -168,6 +174,7 @@ class PaymentsTable
                         if (! empty($data['to'])) {
                             $indicators[] = __('Hasta: :date', ['date' => \Carbon\Carbon::parse($data['to'])->format('d/m/Y')]);
                         }
+
                         return $indicators;
                     }),
 
@@ -197,6 +204,7 @@ class PaymentsTable
                         if (! empty($data['max'])) {
                             $indicators[] = __('Máx: $:amount', ['amount' => $data['max']]);
                         }
+
                         return $indicators;
                     }),
 

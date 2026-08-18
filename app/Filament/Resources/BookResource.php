@@ -2,29 +2,29 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Actions\BookCourtesyActions;
 use App\Filament\Exports\BookExporter;
 use App\Filament\Resources\BookResource\Pages;
 use App\Models\Book;
+use BackedEnum;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use UnitEnum;
-use BackedEnum;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Tables;
+use Filament\Tables\Table;
 
 class BookResource extends Resource
 {
     protected static ?string $model = Book::class;
 
-    protected static string | BackedEnum | null $navigationIcon = 'heroicon-o-book-open';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
+
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationGroup(): ?string
@@ -562,8 +562,10 @@ class BookResource extends Resource
                                     ->options([
                                         'draft' => __('admin.book.status_draft'),
                                         'submitted' => __('admin.book.status_submitted'),
+                                        'pending_listing' => __('admin.book.f.status_pending_listing'),
                                         'requires_changes_listing' => __('admin.book.f.status_changes_listing'),
                                         'listed' => __('admin.book.f.status_listed_book'),
+                                        'rejected' => __('admin.book.f.status_rejected_book'),
                                     ])
                                     ->required()
                                     ->default('draft'),
@@ -597,7 +599,7 @@ class BookResource extends Resource
                                     ->helperText(__('admin.book.f.featured_until_help')),
                             ])->columns(2),
                     ])
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -664,6 +666,7 @@ class BookResource extends Resource
                         $active = $record->is_featured
                             && $record->featured_until
                             && $record->featured_until->toDateString() >= now()->toDateString();
+
                         return $active
                             ? __('admin.book.featured_badge')
                             : '—';
@@ -721,6 +724,9 @@ class BookResource extends Resource
             ])
             ->actions([
                 \Filament\Actions\EditAction::make(),
+                // Publicar libro de cortesía: exonera el book-listing y manda
+                // el libro a revisión con un Payment de monto 0 como traza.
+                BookCourtesyActions::listing(),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([

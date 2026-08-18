@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Payments\Schemas;
 
 use App\Filament\Resources\BookResource;
 use App\Filament\Resources\JournalResource;
+use App\Models\Payment;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
@@ -25,7 +26,11 @@ class PaymentInfolist
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('provider')
-                    ->label(__('admin.payment.provider')),
+                    ->label(__('admin.payment.provider'))
+                    ->formatStateUsing(fn (string $state): string => $state === Payment::PROVIDER_COURTESY
+                        ? __('admin.payment.provider_courtesy')
+                        : $state
+                    ),
                 TextEntry::make('transaction_id')
                     ->label(__('admin.payment.transaction_id_short'))
                     ->placeholder('-'),

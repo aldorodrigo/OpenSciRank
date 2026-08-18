@@ -124,7 +124,7 @@ class AdminTaskInfolist
                             ->visible(fn (AdminTask $record): bool => $record->isComplimentary()
                                 && (auth()->user()?->hasRole('super_admin') ?? false)
                             )
-                            ->getStateUsing(fn (): string => __('Cortesía — sin pago'))
+                            ->getStateUsing(fn (): string => __('Cortesía — sin cobro'))
                             ->badge()
                             ->color('emerald')
                             ->icon('heroicon-o-gift')
@@ -274,7 +274,6 @@ class AdminTaskInfolist
                             ->columnSpanFull(),
                     ]),
 
-                
                 // ── 3. Notas internas ─────────────────────────────────────────
                 Section::make(__('Notas internas'))
                     ->icon('heroicon-o-pencil-square')

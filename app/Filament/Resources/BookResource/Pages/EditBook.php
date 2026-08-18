@@ -2,12 +2,25 @@
 
 namespace App\Filament\Resources\BookResource\Pages;
 
+use App\Filament\Actions\BookCourtesyActions;
 use App\Filament\Resources\BookResource;
+use App\Models\Book;
 use Filament\Resources\Pages\EditRecord;
 
 class EditBook extends EditRecord
 {
     protected static string $resource = BookResource::class;
+
+    /**
+     * "Publicar de cortesía" también en el header de la ficha: el admin suele
+     * revisar el libro antes de decidir la exoneración.
+     */
+    protected function getHeaderActions(): array
+    {
+        return [
+            BookCourtesyActions::listing(fn (): ?Book => $this->getRecord()),
+        ];
+    }
 
     /**
      * Hidrata los campos traducibles como arrays para que los Tabs por

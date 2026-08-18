@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\AdminTask;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -17,6 +17,33 @@ class Payment extends Model
         'metadata' => 'array',
         'amount' => 'decimal:2',
     ];
+
+    /**
+     * Provider de los pagos de cortesía: el servicio fue otorgado sin cobro
+     * por decisión del admin (convenio institucional, canje, soporte comercial).
+     * El registro existe con amount = 0 para dejar traza de la exoneración.
+     *
+     * @see \App\Support\CourtesyPayment
+     */
+    public const PROVIDER_COURTESY = 'courtesy';
+
+    /**
+     * ¿Este pago es una cortesía (servicio exonerado, monto 0)?
+     */
+    public function isCourtesy(): bool
+    {
+        return $this->provider === self::PROVIDER_COURTESY;
+    }
+
+    /**
+     * Excluye los pagos de cortesía. Se usa en las pantallas del editor:
+     * la exoneración es un registro interno de la plataforma, no una
+     * transacción que el editor deba ver en su historial de pagos.
+     */
+    public function scopeNotCourtesy(Builder $query): Builder
+    {
+        return $query->where('provider', '!=', self::PROVIDER_COURTESY);
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -195,6 +222,7 @@ class Payment extends Model
             'subtotal' => $subtotal,
             'amount' => $amount,
             'discount' => $discount,
+            'courtesy' => $this->isCourtesy(),
             'currency' => $this->currency ?? 'USD',
         ];
     }
