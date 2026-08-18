@@ -175,6 +175,32 @@ class BookCourtesyListingTest extends TestCase
         CourtesyListing::forBook($book, 'Motivo cualquiera de prueba.', $this->superAdmin());
     }
 
+    /**
+     * Issue #72: el modal de detalle del pago mostraba "Courtesy" (el valor
+     * crudo de `provider`) y no decía el motivo ni quién había autorizado la
+     * exoneración, pese a que la acción los exige y los persiste.
+     */
+    public function test_el_detalle_del_pago_muestra_la_cortesia_traducida_con_su_motivo(): void
+    {
+        $this->app->setLocale('es');
+
+        $admin = $this->superAdmin();
+        $book = $this->book();
+
+        $payment = CourtesyListing::forBook($book, 'Convenio institucional con la universidad.', $admin);
+
+        $html = view('filament.payments.payment-detail-modal', [
+            'payment' => $payment->fresh(['user', 'product', 'payable']),
+        ])->render();
+
+        $this->assertStringContainsString('Cortesía', $html);
+        $this->assertStringNotContainsString('Courtesy', $html);
+        $this->assertStringContainsString('Convenio institucional con la universidad.', $html);
+        $this->assertStringContainsString($admin->name, $html);
+        // El desglose nombra la exoneración en vez de un descuento anónimo.
+        $this->assertStringContainsString('Exoneración de cortesía', $html);
+    }
+
     public function test_accion_no_visible_para_usuario_sin_super_admin(): void
     {
         $book = $this->book();

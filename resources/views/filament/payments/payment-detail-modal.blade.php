@@ -11,6 +11,21 @@
     $isExpress = (bool) ($payment->metadata['is_express'] ?? false);
     $tasks = $payment->adminTasks()->with('assignee')->orderBy('id')->get();
 
+    // Cortesía (#69): el motivo es obligatorio al otorgarla y queda en el
+    // metadata; sin esto el desglose muestra un descuento del 100% sin decir
+    // por qué ni quién lo autorizó.
+    $isCourtesy = $payment->isCourtesy();
+    $courtesyReason = $isCourtesy ? ($payment->metadata['reason'] ?? null) : null;
+    $courtesyGrantedBy = $isCourtesy ? ($payment->metadata['granted_by_name'] ?? null) : null;
+
+    // El proveedor se etiqueta igual que en la tabla y el infolist. `courtesy`
+    // no es una pasarela: sin traducir se leía "Courtesy" en el panel en español.
+    $providerLabel = match (true) {
+        $isCourtesy => __('admin.payment.provider_courtesy'),
+        filled($payment->provider) => ucfirst($payment->provider),
+        default => '—',
+    };
+
     $payableLabel = $payment->payable
         ? match ($payment->payable_type) {
             \App\Models\Journal::class => '[' . __('Revista') . '] ' . $payment->payable->getTranslationWithFallback('title'),
@@ -83,7 +98,7 @@
         <div>
             <div class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Proveedor') }}</div>
             <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
-                {{ $payment->provider ? ucfirst($payment->provider) : '—' }}
+                {{ $providerLabel }}
             </div>
         </div>
 
@@ -122,6 +137,22 @@
                 @endif
             </div>
         </div>
+
+        @if($isCourtesy)
+            <div class="md:col-span-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
+                <div class="text-xs font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                    {{ __('admin.payment.courtesy_reason') }}
+                </div>
+                <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                    {{ $courtesyReason ?: '—' }}
+                </div>
+                @if($courtesyGrantedBy)
+                    <div class="mt-2 text-xs text-emerald-800 dark:text-emerald-300">
+                        {{ __('admin.payment.courtesy_granted_by', ['name' => $courtesyGrantedBy]) }}
+                    </div>
+                @endif
+            </div>
+        @endif
     </div>
 
     {{-- ── Sección 2: desglose del cobro ─────────────────────────────── --}}
@@ -167,8 +198,10 @@
 
                     @if($b['discount'] > 0)
                         <tr>
-                            <td class="px-4 py-2.5 italic text-emerald-700 dark:text-emerald-400">{{ __('Descuento aplicado') }}</td>
-                            <td class="px-4 py-2.5 font-mono text-xs text-gray-500 dark:text-gray-400">—</td>
+                            <td class="px-4 py-2.5 italic text-emerald-700 dark:text-emerald-400">
+                                {{ $isCourtesy ? __('admin.payment.courtesy_waiver') : __('Descuento aplicado') }}
+                            </td>
+                            <td class="px-4 py-2.5 font-mono text-xs text-gray-500 dark:text-gray-400">{{ $isCourtesy ? __('admin.payment.provider_courtesy') : '—' }}</td>
                             <td class="px-4 py-2.5 text-right font-semibold text-emerald-700 dark:text-emerald-400">−${{ number_format($b['discount'], 0) }}</td>
                         </tr>
                     @endif
