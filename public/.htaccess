@@ -46,9 +46,18 @@
     # 🛡️ Permissions-Policy: deshabilita features del browser que NO necesitamos.
     # Si una librería intenta abrir cámara/micrófono/GPS sin permiso, el browser
     # bloquea silenciosamente. Reduce superficie de ataque.
-    # Sintaxis structured-fields: los orígenes van entre comillas DOBLES (las
-    # comillas simples son sintaxis de CSP y rompen el parser del browser).
-    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(self \"https://checkout.stripe.com\"), fullscreen=(self)"
+    #
+    # SIN comillas dentro del valor: en structured-fields un origen externo se
+    # escribe entre comillas dobles, que acá hay que escapar como \" — y LiteSpeed
+    # (el servidor de producción) las emite literales en vez de resolverlas. El
+    # header llegaba al browser con las barras invertidas adentro y el parser lo
+    # descartaba entero, dejando la política sin efecto:
+    #   "Parse of permissions policy failed because of errors reported by
+    #    structured header parser"
+    #
+    # No hace falta habilitar payment para el origen de Stripe: el checkout es por
+    # redirección al dominio de Stripe, no un iframe embebido en nuestras páginas.
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(self), fullscreen=(self)"
 
     # 🛡️ HSTS — fuerza HTTPS en todas las requests futuras durante 1 año.
     # SOLO se envía sobre conexiones HTTPS (env=HTTPS), no rompe local HTTP.
