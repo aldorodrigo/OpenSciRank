@@ -218,7 +218,7 @@ class BookSubmissionWizard extends Component
         'cc_by_nc_nd' => 'CC BY-NC-ND (Atribución-NoComercial-SinDerivadas)',
         'copyright_all_rights_reserved' => 'Copyright (Todos los derechos reservados)',
         'public_domain' => 'Dominio Público',
-        'other' => 'Otra licensia...'
+        'other' => 'Otra licencia...'
     ];
 
     public array $publicationModelOptions = [

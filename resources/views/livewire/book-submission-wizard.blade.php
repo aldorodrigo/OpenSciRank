@@ -440,9 +440,8 @@
                                     <p class="mt-2 text-sm text-green-600">{{ __('File selected:') }} {{ $table_of_contents_file->getClientOriginalName() }}</p>
                                 @elseif($book && $book->table_of_contents_file)
                                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                        {{ __('Archivo guardado:') }}
-                                        <a href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($book->table_of_contents_file) }}" target="_blank" rel="noopener" class="text-brand underline">{{ __('ver') }}</a>
-                                        — {{ __('subí otro para reemplazarlo.') }}
+                                        <a href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($book->table_of_contents_file) }}" target="_blank" rel="noopener" class="text-brand underline">{{ __('Ver archivo guardado') }}</a>
+                                        — {{ __('Subí otro para reemplazarlo.') }}
                                     </p>
                                 @endif
                             </div>

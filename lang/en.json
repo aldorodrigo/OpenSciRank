@@ -1,4 +1,10 @@
 {
+    "Se guardará al continuar al siguiente paso.": "It will be saved when you continue to the next step.",
+    "Portada guardada. Subí otra imagen para reemplazarla.": "Cover saved. Upload another image to replace it.",
+    "Ver archivo guardado": "View saved file",
+    "Subí otro para reemplazarlo.": "Upload another one to replace it.",
+    "Archivo guardado:": "Saved file:",
+    "Revisá estos campos antes de continuar:": "Please review these fields before continuing:",
     "evaluator_desk.title": "Evaluator desk",
     "evaluator_desk.subtitle": "Your assigned evaluations and their status.",
     "evaluator_desk.nav_label": "Desk",
