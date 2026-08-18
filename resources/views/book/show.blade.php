@@ -25,6 +25,37 @@
     <script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     </x-slot:jsonLd>
 
+    @php
+        // `authors` es un HasMany a BookAuthor: interpolarlo directamente
+        // imprimía el JSON de la relación en la ficha pública (issue #74).
+        $bookAuthors = $book->authors;
+
+        $authorNames = $bookAuthors->pluck('full_name')->filter()->implode(', ');
+
+        $authorDetails = $bookAuthors
+            ->map(function ($author) {
+                $line = $author->full_name;
+
+                if ($role = \App\Support\BookVocabulary::label('author_role', $author->role)) {
+                    $line .= ' ('.$role.')';
+                }
+
+                if (filled($author->affiliation)) {
+                    $line .= ' — '.$author->affiliation;
+                }
+
+                return $line;
+            })
+            ->filter()
+            ->all();
+
+        $publisherCountry = $book->publisher_country
+            ? (\App\Support\Countries::getName($book->publisher_country) ?? $book->publisher_country)
+            : null;
+
+        $primaryLanguage = \App\Support\BookVocabulary::label('language', $book->primary_language);
+    @endphp
+
     <x-slot:header>true</x-slot:header>
 
     {{-- Breadcrumb --}}
@@ -46,8 +77,8 @@
             <div class="flex flex-col gap-8 md:flex-row md:items-start">
                 {{-- Cover / Icon --}}
                 <div class="shrink-0">
-                    @if($book->cover ?? null)
-                        <img src="{{ Storage::disk('public')->url($book->cover) }}" alt="{{ $book->getTranslationWithFallback('title') }}" class="h-40 w-32 rounded-xl object-cover shadow-lg">
+                    @if($book->cover_image ?? null)
+                        <img src="{{ Storage::disk('public')->url($book->cover_image) }}" alt="{{ $book->getTranslationWithFallback('title') }}" class="h-40 w-32 rounded-xl object-cover shadow-lg">
                     @else
                         <div class="flex h-40 w-32 items-center justify-center rounded-xl bg-blue-100 shadow-lg dark:from-blue-900/50 dark:to-blue-900/50">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -73,10 +104,10 @@
                     </div>
 
                     <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
-                        @if($book->authors ?? null)
+                        @if($authorNames)
                             <span class="flex items-center gap-1.5">
                                 <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                                {{ $book->authors }}
+                                {{ $authorNames }}
                             </span>
                         @endif
                         @if($book->publisher ?? null)
@@ -97,10 +128,10 @@
                                 {{ $book->publication_year }}
                             </span>
                         @endif
-                        @if($book->language ?? null)
+                        @if($primaryLanguage)
                             <span class="flex items-center gap-1.5">
                                 <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
-                                {{ $book->language }}
+                                {{ $primaryLanguage }}
                             </span>
                         @endif
                     </div>
@@ -108,8 +139,8 @@
 
                 {{-- Actions --}}
                 <div class="flex shrink-0 flex-col gap-3">
-                    @if($book->url ?? null)
-                        <a href="{{ $book->url }}" target="_blank" rel="noopener"
+                    @if($book->landing_url ?? null)
+                        <a href="{{ $book->landing_url }}" target="_blank" rel="noopener"
                             class="inline-flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-500">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                             {{ __('View book') }}
@@ -132,24 +163,33 @@
                 <div class="rounded-xl bg-white p-8 shadow-sm dark:bg-gray-900">
                     <h2 class="mb-6 text-xl font-bold text-gray-900 dark:text-white">{{ __('Bibliographic Information') }}</h2>
                     <dl class="grid gap-4 sm:grid-cols-2">
+                        {{-- Los nombres de columna son los reales del modelo: la versión
+                             anterior pedía `language`/`country`/`subject_area`/`url`, que no
+                             existen, y la ficha quedaba casi vacía (issue #74). --}}
                         @php $fields = [
                             'Title'              => $book->getTranslationWithFallback('title') ?: null,
-                            'Authors / Editors'  => $book->authors ?? null,
+                            'Authors / Editors'  => $authorDetails ?: null,
                             'Publisher'          => $book->publisher ?? null,
                             'ISBN'               => $book->isbn ?? null,
                             'Publication year'   => $book->publication_year ?? null,
-                            'Language'           => $book->language ?? null,
-                            'Country'            => $book->country ?? null,
-                            'Subject area'       => $book->subject_area ?? null,
+                            'Language'           => $primaryLanguage,
+                            'Country'            => $publisherCountry,
+                            'Subject area'       => $book->main_discipline ?? null,
                             'DOI'                => $book->doi ?? null,
-                            'URL'                => $book->url ?? null,
+                            'URL'                => $book->landing_url ?? null,
                         ]; @endphp
                         @foreach($fields as $label => $value)
                             @if($value)
                             <div>
                                 <dt class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ __($label) }}</dt>
                                 <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                    @if($label === 'URL' || $label === 'DOI')
+                                    @if(is_array($value))
+                                        <ul class="space-y-0.5">
+                                            @foreach($value as $line)
+                                                <li>{{ $line }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @elseif($label === 'URL' || $label === 'DOI')
                                         <a href="{{ $value }}" target="_blank" rel="noopener" class="break-all text-brand hover:underline dark:text-blue-400">{{ $value }}</a>
                                     @else
                                         {{ $value }}
