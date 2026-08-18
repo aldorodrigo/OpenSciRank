@@ -6,6 +6,7 @@ use App\Filament\Actions\BookCourtesyActions;
 use App\Filament\Exports\BookExporter;
 use App\Filament\Resources\BookResource\Pages;
 use App\Models\Book;
+use App\Support\BookVocabulary;
 use BackedEnum;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
@@ -132,36 +133,14 @@ class BookResource extends Resource
                                     ]),
                                 Forms\Components\Select::make('book_type')
                                     ->label(__('admin.book.f.book_type'))
-                                    ->options([
-                                        'libro_cientifico' => __('admin.book.type_scientific'),
-                                        'libro_academico' => __('admin.book.type_academic'),
-                                        'libro_tecnico' => __('admin.book.type_technical'),
-                                        'manual' => __('admin.book.type_manual'),
-                                        'capitulo_libro' => __('admin.book.type_chapter'),
-                                    ]),
+                                    ->options(fn (): array => BookVocabulary::options('book_type')),
                                 Forms\Components\Select::make('primary_language')
                                     ->label(__('admin.book.f.primary_language'))
-                                    ->options([
-                                        'es' => 'Español',
-                                        'en' => 'Inglés',
-                                        'pt' => 'Portugués',
-                                        'fr' => 'Francés',
-                                        'de' => 'Alemán',
-                                        'it' => 'Italiano',
-                                        'other' => 'Otro',
-                                    ])
+                                    ->options(fn (): array => BookVocabulary::options('language'))
                                     ->searchable(),
                                 Forms\Components\Select::make('secondary_language')
                                     ->label(__('admin.book.f.secondary_language'))
-                                    ->options([
-                                        'es' => 'Español',
-                                        'en' => 'Inglés',
-                                        'pt' => 'Portugués',
-                                        'fr' => 'Francés',
-                                        'de' => 'Alemán',
-                                        'it' => 'Italiano',
-                                        'other' => 'Otro',
-                                    ])
+                                    ->options(fn (): array => BookVocabulary::options('language'))
                                     ->searchable(),
                                 Forms\Components\TextInput::make('publication_year')
                                     ->label(__('admin.book.f.publication_year'))
@@ -207,12 +186,7 @@ class BookResource extends Resource
                                     ->schema([
                                         Forms\Components\Select::make('role')
                                             ->label(__('admin.book.f.author_role'))
-                                            ->options([
-                                                'author' => __('admin.book.f.author_role_author'),
-                                                'editor' => __('admin.book.f.author_role_editor'),
-                                                'translator' => __('admin.book.f.author_role_translator'),
-                                                'coordinator' => __('admin.book.f.author_role_coordinator'),
-                                            ])
+                                            ->options(fn (): array => BookVocabulary::options('author_role'))
                                             ->default('author')
                                             ->required(),
                                         Forms\Components\TextInput::make('full_name')
@@ -301,12 +275,7 @@ class BookResource extends Resource
                                     ->minValue(1),
                                 Forms\Components\Select::make('format')
                                     ->label(__('admin.book.f.format'))
-                                    ->options([
-                                        'pdf' => 'PDF',
-                                        'epub' => 'EPUB',
-                                        'print' => __('admin.book.f.format_print'),
-                                        'hybrid' => __('admin.book.f.format_hybrid'),
-                                    ]),
+                                    ->options(fn (): array => BookVocabulary::options('format')),
                             ])->columns(2),
 
                         // ============================================
@@ -347,11 +316,7 @@ class BookResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\Select::make('academic_level')
                                     ->label(__('admin.book.f.academic_level'))
-                                    ->options([
-                                        'pregrado' => __('admin.book.f.level_undergrad'),
-                                        'posgrado' => __('admin.book.f.level_postgrad'),
-                                        'investigacion' => __('admin.book.f.level_research'),
-                                    ]),
+                                    ->options(fn (): array => BookVocabulary::options('academic_level')),
                                 Tabs::make('table_of_contents_tabs')
                                     ->columnSpanFull()
                                     ->tabs([
@@ -389,24 +354,11 @@ class BookResource extends Resource
                                     ->live(),
                                 Forms\Components\Select::make('access_type')
                                     ->label(__('admin.book.f.access_type'))
-                                    ->options([
-                                        'immediate' => __('admin.book.f.access_immediate'),
-                                        'embargo' => __('admin.book.f.access_embargo'),
-                                        'closed' => __('admin.book.f.access_closed'),
-                                    ])
+                                    ->options(fn (): array => BookVocabulary::options('access_type'))
                                     ->visible(fn (Get $get) => $get('is_open_access')),
                                 Forms\Components\Select::make('license_type')
                                     ->label(__('admin.book.f.license'))
-                                    ->options([
-                                        'CC-BY' => 'CC BY',
-                                        'CC-BY-SA' => 'CC BY-SA',
-                                        'CC-BY-NC' => 'CC BY-NC',
-                                        'CC-BY-ND' => 'CC BY-ND',
-                                        'CC-BY-NC-SA' => 'CC BY-NC-SA',
-                                        'CC-BY-NC-ND' => 'CC BY-NC-ND',
-                                        'copyright' => __('admin.book.f.license_copyright'),
-                                        'other' => __('admin.book.f.license_other'),
-                                    ]),
+                                    ->options(fn (): array => BookVocabulary::options('license_type')),
                                 Tabs::make('rights_holder_tabs')
                                     ->columnSpanFull()
                                     ->tabs([
@@ -439,12 +391,7 @@ class BookResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('publication_model')
                                     ->label(__('admin.book.f.publication_model'))
-                                    ->options([
-                                        'free' => __('admin.book.f.model_free'),
-                                        'pay_download' => __('admin.book.f.model_pay_download'),
-                                        'pay_print' => __('admin.book.f.model_pay_print'),
-                                        'sponsored' => __('admin.book.f.model_sponsored'),
-                                    ])
+                                    ->options(fn (): array => BookVocabulary::options('publication_model'))
                                     ->live(),
                                 Forms\Components\TextInput::make('access_cost')
                                     ->label(__('admin.book.f.access_cost'))
@@ -457,12 +404,7 @@ class BookResource extends Resource
                                     ->prefix('$'),
                                 Forms\Components\CheckboxList::make('funded_by')
                                     ->label(__('admin.book.f.funded_by'))
-                                    ->options([
-                                        'university' => __('admin.book.f.funded_university'),
-                                        'project' => __('admin.book.f.funded_project'),
-                                        'author' => __('admin.book.f.funded_author'),
-                                        'other' => __('admin.book.f.funded_other'),
-                                    ])
+                                    ->options(fn (): array => BookVocabulary::options('funded_by'))
                                     ->columns(2),
                             ])->columns(2),
 
@@ -476,10 +418,7 @@ class BookResource extends Resource
                                     ->live(),
                                 Forms\Components\Select::make('review_type')
                                     ->label(__('admin.book.f.review_type'))
-                                    ->options([
-                                        'single_blind' => __('admin.book.f.review_single_blind'),
-                                        'double_blind' => __('admin.book.f.review_double_blind'),
-                                    ])
+                                    ->options(fn (): array => BookVocabulary::options('review_type'))
                                     ->visible(fn (Get $get) => $get('has_peer_review')),
                                 Forms\Components\Toggle::make('has_editorial_committee')
                                     ->label(__('admin.book.f.has_editorial_committee')),
@@ -501,15 +440,7 @@ class BookResource extends Resource
                                     ->live(),
                                 Forms\Components\CheckboxList::make('indexes')
                                     ->label(__('admin.book.f.indexes'))
-                                    ->options([
-                                        'google_books' => 'Google Books',
-                                        'google_scholar' => 'Google Scholar',
-                                        'doab' => 'DOAB',
-                                        'latindex' => 'Latindex Libros',
-                                        'scopus' => 'Scopus',
-                                        'wos' => 'Web of Science',
-                                        'other' => __('admin.book.f.index_other'),
-                                    ])
+                                    ->options(fn (): array => BookVocabulary::options('index'))
                                     ->columns(2)
                                     ->visible(fn (Get $get) => $get('is_indexed')),
                                 Forms\Components\TextInput::make('citation_count')
@@ -657,14 +588,7 @@ class BookResource extends Resource
                 Tables\Columns\TextColumn::make('book_type')
                     ->label(__('admin.book.type'))
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'libro_cientifico' => __('admin.book.type_scientific'),
-                        'libro_academico' => __('admin.book.type_academic'),
-                        'libro_tecnico' => __('admin.book.type_technical'),
-                        'manual' => __('admin.book.type_manual'),
-                        'capitulo_libro' => __('admin.book.type_chapter'),
-                        default => $state,
-                    }),
+                    ->formatStateUsing(fn (string $state): string => BookVocabulary::label('book_type', $state) ?? $state),
                 Tables\Columns\TextColumn::make('status')
                     ->label(__('admin.book.status'))
                     ->badge()
@@ -703,13 +627,7 @@ class BookResource extends Resource
                     ->options(fn (): array => self::statusOptions()),
                 Tables\Filters\SelectFilter::make('book_type')
                     ->label(__('admin.book.type'))
-                    ->options([
-                        'libro_cientifico' => __('admin.book.type_scientific'),
-                        'libro_academico' => __('admin.book.type_academic'),
-                        'libro_tecnico' => __('admin.book.type_technical'),
-                        'manual' => __('admin.book.type_manual'),
-                        'capitulo_libro' => __('admin.book.type_chapter'),
-                    ]),
+                    ->options(fn (): array => BookVocabulary::options('book_type')),
                 Tables\Filters\TernaryFilter::make('is_open_access')
                     ->label(__('admin.book.filter_open_access')),
                 // Sprint 3 #20: filtro "Destacado". El estado true sólo trae los

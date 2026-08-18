@@ -5,7 +5,9 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Book;
 use App\Models\BookAuthor;
+use App\Support\BookVocabulary;
 use App\Support\Countries;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 
@@ -182,114 +184,10 @@ class BookSubmissionWizard extends Component
         $this->normalizeAuthors();
     }
     
-    // Provide options arrays for Blade
-    public array $bookTypes = [
-        'monograph' => 'Monografía',
-        'edited_volume' => 'Volumen Editado',
-        'textbook' => 'Libro de Texto',
-        'conference_proceedings' => 'Actas de Congreso',
-        'reference_work' => 'Obra de Referencia',
-        'other' => 'Otro'
-    ];
-    
-    public array $authorRoles = [
-        'author' => 'Autor',
-        'editor' => 'Editor',
-        'translator' => 'Traductor',
-        'coordinator' => 'Coordinador',
-        'compiler' => 'Compilador',
-        'illustrator' => 'Ilustrador'
-    ];
 
-    public array $accessTypeOptions = [
-        'gold' => 'Dorado (Gold)',
-        'green' => 'Verde (Green)',
-        'hybrid' => 'Híbrido (Hybrid)',
-        'bronze' => 'Bronce (Bronze)',
-        'diamond' => 'Diamante / Platino (Diamond/Platinum)'
-    ];
-
-    public array $licenseTypes = [
-        'cc_by' => 'CC BY (Atribución)',
-        'cc_by_sa' => 'CC BY-SA (Atribución-CompartirIgual)',
-        'cc_by_nd' => 'CC BY-ND (Atribución-SinDerivadas)',
-        'cc_by_nc' => 'CC BY-NC (Atribución-NoComercial)',
-        'cc_by_nc_sa' => 'CC BY-NC-SA (Atribución-NoComercial-CompartirIgual)',
-        'cc_by_nc_nd' => 'CC BY-NC-ND (Atribución-NoComercial-SinDerivadas)',
-        'copyright_all_rights_reserved' => 'Copyright (Todos los derechos reservados)',
-        'public_domain' => 'Dominio Público',
-        'other' => 'Otra licencia...'
-    ];
-
-    public array $publicationModelOptions = [
-        'open_apc' => 'Acceso Abierto (Con cargo por publicación - APC)',
-        'open_no_apc' => 'Acceso Abierto Diamante (Sin cargo ni para autor ni lector)',
-        'pay_download' => 'Pago por Descarga (Digital)',
-        'pay_print' => 'Impreso bajo demanda (Pago por copia)',
-        'subscription' => 'Suscripción institucional',
-        'freemium' => 'Freemium (Básico gratis, avanzado de pago)'
-    ];
-
-    public array $fundingOptions = [
-        'institution' => 'Institución del Autor',
-        'grant' => 'Subvención / Proyecto de Investigación',
-        'society' => 'Sociedad Científica',
-        'government' => 'Gobierno',
-        'crowdfunding' => 'Crowdfunding',
-        'self_funded' => 'Autofinanciado',
-        'none' => 'Sin financiación externa'
-    ];
-
-    public array $languageOptions = [
-        'es' => 'Español',
-        'en' => 'Inglés',
-        'pt' => 'Portugués',
-        'fr' => 'Francés',
-        'de' => 'Alemán',
-        'it' => 'Italiano',
-    ];
-
-    public array $knowledgeAreaOptions = [
-        'ciencias_exactas_y_naturales' => 'Ciencias Exactas y Naturales',
-        'ingenieria_y_tecnologia' => 'Ingeniería y Tecnología',
-        'ciencias_medicas_y_de_la_salud' => 'Ciencias Médicas y de la Salud',
-        'ciencias_agricolas' => 'Ciencias Agrícolas',
-        'ciencias_sociales' => 'Ciencias Sociales',
-        'humanidades' => 'Humanidades'
-    ];
-
-    public array $academicLevelOptions = [
-        'pregrado' => 'Pregrado (Grado)',
-        'postgrado' => 'Postgrado (Máster, Especialización)',
-        'doctorado' => 'Doctorado',
-        'investigadores' => 'Investigadores / Profesionales',
-        'publico_general' => 'Público General / Divulgación'
-    ];
-
-    public array $formatOptions = [
-        'digital' => 'Digital (PDF, EPUB, etc.)',
-        'impreso' => 'Impreso',
-        'hibrido' => 'Híbrido (Impreso y Digital)'
-    ];
-
-    public array $reviewTypeOptions = [
-        'single_blind' => 'Ciego Simple',
-        'double_blind' => 'Doble Ciego',
-        'open_review' => 'Revisión Abierta',
-        'post_publication' => 'Revisión Post-Publicación',
-        'editorial_review' => 'Revisión Editorial Interna'
-    ];
-
-    public array $indexOptions = [
-        'scopus_book_citation_index' => 'Scopus / Book Citation Index',
-        'doab' => 'DOAB (Directory of Open Access Books)',
-        'scielo_livros' => 'SciELO Livros',
-        'latindex' => 'Latindex',
-        'dialnet' => 'Dialnet',
-        'redib' => 'REDIB',
-        'google_scholar' => 'Google Scholar',
-        'other' => 'Otro índice regional o internacional'
-    ];
+    // Las opciones de los selects ya no viven acá: son vocabularios compartidos
+    // con el admin (issue #71). Se inyectan al Blade desde render() vía
+    // BookVocabulary, así el wizard y BookResource no pueden volver a divergir.
 
     public function addAuthor()
     {
@@ -369,23 +267,27 @@ class BookSubmissionWizard extends Component
         $rules = match($this->currentStep) {
             1 => [
                 "title.{$primary}" => 'required|string|min:3|max:255',
-                'book_type' => 'required|string',
-                'primary_language' => 'required|string',
+                // Los `in:` atan el wizard al vocabulario compartido con el admin
+                // (#71): un valor fuera de la lista se guardaba igual y después
+                // hacía fallar el formulario de Filament.
+                'book_type' => ['required', 'string', Rule::in(BookVocabulary::values('book_type'))],
+                'primary_language' => ['required', 'string', Rule::in(BookVocabulary::values('language'))],
                 'publisher' => 'required|string|max:255',
                 'publisher_country' => 'required|string|max:100',
             ],
             2 => [
                 'authors' => 'required|array|min:1',
                 'authors.*.full_name' => 'required|string|max:255',
-                'authors.*.role' => 'required|string',
+                'authors.*.role' => ['required', 'string', Rule::in(BookVocabulary::values('author_role'))],
                 "abstract.{$primary}" => 'required|string|min:100|max:5000',
                 'keywords' => 'required|array|min:3',
                 'knowledge_areas' => 'required|array|min:1',
+                'knowledge_areas.*' => Rule::in(BookVocabulary::values('knowledge_area')),
             ],
             3 => [
                 'is_open_access' => 'required|boolean',
-                'license_type' => 'required|string',
-                'publication_model' => 'required|string',
+                'license_type' => ['required', 'string', Rule::in(BookVocabulary::values('license_type'))],
+                'publication_model' => ['required', 'string', Rule::in(BookVocabulary::values('publication_model'))],
             ],
             4 => [
                 'has_peer_review' => 'required|boolean',
@@ -587,6 +489,18 @@ class BookSubmissionWizard extends Component
     {
         return view('livewire.book-submission-wizard', [
             'countries' => Countries::forSelect(),
+            'bookTypes' => BookVocabulary::options('book_type'),
+            'authorRoles' => BookVocabulary::options('author_role'),
+            'academicLevelOptions' => BookVocabulary::options('academic_level'),
+            'knowledgeAreaOptions' => BookVocabulary::options('knowledge_area'),
+            'accessTypeOptions' => BookVocabulary::options('access_type'),
+            'licenseTypes' => BookVocabulary::options('license_type'),
+            'publicationModelOptions' => BookVocabulary::options('publication_model'),
+            'fundingOptions' => BookVocabulary::options('funded_by'),
+            'formatOptions' => BookVocabulary::options('format'),
+            'reviewTypeOptions' => BookVocabulary::options('review_type'),
+            'indexOptions' => BookVocabulary::options('index'),
+            'languageOptions' => BookVocabulary::options('language'),
         ])->layout('components.layouts.app', [
             'title' => ($this->book ? __('Edit Book') : __('Register Book')) . ' - Editorial Standards Platform',
         ]);
