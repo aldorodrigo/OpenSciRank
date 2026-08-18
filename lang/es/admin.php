@@ -344,6 +344,8 @@ return [
         'notif_courtesy_done' => 'Libro enviado a revisión',
         'notif_courtesy_done_body' => 'Se registró la cortesía y se creó la tarea de revisión de listado.',
         'notif_courtesy_unavailable' => 'No se puede aplicar la cortesía a este libro (estado no elegible o sin editor asociado).',
+        'action_preview' => 'Previsualizar ficha',
+        'action_view_public' => 'Ver ficha pública',
         // Issue #75 — resolución de la revisión de listado.
         'action_list' => 'Listar libro',
         'action_request_changes' => 'Pedir correcciones',

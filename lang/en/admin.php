@@ -324,6 +324,8 @@ return [
         'notif_courtesy_done' => 'Book sent to review',
         'notif_courtesy_done_body' => 'The courtesy was recorded and the listing review task was created.',
         'notif_courtesy_unavailable' => 'The courtesy cannot be applied to this book (status not eligible or no editor assigned).',
+        'action_preview' => 'Preview record',
+        'action_view_public' => 'View public record',
         // Issue #75 — listing review resolution.
         'action_list' => 'List book',
         'action_request_changes' => 'Request corrections',

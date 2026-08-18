@@ -656,16 +656,23 @@ class BookResource extends Resource
                     ->color('gray')
                     ->exporter(BookExporter::class),
             ])
+            // Todas las acciones de fila viven en un solo desplegable: entre
+            // editar, previsualizar, las tres decisiones de listado y la
+            // cortesía, sueltas ocupaban media tabla.
             ->actions([
-                \Filament\Actions\EditAction::make(),
-                // Issue #75: resolución de la revisión de listado sin abrir la
-                // ficha. Sólo aparecen si el libro está en pending_listing.
-                BookListingActions::approve(),
-                BookListingActions::requestChanges(),
-                BookListingActions::reject(),
-                // Publicar libro de cortesía: exonera el book-listing y manda
-                // el libro a revisión con un Payment de monto 0 como traza.
-                BookCourtesyActions::listing(),
+                \Filament\Actions\ActionGroup::make([
+                    \Filament\Actions\EditAction::make(),
+                    // Ver la ficha como va a quedar publicada, antes de decidir.
+                    BookListingActions::preview(),
+                    // Issue #75: resolución de la revisión de listado sin abrir la
+                    // ficha. Sólo aparecen si el libro está en pending_listing.
+                    BookListingActions::approve(),
+                    BookListingActions::requestChanges(),
+                    BookListingActions::reject(),
+                    // Publicar libro de cortesía: exonera el book-listing y manda
+                    // el libro a revisión con un Payment de monto 0 como traza.
+                    BookCourtesyActions::listing(),
+                ]),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([

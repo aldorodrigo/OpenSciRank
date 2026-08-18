@@ -290,6 +290,41 @@ class BookListingFlowTest extends TestCase
         $this->assertTrue(BookListingActions::reject($resolve)->isVisible());
     }
 
+    public function test_la_previsualizacion_apunta_a_la_ficha_publica_en_cualquier_estado(): void
+    {
+        $book = $this->book('draft');
+        $resolve = fn (): Book => $book;
+
+        $this->actingAs(User::factory()->create());
+        $this->assertFalse(BookListingActions::preview($resolve)->isVisible());
+
+        $this->actingAs($this->superAdmin());
+        $action = BookListingActions::preview($resolve);
+
+        // A diferencia de las tres decisiones, previsualizar sirve en cualquier
+        // estado: es para revisar el contenido antes de resolver.
+        $this->assertTrue($action->isVisible());
+        $this->assertSame(route('book.show', ['slug' => $book->slug]), $action->getUrl());
+        $this->assertSame(__('admin.book.action_preview'), $action->getLabel());
+
+        $book->update(['status' => 'listed']);
+        $this->assertSame(__('admin.book.action_view_public'), BookListingActions::preview($resolve)->getLabel());
+    }
+
+    public function test_el_admin_puede_ver_la_ficha_de_un_libro_todavia_sin_publicar(): void
+    {
+        $book = $this->book('pending_listing');
+
+        // Para cualquier otro visitante sigue siendo 404 hasta que esté listed.
+        $this->get('/es/book/'.$book->slug)->assertNotFound();
+
+        $this->actingAs($this->superAdmin());
+        $this->get('/es/book/'.$book->slug)->assertOk();
+
+        $this->actingAs($book->user);
+        $this->get('/es/book/'.$book->slug)->assertOk();
+    }
+
     public function test_las_acciones_desaparecen_cuando_el_libro_ya_esta_resuelto(): void
     {
         $this->actingAs($this->superAdmin());

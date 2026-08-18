@@ -119,6 +119,35 @@ class BookListingActions
     }
 
     /**
+     * Ver la ficha pública tal como va a quedar listada, para revisar el
+     * contenido antes de decidir.
+     *
+     * Abre `/book/{slug}` en una pestaña nueva. Funciona con el libro todavía
+     * sin publicar porque la ruta deja pasar al dueño y al super_admin (#75);
+     * para el resto del mundo sigue siendo 404 hasta que esté `listed`.
+     *
+     * @param  Closure(): Book|null  $resolve
+     */
+    public static function preview(?Closure $resolve = null): Action
+    {
+        return Action::make('preview_public')
+            ->label(fn ($record = null): string => self::book($record, $resolve)?->status === 'listed'
+                ? __('admin.book.action_view_public')
+                : __('admin.book.action_preview')
+            )
+            ->icon('heroicon-o-eye')
+            ->color('gray')
+            ->visible(fn ($record = null): bool => (auth()->user()?->hasRole('super_admin') ?? false)
+                && filled(self::book($record, $resolve)?->slug)
+            )
+            ->url(fn ($record = null): ?string => filled($slug = self::book($record, $resolve)?->slug)
+                ? route('book.show', ['slug' => $slug])
+                : null,
+                shouldOpenInNewTab: true
+            );
+    }
+
+    /**
      * Listar en lote los que estén en revisión. Correcciones y rechazo no van en
      * lote porque cada uno necesita su propio motivo.
      */

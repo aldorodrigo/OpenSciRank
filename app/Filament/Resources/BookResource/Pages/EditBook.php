@@ -24,6 +24,7 @@ class EditBook extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            BookListingActions::preview(fn (): ?Book => $this->getRecord()),
             BookListingActions::approve(fn (): ?Book => $this->getRecord()),
             BookListingActions::requestChanges(fn (): ?Book => $this->getRecord()),
             BookListingActions::reject(fn (): ?Book => $this->getRecord()),
