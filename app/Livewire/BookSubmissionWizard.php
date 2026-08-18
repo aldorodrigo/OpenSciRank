@@ -160,8 +160,19 @@ class BookSubmissionWizard extends Component
                 ])->toArray();
             }
 
-            // We do not load file objects back into Livewire variables since they are already saved,
-            // the view relies on `$book->main_file` to show existing files.
+            // Los archivos ya subidos no se rehidratan como objetos de upload — la vista
+            // los muestra desde `$book`. Pero capítulos y complementarios SÍ se cargan:
+            // saveDraft() reescribe la lista completa, así que sin esto subir un archivo
+            // nuevo al editar borraba los que ya estaban guardados.
+            $this->chapter_files = collect($book->chapter_files ?? [])
+                ->map(fn ($cf) => ['chapter_name' => $cf['chapter_name'] ?? '', 'file' => $cf['file'] ?? null])
+                ->values()
+                ->all();
+
+            $this->supplementary_files = collect($book->supplementary_files ?? [])
+                ->map(fn ($sf) => ['name' => $sf['name'] ?? '', 'file' => $sf['file'] ?? null])
+                ->values()
+                ->all();
         } else {
             $this->authors = [['full_name' => '', 'role' => 'author', 'affiliation' => '', 'country_code' => '', 'orcid' => '']];
             $this->keywords = [];

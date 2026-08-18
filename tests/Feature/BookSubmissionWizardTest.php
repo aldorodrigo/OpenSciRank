@@ -6,6 +6,8 @@ use App\Livewire\BookSubmissionWizard;
 use App\Models\Book;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -110,6 +112,91 @@ class BookSubmissionWizardTest extends TestCase
 
         Livewire::test(BookSubmissionWizard::class, ['book' => $book])
             ->assertSet('exact_publication_date', '2026-03-20');
+    }
+
+    /** La portada subida en el paso 1 debe quedar en el disco público y en el modelo. */
+    public function test_la_portada_se_guarda_al_pasar_de_paso(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Livewire::test(BookSubmissionWizard::class)
+            ->set('primary_locale', 'es')
+            ->set('title.es', 'Libro con portada')
+            ->set('book_type', 'monograph')
+            ->set('primary_language', 'es')
+            ->set('publisher', 'Editorial Prueba')
+            ->set('publisher_country', 'PY')
+            ->set('cover_image', UploadedFile::fake()->image('portada.jpg', 600, 900))
+            ->call('nextStep')
+            ->assertHasNoErrors();
+
+        $book = Book::first();
+
+        $this->assertNotNull($book->cover_image, 'El borrador no guardó la portada.');
+        Storage::disk('public')->assertExists($book->cover_image);
+    }
+
+    /** Volver a guardar sin tocar la portada no debe duplicar el archivo ni perderlo. */
+    public function test_guardar_de_nuevo_no_duplica_ni_pierde_la_portada(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $component = Livewire::test(BookSubmissionWizard::class)
+            ->set('primary_locale', 'es')
+            ->set('title.es', 'Libro con portada')
+            ->set('book_type', 'monograph')
+            ->set('primary_language', 'es')
+            ->set('publisher', 'Editorial Prueba')
+            ->set('publisher_country', 'PY')
+            ->set('cover_image', UploadedFile::fake()->image('portada.jpg', 600, 900))
+            ->call('nextStep');
+
+        $primera = Book::first()->cover_image;
+
+        $component->call('previousStep')->call('nextStep');
+
+        $this->assertSame($primera, Book::first()->cover_image);
+        $this->assertCount(1, Storage::disk('public')->files('book-covers'));
+    }
+
+    /** Editar un borrador y subir un capítulo nuevo no puede borrar los ya guardados. */
+    public function test_editar_no_pierde_los_capitulos_ya_guardados(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $book = Book::create([
+            'user_id' => $user->id,
+            'title' => ['es' => 'Libro con capítulos'],
+            'slug' => 'libro-con-capitulos',
+            'primary_locale' => 'es',
+            'status' => 'draft',
+            'chapter_files' => [
+                ['chapter_name' => 'Capítulo 1', 'file' => 'book-chapters/cap1.pdf'],
+                ['chapter_name' => 'Capítulo 2', 'file' => 'book-chapters/cap2.pdf'],
+            ],
+        ]);
+
+        Livewire::test(BookSubmissionWizard::class, ['book' => $book])
+            ->call('addChapterFile')
+            ->set('chapter_files.2.chapter_name', 'Capítulo 3')
+            ->set('chapter_files.2.file', UploadedFile::fake()->create('cap3.pdf', 100, 'application/pdf'))
+            ->call('saveDraft');
+
+        $guardados = $book->fresh()->chapter_files;
+
+        $this->assertCount(3, $guardados);
+        $this->assertSame('book-chapters/cap1.pdf', $guardados[0]['file']);
+        $this->assertSame('book-chapters/cap2.pdf', $guardados[1]['file']);
+        $this->assertSame('Capítulo 3', $guardados[2]['chapter_name']);
     }
 
     /** Recorrido completo del wizard sin llenar ningún campo numérico opcional. */

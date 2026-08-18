@@ -165,6 +165,10 @@
                                 class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
                             @if($cover_image)
                                 <img src="{{ $cover_image->temporaryUrl() }}" class="mt-2 h-32 rounded">
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Se guardará al continuar al siguiente paso.') }}</p>
+                            @elseif($book && $book->cover_image)
+                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($book->cover_image) }}" class="mt-2 h-32 rounded" alt="{{ __('Book Cover') }}">
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Portada guardada. Subí otra imagen para reemplazarla.') }}</p>
                             @endif
                         </div>
                     </div>
@@ -434,6 +438,12 @@
                                 </div>
                                 @if($table_of_contents_file)
                                     <p class="mt-2 text-sm text-green-600">{{ __('File selected:') }} {{ $table_of_contents_file->getClientOriginalName() }}</p>
+                                @elseif($book && $book->table_of_contents_file)
+                                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                        {{ __('Archivo guardado:') }}
+                                        <a href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($book->table_of_contents_file) }}" target="_blank" rel="noopener" class="text-brand underline">{{ __('ver') }}</a>
+                                        — {{ __('subí otro para reemplazarlo.') }}
+                                    </p>
                                 @endif
                             </div>
                         </div>
@@ -809,8 +819,16 @@
                                             class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                             placeholder="{{ __('Chapter Title') }}">
 
-                                        <input type="file" wire:model="chapter_files.{{ $index }}.file"
-                                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-brand hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-300">
+                                        <div>
+                                            <input type="file" wire:model="chapter_files.{{ $index }}.file"
+                                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-brand hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-300">
+                                            @if(is_string($chapter_files[$index]['file'] ?? null) && $chapter_files[$index]['file'])
+                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ __('Archivo guardado:') }}
+                                                    <a href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($chapter_files[$index]['file']) }}" target="_blank" rel="noopener" class="text-brand underline">{{ basename($chapter_files[$index]['file']) }}</a>
+                                                </p>
+                                            @endif
+                                        </div>
                                     </div>
                                     <button type="button" wire:click="removeChapterFile({{ $index }})" class="text-red-500 hover:text-red-700 mt-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -838,8 +856,16 @@
                                             class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                                             placeholder="{{ __('Material Name') }}">
 
-                                        <input type="file" wire:model="supplementary_files.{{ $index }}.file"
-                                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-brand hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-300">
+                                        <div>
+                                            <input type="file" wire:model="supplementary_files.{{ $index }}.file"
+                                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-brand hover:file:bg-blue-100 dark:file:bg-blue-900/20 dark:file:text-blue-300">
+                                            @if(is_string($supplementary_files[$index]['file'] ?? null) && $supplementary_files[$index]['file'])
+                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ __('Archivo guardado:') }}
+                                                    <a href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($supplementary_files[$index]['file']) }}" target="_blank" rel="noopener" class="text-brand underline">{{ basename($supplementary_files[$index]['file']) }}</a>
+                                                </p>
+                                            @endif
+                                        </div>
                                     </div>
                                     <button type="button" wire:click="removeSupplementaryFile({{ $index }})" class="text-red-500 hover:text-red-700 mt-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
