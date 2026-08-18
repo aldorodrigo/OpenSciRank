@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\JournalResource\Pages;
 
-use App\Filament\Actions\JournalOaiActions;
 use App\Filament\Resources\JournalResource;
 use App\Jobs\HarvestJournalArticles;
 use App\Jobs\RefreshJournalMetricsJob;
@@ -147,12 +146,9 @@ class EvaluateJournal extends Page
                 ->openUrlInNewTab()
                 ->visible(fn (): bool => $this->record->evaluated_at !== null),
 
-            // #57 — evidencia OAI/métricas dentro de la tarea de evaluación.
-            // El mount() ya autoriza al evaluador asignado (o super_admin), por eso
-            // no re-chequeamos rol; testConnection/harvest ya se ocultan sin oai_base_url.
-            JournalOaiActions::testConnection(fn (): Journal => $this->getRecord()),
-            JournalOaiActions::harvest(fn (): Journal => $this->getRecord()),
-            JournalOaiActions::refreshMetrics(fn (): Journal => $this->getRecord()),
+            // #57 — la evidencia OAI/métricas (probar conexión, cosechar, refrescar)
+            // vive ahora dentro de las pestañas embebidas abajo (Artículos Cosechados
+            // y Métricas de Impacto), no en el header.
         ];
     }
 

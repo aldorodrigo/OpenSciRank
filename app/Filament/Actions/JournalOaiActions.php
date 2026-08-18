@@ -8,13 +8,15 @@ use App\Services\Metrics\JournalMetricsService;
 use App\Services\OaiPmhService;
 use Closure;
 use Filament\Actions\Action;
+use Filament\Forms;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
  * Factory de acciones Filament reutilizables sobre un Journal: probar conexión OAI,
- * cosechar artículos, refrescar métricas y destrabar una cosecha.
+ * cosechar artículos, refrescar métricas, registrar snapshot manual de Scholar y
+ * destrabar una cosecha.
  *
  * Funciona en dos contextos:
  *  - Header/página (un solo journal): pasar `$resolve` (`fn () => $this->getRecord()`).
@@ -37,8 +39,8 @@ class JournalOaiActions
             ->label(__('admin.journal.action_test_oai'))
             ->icon('heroicon-o-signal')
             ->color('gray')
-            ->visible(fn (?Journal $record = null): bool => ! empty(self::journal($record, $resolve)?->oai_base_url))
-            ->action(function (?Journal $record = null) use ($resolve): void {
+            ->visible(fn ($record = null): bool => ! empty(self::journal($record, $resolve)?->oai_base_url))
+            ->action(function ($record = null) use ($resolve): void {
                 $journal = self::journal($record, $resolve);
 
                 try {
@@ -90,11 +92,11 @@ class JournalOaiActions
             ->label(__('admin.journal.action_harvest'))
             ->icon('heroicon-o-arrow-path')
             ->color('success')
-            ->visible(fn (?Journal $record = null): bool => ! empty(self::journal($record, $resolve)?->oai_base_url))
+            ->visible(fn ($record = null): bool => ! empty(self::journal($record, $resolve)?->oai_base_url))
             ->requiresConfirmation()
             ->modalHeading(__('admin.journal.modal_harvest_heading'))
             ->modalDescription(__('admin.journal.modal_harvest_desc'))
-            ->action(function (?Journal $record = null) use ($resolve): void {
+            ->action(function ($record = null) use ($resolve): void {
                 $journal = self::journal($record, $resolve);
                 $journal->update(['oai_harvest_status' => 'queued']);
 
@@ -120,10 +122,11 @@ class JournalOaiActions
             ->label(__('admin.metrics.action_refresh'))
             ->icon('heroicon-o-arrow-path')
             ->color('primary')
+            ->visible(fn ($record = null): bool => self::journal($record, $resolve) !== null)
             ->requiresConfirmation()
             ->modalHeading(__('admin.metrics.confirm_refresh_heading'))
             ->modalDescription(__('admin.metrics.confirm_refresh_body'))
-            ->action(function (?Journal $record = null) use ($resolve): void {
+            ->action(function ($record = null) use ($resolve): void {
                 $journal = self::journal($record, $resolve);
                 $result = app(JournalMetricsService::class)->refresh($journal);
 
@@ -153,6 +156,58 @@ class JournalOaiActions
     }
 
     /**
+     * Registrar manualmente un snapshot de Google Scholar (que no tiene API).
+     * Abre un modal con h_index/total_citations/URL de perfil/notas y persiste el
+     * snapshot vía JournalMetricsService. Misma lógica que el header
+     * `register_scholar` de MetricSnapshotsRelationManager.
+     */
+    public static function registerScholar(?Closure $resolve = null): Action
+    {
+        return Action::make('register_scholar')
+            ->label(__('admin.metrics.action_register_scholar'))
+            ->icon('heroicon-o-academic-cap')
+            ->color('warning')
+            ->visible(fn ($record = null): bool => self::journal($record, $resolve) !== null)
+            ->form([
+                Forms\Components\TextInput::make('h_index')
+                    ->label(__('admin.metrics.h_index'))
+                    ->numeric()
+                    ->minValue(0)
+                    ->required(),
+                Forms\Components\TextInput::make('total_citations')
+                    ->label(__('admin.metrics.total_citations'))
+                    ->numeric()
+                    ->minValue(0),
+                Forms\Components\TextInput::make('profile_url')
+                    ->label(__('admin.metrics.scholar_profile_url'))
+                    ->url()
+                    ->placeholder('https://scholar.google.com/citations?user=...'),
+                Forms\Components\Textarea::make('notes')
+                    ->label(__('admin.metrics.notes'))
+                    ->rows(2),
+            ])
+            ->action(function (array $data, $record = null) use ($resolve): void {
+                $journal = self::journal($record, $resolve);
+
+                app(JournalMetricsService::class)->registerScholarSnapshot(
+                    journal: $journal,
+                    hIndex: $data['h_index'] !== null ? (int) $data['h_index'] : null,
+                    totalCitations: isset($data['total_citations']) && $data['total_citations'] !== null
+                        ? (int) $data['total_citations']
+                        : null,
+                    capturedByUserId: auth()->id(),
+                    profileUrl: $data['profile_url'] ?? null,
+                    notes: $data['notes'] ?? null,
+                );
+
+                Notification::make()
+                    ->title(__('admin.metrics.notif_scholar_registered'))
+                    ->success()
+                    ->send();
+            });
+    }
+
+    /**
      * Destrabar una cosecha clavada en `queued`/`running` sin tocar la consola:
      * borra el lock viejo de WithoutOverlapping (que quedó tras un worker muerto
      * a mitad de job) y devuelve el estado a `idle`. No re-encola — para eso está
@@ -164,11 +219,11 @@ class JournalOaiActions
             ->label(__('admin.journal.action_reset_harvest'))
             ->icon('heroicon-o-arrow-uturn-left')
             ->color('warning')
-            ->visible(fn (?Journal $record = null): bool => in_array(self::journal($record, $resolve)?->oai_harvest_status, ['queued', 'running'], true))
+            ->visible(fn ($record = null): bool => in_array(self::journal($record, $resolve)?->oai_harvest_status, ['queued', 'running'], true))
             ->requiresConfirmation()
             ->modalHeading(__('admin.journal.modal_reset_harvest_heading'))
             ->modalDescription(__('admin.journal.modal_reset_harvest_desc'))
-            ->action(function (?Journal $record = null) use ($resolve): void {
+            ->action(function ($record = null) use ($resolve): void {
                 $journal = self::journal($record, $resolve);
 
                 // El lock de WithoutOverlapping vive con clave
@@ -188,11 +243,19 @@ class JournalOaiActions
     }
 
     /**
-     * Resuelve el journal objetivo: el `$record` inyectado por Filament (fila de
-     * tabla) tiene prioridad; si no hay, se usa el `$resolve` (header/página).
+     * Resuelve el journal objetivo. El `$record` inyectado por Filament tiene
+     * prioridad SOLO si es un Journal (fila de tabla o página cuyo record es un
+     * Journal). En una página cuyo record es otra cosa —p. ej. ViewAdminTask
+     * inyecta el AdminTask— se ignora y se usa el `$resolve` (que devuelve el
+     * journal relacionado). Sin tipar el parámetro para no reventar con el
+     * TypeError cuando Filament inyecta un modelo que no es Journal.
      */
-    private static function journal(?Journal $record, ?Closure $resolve): ?Journal
+    private static function journal(mixed $record, ?Closure $resolve): ?Journal
     {
-        return $record ?? ($resolve ? $resolve() : null);
+        if ($record instanceof Journal) {
+            return $record;
+        }
+
+        return $resolve ? $resolve() : null;
     }
 }

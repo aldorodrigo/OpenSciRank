@@ -10,12 +10,15 @@ use App\Notifications\ListingApproved;
 use App\Notifications\ListingRejected;
 use App\Support\AdminTaskFactory;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\Concerns\HasRelationManagers;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 
 class ReviewListing extends Page
 {
+    use HasRelationManagers;
     use InteractsWithRecord;
 
     protected static string $resource = JournalResource::class;
@@ -62,6 +65,23 @@ class ReviewListing extends Page
         } else {
             $this->assigned_status = 'listed';
         }
+    }
+
+    /**
+     * Pestañas de relaciones (Artículos OAI, Métricas, Equipo, Pagos, Historial)
+     * embebidas bajo las observaciones. La cosecha OAI y el refresco de métricas
+     * viven ahora dentro de la pestaña "Artículos Cosechados (OAI)", no en el header.
+     *
+     * Visibilidad por rol: cada relation manager decide con canViewForRecord().
+     * Pagos e Historial quedan restringidos a super_admin; el evaluador (que de
+     * todos modos no accede a este flujo de listado) no los vería.
+     */
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getRelationManagersContentComponent(),
+            ]);
     }
 
     public function getTitle(): string | Htmlable
