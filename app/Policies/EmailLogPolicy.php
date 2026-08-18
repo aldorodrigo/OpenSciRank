@@ -1,0 +1,70 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Policies;
+
+use Illuminate\Foundation\Auth\User as AuthUser;
+use App\Models\EmailLog;
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class EmailLogPolicy
+{
+    use HandlesAuthorization;
+    
+    public function viewAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('ViewAny:EmailLog');
+    }
+
+    public function view(AuthUser $authUser, EmailLog $emailLog): bool
+    {
+        return $authUser->can('View:EmailLog');
+    }
+
+    public function create(AuthUser $authUser): bool
+    {
+        return $authUser->can('Create:EmailLog');
+    }
+
+    public function update(AuthUser $authUser, EmailLog $emailLog): bool
+    {
+        return $authUser->can('Update:EmailLog');
+    }
+
+    public function delete(AuthUser $authUser, EmailLog $emailLog): bool
+    {
+        return $authUser->can('Delete:EmailLog');
+    }
+
+    public function restore(AuthUser $authUser, EmailLog $emailLog): bool
+    {
+        return $authUser->can('Restore:EmailLog');
+    }
+
+    public function forceDelete(AuthUser $authUser, EmailLog $emailLog): bool
+    {
+        return $authUser->can('ForceDelete:EmailLog');
+    }
+
+    public function forceDeleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('ForceDeleteAny:EmailLog');
+    }
+
+    public function restoreAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('RestoreAny:EmailLog');
+    }
+
+    public function replicate(AuthUser $authUser, EmailLog $emailLog): bool
+    {
+        return $authUser->can('Replicate:EmailLog');
+    }
+
+    public function reorder(AuthUser $authUser): bool
+    {
+        return $authUser->can('Reorder:EmailLog');
+    }
+
+}
